@@ -4,9 +4,9 @@
 
 {% block content %}
 	<h1> Home </h1>
-	{% for article in articles %}
-	<h3>{{ article.title }}</h3>
-	<p>{{ article.content }}</p>
+	{% for post in posts %}
+	<h3>{{ post.getTitle() }}</h3>
+	<p>{{ post.getContent() }}</p>
 	{% else %}
 	<p> There are no articles. </p>
 	{% endfor %}

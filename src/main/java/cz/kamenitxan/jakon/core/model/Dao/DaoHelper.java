@@ -14,7 +14,7 @@ import java.sql.SQLException;
  * Created by Kamenitxan (kamenitxan@me.com) on 20.12.15.
  */
 public class DaoHelper {
-	private final String databaseUrl = "jdbc:sqlite:jakon.sqlite";
+	private static final String databaseUrl = "jdbc:sqlite:jakon.sqlite";
 	private static Dao<Category, String> categoryDao = null;
 	private static Dao<Page, Integer> pageDao = null;
 	private static Dao<Post, Integer> postDao = null;

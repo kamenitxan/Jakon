@@ -6,6 +6,7 @@ import com.mitchellbosecke.pebble.loader.FileLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import cz.kamenitxan.jakon.core.model.Page;
+import cz.kamenitxan.jakon.core.model.Post;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -54,7 +55,7 @@ public class Pebble implements TemplateEngine {
 	}
 
 	@Override
-	public void render(String templateName, List<Page> pages) {
+	public void render(String templateName, List<Post> posts) {
 		PebbleTemplate compiledTemplate = null;
 		try {
 			compiledTemplate = engine.getTemplate(templateName);
@@ -62,13 +63,13 @@ public class Pebble implements TemplateEngine {
 			e.printStackTrace();
 		}
 
-		Writer writer = new StringWriter();
+
 
 		Map<String, Object> context = new HashMap<>();
-		context.put("pages", "");
+		context.put("posts", posts);
 		context.put("category", "");
 
-
+		Writer writer = new StringWriter();
 		try {
 			compiledTemplate.evaluate(writer, context);
 		} catch (PebbleException | IOException e) {
@@ -77,5 +78,12 @@ public class Pebble implements TemplateEngine {
 
 		String output = writer.toString();
 		TemplateUtils.saveRenderedPage(templateName, output);
+	}
+
+	private String postListHTML(Post post) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("<h2>").append(post.getTitle()).append("</h2>");
+		sb.append("<p>").append(post.getPerex()).append("</p>");
+		return sb.toString();
 	}
 }

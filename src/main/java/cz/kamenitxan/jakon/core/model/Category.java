@@ -1,7 +1,9 @@
 package cz.kamenitxan.jakon.core.model;
 
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 /**
@@ -10,6 +12,9 @@ import javax.persistence.Id;
 @Entity
 public class Category {
 	@Id
+	@GeneratedValue
+	private int id;
+	@Column
 	String name;
 
 	public Category() {
@@ -17,5 +22,13 @@ public class Category {
 
 	public String getName() {
 		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getId() {
+		return id;
 	}
 }

@@ -3,27 +3,22 @@ package cz.kamenitxan.jakon.core.model;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import java.util.Date;
 
 /**
  * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
  */
 public class Post extends Page {
-	@Id
-	@GeneratedValue
-	private int id;
 	@Column
 	private Date date;
 	@Column
 	private String perex;
 	@Column
+	@ManyToOne
 	private Category category;
 
 	public Post() {
-	}
-
-	public int getId() {
-		return id;
 	}
 
 	public Date getDate() {
