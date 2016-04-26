@@ -10,12 +10,11 @@ import javax.persistence.Id;
  * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
  */
 @Entity
-public class Category {
-	@Id
-	@GeneratedValue
-	private int id;
+public class Category extends JakonObject {
 	@Column
-	String name;
+	private String name;
+	@Column
+	private boolean showComments;
 
 	public Category() {
 	}
@@ -28,7 +27,11 @@ public class Category {
 		this.name = name;
 	}
 
-	public int getId() {
-		return id;
+	public boolean isShowComments() {
+		return showComments;
+	}
+
+	public void setShowComments(boolean showComments) {
+		this.showComments = showComments;
 	}
 }

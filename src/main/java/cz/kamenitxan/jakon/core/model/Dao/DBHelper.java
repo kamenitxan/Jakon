@@ -1,0 +1,54 @@
+package cz.kamenitxan.jakon.core.model.Dao;
+
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.DaoManager;
+import com.j256.ormlite.jdbc.JdbcConnectionSource;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
+import cz.kamenitxan.jakon.core.model.Category;
+import cz.kamenitxan.jakon.core.model.JakonObject;
+import cz.kamenitxan.jakon.core.model.Page;
+import cz.kamenitxan.jakon.core.model.Post;
+
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Created by Kamenitxan (kamenitxan@me.com) on 20.12.15.
+ */
+public class DBHelper {
+	private static final String databaseUrl = "jdbc:sqlite:jakon.sqlite";
+
+	private static Map<Class<? extends JakonObject>, Dao<? extends JakonObject, Integer>> daos = new HashMap<>();
+
+	static {
+		try {
+			Class.forName("org.sqlite.JDBC");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+			addDao(Post.class);
+			addDao(Page.class);
+			addDao(Category.class);
+	}
+
+	public static <T extends JakonObject> void addDao(Class<T> jobject) {
+		try {
+			final ConnectionSource connectionSource = new JdbcConnectionSource(databaseUrl);
+
+			Dao<T, Integer> dao = DaoManager.createDao(connectionSource, jobject);
+			if (!dao.isTableExists()) {
+				TableUtils.createTable(connectionSource, jobject);
+			}
+			daos.put(jobject, dao);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static Dao<? extends JakonObject, Integer> getDao(Class object) {
+		return daos.get(object);
+	}
+
+}

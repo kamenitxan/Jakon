@@ -1,26 +1,23 @@
 package cz.kamenitxan.jakon.core.model;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
  */
-public class Page {
-	@Id
-	@GeneratedValue
-	private int id;
+@Entity
+public class Page extends JakonObject {
 	@Column
 	private String title;
 	@Column
 	private String content;
+	@Column
+	@OneToOne
+	private Page parent = null;
+	@Column
+	private boolean showComments = false;
 
 	public Page() {
-	}
-
-	public int getId() {
-		return id;
 	}
 
 	public String getTitle() {
@@ -37,5 +34,13 @@ public class Page {
 
 	public void setContent(String content) {
 		this.content = content;
+	}
+
+	public Page getParent() {
+		return parent;
+	}
+
+	public void setParent(Page parent) {
+		this.parent = parent;
 	}
 }

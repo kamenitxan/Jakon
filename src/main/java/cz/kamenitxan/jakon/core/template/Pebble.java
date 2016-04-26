@@ -5,6 +5,7 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.FileLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import cz.kamenitxan.jakon.core.model.JakonObject;
 import cz.kamenitxan.jakon.core.model.Page;
 import cz.kamenitxan.jakon.core.model.Post;
 
@@ -29,7 +30,7 @@ public class Pebble implements TemplateEngine {
 	}
 
 	@Override
-	public void render(String templateName, Page post) {
+	public void render(String templateName, JakonObject jakonObject) {
 		PebbleTemplate compiledTemplate = null;
 		try {
 			compiledTemplate = engine.getTemplate(templateName);
@@ -40,7 +41,7 @@ public class Pebble implements TemplateEngine {
 		Writer writer = new StringWriter();
 
 		Map<String, Object> context = new HashMap<>();
-		context.put("post", post);
+		context.put("post", jakonObject);
 		context.put("pages", "");
 		context.put("category", "");
 
@@ -55,7 +56,7 @@ public class Pebble implements TemplateEngine {
 	}
 
 	@Override
-	public void render(String templateName, List<Post> posts) {
+	public void render(String templateName, List<? extends JakonObject> jakonObjects) {
 		PebbleTemplate compiledTemplate = null;
 		try {
 			compiledTemplate = engine.getTemplate(templateName);
@@ -66,7 +67,7 @@ public class Pebble implements TemplateEngine {
 
 
 		Map<String, Object> context = new HashMap<>();
-		context.put("posts", posts);
+		context.put("posts", jakonObjects);
 		context.put("category", "");
 
 		Writer writer = new StringWriter();
@@ -77,7 +78,7 @@ public class Pebble implements TemplateEngine {
 		}
 
 		String output = writer.toString();
-		TemplateUtils.saveRenderedPage(templateName, output);
+		TemplateUtils.saveRenderedPage(templateName, output, "");
 	}
 
 	private String postListHTML(Post post) {

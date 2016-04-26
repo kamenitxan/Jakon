@@ -9,13 +9,16 @@ import java.io.IOException;
  * Created by Kamenitxan (kamenitxan@me.com) on 20.12.15.
  */
 public class TemplateUtils {
-	public static void saveRenderedPage(String templateName, String content) {
+	public static void saveRenderedPage(String templateName, String content, String url) {
 		try {
 			File file = new File("out/" + "test" + ".html");
 
 			// if file doesnt exists, then create it
 			if (!file.exists()) {
-				file.createNewFile();
+				boolean created = file.createNewFile();
+				if (!created) {
+					throw new IOException("Could not create file.");
+				}
 			}
 
 			FileWriter fw = new FileWriter(file.getAbsoluteFile());

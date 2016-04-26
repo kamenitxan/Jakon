@@ -1,8 +1,7 @@
 package cz.kamenitxan.jakon.core;
 
-import cz.kamenitxan.jakon.core.model.Category;
-import cz.kamenitxan.jakon.core.model.Dao.DaoHelper;
-import cz.kamenitxan.jakon.core.model.Page;
+import com.j256.ormlite.dao.Dao;
+import cz.kamenitxan.jakon.core.model.Dao.DBHelper;
 import cz.kamenitxan.jakon.core.model.Post;
 import cz.kamenitxan.jakon.core.template.Pebble;
 
@@ -16,8 +15,9 @@ public class Director {
 
 	public void render() {
 		try {
-			List<Post> posts = DaoHelper.getPostDao().queryForAll();
-			new Pebble().render("list", posts);
+			Dao<Post, Integer> postDao = (Dao<Post, Integer>) DBHelper.getDao(Post.class);
+			List<Post> posts = postDao.queryForAll();
+			new Pebble().render(posts.get(0).getTemplate(), posts);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

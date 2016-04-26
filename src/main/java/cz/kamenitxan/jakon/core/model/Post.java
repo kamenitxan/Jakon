@@ -1,15 +1,13 @@
 package cz.kamenitxan.jakon.core.model;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
  * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
  */
-public class Post extends Page {
+@Entity
+public class Post extends Page{
 	@Column
 	private Date date;
 	@Column
