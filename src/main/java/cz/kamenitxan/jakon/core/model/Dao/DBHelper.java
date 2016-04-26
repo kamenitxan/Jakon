@@ -51,4 +51,16 @@ public class DBHelper {
 		return daos.get(object);
 	}
 
+	public static Dao<Post, Integer> getPostDao() {
+		return (Dao<Post, Integer>) getDao(Post.class);
+	}
+
+	public static Dao<Page, Integer> getPageDao() {
+		return (Dao<Page, Integer>) getDao(Page.class);
+	}
+
+	public static Dao<Category, Integer> getCategoryDao() {
+		return (Dao<Category, Integer>) getDao(Category.class);
+	}
+
 }

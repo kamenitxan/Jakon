@@ -30,7 +30,7 @@ public class Pebble implements TemplateEngine {
 	}
 
 	@Override
-	public void render(String templateName, JakonObject jakonObject) {
+	public void render(String templateName, Map<String, Object> context) {
 		PebbleTemplate compiledTemplate = null;
 		try {
 			compiledTemplate = engine.getTemplate(templateName);
@@ -39,15 +39,10 @@ public class Pebble implements TemplateEngine {
 		}
 
 		Writer writer = new StringWriter();
-
-		Map<String, Object> context = new HashMap<>();
-		context.put("post", jakonObject);
-		context.put("pages", "");
-		context.put("category", "");
-
-
 		try {
-			compiledTemplate.evaluate(writer, context);
+			if (compiledTemplate != null) {
+				compiledTemplate.evaluate(writer, context);
+			}
 		} catch (PebbleException | IOException e) {
 			e.printStackTrace();
 		}
@@ -56,7 +51,7 @@ public class Pebble implements TemplateEngine {
 	}
 
 	@Override
-	public void render(String templateName, List<? extends JakonObject> jakonObjects) {
+	public void renderList(String templateName, Map<String, Object> context) {
 		PebbleTemplate compiledTemplate = null;
 		try {
 			compiledTemplate = engine.getTemplate(templateName);
@@ -64,15 +59,11 @@ public class Pebble implements TemplateEngine {
 			e.printStackTrace();
 		}
 
-
-
-		Map<String, Object> context = new HashMap<>();
-		context.put("posts", jakonObjects);
-		context.put("category", "");
-
 		Writer writer = new StringWriter();
 		try {
-			compiledTemplate.evaluate(writer, context);
+			if (compiledTemplate != null) {
+				compiledTemplate.evaluate(writer, context);
+			}
 		} catch (PebbleException | IOException e) {
 			e.printStackTrace();
 		}
@@ -81,10 +72,4 @@ public class Pebble implements TemplateEngine {
 		TemplateUtils.saveRenderedPage(templateName, output, "");
 	}
 
-	private String postListHTML(Post post) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("<h2>").append(post.getTitle()).append("</h2>");
-		sb.append("<p>").append(post.getPerex()).append("</p>");
-		return sb.toString();
-	}
 }

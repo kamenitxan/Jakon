@@ -2,6 +2,8 @@ package cz.kamenitxan.jakon.core.model;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
@@ -17,6 +19,7 @@ public class Post extends Page{
 	private Category category;
 
 	public Post() {
+		setListTemplate("list");
 	}
 
 	public Date getDate() {
@@ -41,5 +44,16 @@ public class Post extends Page{
 
 	public void setCategory(Category category) {
 		this.category = category;
+	}
+
+	@Override
+	public Map<String, Object> getSingleRenderContext() {
+		Map<String, Object> context = new HashMap<>();
+		return super.getSingleRenderContext();
+	}
+
+	@Override
+	public Map<String, Object> getListRenderContext() {
+		return super.getListRenderContext();
 	}
 }

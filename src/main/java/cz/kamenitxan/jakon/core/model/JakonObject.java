@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.io.StringWriter;
+import java.util.Map;
 
 
 /**
@@ -88,5 +89,13 @@ public class JakonObject {
 		.writeEnd();
 		generator.close();
 		return writer.toString();
+	}
+
+	public Map<String, Object> getSingleRenderContext() {
+		return null;
+	}
+
+	public Map<String, Object> getListRenderContext() {
+		return null;
 	}
 }
