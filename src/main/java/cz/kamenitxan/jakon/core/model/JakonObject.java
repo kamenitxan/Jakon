@@ -6,7 +6,6 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.io.StringWriter;
-import java.util.Map;
 
 
 /**
@@ -19,48 +18,28 @@ public class JakonObject {
 	@Column
 	private String url = "";
 	@Column
-	private String singleTemplate = null;
-	@Column
-	private String listTemplate = null;
-	@Column
 	private String sectionName = "";
 	@Column
 	private boolean published = true;
 
+	/**
+	 * Return JakonObject Id. Used as primary key in database.
+	 * @return id
+	 */
 	public int getId() {
 		return id;
 	}
 
+	/**
+	 * Returns relative url. This is used for creating folders for output html files. E.g. "/pages/page-title"
+	 * @return relative url
+	 */
 	public String getUrl() {
 		return url;
 	}
 
 	public void setUrl(String url) {
 		this.url = url;
-	}
-
-	public String getTemplate() {
-		return singleTemplate;
-	}
-
-	public void setTemplate(String template) {
-		this.singleTemplate = template;
-	}
-
-	public String getSingleTemplate() {
-		return singleTemplate;
-	}
-
-	public void setSingleTemplate(String singleTemplate) {
-		this.singleTemplate = singleTemplate;
-	}
-
-	public String getListTemplate() {
-		return listTemplate;
-	}
-
-	public void setListTemplate(String listTemplate) {
-		this.listTemplate = listTemplate;
 	}
 
 	public String getSectionName() {
@@ -71,6 +50,10 @@ public class JakonObject {
 		this.sectionName = sectionName;
 	}
 
+	/**
+	 * Returns true if JakonObject should be rendered, thus published.
+	 * @return published state
+	 */
 	public boolean isPublished() {
 		return published;
 	}
@@ -91,11 +74,4 @@ public class JakonObject {
 		return writer.toString();
 	}
 
-	public Map<String, Object> getSingleRenderContext() {
-		return null;
-	}
-
-	public Map<String, Object> getListRenderContext() {
-		return null;
-	}
 }

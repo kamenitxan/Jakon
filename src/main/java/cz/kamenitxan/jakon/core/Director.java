@@ -14,7 +14,7 @@ import java.util.List;
  * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
  */
 public class Director<T extends CustomPage> {
-	private Director instance = null;
+	private static Director instance = null;
 	private List<T> customPages = new ArrayList<>();
 
 	private Director() {
@@ -38,7 +38,7 @@ public class Director<T extends CustomPage> {
 		customPages.remove(page);
 	}
 
-	public Director getInstance() {
+	public static Director getInstance() {
 		if (instance == null) {
 			new Director();
 		}

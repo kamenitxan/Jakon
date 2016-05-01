@@ -9,9 +9,19 @@ import java.io.IOException;
  * Created by Kamenitxan (kamenitxan@me.com) on 20.12.15.
  */
 public class TemplateUtils {
-	public static void saveRenderedPage(String templateName, String content, String url) {
+	private static TemplateEngine engine;
+
+	static {
+		engine = new Pebble();
+	}
+
+	public static TemplateEngine getEngine() {
+		return engine;
+	}
+
+	public static void saveRenderedPage(String content, String path) {
 		try {
-			File file = new File("out/" + "test" + ".html");
+			File file = new File("out/" + path + ".html");
 
 			// if file doesnt exists, then create it
 			if (!file.exists()) {

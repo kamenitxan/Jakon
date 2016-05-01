@@ -1,6 +1,9 @@
 package cz.kamenitxan.jakon.core.model;
 
+import javax.json.Json;
+import javax.json.stream.JsonGenerator;
 import javax.persistence.*;
+import java.io.StringWriter;
 
 /**
  * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
@@ -42,5 +45,20 @@ public class Page extends JakonObject {
 
 	public void setParent(Page parent) {
 		this.parent = parent;
+	}
+
+	@Override
+	public String toJson() {
+		StringWriter writer = new StringWriter();
+		JsonGenerator generator = Json.createGenerator(writer);
+
+		generator.writeStartObject()
+				.write(super.getId())
+				.write(getTitle())
+				.write(getContent())
+				.write(getParent().getId())
+				.writeEnd();
+		generator.close();
+		return writer.toString();
 	}
 }
