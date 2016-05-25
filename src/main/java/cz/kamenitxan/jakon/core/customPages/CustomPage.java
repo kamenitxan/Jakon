@@ -5,6 +5,6 @@ import cz.kamenitxan.jakon.core.model.JakonObject;
 /**
  * Created by TPa on 26.04.16.
  */
-public class CustomPage extends JakonObject {
+public abstract class CustomPage extends JakonObject {
 
 }

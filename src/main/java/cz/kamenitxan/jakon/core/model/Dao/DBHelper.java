@@ -21,6 +21,7 @@ public class DBHelper {
 	private static final String databaseUrl = "jdbc:sqlite:jakon.sqlite";
 
 	private static Map<Class<? extends JakonObject>, Dao<? extends JakonObject, Integer>> daos = new HashMap<>();
+	private static Map<Integer, JakonObject> objectCache = new HashMap<>();
 
 	static {
 		try {
@@ -61,6 +62,30 @@ public class DBHelper {
 
 	public static Dao<Category, Integer> getCategoryDao() {
 		return (Dao<Category, Integer>) getDao(Category.class);
+	}
+
+	/**
+	 *
+	 * @param id searched JakonObject id
+	 * @param refresh if true, object is queried from DB. not cache
+	 * @return JakonObject or null
+	 */
+	public static JakonObject getObjectById(Integer id, boolean refresh) {
+		if (!refresh && objectCache.containsKey(id)) {
+			return objectCache.get(id);
+		}
+		try {
+			for (Dao<? extends JakonObject, Integer> dao : daos.values()) {
+				JakonObject o = dao.queryForId(id);
+				if (o != null) {
+					// TODO: pridat objekt do cache
+					return o;
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

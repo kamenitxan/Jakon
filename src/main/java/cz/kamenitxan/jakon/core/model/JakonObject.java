@@ -11,7 +11,7 @@ import java.io.StringWriter;
 /**
  * Created by TPa on 22.04.16.
  */
-public class JakonObject {
+public abstract class JakonObject {
 	@Id
 	@GeneratedValue
 	private int id;

@@ -32,6 +32,8 @@ public class Page extends JakonObject {
 	}
 
 	public String getContent() {
+		// TODO: parsovani funkci
+		// (\{)((?:[a-z][a-z]+)).*?(\})
 		return content;
 	}
 
