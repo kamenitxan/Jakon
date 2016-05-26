@@ -1,12 +1,9 @@
 package cz.kamenitxan.jakon.core.controler;
 
-import cz.kamenitxan.jakon.Main;
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper;
 import cz.kamenitxan.jakon.core.model.Page;
 import cz.kamenitxan.jakon.core.template.TemplateEngine;
 import cz.kamenitxan.jakon.core.template.TemplateUtils;
-import spark.Spark;
-import spark.Spark.*;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -18,9 +15,6 @@ import java.util.Map;
  */
 public class PageControler implements IControler{
 	private static String template = "page.peb";
-	static {
-		Spark.get("/", (req, res) -> "Hello World");
-	}
 
 	@Override
 	public void generate() {

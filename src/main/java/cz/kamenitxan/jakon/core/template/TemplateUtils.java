@@ -1,5 +1,7 @@
 package cz.kamenitxan.jakon.core.template;
 
+import cz.kamenitxan.jakon.core.Settings;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -9,14 +11,8 @@ import java.io.IOException;
  * Created by Kamenitxan (kamenitxan@me.com) on 20.12.15.
  */
 public class TemplateUtils {
-	private static TemplateEngine engine;
-
-	static {
-		engine = new Pebble();
-	}
-
 	public static TemplateEngine getEngine() {
-		return engine;
+		return Settings.getTemplateEngine();
 	}
 
 	public static void saveRenderedPage(String content, String path) {

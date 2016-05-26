@@ -2,6 +2,7 @@ package cz.kamenitxan.jakon.core.model.Dao;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
+import com.j256.ormlite.dao.ReferenceObjectCache;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
@@ -21,7 +22,6 @@ public class DBHelper {
 	private static final String databaseUrl = "jdbc:sqlite:jakon.sqlite";
 
 	private static Map<Class<? extends JakonObject>, Dao<? extends JakonObject, Integer>> daos = new HashMap<>();
-	private static Map<Integer, JakonObject> objectCache = new HashMap<>();
 
 	static {
 		try {
@@ -39,6 +39,7 @@ public class DBHelper {
 			final ConnectionSource connectionSource = new JdbcConnectionSource(databaseUrl);
 
 			Dao<T, Integer> dao = DaoManager.createDao(connectionSource, jobject);
+			dao.setObjectCache(ReferenceObjectCache.makeSoftCache());
 			if (!dao.isTableExists()) {
 				TableUtils.createTable(connectionSource, jobject);
 			}
@@ -65,20 +66,16 @@ public class DBHelper {
 	}
 
 	/**
-	 *
 	 * @param id searched JakonObject id
 	 * @param refresh if true, object is queried from DB. not cache
 	 * @return JakonObject or null
 	 */
+	@Deprecated
 	public static JakonObject getObjectById(Integer id, boolean refresh) {
-		if (!refresh && objectCache.containsKey(id)) {
-			return objectCache.get(id);
-		}
 		try {
 			for (Dao<? extends JakonObject, Integer> dao : daos.values()) {
 				JakonObject o = dao.queryForId(id);
 				if (o != null) {
-					// TODO: pridat objekt do cache
 					return o;
 				}
 			}
@@ -86,6 +83,14 @@ public class DBHelper {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	/**
+	 * @param id searched JakonObject id
+	 * @return JakonObject or null
+	 */
+	public static JakonObject getObjectById(Integer id) {
+		return getObjectById(id, false);
 	}
 
 }
