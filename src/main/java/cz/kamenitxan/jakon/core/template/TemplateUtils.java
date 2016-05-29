@@ -21,6 +21,7 @@ public class TemplateUtils {
 
 			// if file doesnt exists, then create it
 			if (!file.exists()) {
+				file.getParentFile().mkdirs();
 				boolean created = file.createNewFile();
 				if (!created) {
 					throw new IOException("Could not create file.");

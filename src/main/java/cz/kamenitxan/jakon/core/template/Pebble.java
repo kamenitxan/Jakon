@@ -5,6 +5,7 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.FileLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import cz.kamenitxan.jakon.core.Settings;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -19,7 +20,7 @@ public class Pebble implements TemplateEngine {
 
 	static {
 		Loader loader = new FileLoader();
-		loader.setPrefix("templates/bacon/");
+		loader.setPrefix(Settings.getTemplateDir());
 		loader.setSuffix(".peb");
 		engine = new PebbleEngine(loader);
 	}

@@ -1,15 +1,10 @@
 package cz.kamenitxan.jakon.core;
 
-import com.j256.ormlite.dao.Dao;
 import cz.kamenitxan.jakon.core.controler.IControler;
 import cz.kamenitxan.jakon.core.controler.PageControler;
 import cz.kamenitxan.jakon.core.customPages.CustomPage;
-import cz.kamenitxan.jakon.core.function.Link;
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper;
-import cz.kamenitxan.jakon.core.model.Post;
 import cz.kamenitxan.jakon.core.template.Pebble;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,8 +27,8 @@ public class Director<T extends CustomPage> {
 	}
 
 	public void render() {
-		controlers.parallelStream().forEach( a -> render());
-		customPages.parallelStream().forEach( a -> render());
+		controlers.parallelStream().forEach(IControler::generate);
+		//customPages.parallelStream().forEach( a -> render());
 	}
 
 	public void registerCustomPage(T page) {
@@ -50,7 +45,7 @@ public class Director<T extends CustomPage> {
 
 	public static synchronized Director getInstance() {
 		if (instance == null) {
-			new Director();
+			instance = new Director();
 		}
 		return instance;
 	}
