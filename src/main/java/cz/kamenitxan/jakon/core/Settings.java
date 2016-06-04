@@ -8,6 +8,8 @@ import cz.kamenitxan.jakon.core.template.TemplateEngine;
 public class Settings {
 	private static String templateDir;
 	private static TemplateEngine engine;
+	private static String staticDir;
+	private static String outputDir;
 
 	public static String getTemplateDir() {
 		return templateDir;
@@ -23,5 +25,21 @@ public class Settings {
 
 	public static void setTemplateEngine(TemplateEngine engine) {
 		Settings.engine = engine;
+	}
+
+	public static String getStaticDir() {
+		return staticDir;
+	}
+
+	public static void setStaticDir(String staticDir) {
+		Settings.staticDir = staticDir;
+	}
+
+	public static String getOutputDir() {
+		return outputDir;
+	}
+
+	public static void setOutputDir(String outputDir) {
+		Settings.outputDir = outputDir;
 	}
 }
