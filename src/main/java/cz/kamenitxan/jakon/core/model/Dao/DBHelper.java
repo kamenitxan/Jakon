@@ -6,6 +6,7 @@ import com.j256.ormlite.dao.ReferenceObjectCache;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
+import cz.kamenitxan.jakon.core.Settings;
 import cz.kamenitxan.jakon.core.model.Category;
 import cz.kamenitxan.jakon.core.model.JakonObject;
 import cz.kamenitxan.jakon.core.model.Page;
@@ -18,14 +19,12 @@ import java.util.Map;
 /**
  * Created by Kamenitxan (kamenitxan@me.com) on 20.12.15.
  */
-public class DBHelper {
-	private static final String databaseUrl = "jdbc:sqlite:jakon.sqlite";
-
+public abstract class DBHelper {
 	private static Map<Class<? extends JakonObject>, Dao<? extends JakonObject, Integer>> daos = new HashMap<>();
 
 	static {
 		try {
-			Class.forName("org.sqlite.JDBC");
+			Class.forName(Settings.getDatabaseDriver());
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -36,7 +35,7 @@ public class DBHelper {
 
 	public static <T extends JakonObject> void addDao(Class<T> jobject) {
 		try {
-			final ConnectionSource connectionSource = new JdbcConnectionSource(databaseUrl);
+			final ConnectionSource connectionSource = new JdbcConnectionSource(Settings.getDatabaseConnPath());
 
 			Dao<T, Integer> dao = DaoManager.createDao(connectionSource, jobject);
 			dao.setObjectCache(ReferenceObjectCache.makeSoftCache());

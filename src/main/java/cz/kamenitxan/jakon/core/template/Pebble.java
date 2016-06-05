@@ -23,6 +23,7 @@ public class Pebble implements TemplateEngine {
 		loader.setPrefix(Settings.getTemplateDir());
 		loader.setSuffix(".peb");
 		engine = new PebbleEngine(loader);
+		engine.setStrictVariables(true);
 	}
 
 	@Override

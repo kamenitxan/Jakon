@@ -42,6 +42,25 @@ public abstract class TemplateUtils {
 	}
 
 	/**
+	 * Walks file tree starting at the given path and deletes all files
+	 * but leaves the directory structure intact. If the given Path does not exist nothing
+	 * is done.
+	 *
+	 * @param pathS
+	 */
+	public static void clean(String pathS) {
+		Path path = Paths.get(pathS);
+		if (Files.exists(path)) {
+			validate(path);
+			try {
+				Files.walkFileTree(path, new CleanDirVisitor());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
 	 * Copies a directory tree
 	 *
 	 * @param fromS
@@ -99,6 +118,14 @@ public abstract class TemplateUtils {
 		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 
 			Files.copy(file, toPath.resolve(fromPath.relativize(file)), copyOption);
+			return FileVisitResult.CONTINUE;
+		}
+	}
+
+	static class CleanDirVisitor extends SimpleFileVisitor<Path> {
+		@Override
+		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+			Files.delete(file);
 			return FileVisitResult.CONTINUE;
 		}
 	}
