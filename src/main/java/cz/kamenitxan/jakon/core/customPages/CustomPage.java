@@ -7,7 +7,7 @@ import cz.kamenitxan.jakon.core.model.JakonObject;
  */
 public abstract class CustomPage extends JakonObject {
 	public void render() {
-		throw new UnsupportedOperationException("Render method not for class " + this.getClass().getSimpleName()
+		throw new UnsupportedOperationException("Render method for class " + this.getClass().getSimpleName()
 												+ " is not implemented");
 	}
 }
