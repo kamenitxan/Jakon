@@ -13,8 +13,15 @@ import java.util.Properties;
  */
 public abstract class Settings {
 	private static TemplateEngine engine;
-
 	private static Map<String, String> settings = new HashMap<>();
+
+	static {
+		try {
+			init(null);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public static void init(File configFile) throws IOException {
 		if (configFile == null) {
@@ -27,7 +34,7 @@ public abstract class Settings {
 		Enumeration<?> e = prop.propertyNames();
 		while (e.hasMoreElements()) {
 			String key = (String) e.nextElement();
-			String value = prop.getProperty(key);
+			String value = prop.getProperty(key).trim();
 			settings.put(key, value);
 		}
 	}
@@ -86,5 +93,9 @@ public abstract class Settings {
 
 	public static void setPort(int port) {
 		settings.put("port", String.valueOf(port));
+	}
+
+	public static String getProperty(String name) {
+		return settings.get(name);
 	}
 }

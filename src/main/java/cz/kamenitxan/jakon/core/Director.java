@@ -7,6 +7,8 @@ import cz.kamenitxan.jakon.core.customPages.CustomPage;
 import cz.kamenitxan.jakon.core.model.Dao.MongoHelper;
 import cz.kamenitxan.jakon.core.template.Pebble;
 import cz.kamenitxan.jakon.core.template.TemplateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,7 @@ public class Director<T extends CustomPage> {
 	private static Director instance = null;
 	private List<T> customPages = new ArrayList<>();
 	private List<IControler> controlers = new ArrayList<>();
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private Director() {
 	}
@@ -42,7 +45,7 @@ public class Director<T extends CustomPage> {
 		if (Settings.getStaticDir() != null && Settings.getOutputDir() != null) {
 			TemplateUtils.copy(Settings.getStaticDir(), Settings.getOutputDir());
 		}
-		System.out.println("Render complete.");
+		logger.info("Render complete");
 	}
 
 	public void registerCustomPage(T page) {
