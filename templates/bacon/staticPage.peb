@@ -1,0 +1,8 @@
+{% extends "core" %}
+
+{% block title %} Static page {% endblock %}
+
+{% block content %}
+    <h1> Static page </h1>
+    <p>__content__</p>
+{% endblock %}

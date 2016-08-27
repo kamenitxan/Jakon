@@ -39,8 +39,20 @@ public class Director<T extends CustomPage> {
 	public void render() {
 		TemplateUtils.clean(Settings.getOutputDir());
 
-		controlers.parallelStream().forEach(IControler::generate);
-		customPages.parallelStream().forEach(CustomPage::render);
+		controlers.parallelStream().forEach(i -> {
+			long startTime = System.currentTimeMillis();
+			i.generate();
+			long stopTime = System.currentTimeMillis();
+			long elapsedTime = stopTime - startTime;
+			logger.info(i.getClass().getSimpleName() + " generated in " + elapsedTime + " ms");
+		});
+		customPages.parallelStream().forEach(i -> {
+			long startTime = System.currentTimeMillis();
+			i.render();
+			long stopTime = System.currentTimeMillis();
+			long elapsedTime = stopTime - startTime;
+			logger.info(i.getClass().getSimpleName() + " generated in " + elapsedTime + " ms");
+		});
 
 		if (Settings.getStaticDir() != null && Settings.getOutputDir() != null) {
 			TemplateUtils.copy(Settings.getStaticDir(), Settings.getOutputDir());

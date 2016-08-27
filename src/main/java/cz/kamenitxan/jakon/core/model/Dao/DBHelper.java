@@ -4,6 +4,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.dao.ReferenceObjectCache;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
+import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import cz.kamenitxan.jakon.core.Settings;
@@ -35,7 +36,7 @@ public abstract class DBHelper {
 
 	public static <T extends JakonObject> void addDao(Class<T> jobject) {
 		try {
-			final ConnectionSource connectionSource = new JdbcConnectionSource(Settings.getDatabaseConnPath());
+			final ConnectionSource connectionSource = new JdbcPooledConnectionSource(Settings.getDatabaseConnPath(), Settings.getProperty("databaseUser"), Settings.getProperty("databasePass"));
 
 			Dao<T, Integer> dao = DaoManager.createDao(connectionSource, jobject);
 			dao.setObjectCache(ReferenceObjectCache.makeSoftCache());
