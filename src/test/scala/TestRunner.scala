@@ -1,15 +1,25 @@
+import cz.kamenitxan.jakon.core.customPages.StaticPage
+import cz.kamenitxan.jakon.core.template.Pebble
+import cz.kamenitxan.jakon.core.{Director, Settings}
 import org.scalatest.{BeforeAndAfterAll, Suites}
 
 /**
   * Created by TPa on 27.08.16.
   */
-class Runner extends Suites(new RenderTest) with BeforeAndAfterAll {
+class TestRunner extends Suites(new RenderTest) with BeforeAndAfterAll {
 
-	def beforeAll(configMap: Map[String, Any]) {
-		println("Before!")  // start up your web server or whatever
+	override def beforeAll() {
+		println("Before!")
+		Director.init()
+		Settings.init(null)
+		Settings.setTemplateEngine(new Pebble)
+		val staticPage = new StaticPage("staticPage", "static")
+		Director.registerCustomPage(staticPage)
+
+		Director.render()
 	}
 
-	def afterAll(configMap: Map[String, Any]) {
+	override def afterAll() {
 		println("After!")  // shut down the web server
 	}
 }
