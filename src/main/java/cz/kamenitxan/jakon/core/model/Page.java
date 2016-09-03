@@ -49,8 +49,6 @@ public class Page extends JakonObject {
 			m.appendReplacement(result, FunctionHelper.getFunction(funcion).execute(FunctionHelper.splitParams(params)));
 		}
 		m.appendTail(result);
-		System.out.println(result);
-
 		return result.toString();
 	}
 

@@ -1,7 +1,8 @@
 package cz.kamenitxan.jakon
 
 import cz.kamenitxan.jakon.core.Director
-import org.slf4j.Logger
+import cz.kamenitxan.jakon.core.model.Dao.DBHelper
+import cz.kamenitxan.jakon.core.model.JakonUser
 import org.slf4j.LoggerFactory
 
 /**
@@ -13,6 +14,7 @@ object Main {
 	def main(args: Array[String]) {
 		logger.info("Jakon started")
 		Director.init()
+		DBHelper.addDao(new JakonUser().getClass)
 		logger.info("Jakon default init complete")
 		Director.render()
 	}

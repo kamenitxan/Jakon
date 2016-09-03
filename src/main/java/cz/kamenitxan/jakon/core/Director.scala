@@ -21,11 +21,11 @@ object Director {
 
 	def init() {
 		Settings.setTemplateDir("templates/bacon/")
-		Settings.setTemplateEngine(new Pebble)
+		Settings.setTemplateEngine(Pebble)
 		Settings.setOutputDir("out")
 		Settings.setDatabaseDriver("org.sqlite.JDBC")
 		Settings.setDatabaseConnPath("jdbc:sqlite:jakon.sqlite")
-		MongoHelper.setDbName("jakon")
+		//MongoHelper.setDbName("jakon")
 		registerControler(new PageControler)
 	}
 
