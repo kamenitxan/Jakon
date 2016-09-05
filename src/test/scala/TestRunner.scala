@@ -18,7 +18,7 @@ class TestRunner extends Suites(new RenderTest, new LinkTest, new AuthTest) with
 		println("Before!")
 		Director.init()
 		Settings.init(null)
-		Settings.setTemplateEngine(Pebble)
+		Settings.setTemplateEngine(new Pebble)
 		val staticPage = new StaticPage("staticPage", "static")
 		Director.registerCustomPage(staticPage)
 		DBHelper.addDao(classOf[JakonUser])

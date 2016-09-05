@@ -3,6 +3,7 @@ package cz.kamenitxan.jakon
 import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonUser
+import cz.kamenitxan.jakon.webui.Routes
 import org.slf4j.LoggerFactory
 
 /**
@@ -17,5 +18,7 @@ object Main {
 		DBHelper.addDao(new JakonUser().getClass)
 		logger.info("Jakon default init complete")
 		Director.render()
+
+		Routes.init()
 	}
 }

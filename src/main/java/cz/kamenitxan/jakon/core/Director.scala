@@ -21,12 +21,11 @@ object Director {
 
 	def init() {
 		Settings.setTemplateDir("templates/bacon/")
-		Settings.setTemplateEngine(Pebble)
+		Settings.setTemplateEngine(new Pebble)
 		Settings.setOutputDir("out")
 		Settings.setDatabaseDriver("org.sqlite.JDBC")
 		Settings.setDatabaseConnPath("jdbc:sqlite:jakon.sqlite")
 		//MongoHelper.setDbName("jakon")
-		registerControler(new PageControler)
 	}
 
 	def render() {
@@ -49,6 +48,7 @@ object Director {
 		if (Settings.getStaticDir != null && Settings.getOutputDir != null) {
 			TemplateUtils.copy(Settings.getStaticDir, Settings.getOutputDir)
 		}
+		TemplateUtils.copy("templates/admin/static", Settings.getOutputDir)
 		logger.info("Render complete")
 	}
 

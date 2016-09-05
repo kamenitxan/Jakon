@@ -42,13 +42,13 @@ object DBHelper {
 		daos.getOrElse[Dao[JakonObject, Integer]](objectClass, null)
 	}
 
-	def getPostDao: Dao[Post, Integer] = getDao(classOf[Post]).asInstanceOf[Dao[Post, Integer]]
+	def getPostDao = getDao(classOf[Post]).asInstanceOf[Dao[Post, Integer]]
 
-	def getPageDao: Dao[Page, Integer] = getDao(classOf[Page]).asInstanceOf[Dao[Page, Integer]]
+	def getPageDao = getDao(classOf[Page]).asInstanceOf[Dao[Page, Integer]]
 
-	def getCategoryDao: Dao[Category, Integer] = getDao(classOf[Category]).asInstanceOf[Dao[Category, Integer]]
+	def getCategoryDao = getDao(classOf[Category]).asInstanceOf[Dao[Category, Integer]]
 
-	def getUserDao: Dao[JakonUser, Integer] = getDao(classOf[JakonUser]).asInstanceOf[Dao[JakonUser, Integer]]
+	def getUserDao = getDao(classOf[JakonUser]).asInstanceOf[Dao[JakonUser, Integer]]
 
 	/**
 	  * @param id      searched JakonObject id
@@ -74,7 +74,7 @@ object DBHelper {
 	  * @return JakonObject or null
 	  */
 	def getObjectById(id: Integer): JakonObject = {
-		getObjectById(id, false)
+		getObjectById(id, refresh = false)
 	}
 
 }

@@ -1,7 +1,6 @@
 package cz.kamenitxan.jakon.core.model
 
 import javax.json.Json
-import javax.json.stream.JsonGenerator
 import javax.persistence.Column
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
@@ -23,11 +22,11 @@ abstract class JakonObject {
 	@BeanProperty
 	@Column var published: Boolean = true
 
-	def toJson: String = {
-		val writer: StringWriter = new StringWriter
-		val generator: JsonGenerator = Json.createGenerator(writer)
+	def toJson = {
+		val writer = new StringWriter
+		val generator = Json.createGenerator(writer)
 		generator.writeStartObject.write(id).write(url).writeEnd
 		generator.close()
-		return writer.toString
+		writer.toString
 	}
 }

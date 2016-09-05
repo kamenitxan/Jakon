@@ -12,7 +12,7 @@ import cz.kamenitxan.jakon.core.Settings
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
   */
-object Pebble extends TemplateEngine {
+class Pebble extends TemplateEngine {
 	val loader = new FileLoader
 	loader.setPrefix(Settings.getTemplateDir)
 	loader.setSuffix(".peb")

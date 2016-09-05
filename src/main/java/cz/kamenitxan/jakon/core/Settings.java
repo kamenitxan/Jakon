@@ -1,10 +1,14 @@
 package cz.kamenitxan.jakon.core;
 
+import com.mitchellbosecke.pebble.PebbleEngine;
+import com.mitchellbosecke.pebble.loader.FileLoader;
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper;
 import cz.kamenitxan.jakon.core.model.JakonObject;
 import cz.kamenitxan.jakon.core.model.JakonUser;
 import cz.kamenitxan.jakon.core.model.Page;
+import cz.kamenitxan.jakon.core.template.Pebble;
 import cz.kamenitxan.jakon.core.template.TemplateEngine;
+import spark.template.pebble.PebbleTemplateEngine;
 
 import java.io.*;
 import java.util.Enumeration;
@@ -17,6 +21,7 @@ import java.util.Properties;
  */
 public abstract class Settings {
 	private static TemplateEngine engine;
+	private static spark.TemplateEngine adminEngine;
 	private static Map<String, String> settings = new HashMap<>();
 
 	static {
@@ -41,6 +46,11 @@ public abstract class Settings {
 			String value = prop.getProperty(key).trim();
 			settings.put(key, value);
 		}
+
+		FileLoader loader = new FileLoader();
+		loader.setPrefix("templates/admin");
+		loader.setSuffix(".peb");
+		adminEngine = new PebbleTemplateEngine(loader);
 	}
 
 	public static String getTemplateDir() {
@@ -57,6 +67,14 @@ public abstract class Settings {
 
 	public static void setTemplateEngine(TemplateEngine engine) {
 		Settings.engine = engine;
+	}
+
+	public static spark.TemplateEngine getAdminEngine() {
+		return adminEngine;
+	}
+
+	public static void setAdminEngine(spark.TemplateEngine adminEngine) {
+		Settings.adminEngine = adminEngine;
 	}
 
 	public static String getStaticDir() {
