@@ -1,6 +1,9 @@
 package cz.kamenitxan.jakon.webui;
 
 import cz.kamenitxan.jakon.core.Settings;
+import cz.kamenitxan.jakon.core.model.Dao.DBHelper;
+import cz.kamenitxan.jakon.utils.Utils;
+import cz.kamenitxan.jakon.webui.controler.ObjectControler;
 import spark.TemplateEngine;
 
 import static spark.Spark.*;
@@ -15,8 +18,9 @@ public class Routes {
 
 		externalStaticFileLocation("out");
 
-		get("/admin", ((request, response) -> Authentication.loginGet(response)), te);
+		get("/admin", (request, response) -> Authentication.loginGet(response), te);
+		get("/admin/index", Dashboard::getDashboard, te);
 
-
+		get("/admin/object/:name", ObjectControler::getList, te);
 	}
 }

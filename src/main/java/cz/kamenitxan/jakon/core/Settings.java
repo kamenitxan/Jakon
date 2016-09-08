@@ -1,16 +1,13 @@
 package cz.kamenitxan.jakon.core;
 
-import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.loader.FileLoader;
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper;
-import cz.kamenitxan.jakon.core.model.JakonObject;
-import cz.kamenitxan.jakon.core.model.JakonUser;
-import cz.kamenitxan.jakon.core.model.Page;
-import cz.kamenitxan.jakon.core.template.Pebble;
 import cz.kamenitxan.jakon.core.template.TemplateEngine;
-import spark.template.pebble.PebbleTemplateEngine;
+import cz.kamenitxan.jakon.utils.FixedPebbleTemplateEngine;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +47,7 @@ public abstract class Settings {
 		FileLoader loader = new FileLoader();
 		loader.setPrefix("templates/admin");
 		loader.setSuffix(".peb");
-		adminEngine = new PebbleTemplateEngine(loader);
+		adminEngine = new FixedPebbleTemplateEngine(loader);
 	}
 
 	public static String getTemplateDir() {

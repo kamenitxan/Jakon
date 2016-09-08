@@ -1,0 +1,5 @@
+{% extends "core" %}
+
+{% block content %}
+    test obj {{ objectName }}
+{% endblock %}

@@ -16,8 +16,9 @@ class Pebble extends TemplateEngine {
 	val loader = new FileLoader
 	loader.setPrefix(Settings.getTemplateDir)
 	loader.setSuffix(".peb")
-	val engine = new PebbleEngine(loader)
-	engine.setStrictVariables(true)
+	val engine = new PebbleEngine.Builder()
+	  .loader(loader)
+	  .strictVariables(true).build()
 
 	def render(templateName: String, path: String, context: util.Map[String, AnyRef]) {
 		var compiledTemplate: PebbleTemplate = null

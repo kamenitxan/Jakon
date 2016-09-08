@@ -8,6 +8,7 @@ import com.j256.ormlite.table.TableUtils
 import cz.kamenitxan.jakon.core.Settings
 import cz.kamenitxan.jakon.core.model._
 
+import scala.collection.JavaConversions._
 import scala.collection.mutable
 
 /**
@@ -49,6 +50,8 @@ object DBHelper {
 	def getCategoryDao = getDao(classOf[Category]).asInstanceOf[Dao[Category, Integer]]
 
 	def getUserDao = getDao(classOf[JakonUser]).asInstanceOf[Dao[JakonUser, Integer]]
+
+	def getDaoClasses = daos.keys.toList
 
 	/**
 	  * @param id      searched JakonObject id

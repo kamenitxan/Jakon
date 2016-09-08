@@ -11,7 +11,7 @@ import spark.{ModelAndView, Request, Response}
 object Authentication {
 
 	def loginGet(response: Response): ModelAndView = {
-		new ModelAndView(null, "login")
+		new Context(null, "login")
 	}
 
 	def loginPost(req: Request, res: Response) = {
