@@ -6,6 +6,8 @@ import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import java.io.StringWriter
 
+import cz.kamenitxan.jakon.webui.ObjectSettings
+
 import scala.beans.BeanProperty
 
 /**
@@ -21,6 +23,10 @@ abstract class JakonObject {
 	@Column var sectionName: String = ""
 	@BeanProperty
 	@Column var published: Boolean = true
+
+	val objectSettings: ObjectSettings
+
+	def getObjectSettings = objectSettings
 
 	def toJson = {
 		val writer = new StringWriter

@@ -1,6 +1,8 @@
 package cz.kamenitxan.jakon.core.model;
 
 
+import cz.kamenitxan.jakon.webui.ObjectSettings;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -33,5 +35,10 @@ public class Category extends JakonObject {
 
 	public void setShowComments(boolean showComments) {
 		this.showComments = showComments;
+	}
+
+	@Override
+	public ObjectSettings objectSettings() {
+		return null;
 	}
 }

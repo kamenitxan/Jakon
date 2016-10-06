@@ -2,6 +2,8 @@ package cz.kamenitxan.jakon.core.model
 
 import javax.persistence.{Column, Entity}
 
+import cz.kamenitxan.jakon.webui.ObjectSettings
+
 import scala.beans.BeanProperty
 
 
@@ -18,4 +20,6 @@ class JakonUser(u: Unit = ()) extends JakonObject {
 
 
 	def this() = this(u=())
+
+	override val objectSettings: ObjectSettings = new ObjectSettings(null, null)
 }

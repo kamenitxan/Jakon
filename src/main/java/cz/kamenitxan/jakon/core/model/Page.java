@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.core.model;
 
 import cz.kamenitxan.jakon.core.function.FunctionHelper;
+import cz.kamenitxan.jakon.webui.ObjectSettings;
 
 import javax.json.Json;
 import javax.json.stream.JsonGenerator;
@@ -85,5 +86,10 @@ public class Page extends JakonObject {
 				.writeEnd();
 		generator.close();
 		return writer.toString();
+	}
+
+	@Override
+	public ObjectSettings objectSettings() {
+		return null;
 	}
 }

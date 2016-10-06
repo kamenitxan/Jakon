@@ -48,6 +48,7 @@ object Director {
 		if (Settings.getStaticDir != null && Settings.getOutputDir != null) {
 			TemplateUtils.copy(Settings.getStaticDir, Settings.getOutputDir)
 		}
+		//TODO: moznost vypnout administraci
 		TemplateUtils.copy("templates/admin/static", Settings.getOutputDir)
 		logger.info("Render complete")
 	}
