@@ -14,7 +14,7 @@ object Main {
 
 	def main(args: Array[String]) {
 		logger.info("Jakon started")
-		Director.init()
+		//Director.init()
 		DBHelper.addDao(new JakonUser().getClass)
 		logger.info("Jakon default init complete")
 		Director.render()

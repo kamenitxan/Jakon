@@ -4,6 +4,7 @@ import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import cz.kamenitxan.jakon.utils.validation.PebbleExtension;
 import spark.ModelAndView;
 import spark.TemplateEngine;
 
@@ -34,7 +35,7 @@ public class FixedPebbleTemplateEngine extends TemplateEngine {
 	 * Construct a new template engine using pebble with an engine using a special loader.
 	 */
 	public FixedPebbleTemplateEngine(Loader loader) {
-		this.engine = new PebbleEngine.Builder().loader(loader).build();
+		this.engine = new PebbleEngine.Builder().loader(loader).extension(new PebbleExtension()).build();
 	}
 
 	/**
