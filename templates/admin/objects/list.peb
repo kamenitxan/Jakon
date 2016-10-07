@@ -20,19 +20,22 @@
                                id="dataTables-example">
                             <thead>
                             <tr>
+                                <th>Id</th>
                                 {% for field in fields %}
                                     <th>{{ field }}</th>
                                 {% endfor %}
+                                <th></th>
                             </tr>
                             </thead>
-                            <tbody>objects
-
+                            <tbody>
                             {% for object in objects %}
                                 <tr>
+                                    <td>{{ getAttr(object, "id") }}</td>
                                     {% for field in fields %}
                                         <td>{{ getAttr(object, field) }}</td>
                                     {% endfor %}
-
+                                    <td><a href="/admin/object/{{ objectName }}/{{ getAttr(object, "id") }}"
+                                           class="btn btn-default">Edit</a></td>
                                 </tr>
                             {% endfor %}
 

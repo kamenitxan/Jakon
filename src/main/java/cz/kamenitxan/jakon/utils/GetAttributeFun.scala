@@ -1,5 +1,6 @@
 package cz.kamenitxan.jakon.utils
 
+import java.lang.reflect.Field
 import java.util
 
 import com.mitchellbosecke.pebble.extension.Function
@@ -19,8 +20,17 @@ class GetAttributeFun extends Function {
 		val attrName = args.get("attr").asInstanceOf[String]
 
 		val obj = args.get("object")
-		val field = obj.getClass.getDeclaredField(attrName)
+		val field = getField(obj.getClass, attrName)
 		field.setAccessible(true)
 		field.get(obj)
 	}
+
+	def getField(obj: Class[_ <: Any], attrName: String): Field = {
+		try {
+			obj.getDeclaredField(attrName)
+		} catch {
+			case e: NoSuchFieldException => getField(obj.getSuperclass, attrName)
+		}
+	}
+
 }

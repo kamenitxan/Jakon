@@ -1,8 +1,6 @@
 package cz.kamenitxan.jakon.webui;
 
 import cz.kamenitxan.jakon.core.Settings;
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper;
-import cz.kamenitxan.jakon.utils.Utils;
 import cz.kamenitxan.jakon.webui.controler.ObjectControler;
 import spark.TemplateEngine;
 
@@ -22,5 +20,7 @@ public class Routes {
 		get("/admin/index", Dashboard::getDashboard, te);
 
 		get("/admin/object/:name", ObjectControler::getList, te);
+		get("/admin/object/:name/:id", ObjectControler::getItem, te);
+		post("/admin/object/:name/:id", ObjectControler::updateItem, te);
 	}
 }
