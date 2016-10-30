@@ -20,7 +20,11 @@ public class Routes {
 		get("/admin/index", Dashboard::getDashboard, te);
 
 		get("/admin/object/:name", ObjectControler::getList, te);
+		get("/admin/object/create/:name", ObjectControler::getItem, te);
+		post("/admin/object/create/:name", ObjectControler::updateItem, te);
+		get("/admin/object/delete/:name/:id", ObjectControler::deleteItem, te);
 		get("/admin/object/:name/:id", ObjectControler::getItem, te);
 		post("/admin/object/:name/:id", ObjectControler::updateItem, te);
+
 	}
 }
