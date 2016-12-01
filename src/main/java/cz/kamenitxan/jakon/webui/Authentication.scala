@@ -14,7 +14,7 @@ object Authentication {
 		new Context(null, "login")
 	}
 
-	def loginPost(req: Request, res: Response) = {
+	def loginPost(req: Request, res: Response): ModelAndView = {
 		val email = req.queryParams("email")
 		val password = req.queryParams("password")
 		if (email != null && password != null) {
@@ -22,10 +22,11 @@ object Authentication {
 			if (user == null) {
 
 			} else if (checkPassword(password, user.password)){
+				req.session(true).attribute("user", user.email)
 				res.redirect("/admin/index")
 			}
 		}
-
+		new Context(null, "login")
 	}
 
 	def login(username: String, password: String): Option[JakonUser] = {
@@ -39,7 +40,7 @@ object Authentication {
 		DBHelper.getDao(classOf[JakonUser]).createIfNotExists(user).asInstanceOf[JakonUser]
 	}
 
-	def hashPassword(password_plaintext: String) = {
+	private def hashPassword(password_plaintext: String) = {
 		val salt = BCrypt.gensalt(12)
 		BCrypt.hashpw(password_plaintext, salt)
 	}

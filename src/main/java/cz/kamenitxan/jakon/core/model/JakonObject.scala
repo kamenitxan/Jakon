@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import java.io.StringWriter
 
+import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.webui.ObjectSettings
 
 import scala.beans.BeanProperty
@@ -27,6 +28,14 @@ abstract class JakonObject {
 	val objectSettings: ObjectSettings
 
 	def getObjectSettings = objectSettings
+
+	def create(): Unit = {
+		DBHelper.getDao(this.getClass).createOrUpdate(this)
+	}
+
+	def update(): Unit = {
+		DBHelper.getDao(this.getClass).createOrUpdate(this)
+	}
 
 	def toJson = {
 		val writer = new StringWriter

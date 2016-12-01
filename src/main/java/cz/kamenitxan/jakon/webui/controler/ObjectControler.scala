@@ -67,7 +67,11 @@ object ObjectControler {
 			fieldRef.setAccessible(true)
 			fieldRef.set(obj, req.queryParams(p))
 		}
-		DBHelper.getDao(objectClass).createOrUpdate(obj)
+		if (objectId.nonEmpty) {
+			obj.update()
+		} else {
+			obj.create()
+		}
 		res.redirect("/admin/object/" + objectName)
 		new Context(Map[String, Any](), "objects/list")
 	}

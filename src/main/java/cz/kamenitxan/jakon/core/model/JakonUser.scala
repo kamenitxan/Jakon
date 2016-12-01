@@ -2,7 +2,8 @@ package cz.kamenitxan.jakon.core.model
 
 import javax.persistence.{Column, Entity}
 
-import cz.kamenitxan.jakon.webui.ObjectSettings
+import cz.kamenitxan.jakon.core.model.Dao.DBHelper
+import cz.kamenitxan.jakon.webui.{Authentication, ObjectSettings}
 
 import scala.beans.BeanProperty
 
@@ -22,4 +23,8 @@ class JakonUser(u: Unit = ()) extends JakonObject {
 	def this() = this(u=())
 
 	override val objectSettings: ObjectSettings = new ObjectSettings(null, null)
+
+	override def create(): Unit = {
+		Authentication.createUser(this)
+	}
 }

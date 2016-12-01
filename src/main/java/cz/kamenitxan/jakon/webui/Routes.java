@@ -16,7 +16,16 @@ public class Routes {
 
 		externalStaticFileLocation("out");
 
+		before("/admin/*", (request, response) -> {
+			if (request.session().attribute("user") == null) {
+				response.redirect("/admin", 401);
+			}
+		});
+
+
+
 		get("/admin", (request, response) -> Authentication.loginGet(response), te);
+		post("/admin", Authentication::loginPost, te);
 		get("/admin/index", Dashboard::getDashboard, te);
 
 		get("/admin/object/:name", ObjectControler::getList, te);
