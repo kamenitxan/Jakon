@@ -27,7 +27,7 @@ abstract class JakonObject {
 
 	val objectSettings: ObjectSettings
 
-	def getObjectSettings = objectSettings
+	def getObjectSettings: ObjectSettings = objectSettings
 
 	def create(): Unit = {
 		DBHelper.getDao(this.getClass).createOrUpdate(this)

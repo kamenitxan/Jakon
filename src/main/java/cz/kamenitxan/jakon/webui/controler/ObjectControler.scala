@@ -13,6 +13,8 @@ import scala.collection.JavaConverters._
   */
 object ObjectControler {
 	val excludedFields = List("url", "sectionName", "ObjectSettings")
+	val S = classOf[String]
+	val B = classOf[Boolean]
 
 	def getList(req: Request, res: Response): ModelAndView = {
 		val objectName = req.params(":name")
@@ -65,7 +67,11 @@ object ObjectControler {
 		for (p <- params) {
 			val fieldRef = objectClass.getDeclaredField(p)
 			fieldRef.setAccessible(true)
-			fieldRef.set(obj, req.queryParams(p))
+			fieldRef.getType match {
+				case B => fieldRef.set(obj, req.queryParams(p).toBoolean)
+				case _ => fieldRef.set(obj, req.queryParams(p))
+			}
+
 		}
 		if (objectId.nonEmpty) {
 			obj.update()

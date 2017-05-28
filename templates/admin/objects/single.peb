@@ -18,7 +18,7 @@
                     <div class="form-group">
                         <label for="{{ field._1 }}" class="col-sm-2">{{ field._1 }}</label>
                         <div class="col-sm-10">
-                            <input type="text" name="{{ field._1 }}" id="{{ field._1 }}"
+                            <input type="{{ getAttrType(object, field._1) }}" name="{{ field._1 }}" id="{{ field._1 }}"
                                    value="{{ getAttr(object, field._1) }}"/>
                         </div>
                     </div>
