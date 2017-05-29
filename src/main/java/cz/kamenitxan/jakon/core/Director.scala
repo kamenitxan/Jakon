@@ -1,12 +1,15 @@
 package cz.kamenitxan.jakon.core
 
 import com.mongodb.MongoClient
+import cz.kamenitxan.jakon.Main.logger
 import cz.kamenitxan.jakon.core.controler.IControler
 import cz.kamenitxan.jakon.core.controler.PageControler
 import cz.kamenitxan.jakon.core.customPages.CustomPage
-import cz.kamenitxan.jakon.core.model.Dao.MongoHelper
+import cz.kamenitxan.jakon.core.model.Dao.{DBHelper, MongoHelper}
+import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.core.template.Pebble
 import cz.kamenitxan.jakon.core.template.TemplateUtils
+import cz.kamenitxan.jakon.webui.{Authentication, Routes}
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -26,6 +29,23 @@ object Director {
 		Settings.setDatabaseDriver("org.sqlite.JDBC")
 		Settings.setDatabaseConnPath("jdbc:sqlite:jakon.sqlite")
 		//MongoHelper.setDbName("jakon")
+	}
+
+	def start(): Unit = {
+		logger.info("Jakon started")
+		Routes.init()
+		DBHelper.addDao(new JakonUser().getClass)
+		val adminUser = DBHelper.getUserDao.queryBuilder().where().eq("email", "admin@admin.cz").queryForFirst()
+		if (adminUser == null) {
+			val user = new JakonUser()
+			user.firstName = "Admin"
+			user.lastName = "Admin"
+			user.email = "admin@admin.cz"
+			user.password = "admin"
+			Authentication.createUser(user)
+		}
+		logger.info("Jakon default init complete")
+		Director.render()
 	}
 
 	def render() {
@@ -49,7 +69,7 @@ object Director {
 			TemplateUtils.copy(Settings.getStaticDir, Settings.getOutputDir)
 		}
 		//TODO: moznost vypnout administraci
-		TemplateUtils.copy("templates/admin/static", Settings.getOutputDir)
+		//TemplateUtils.copy("templates/admin/static", Settings.getOutputDir)
 		logger.info("Render complete")
 	}
 

@@ -12,7 +12,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
         <ormlite.version>5.0</ormlite.version>
-        <scala.version>2.12.0</scala.version>
+		<scala.version>2.12.2</scala.version>
 	</properties>
 
 	<dependencies>
@@ -44,12 +44,12 @@
 		<dependency>
 			<groupId>com.sparkjava</groupId>
 			<artifactId>spark-core</artifactId>
-            <version>2.5.3</version>
+			<version>2.6.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sparkjava</groupId>
 			<artifactId>spark-template-pebble</artifactId>
-			<version>2.3</version>
+			<version>2.5.5</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.json</groupId>
@@ -64,13 +64,18 @@
 		<dependency>
 			<groupId>org.scalatest</groupId>
             <artifactId>scalatest_2.12</artifactId>
-            <version>3.0.1</version>
+			<version>3.0.3</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.svenkubiak</groupId>
 			<artifactId>jBCrypt</artifactId>
 			<version>0.4.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.21</version>
 		</dependency>
 	</dependencies>
 

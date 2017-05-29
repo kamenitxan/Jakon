@@ -8,6 +8,7 @@ import com.mitchellbosecke.pebble.error.PebbleException
 import com.mitchellbosecke.pebble.loader.FileLoader
 import com.mitchellbosecke.pebble.template.PebbleTemplate
 import cz.kamenitxan.jakon.core.Settings
+import spark.ModelAndView
 
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.

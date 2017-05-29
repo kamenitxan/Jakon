@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.core;
 
 import com.mitchellbosecke.pebble.loader.FileLoader;
+import cz.kamenitxan.jakon.core.template.Pebble;
 import cz.kamenitxan.jakon.core.template.TemplateEngine;
 import cz.kamenitxan.jakon.utils.FixedPebbleTemplateEngine;
 
@@ -48,6 +49,7 @@ public abstract class Settings {
 		loader.setPrefix("templates/admin");
 		loader.setSuffix(".peb");
 		adminEngine = new FixedPebbleTemplateEngine(loader);
+		setTemplateEngine(new Pebble());
 	}
 
 	public static String getTemplateDir() {

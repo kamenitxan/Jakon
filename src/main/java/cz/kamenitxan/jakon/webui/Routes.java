@@ -14,7 +14,7 @@ public class Routes {
 	public static void init() {
 		TemplateEngine te = Settings.getAdminEngine();
 
-		externalStaticFileLocation("out");
+		//staticFiles.externalLocation("/static");
 
 		before("/admin/*", (request, response) -> {
 			if (request.session().attribute("user") == null) {
