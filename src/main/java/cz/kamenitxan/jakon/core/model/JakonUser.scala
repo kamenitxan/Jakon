@@ -2,7 +2,7 @@ package cz.kamenitxan.jakon.core.model
 
 import javax.persistence.{Column, Entity}
 
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper
+import cz.kamenitxan.jakon.webui.Authentication.hashPassword
 import cz.kamenitxan.jakon.webui.{Authentication, ObjectSettings}
 
 import scala.beans.BeanProperty
@@ -26,5 +26,10 @@ class JakonUser(u: Unit = ()) extends JakonObject {
 
 	override def create(): Unit = {
 		Authentication.createUser(this)
+	}
+
+	override def update(): Unit = {
+		this.password = hashPassword(this.password)
+		super.update()
 	}
 }

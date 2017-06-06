@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.webui;
 
 import cz.kamenitxan.jakon.core.Settings;
+import cz.kamenitxan.jakon.core.model.DeployMode;
 import cz.kamenitxan.jakon.webui.controler.ObjectControler;
 import spark.TemplateEngine;
 
@@ -17,6 +18,7 @@ public class Routes {
 		//staticFiles.externalLocation("/static");
 
 		before("/admin/*", (request, response) -> {
+			if (Settings.getDeployMode() == DeployMode.DEVEL) return;
 			if (request.session().attribute("user") == null) {
 				response.redirect("/admin", 401);
 			}

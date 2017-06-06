@@ -40,7 +40,7 @@ object Authentication {
 		DBHelper.getDao(classOf[JakonUser]).createIfNotExists(user).asInstanceOf[JakonUser]
 	}
 
-	private def hashPassword(password_plaintext: String) = {
+	def hashPassword(password_plaintext: String) = {
 		val salt = BCrypt.gensalt(12)
 		BCrypt.hashpw(password_plaintext, salt)
 	}

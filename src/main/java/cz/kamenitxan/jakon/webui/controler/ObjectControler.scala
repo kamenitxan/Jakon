@@ -15,6 +15,7 @@ object ObjectControler {
 	val excludedFields = List("url", "sectionName", "ObjectSettings")
 	val S = classOf[String]
 	val B = classOf[Boolean]
+	val D = classOf[java.lang.Double]
 
 	def getList(req: Request, res: Response): ModelAndView = {
 		val objectName = req.params(":name")
@@ -69,6 +70,7 @@ object ObjectControler {
 			fieldRef.setAccessible(true)
 			fieldRef.getType match {
 				case B => fieldRef.set(obj, req.queryParams(p).toBoolean)
+				case D => fieldRef.set(obj, req.queryParams(p).toDouble)
 				case _ => fieldRef.set(obj, req.queryParams(p))
 			}
 

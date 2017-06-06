@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.core;
 
 import com.mitchellbosecke.pebble.loader.FileLoader;
+import cz.kamenitxan.jakon.core.model.DeployMode;
 import cz.kamenitxan.jakon.core.template.Pebble;
 import cz.kamenitxan.jakon.core.template.TemplateEngine;
 import cz.kamenitxan.jakon.utils.FixedPebbleTemplateEngine;
@@ -118,5 +119,18 @@ public abstract class Settings {
 
 	public static String getProperty(String name) {
 		return settings.get(name);
+	}
+
+	public static DeployMode getDeployMode() {
+		String mode = settings.get("deployMode");
+		if (mode != null) {
+			return DeployMode.valueOf(mode);
+		} else {
+			return DeployMode.PRODUCTION;
+		}
+	}
+
+	public static void setDeployMode(DeployMode mode) {
+		settings.put("deployMode", mode.name());
 	}
 }
