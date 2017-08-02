@@ -13,6 +13,7 @@
     <link href="/jakon/vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="/jakon/css/sb-admin-2.css" rel="stylesheet">
+    <link href="/jakon/css/jquery-ui.min.css" rel="stylesheet">
     <!-- Custom Fonts -->
     <link href="/jakon/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
@@ -23,14 +24,16 @@
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <!-- jQuery -->
+    <script src="/jakon/vendor/jquery/jquery.min.js"></script>
+    <script src="/jakon/js/jquery-ui.min.js"></script>
 </head>
 <body>
 <div class="wrapper">
         {% block content %}{% endblock %}
-    </div>
+</div>
 
-    <!-- jQuery -->
-<script src="/jakon/vendor/jquery/jquery.min.js"></script>
+
     <!-- Bootstrap Core JavaScript -->
 <script src="/jakon/vendor/bootstrap/js/bootstrap.min.js"></script>
     <!-- Metis Menu Plugin JavaScript -->

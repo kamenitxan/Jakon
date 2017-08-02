@@ -4,7 +4,7 @@ import com.mitchellbosecke.pebble.loader.FileLoader;
 import cz.kamenitxan.jakon.core.model.DeployMode;
 import cz.kamenitxan.jakon.core.template.Pebble;
 import cz.kamenitxan.jakon.core.template.TemplateEngine;
-import cz.kamenitxan.jakon.utils.FixedPebbleTemplateEngine;
+import cz.kamenitxan.jakon.webui.functions.FixedPebbleTemplateEngine;
 
 import java.io.File;
 import java.io.FileInputStream;

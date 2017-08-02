@@ -2,9 +2,11 @@ package cz.kamenitxan.jakon.webui.controler
 
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonObject
+import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.utils.Utils._
 import spark.{ModelAndView, Request, Response}
+import cz.kamenitxan.jakon.webui.conform.FieldConformer._
 
 import scala.collection.JavaConverters._
 
@@ -12,10 +14,8 @@ import scala.collection.JavaConverters._
   * Created by TPa on 08.09.16.
   */
 object ObjectControler {
-	val excludedFields = List("url", "sectionName", "ObjectSettings")
-	val S = classOf[String]
-	val B = classOf[Boolean]
-	val D = classOf[java.lang.Double]
+	val excludedFields = List("url", "sectionName", "objectSettings")
+
 
 	def getList(req: Request, res: Response): ModelAndView = {
 		val objectName = req.params(":name")
@@ -44,7 +44,8 @@ object ObjectControler {
 		} else {
 			obj = objectClass.newInstance()
 		}
-		val fields = objectClass.getDeclaredFields.map(f => f.getName -> f.getType).filter(n => !excludedFields.contains(n._2.getSimpleName)).toList.asJava
+		//TODO: moznost udelat promene required
+		val fields = Utils.getFieldsUpTo(objectClass, classOf[Object]).map(f => f.getName -> f.getType).filter(n => !excludedFields.contains(n._1)).asJava
 		new Context(Map[String, Any](
 			"objectName" -> objectName,
 			"object" -> obj,
@@ -65,15 +66,14 @@ object ObjectControler {
 			obj = objectClass.newInstance()
 		}
 
-		for (p <- params) {
-			val fieldRef = objectClass.getDeclaredField(p)
+		for (p <- params.filter(p => !p.equals("id"))) {
+			val fieldRef = Utils.getFieldsUpTo(objectClass, classOf[Object]).find(f => f.getName.equals(p)).get
 			fieldRef.setAccessible(true)
-			fieldRef.getType match {
-				case B => fieldRef.set(obj, req.queryParams(p).toBoolean)
-				case D => fieldRef.set(obj, req.queryParams(p).toDouble)
-				case _ => fieldRef.set(obj, req.queryParams(p))
+			val ftype = fieldRef.getType
+			val value = req.queryParams(p).conform(ftype)
+			if (value != null) {
+				fieldRef.set(obj, value)
 			}
-
 		}
 		if (objectId.nonEmpty) {
 			obj.update()

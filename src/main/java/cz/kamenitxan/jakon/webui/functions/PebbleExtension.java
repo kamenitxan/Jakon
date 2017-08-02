@@ -1,9 +1,9 @@
-package cz.kamenitxan.jakon.utils.validation;
+package cz.kamenitxan.jakon.webui.functions;
 
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Function;
-import cz.kamenitxan.jakon.utils.GetAttributeFun;
-import cz.kamenitxan.jakon.utils.GetAttributeTypeFun;
+import cz.kamenitxan.jakon.webui.functions.GetAttributeFun;
+import cz.kamenitxan.jakon.webui.functions.GetAttributeTypeFun;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -29,4 +29,11 @@
         </div>
         <!-- /.col-lg-12 -->
     </div>
+
+    <script>
+        $( function() {
+            $('input[type="date"]').datepicker();
+        } );
+    </script>
+    </div>
 {% endblock %}

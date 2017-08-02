@@ -1,7 +1,8 @@
-package cz.kamenitxan.jakon.utils
+package cz.kamenitxan.jakon.webui.functions
 
 import java.lang.reflect.Field
 import java.util
+import java.util.Date
 
 import com.mitchellbosecke.pebble.extension.Function
 
@@ -25,10 +26,12 @@ class GetAttributeTypeFun extends Function {
 
 		val S = classOf[String]
 		val B = classOf[Boolean]
+		val DATE = classOf[Date]
 
 		field.getType match {
 			case S => "text"
 			case B => "checkbox"
+			case DATE => "date"
 			case _ => "text"
 		}
 	}

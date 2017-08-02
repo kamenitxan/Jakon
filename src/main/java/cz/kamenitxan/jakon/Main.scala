@@ -1,6 +1,5 @@
 package cz.kamenitxan.jakon
 
-import cz.kamenitxan.jakon.core.Director
 import org.slf4j.LoggerFactory
 
 /**
@@ -18,6 +17,6 @@ object Main {
 			}
 		})
 
-		Director.start()
+		JakonInit.run()
 	}
 }

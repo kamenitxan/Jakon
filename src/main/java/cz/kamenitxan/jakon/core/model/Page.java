@@ -7,8 +7,11 @@ import javax.json.Json;
 import javax.json.stream.JsonGenerator;
 import javax.persistence.*;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import scala.collection.JavaConversions;
+import scala.collection.JavaConverters;
 
 /**
  * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
@@ -90,6 +93,6 @@ public class Page extends JakonObject {
 
 	@Override
 	public ObjectSettings objectSettings() {
-		return null;
+		return new ObjectSettings(JavaConverters.asScalaBuffer(new ArrayList<String>()).toList(), JavaConverters.asScalaBuffer(new ArrayList<String>()).toList());
 	}
 }

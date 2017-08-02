@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.utils
+package cz.kamenitxan.jakon.webui.functions
 
 import java.lang.reflect.Field
 import java.util
