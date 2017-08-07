@@ -1,0 +1,3 @@
+<textarea name="{{ field.name }}" cols="80" rows="5">
+    {{ field.value }}
+</textarea>

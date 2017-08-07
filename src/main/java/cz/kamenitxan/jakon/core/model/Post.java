@@ -31,7 +31,7 @@ public class Post extends JakonObject {
 	@JakonField
 	private String title;
 	@Column
-	@JakonField
+	@JakonField(inputTemplate = "textarea")
 	private String content;
 	@Column
 	@JakonField

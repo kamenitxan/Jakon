@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ng-app="FileManagerApp">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -27,8 +27,15 @@
     <!-- jQuery -->
     <script src="/jakon/vendor/jquery/jquery.min.js"></script>
     <script src="/jakon/js/jquery-ui.min.js"></script>
+
+    <!-- angular-filemanager -->
+    <script src="/jakon/js/fm/angular.min.js"></script>
+    <script src="/jakon/js/fm/angular-translate.min.js"></script>
+    <script src="/jakon/js/fm/ng-file-upload.min.js"></script>
+    <script src="/jakon/js/fm/angular-filemanager.min.js"></script>
+    <link href="/jakon/css/fm/angular-filemanager.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="ng-cloak">
 <div class="wrapper">
         {% block content %}{% endblock %}
 </div>
