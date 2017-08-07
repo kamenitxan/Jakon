@@ -1,0 +1,2 @@
+<input type="{{ field.htmlType }}" name="{{ field.name }}" id="{{ field.name }}"
+       value="{{ getAttr(object, field.name) }}"/>

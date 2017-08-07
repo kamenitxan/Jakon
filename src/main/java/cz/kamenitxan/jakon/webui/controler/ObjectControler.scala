@@ -5,6 +5,7 @@ import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.utils.Utils._
+import cz.kamenitxan.jakon.webui.conform.FieldConformer
 import spark.{ModelAndView, Request, Response}
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
 
@@ -45,12 +46,13 @@ object ObjectControler {
 			obj = objectClass.newInstance()
 		}
 		//TODO: moznost udelat promene required
-		val fields = Utils.getFieldsUpTo(objectClass, classOf[Object]).map(f => f.getName -> f.getType).filter(n => !excludedFields.contains(n._1)).asJava
+		val fields = Utils.getFieldsUpTo(objectClass, classOf[Object]).filter(n => !excludedFields.contains(n.getName))
+		val f = FieldConformer.getFieldInfos(obj, fields).asJava
 		new Context(Map[String, Any](
 			"objectName" -> objectName,
 			"object" -> obj,
 			"id" -> obj.id,
-			"fields" -> fields
+			"fields" -> f
 		), "objects/single")
 	}
 

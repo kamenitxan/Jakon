@@ -4,6 +4,7 @@ import java.lang.reflect.Field
 import java.util
 
 import com.mitchellbosecke.pebble.extension.Function
+import cz.kamenitxan.jakon.utils.Utils
 
 /**
   * Created by TPa on 6.10.16.
@@ -27,7 +28,8 @@ class GetAttributeFun extends Function {
 
 	def getField(obj: Class[_ <: Any], attrName: String): Field = {
 		try {
-			obj.getDeclaredField(attrName)
+			val fields = Utils.getFieldsUpTo(obj, classOf[Object])
+			fields.find(f => attrName.equals(f.getName)).get
 		} catch {
 			case e: NoSuchFieldException => getField(obj.getSuperclass, attrName)
 		}

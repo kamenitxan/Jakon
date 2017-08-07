@@ -12,4 +12,6 @@ public @interface JakonField {
 	boolean required() default true;
 	boolean editable() default true;
 	boolean shown() default true;
+	String htmlClass() default "";
+	String inputTemplate() default "";
 }

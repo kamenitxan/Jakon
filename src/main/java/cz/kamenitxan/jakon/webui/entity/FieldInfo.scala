@@ -6,9 +6,10 @@ class FieldInfo(
                val htmlType: String,
                val htmlClass: String,
                val value: String,
-               val renderedValue: String,
-               val name: String
+               val name: String,
+               val objectName: String
                ) {
 
+    override def toString = s"FieldInfo($required, $editable, $htmlType, $htmlClass, $value, $name)"
 }
 

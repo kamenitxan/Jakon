@@ -8,6 +8,7 @@ import java.io.StringWriter
 
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.webui.ObjectSettings
+import cz.kamenitxan.jakon.webui.entity.JakonField
 
 import scala.beans.BeanProperty
 
@@ -17,13 +18,17 @@ import scala.beans.BeanProperty
 abstract class JakonObject {
 	@BeanProperty
 	@Id
-	@GeneratedValue val id: Int = 0
+	@GeneratedValue
+	@JakonField val id: Int = 0
 	@BeanProperty
-	@Column var url: String = ""
+	@Column
+	@JakonField var url: String = ""
 	@BeanProperty
-	@Column var sectionName: String = ""
+	@Column
+	@JakonField var sectionName: String = ""
 	@BeanProperty
-	@Column var published: Boolean = true
+	@Column
+	@JakonField var published: Boolean = true
 
 	val objectSettings: ObjectSettings
 

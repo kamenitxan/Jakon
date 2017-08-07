@@ -18,19 +18,23 @@ import java.util.regex.Pattern;
 @Entity
 public class Post extends JakonObject {
 	@Column
+	@JakonField
 	private Date date;
 	@Column
 	@JakonField(required = false)
 	private String perex;
 	@Column
 	@ManyToOne
-	@JakonField(required = false)
+	@JakonField(required = false, inputTemplate = "String")
 	private Category category;
 	@Column
+	@JakonField
 	private String title;
 	@Column
+	@JakonField
 	private String content;
 	@Column
+	@JakonField
 	private boolean showComments = false;
 
 
