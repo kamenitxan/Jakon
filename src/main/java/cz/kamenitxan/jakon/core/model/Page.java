@@ -10,6 +10,8 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import cz.kamenitxan.jakon.webui.entity.JakonField;
 import scala.collection.JavaConversions;
 import scala.collection.JavaConverters;
 
@@ -19,16 +21,20 @@ import scala.collection.JavaConverters;
 @Entity
 public class Page extends JakonObject {
 	@Column
+	@JakonField
 	private String title;
 	@Column
+	@JakonField
 	private String content;
-	@Column
 	@OneToOne
+	@JakonField(inputTemplate = "String")
 	private Page parent = null;
 	@Column
+	@JakonField
 	private boolean showComments = false;
 
 	public Page() {
+		super(Page.class.getName());
 	}
 
 	public String getTitle() {
@@ -74,6 +80,11 @@ public class Page extends JakonObject {
 
 	public void setShowComments(boolean showComments) {
 		this.showComments = showComments;
+	}
+
+	@Override
+	public String getUrl() {
+		return "/page/" + title;
 	}
 
 	@Override

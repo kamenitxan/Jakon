@@ -2,6 +2,7 @@ package cz.kamenitxan.jakon.core.model;
 
 
 import cz.kamenitxan.jakon.webui.ObjectSettings;
+import cz.kamenitxan.jakon.webui.entity.JakonField;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,11 +15,14 @@ import javax.persistence.Id;
 @Entity
 public class Category extends JakonObject {
 	@Column
+	@JakonField
 	private String name;
 	@Column
+	@JakonField
 	private boolean showComments;
 
 	public Category() {
+		super(Category.class.getName());
 	}
 
 	public String getName() {

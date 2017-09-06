@@ -1,9 +1,12 @@
 package cz.kamenitxan.jakon.webui
 
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
+import cz.kamenitxan.jakon.core.model.Dao.DBHelper.getSession
 import cz.kamenitxan.jakon.core.model.JakonUser
+import org.hibernate.criterion.Restrictions
 import org.mindrot.jbcrypt.BCrypt
 import spark.{ModelAndView, Request, Response}
+
 
 /**
   * Created by TPa on 03.09.16.
@@ -18,7 +21,9 @@ object Authentication {
 		val email = req.queryParams("email")
 		val password = req.queryParams("password")
 		if (email != null && password != null) {
-			val user = DBHelper.getUserDao.queryBuilder().where().eq("email", email).queryForFirst()
+			val ses = DBHelper.getSession
+			val criteria = getSession.createCriteria(classOf[JakonUser])
+			val user = criteria.add(Restrictions.eq("email", email) ).uniqueResult().asInstanceOf[JakonUser]
 			if (user == null) {
 
 			} else if (checkPassword(password, user.password)){
@@ -29,15 +34,14 @@ object Authentication {
 		new Context(null, "login")
 	}
 
-	def login(username: String, password: String): Option[JakonUser] = {
-		val user = DBHelper.getDao(classOf[JakonUser]).queryBuilder().where().eq("username", username).queryForFirst().asInstanceOf[JakonUser]
-		if (checkPassword(password, user.getPassword)) return Some(user)
-		None
-	}
-
 	def createUser(user: JakonUser): JakonUser = {
 		user.password = hashPassword(user.password)
-		DBHelper.getDao(classOf[JakonUser]).createIfNotExists(user).asInstanceOf[JakonUser]
+		val session = DBHelper.getSession
+		session.beginTransaction()
+		session.save(user)
+		session.getTransaction.commit()
+		session.close()
+		user
 	}
 
 	def hashPassword(password_plaintext: String) = {

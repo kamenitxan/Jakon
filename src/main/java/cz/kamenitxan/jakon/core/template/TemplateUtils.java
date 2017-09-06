@@ -1,6 +1,9 @@
 package cz.kamenitxan.jakon.core.template;
 
 import cz.kamenitxan.jakon.core.Settings;
+import org.commonmark.node.Node;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -128,5 +131,12 @@ public abstract class TemplateUtils {
 			Files.delete(file);
 			return FileVisitResult.CONTINUE;
 		}
+	}
+
+	private static final Parser parser = Parser.builder().build();
+	private static final HtmlRenderer renderer = HtmlRenderer.builder().build();
+	public static String parseMarkdown(String text) {
+		Node document = parser.parse(text);
+		return renderer.render(document);
 	}
 }

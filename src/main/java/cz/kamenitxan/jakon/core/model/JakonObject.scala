@@ -1,9 +1,7 @@
 package cz.kamenitxan.jakon.core.model
 
 import javax.json.Json
-import javax.persistence.Column
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
+import javax.persistence._
 import java.io.StringWriter
 
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
@@ -15,11 +13,17 @@ import scala.beans.BeanProperty
 /**
   * Created by TPa on 22.04.16.
   */
-abstract class JakonObject {
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+abstract class JakonObject(@BeanProperty
+                           @Column
+                           @JakonField var childClass: String
+                          ) extends Serializable {
 	@BeanProperty
 	@Id
 	@GeneratedValue
-	@JakonField val id: Int = 0
+	@JakonField(disabled = true, required = false)
+	val id: Int = 0
 	@BeanProperty
 	@Column
 	@JakonField var url: String = ""
@@ -35,11 +39,19 @@ abstract class JakonObject {
 	def getObjectSettings: ObjectSettings = objectSettings
 
 	def create(): Unit = {
-		DBHelper.getDao(this.getClass).createOrUpdate(this)
+		val session = DBHelper.getSession
+		session.beginTransaction()
+		session.save(this)
+		session.getTransaction.commit()
+		session.close()
 	}
 
 	def update(): Unit = {
-		DBHelper.getDao(this.getClass).createOrUpdate(this)
+		val session = DBHelper.getSession
+		session.beginTransaction()
+		session.update(this)
+		session.getTransaction.commit()
+		session.close()
 	}
 
 	def toJson = {

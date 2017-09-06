@@ -27,7 +27,7 @@ class TestRunner extends Suites(new RenderTest, new LinkTest, new AuthTest) with
 		page.setTitle("test page 1")
 		page.setContent("test content")
 		page.setUrl("/page/testpage1")
-		DBHelper.getPageDao.createIfNotExists(page)
+		//DBHelper.getPageDao.createIfNotExists(page)
 
 		Director.render()
 	}

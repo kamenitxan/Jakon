@@ -40,6 +40,7 @@ public class Routes {
 
 		path("/admin/files", () -> {
 			get("/", FileManagerControler::getManager, te);
+			get("/frame", FileManagerControler::getManagerFrame, te);
 
 			get("/:method", FileManagerControler::executeGet);
 			post("/:method", FileManagerControler::executePost);

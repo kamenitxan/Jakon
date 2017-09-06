@@ -1,3 +1,5 @@
-<textarea name="{{ field.name }}" cols="80" rows="5">
-    {{ field.value }}
-</textarea>
+<textarea name="{{ field.name }}" cols="80" rows="5" id="editor-container{{ fieldHash }}">{{ field.value | raw }}</textarea>
+
+<script>
+        var simplemde = new SimpleMDE({ element: document.getElementById("editor-container{{ fieldHash }}") });
+</script>

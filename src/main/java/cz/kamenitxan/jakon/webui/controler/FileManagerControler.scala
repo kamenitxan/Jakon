@@ -9,6 +9,10 @@ object FileManagerControler {
 		new Context(Map[String, Any](), "objects/fileManager")
 	}
 
+	def getManagerFrame(req: Request, res: Response) = {
+		new Context(Map[String, Any](), "objects/fileManagerFrame")
+	}
+
 	def executeGet(req: Request, res: Response) = {
 		val method = req.params(":method")
 		val fm = new FileManagerServlet

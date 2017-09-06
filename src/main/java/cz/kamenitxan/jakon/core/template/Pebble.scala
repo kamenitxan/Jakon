@@ -8,7 +8,7 @@ import com.mitchellbosecke.pebble.error.PebbleException
 import com.mitchellbosecke.pebble.loader.FileLoader
 import com.mitchellbosecke.pebble.template.PebbleTemplate
 import cz.kamenitxan.jakon.core.Settings
-import spark.ModelAndView
+import cz.kamenitxan.jakon.webui.functions.PebbleExtension
 
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
@@ -19,6 +19,7 @@ class Pebble extends TemplateEngine {
 	loader.setSuffix(".peb")
 	val engine = new PebbleEngine.Builder()
 	  .loader(loader)
+	    .extension(new PebbleExtension)
 	  .strictVariables(true).build()
 
 	def render(templateName: String, path: String, context: util.Map[String, AnyRef]) {

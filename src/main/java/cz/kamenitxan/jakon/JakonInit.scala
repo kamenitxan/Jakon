@@ -8,19 +8,19 @@ import cz.kamenitxan.jakon.core.{Director, Settings}
 import org.slf4j.LoggerFactory
 import spark.Spark.{port, staticFiles}
 
-object JakonInit {
+class JakonInit {
 	private val logger = LoggerFactory.getLogger(this.getClass)
 
 	var daoSetup = () => {
-		DBHelper.addDao(classOf[Post])
-		DBHelper.addDao(classOf[Page])
-		DBHelper.addDao(classOf[Category])
+		//DBHelper.addDao(classOf[Post])
+		//DBHelper.addDao(classOf[Page])
+		//DBHelper.addDao(classOf[Category])
 	}
 
 	var routesSetup = () => {}
 
 	def run(): Unit = {
-		staticFiles.externalLocation("static")
+		staticFiles.externalLocation(Settings.getOutputDir)
 		port(Settings.getPort)
 
 		try

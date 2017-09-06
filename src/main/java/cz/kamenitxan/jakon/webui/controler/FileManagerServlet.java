@@ -169,7 +169,9 @@ public class FileManagerServlet extends HttpServlet {
 				return;
 			}
 			response.setHeader("Content-Type", "application/force-download");
-			response.setHeader("Content-Disposition", "inline; filename=\"" + MimeUtility.encodeWord(file.getName()) + "\"");
+			//response.setHeader("Content-Disposition", "inline; filename=\"" + MimeUtility.encodeWord(file.getName()) + "\"");
+			// TODO: lepsi hlavicku
+			response.setHeader("Content-Disposition", "attachment");
 			try (SeekableByteChannel channel = Files.newByteChannel(file.toPath())) {
 				byte[] buffer = new byte[256 * 1024];
 				ByteBuffer byteBuffer = ByteBuffer.wrap(buffer);

@@ -12,13 +12,13 @@
     </div>
     <div class="row">
         <div class="col-lg-12">
-            <form class="form-horizontal" method="post"
+            <form class="form-horizontal" method="post" id="edit-form-id"
                   action="/admin/object{% if id == 0 %}/create{% endif %}/{{ objectName }}{% if id != 0 %}/{{ id }}{% endif %}">
                 {% for field in fields %}
                     <div class="form-group">
                         <label for="{{ field.name }}" class="col-sm-2">{{ field.name }} {% if field.required %}*{% endif %}</label>
                         <div class="col-sm-10">
-                            {% include "includes/forms/" + field.objectName %}
+                            {% include "includes/forms/" + field.objectName with {"fieldHash":field.hashCode} %}
                         </div>
                     </div>
                 {% endfor %}

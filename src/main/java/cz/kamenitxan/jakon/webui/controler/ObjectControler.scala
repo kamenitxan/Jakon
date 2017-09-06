@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon.webui.controler
 
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper
+import cz.kamenitxan.jakon.core.model.Dao.{AbstractHibernateDao, DBHelper}
 import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.Context
@@ -17,12 +17,11 @@ import scala.collection.JavaConverters._
 object ObjectControler {
 	val excludedFields = List("url", "sectionName", "objectSettings")
 
-
 	def getList(req: Request, res: Response): ModelAndView = {
 		val objectName = req.params(":name")
 		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(objectName)).head
 		if (objectClass != null) {
-			val objects = DBHelper.getDao(objectClass).queryForAll()
+			val objects = DBHelper.getSession.createCriteria(objectClass).list()
 			val fields = objectClass.getDeclaredFields.map(f => f.getName).filter(n => !excludedFields.contains(n)).toList.asJava
 			new Context(Map[String, Any](
 				"objectName" -> objectName,
@@ -41,7 +40,7 @@ object ObjectControler {
 		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(objectName)).head
 		var obj: JakonObject = null
 		if (objectId.nonEmpty) {
-			obj = Option(DBHelper.getDao(objectClass).queryForId(objectId.get)).getOrElse(objectClass.newInstance())
+			obj = Option(DBHelper.getSession.get(objectClass, objectId.get)).getOrElse(objectClass.newInstance())
 		} else {
 			obj = objectClass.newInstance()
 		}
@@ -63,7 +62,7 @@ object ObjectControler {
 		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(objectName)).head
 		var obj: JakonObject = null
 		if (objectId.nonEmpty) {
-			obj = Option(DBHelper.getDao(objectClass).queryForId(objectId.get)).getOrElse(objectClass.newInstance())
+			//obj = Option(DBHelper.getDao(objectClass).queryForId(objectId.get)).getOrElse(objectClass.newInstance())
 		} else {
 			obj = objectClass.newInstance()
 		}
@@ -90,7 +89,7 @@ object ObjectControler {
 		val objectName = req.params(":name")
 		val objectId = req.params(":id").toOptInt.get
 		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(objectName)).head
-		DBHelper.getDao(objectClass).deleteById(objectId)
+		//DBHelper.getDao(objectClass).deleteById(objectId)
 		res.redirect("/admin/object/" + objectName)
 		new Context(Map[String, Any](), "objects/list")
 	}

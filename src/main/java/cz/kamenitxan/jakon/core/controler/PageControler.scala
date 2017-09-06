@@ -1,10 +1,13 @@
 package cz.kamenitxan.jakon.core.controler
 
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper
+import cz.kamenitxan.jakon.core.model.Dao.{AbstractHibernateDao, DBHelper}
 import cz.kamenitxan.jakon.core.template.TemplateEngine
 import cz.kamenitxan.jakon.core.template.TemplateUtils
 import java.sql.SQLException
 import java.util
+
+import cz.kamenitxan.jakon.core.model.Page
+
 import scala.collection.JavaConversions._
 
 /**
@@ -16,7 +19,7 @@ class PageControler extends IControler {
 	def generate() {
 		val e: TemplateEngine = TemplateUtils.getEngine
 		try {
-			val pages = DBHelper.getPageDao.queryForAll.toList
+			val pages = DBHelper.getSession.createCriteria(classOf[Page]).list().asInstanceOf[java.util.List[Page]]
 			pages.foreach(p => {
 				val context = new util.HashMap[String, AnyRef]
 				context.put("page", p)

@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.core.model;
 
 import cz.kamenitxan.jakon.core.function.FunctionHelper;
+import cz.kamenitxan.jakon.core.template.TemplateUtils;
 import cz.kamenitxan.jakon.webui.ObjectSettings;
 import cz.kamenitxan.jakon.webui.entity.JakonField;
 
@@ -17,13 +18,13 @@ import java.util.regex.Pattern;
  */
 @Entity
 public class Post extends JakonObject {
+
 	@Column
 	@JakonField
 	private Date date;
 	@Column
 	@JakonField(required = false)
 	private String perex;
-	@Column
 	@ManyToOne
 	@JakonField(required = false, inputTemplate = "String")
 	private Category category;
@@ -39,7 +40,10 @@ public class Post extends JakonObject {
 
 
 	public Post() {
+		super(Post.class.getName());
 	}
+
+
 
 	public String getTitle() {
 		return title;
@@ -53,11 +57,14 @@ public class Post extends JakonObject {
 		if (content == null) {
 			return null;
 		}
+
+		String parsedHtml = TemplateUtils.parseMarkdown(content);
+
 		// TODO: parsovani funkci
 		// (\{)((?:[a-z][a-z]+)).*?(\})
 
 		Pattern p = Pattern.compile("(\\{)((?:[a-z][a-z]+))(.*?)(\\})");
-		Matcher m = p.matcher(content);
+		Matcher m = p.matcher(parsedHtml);
 
 		StringBuffer result = new StringBuffer();
 		while (m.find()) {

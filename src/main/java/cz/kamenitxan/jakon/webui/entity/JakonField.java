@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface JakonField {
 	boolean required() default true;
-	boolean editable() default true;
+	boolean disabled() default false;
 	boolean shown() default true;
 	String htmlClass() default "";
 	String inputTemplate() default "";

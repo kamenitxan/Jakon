@@ -1,5 +1,6 @@
-package cz.kamenitxan.jakon
+package cz.kamenitxan.jakon.example
 
+import cz.kamenitxan.jakon.JakonInit
 import org.slf4j.LoggerFactory
 
 /**
@@ -17,6 +18,6 @@ object Main {
 			}
 		})
 
-		JakonInit.run()
+		new JakonApp().run()
 	}
 }

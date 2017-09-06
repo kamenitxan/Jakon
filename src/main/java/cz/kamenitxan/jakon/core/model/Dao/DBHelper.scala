@@ -1,76 +1,73 @@
 package cz.kamenitxan.jakon.core.model.Dao
 
 import java.sql.SQLException
+import java.util.Properties
+import javax.persistence.TypedQuery
+import javax.persistence.criteria.{CriteriaBuilder, CriteriaQuery, ParameterExpression, Root}
 
-import com.j256.ormlite.dao.{Dao, DaoManager, ReferenceObjectCache}
-import com.j256.ormlite.jdbc.JdbcPooledConnectionSource
-import com.j256.ormlite.table.TableUtils
 import cz.kamenitxan.jakon.core.Settings
 import cz.kamenitxan.jakon.core.model._
+import org.hibernate.HibernateException
+import org.hibernate.Session
+import org.hibernate.SessionFactory
+import org.hibernate.cfg.Configuration
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable
+import scala.reflect.ClassTag
 
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 20.12.15.
   */
 object DBHelper {
-	private val daos = mutable.Map[Class[_ <: JakonObject], Dao[JakonObject, Integer]]()
+	private var concreteSessionFactory: SessionFactory = _
+	val objects = scala.collection.mutable.Set[Class[_ <: JakonObject]]()
 
-	try {
-		Class.forName(Settings.getDatabaseDriver)
-	} catch {
-		case e: ClassNotFoundException => e.printStackTrace()
-	}
+
+	val prop = new Properties()
+	prop.setProperty("hibernate.connection.url", Settings.getDatabaseConnPath)
+	prop.setProperty("hibernate.connection.username", Settings.getProperty("databaseUser"))
+	prop.setProperty("hibernate.connection.password", Settings.getProperty("databasePass"))
+	prop.setProperty("hibernate.dialect", "org.hibernate.dialect.SQLiteDialect")
+	//prop.setProperty("hibernate.hbm2ddl.auto", "create")
+	//prop.setProperty("hibernate.show_sql", "true")
+  	//prop.setProperty("hibernate.format_sql", "true")
+
+
+
 	addDao(classOf[JakonUser])
 
 	def addDao[T <: JakonObject](jobject: Class[T]) {
-		try {
-			val connectionSource = new JdbcPooledConnectionSource(Settings.getDatabaseConnPath, Settings.getProperty("databaseUser"), Settings.getProperty("databasePass"))
-			val dao: Dao[JakonObject, Integer] = DaoManager.createDao(connectionSource, jobject)
-			dao.setObjectCache(ReferenceObjectCache.makeSoftCache)
-			if (!dao.isTableExists) {
-				TableUtils.createTable(connectionSource, jobject)
-			}
-			daos += (jobject -> dao)
-		}
-		catch {
-			case e: SQLException => e.printStackTrace()
-		}
+		objects += jobject
+		val conf = new Configuration().addProperties(prop)
+		objects.foreach(o => conf.addAnnotatedClass(o))
+		concreteSessionFactory = conf.buildSessionFactory()
 	}
 
-	def getDao(objectClass: Class[_ <: JakonObject]): Dao[JakonObject, Integer] = {
-		daos.getOrElse[Dao[JakonObject, Integer]](objectClass, null)
-	}
+	val postDao = new AbstractHibernateDao[Post](classOf[Post])
+	def getPostDao = postDao
 
-	def getPostDao = getDao(classOf[Post]).asInstanceOf[Dao[Post, Integer]]
+	val pageDao = new AbstractHibernateDao[Page](classOf[Page])
+	def getPageDao = pageDao
 
-	def getPageDao = getDao(classOf[Page]).asInstanceOf[Dao[Page, Integer]]
+	val categoryDao = new AbstractHibernateDao[Category](classOf[Category])
+	def getCategoryDao = categoryDao
 
-	def getCategoryDao = getDao(classOf[Category]).asInstanceOf[Dao[Category, Integer]]
+	val userDao = new AbstractHibernateDao[JakonUser](classOf[JakonUser])
+	def getUserDao = userDao
 
-	def getUserDao = getDao(classOf[JakonUser]).asInstanceOf[Dao[JakonUser, Integer]]
 
-	def getDaoClasses = daos.keys.toList
+	@throws[HibernateException]
+	def getSession: Session = concreteSessionFactory.openSession
+
+	def getDaoClasses = objects
 
 	/**
 	  * @param id      searched JakonObject id
 	  * @param refresh if true, object is queried from DB. not cache
 	  * @return JakonObject or null
 	  */
-	@deprecated def getObjectById(id: Integer, refresh: Boolean): JakonObject = {
-		try {
-			for (dao <- daos.values) {
-				val o: JakonObject = dao.queryForId(id)
-				if (o != null) {
-					return o
-				}
-			}
-		} catch {
-			case e: SQLException => e.printStackTrace()
-		}
-		null
-	}
+	@deprecated def getObjectById(id: Integer, refresh: Boolean): JakonObject = ???
 
 	/**
 	  * @param id searched JakonObject id

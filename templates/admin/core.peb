@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-ng-app="FileManagerApp">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -17,6 +17,7 @@
     <!-- Custom Fonts -->
     <link href="/jakon/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -28,14 +29,10 @@
     <script src="/jakon/vendor/jquery/jquery.min.js"></script>
     <script src="/jakon/js/jquery-ui.min.js"></script>
 
-    <!-- angular-filemanager -->
-    <script src="/jakon/js/fm/angular.min.js"></script>
-    <script src="/jakon/js/fm/angular-translate.min.js"></script>
-    <script src="/jakon/js/fm/ng-file-upload.min.js"></script>
-    <script src="/jakon/js/fm/angular-filemanager.min.js"></script>
-    <link href="/jakon/css/fm/angular-filemanager.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
 </head>
-<body class="ng-cloak">
+<body>
 <div class="wrapper">
         {% block content %}{% endblock %}
 </div>

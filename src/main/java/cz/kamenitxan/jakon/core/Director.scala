@@ -1,7 +1,7 @@
 package cz.kamenitxan.jakon.core
 
 import com.mongodb.MongoClient
-import cz.kamenitxan.jakon.Main.logger
+import cz.kamenitxan.jakon.example.Main.logger
 import cz.kamenitxan.jakon.core.controler.IControler
 import cz.kamenitxan.jakon.core.controler.PageControler
 import cz.kamenitxan.jakon.core.customPages.CustomPage
@@ -35,8 +35,8 @@ object Director {
 		logger.info("Jakon started")
 		Routes.init()
 		DBHelper.addDao(new JakonUser().getClass)
-		val adminUser = DBHelper.getUserDao.queryBuilder().where().eq("email", "admin@admin.cz").queryForFirst()
-		if (adminUser == null) {
+		val adminUser = DBHelper.getUserDao.findAll()
+		if (adminUser == null || adminUser.isEmpty) {
 			val user = new JakonUser()
 			user.firstName = "Admin"
 			user.lastName = "Admin"

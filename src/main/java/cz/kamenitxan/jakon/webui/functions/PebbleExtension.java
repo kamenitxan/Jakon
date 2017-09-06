@@ -18,6 +18,7 @@ public class PebbleExtension extends AbstractExtension {
 		return new HashMap<String, Function>() {{
 			put("getAttr", new GetAttributeFun());
 			put("getAttrType", new GetAttributeTypeFun());
+			put("link", new LinkFun());
 		}};
 	}
 }

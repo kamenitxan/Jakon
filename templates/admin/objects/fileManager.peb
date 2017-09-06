@@ -3,42 +3,9 @@
 {% block content %}
     {% include "includes/sideMenu" %}
 
-    <angular-filemanager></angular-filemanager>
-
-
-    <script type="text/javascript">
-        angular.module('FileManagerApp').config(['fileManagerConfigProvider', function (config) {
-            var defaults = config.$get();
-            config.set({
-                appName: 'angular-filemanager',
-                pickCallback: function(item) {
-                    var msg = 'Picked %s "%s" for external use'
-                        .replace('%s', item.type)
-                        .replace('%s', item.fullPath());
-                    window.alert(msg);
-                },
-
-                allowedActions: angular.extend(defaults.allowedActions, {
-                    pickFiles: true,
-                    pickFolders: false,
-                }),
-
-                listUrl: 'listUrl',
-                uploadUrl: 'uploadUrl',
-                renameUrl: 'renameUrl',
-                copyUrl: 'copyUrl',
-                moveUrl: 'moveUrl',
-                removeUrl: 'removeUrl',
-                editUrl: 'editUrl',
-                getContentUrl: 'getContentUrl',
-                createFolderUrl: 'createFolderUrl',
-                downloadFileUrl: 'downloadFileUrl',
-                downloadMultipleUrl: 'downloadMultipleUrl',
-                compressUrl: 'compressUrl',
-                extractUrl: 'extractUrl',
-                permissionsUrl: 'permissionsUrl',
-                basePath: 'basePath',
-            });
-        }]);
-    </script>
+    <div id="page-wrapper">
+        <div class="col-lg-12">
+            <iframe src="/admin/files/frame" width="100%" height="700px"></iframe>
+        </div>
+    </div>
 {% endblock %}

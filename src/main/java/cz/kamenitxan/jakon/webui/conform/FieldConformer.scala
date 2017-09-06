@@ -37,21 +37,27 @@ object FieldConformer {
 		var infos = List[FieldInfo]()
 		fields.foreach(f => {
 			val an = f.getAnnotation(classOf[JakonField])
-			f.setAccessible(true)
-			val templateName = if (an.inputTemplate().isEmpty) {f.getType.getSimpleName} else {an.inputTemplate()}
-			f.getType match {
-				case B =>  {
-					val fv = f.get(obj)
-					infos = new FieldInfo(an.required(), an.editable(), "checkbox", an.htmlClass(), if (fv != null) fv.toString else null, f.getName, templateName) :: infos
-				}
-				case DATE => {
-					val sdf = new SimpleDateFormat("MM/dd/yyyy")
-					val value = sdf.format(f.get(obj))
-					infos = new FieldInfo(an.required(), an.editable(), "date", an.htmlClass(), value, f.getName, templateName) :: infos
-				}
-				case _ => {
-					val fv = f.get(obj)
-					infos = new FieldInfo(an.required(), an.editable(), "text", an.htmlClass(), if (fv != null) fv.toString else null, f.getName, templateName) :: infos
+			if (an != null) {
+				f.setAccessible(true)
+				val templateName = if (an.inputTemplate().isEmpty) {f.getType.getSimpleName} else {an.inputTemplate()}
+				f.getType match {
+					case B =>  {
+						val fv = f.get(obj)
+						infos = new FieldInfo(an.required(), an.disabled(), "checkbox", an.htmlClass(), if (fv != null) fv.toString else null, f.getName, templateName) :: infos
+					}
+					case DATE => {
+						val sdf = new SimpleDateFormat("MM/dd/yyyy")
+						if (f.get(obj) != null) {
+							val value = sdf.format(f.get(obj))
+							infos = new FieldInfo(an.required(), an.disabled(), "date", an.htmlClass(), value, f.getName, templateName) :: infos
+						} else {
+							infos = new FieldInfo(an.required(), an.disabled(), "date", an.htmlClass(), value = "", f.getName, templateName) :: infos
+						}
+					}
+					case _ => {
+						val fv = f.get(obj)
+						infos = new FieldInfo(an.required(), an.disabled(), "text", an.htmlClass(), if (fv != null) fv.toString else null, f.getName, templateName) :: infos
+					}
 				}
 			}
 		})

@@ -11,9 +11,15 @@
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-        <ormlite.version>5.0</ormlite.version>
 		<scala.version>2.12.2</scala.version>
 	</properties>
+
+	<repositories>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
 
 	<dependencies>
 		<dependency>
@@ -22,9 +28,9 @@
 			<version>${scala.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.j256.ormlite</groupId>
-			<artifactId>ormlite-jdbc</artifactId>
-			<version>${ormlite.version}</version>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>5.2.10.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.xerial</groupId>
@@ -32,9 +38,14 @@
             <version>3.15.1</version>
 		</dependency>
 		<dependency>
+			<groupId>com.github.gwenn</groupId>
+			<artifactId>sqlite-dialect</artifactId>
+			<version>master</version>
+		</dependency>
+		<dependency>
 			<groupId>com.mitchellbosecke</groupId>
 			<artifactId>pebble</artifactId>
-            <version>2.3.0</version>
+            <version>2.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.persistence</groupId>
@@ -92,7 +103,11 @@
 			<artifactId>javax.mail-api</artifactId>
 			<version>1.6.0</version>
 		</dependency>
-
+		<dependency>
+			<groupId>com.atlassian.commonmark</groupId>
+			<artifactId>commonmark</artifactId>
+			<version>0.9.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
