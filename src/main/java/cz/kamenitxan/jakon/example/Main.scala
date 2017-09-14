@@ -1,6 +1,5 @@
 package cz.kamenitxan.jakon.example
 
-import cz.kamenitxan.jakon.JakonInit
 import org.slf4j.LoggerFactory
 
 /**

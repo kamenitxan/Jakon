@@ -1,7 +1,8 @@
 package cz.kamenitxan.jakon.webui;
 
-import cz.kamenitxan.jakon.core.Settings;
+import cz.kamenitxan.jakon.core.configuration.Settings;
 import cz.kamenitxan.jakon.core.model.DeployMode;
+import cz.kamenitxan.jakon.webui.controler.DeployControler;
 import cz.kamenitxan.jakon.webui.controler.FileManagerControler;
 import cz.kamenitxan.jakon.webui.controler.ObjectControler;
 import spark.TemplateEngine;
@@ -16,16 +17,12 @@ public class Routes {
 	public static void init() {
 		TemplateEngine te = Settings.getAdminEngine();
 
-		//staticFiles.externalLocation("/static");
-
 		before("/admin/*", (request, response) -> {
 			if (Settings.getDeployMode() == DeployMode.DEVEL) return;
 			if (request.session().attribute("user") == null) {
 				response.redirect("/admin", 401);
 			}
 		});
-
-
 
 		get("/admin", (request, response) -> Authentication.loginGet(response), te);
 		post("/admin", Authentication::loginPost, te);
@@ -61,5 +58,10 @@ public class Routes {
 			post("/permissionsUrl", FileManagerControler::getManager, te);
 			post("/basePath", FileManagerControler::getManager, te);*/
 		});
+
+		path("/admin/deploy", () -> {
+			get("/", DeployControler::getOverview, te);
+		});
+
 	}
 }

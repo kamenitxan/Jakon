@@ -3,7 +3,7 @@ package cz.kamenitxan.jakon.core.dynamic
 import java.util
 
 import com.mitchellbosecke.pebble.loader.FileLoader
-import cz.kamenitxan.jakon.core.Settings
+import cz.kamenitxan.jakon.core.configuration.Settings
 import spark.ModelAndView
 import spark.template.pebble.PebbleTemplateEngine
 

@@ -1,10 +1,12 @@
-package cz.kamenitxan.jakon.core;
+package cz.kamenitxan.jakon.core.configuration;
 
 import com.mitchellbosecke.pebble.loader.FileLoader;
 import cz.kamenitxan.jakon.core.model.DeployMode;
 import cz.kamenitxan.jakon.core.template.Pebble;
 import cz.kamenitxan.jakon.core.template.TemplateEngine;
 import cz.kamenitxan.jakon.webui.functions.FixedPebbleTemplateEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,9 +21,10 @@ import java.util.Properties;
  * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
  */
 public abstract class Settings {
+	private static Logger logger = LoggerFactory.getLogger(Settings.class);
 	private static TemplateEngine engine;
 	private static spark.TemplateEngine adminEngine;
-	private static Map<String, String> settings = new HashMap<>();
+	private static Map<SettingValue, String> settings = new HashMap<>();
 
 	static {
 		try {
@@ -43,7 +46,12 @@ public abstract class Settings {
 		while (e.hasMoreElements()) {
 			String key = (String) e.nextElement();
 			String value = prop.getProperty(key).trim();
-			settings.put(key, value);
+			try {
+				settings.put(SettingValue.fromName(key), value);
+			} catch (IllegalArgumentException ignored) {
+				logger.error("Cant load setting value", e);
+			}
+
 		}
 
 		FileLoader loader = new FileLoader();
@@ -54,11 +62,11 @@ public abstract class Settings {
 	}
 
 	public static String getTemplateDir() {
-		return settings.get("templateDir");
+		return settings.get(SettingValue.TEMPLATE_DIR);
 	}
 
 	public static void setTemplateDir(String templateDir) {
-		settings.put("templateDir", templateDir);
+		settings.put(SettingValue.TEMPLATE_DIR, templateDir);
 	}
 
 	public static TemplateEngine getTemplateEngine() {
@@ -78,51 +86,51 @@ public abstract class Settings {
 	}
 
 	public static String getStaticDir() {
-		return settings.get("staticDir");
+		return settings.get(SettingValue.STATIC_DIR);
 	}
 
 	public static void setStaticDir(String staticDir) {
-		settings.put("staticDir", staticDir);
+		settings.put(SettingValue.STATIC_DIR, staticDir);
 	}
 
 	public static String getOutputDir() {
-		return settings.get("outputDir");
+		return settings.get(SettingValue.OUTPUT_DIR);
 	}
 
 	public static void setOutputDir(String outputDir) {
-		settings.put("outputDir", outputDir);
+		settings.put(SettingValue.OUTPUT_DIR, outputDir);
 	}
 
 	public static String getDatabaseDriver() {
-		return settings.get("databaseDriver");
+		return settings.get(SettingValue.DB_DRIVER);
 	}
 
 	public static void setDatabaseDriver(String databaseDriver) {
-		settings.put("databaseDriver", databaseDriver);
+		settings.put(SettingValue.DB_DRIVER, databaseDriver);
 	}
 
 	public static String getDatabaseConnPath() {
-		return settings.get("databaseConnPath");
+		return settings.get(SettingValue.DB_URL);
 	}
 
 	public static void setDatabaseConnPath(String databaseConnPath) {
-		settings.put("databaseConnPath", databaseConnPath);
+		settings.put(SettingValue.DB_URL, databaseConnPath);
 	}
 
 	public static int getPort() {
-		return Integer.valueOf(settings.get("port"));
+		return Integer.valueOf(settings.get(SettingValue.PORT));
 	}
 
 	public static void setPort(int port) {
-		settings.put("port", String.valueOf(port));
+		settings.put(SettingValue.PORT, String.valueOf(port));
 	}
 
-	public static String getProperty(String name) {
+	public static String getProperty(SettingValue name) {
 		return settings.get(name);
 	}
 
 	public static DeployMode getDeployMode() {
-		String mode = settings.get("deployMode");
+		String mode = settings.get(SettingValue.DEPLOY_MODE);
 		if (mode != null) {
 			return DeployMode.valueOf(mode);
 		} else {
@@ -131,6 +139,6 @@ public abstract class Settings {
 	}
 
 	public static void setDeployMode(DeployMode mode) {
-		settings.put("deployMode", mode.name());
+		settings.put(SettingValue.DEPLOY_MODE, mode.name());
 	}
 }

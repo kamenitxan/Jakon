@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.core
 
 import com.mongodb.MongoClient
+import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.example.Main.logger
 import cz.kamenitxan.jakon.core.controler.IControler
 import cz.kamenitxan.jakon.core.controler.PageControler

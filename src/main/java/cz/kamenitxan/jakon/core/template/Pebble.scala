@@ -7,7 +7,7 @@ import com.mitchellbosecke.pebble.PebbleEngine
 import com.mitchellbosecke.pebble.error.PebbleException
 import com.mitchellbosecke.pebble.loader.FileLoader
 import com.mitchellbosecke.pebble.template.PebbleTemplate
-import cz.kamenitxan.jakon.core.Settings
+import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.webui.functions.PebbleExtension
 
 /**

@@ -1,5 +1,7 @@
 package cz.kamenitxan.jakon.core.deploy
 
-object LocalDeploy extends IDeploy {
-	override def deploy(): Unit = ???
+class LocalDeploy extends IDeploy {
+	override def deploy(server: Server): Unit = ???
+
+	override def getDeploySettings = ???
 }

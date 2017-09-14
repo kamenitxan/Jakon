@@ -29,7 +29,7 @@
                     <a href="/admin/index"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Objects<span class="fa arrow"></span></a>
+                    <a href="#"><i class="fa fa-edit fa-fw"></i> Objects<span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
                         {% for model in modelClasses %}
                             <li>
@@ -40,12 +40,12 @@
                     <!-- /.nav-second-level -->
                 </li>
                 <li>
-                    <a href="/admin/files/"><i class="fa fa-dashboard fa-fw"></i> Files</a>
-                </li>
-                {#<li>
-                    <a href="tables.html"><i class="fa fa-table fa-fw"></i> Tables</a>
+                    <a href="/admin/files/"><i class="fa fa-files-o fa-fw"></i> Files</a>
                 </li>
                 <li>
+                    <a href="/admin/deploy/"><i class="fa fa-server fa-fw"></i> Deploy</a>
+                </li>
+                {#<li>
                     <a href="forms.html"><i class="fa fa-edit fa-fw"></i> Forms</a>
                 </li>
                 <li>

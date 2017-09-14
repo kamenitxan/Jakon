@@ -1,9 +1,16 @@
-<post
- id="{{ page.id }}"
- url="{{ page.url }}"
- sectionName="{{ page.sectionName }}"
- published="{{ page.published }}"
- title="{{ page.title }}"
- content="{{ page.content }}"
- showComments="{{ page.showComments }}"
-/>
+{% extends "core" %}
+
+{% block title %} {{ page.title }} {% endblock %}
+
+{% block content %}
+    <a href="/">Index</a>
+    <p>
+        id="{{ page.id }}"
+        url="{{ page.url }}"
+        sectionName="{{ page.sectionName }}"
+        published="{{ page.published }}"
+        title="{{ page.title }}"
+        content="{{ page.content }}"
+        showComments="{{ page.showComments }}"
+    </p>
+{% endblock %}

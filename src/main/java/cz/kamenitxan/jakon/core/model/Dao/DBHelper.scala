@@ -1,20 +1,11 @@
 package cz.kamenitxan.jakon.core.model.Dao
 
-import java.sql.SQLException
 import java.util.Properties
-import javax.persistence.TypedQuery
-import javax.persistence.criteria.{CriteriaBuilder, CriteriaQuery, ParameterExpression, Root}
 
-import cz.kamenitxan.jakon.core.Settings
+import cz.kamenitxan.jakon.core.configuration.{SettingValue, Settings}
 import cz.kamenitxan.jakon.core.model._
-import org.hibernate.HibernateException
-import org.hibernate.Session
-import org.hibernate.SessionFactory
+import org.hibernate.{HibernateException, Session, SessionFactory}
 import org.hibernate.cfg.Configuration
-
-import scala.collection.JavaConversions._
-import scala.collection.mutable
-import scala.reflect.ClassTag
 
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 20.12.15.
@@ -26,10 +17,10 @@ object DBHelper {
 
 	val prop = new Properties()
 	prop.setProperty("hibernate.connection.url", Settings.getDatabaseConnPath)
-	prop.setProperty("hibernate.connection.username", Settings.getProperty("databaseUser"))
-	prop.setProperty("hibernate.connection.password", Settings.getProperty("databasePass"))
+	prop.setProperty("hibernate.connection.username", Settings.getProperty(SettingValue.DB_USER))
+	prop.setProperty("hibernate.connection.password", Settings.getProperty(SettingValue.DB_PASS))
 	prop.setProperty("hibernate.dialect", "org.hibernate.dialect.SQLiteDialect")
-	//prop.setProperty("hibernate.hbm2ddl.auto", "create")
+	prop.setProperty("hibernate.hbm2ddl.auto", "update")
 	//prop.setProperty("hibernate.show_sql", "true")
   	//prop.setProperty("hibernate.format_sql", "true")
 

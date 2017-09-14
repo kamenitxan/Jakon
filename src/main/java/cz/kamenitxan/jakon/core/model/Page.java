@@ -12,7 +12,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cz.kamenitxan.jakon.webui.entity.JakonField;
-import scala.collection.JavaConversions;
 import scala.collection.JavaConverters;
 
 /**

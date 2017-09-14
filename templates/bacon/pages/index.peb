@@ -7,6 +7,6 @@
     <p>Welcome to Jakon!</p>
     <ul>
         <li>Pages</li>
-        <li>Static Page - {{ link(2) }}</li>
+        <li>Static Page - {{ link(2) | raw }}</li>
     </ul>
 {% endblock %}

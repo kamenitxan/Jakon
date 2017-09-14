@@ -14,8 +14,7 @@ class LinkFun extends Function{
 		if (jo == null) {
 			return ""
 		}
-		val obj = DBHelper.getSession.get(jo.childClass, id).asInstanceOf[JakonObject]
-		"<a href=\"" + obj.url + "\">" + obj.url + "</a>"
+		"<a href=\"" + jo.getUrl + ".html\">" + jo.getUrl + "</a>"
 	}
 
 	override def getArgumentNames = {

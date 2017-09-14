@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon.core.template;
 
-import cz.kamenitxan.jakon.core.Settings;
+import cz.kamenitxan.jakon.core.configuration.Settings;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;

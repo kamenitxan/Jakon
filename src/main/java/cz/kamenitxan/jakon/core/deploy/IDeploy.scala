@@ -1,5 +1,7 @@
 package cz.kamenitxan.jakon.core.deploy
 
 trait IDeploy {
-	def deploy()
+	def deploy(server: Server): Unit
+
+	def getDeploySettings: Map[String, String]
 }

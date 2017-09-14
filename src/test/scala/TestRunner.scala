@@ -4,7 +4,8 @@ import cz.kamenitxan.jakon.core.customPages.StaticPage
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.{JakonUser, Page}
 import cz.kamenitxan.jakon.core.template.Pebble
-import cz.kamenitxan.jakon.core.{Director, Settings}
+import cz.kamenitxan.jakon.core.Director
+import cz.kamenitxan.jakon.core.configuration.Settings
 import functions.LinkTest
 import org.scalatest.{BeforeAndAfterAll, Suites}
 import webui.AuthTest
