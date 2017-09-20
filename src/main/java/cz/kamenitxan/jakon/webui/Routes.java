@@ -61,6 +61,7 @@ public class Routes {
 
 		path("/admin/deploy", () -> {
 			get("/", DeployControler::getOverview, te);
+			get("/start", DeployControler::deploy, te);
 		});
 
 	}

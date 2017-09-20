@@ -108,6 +108,11 @@
 			<artifactId>commonmark</artifactId>
 			<version>0.9.0</version>
 		</dependency>
+		<dependency>
+			<groupId>net.liftweb</groupId>
+			<artifactId>lift-json_2.12</artifactId>
+			<version>3.1.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>

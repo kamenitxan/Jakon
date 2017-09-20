@@ -1,30 +1,20 @@
 package cz.kamenitxan.jakon.core.deploy
 
+import java.io.File
 import java.time.LocalDateTime
+
 import cz.kamenitxan.jakon.core.configuration.{SettingValue, Settings}
+import cz.kamenitxan.jakon.core.deploy.entity.Server
+import net.liftweb.json.{DefaultFormats, JsonParser}
+
+import scala.io.Source
 
 object DeployDirector {
 
-	class CC[T] { def unapply(a:Any):Option[T] = Some(a.asInstanceOf[T]) }
-
-	object M extends CC[Map[String, Any]]
-	object L extends CC[List[Any]]
-	object S extends CC[String]
-	object D extends CC[Double]
-	object B extends CC[Boolean]
-
-
 	val servers: List[Server] = {
-		/*for {
-			Some(M(map)) <- List(scala.util.parsing.json.JSON.parseFull(jsonString))
-			L(languages) = map("languages")
-			M(language) <- languages
-			S(name) = language("name")
-			B(active) = language("is_active")
-			D(completeness) = language("completeness")
-		} yield {
-			(name, active, completeness)
-		}*/
+		implicit val formats = DefaultFormats
+		val json = JsonParser.parse(Source.fromFile("servers.json").mkString)
+		json.extract[List[Server]]
 	}
 	val deployer: IDeploy = {
 		val cls = Class.forName(Settings.getProperty(SettingValue.DEPLOY_TYPE))
@@ -38,7 +28,7 @@ object DeployDirector {
 	def deploy() = {
 		servers.foreach( s => {
 			deployer.deploy(s)
-			s.lastDeploy = LocalDateTime.now()
+			//s.lastDeploy = LocalDateTime.now()
 		})
 	}
 }
