@@ -2,6 +2,7 @@ package cz.kamenitxan.jakon.webui;
 
 import cz.kamenitxan.jakon.core.configuration.Settings;
 import cz.kamenitxan.jakon.core.model.DeployMode;
+import cz.kamenitxan.jakon.webui.controler.Authentication;
 import cz.kamenitxan.jakon.webui.controler.DeployControler;
 import cz.kamenitxan.jakon.webui.controler.FileManagerControler;
 import cz.kamenitxan.jakon.webui.controler.ObjectControler;
@@ -18,7 +19,7 @@ public class Routes {
 		TemplateEngine te = Settings.getAdminEngine();
 
 		before("/admin/*", (request, response) -> {
-			if (Settings.getDeployMode() == DeployMode.DEVEL) return;
+			if (Settings.getDeployMode() == DeployMode.DEVEL || request.pathInfo().equals("/admin/register")) return;
 			if (request.session().attribute("user") == null) {
 				response.redirect("/admin", 401);
 			}
@@ -27,6 +28,8 @@ public class Routes {
 		get("/admin", (request, response) -> Authentication.loginGet(response), te);
 		post("/admin", Authentication::loginPost, te);
 		get("/admin/index", Dashboard::getDashboard, te);
+		get("/admin/register",  (request, response) -> Authentication.registrationGet(response), te);
+		post("/admin/register", Authentication::registrationPost, te);
 
 		get("/admin/object/:name", ObjectControler::getList, te);
 		get("/admin/object/create/:name", ObjectControler::getItem, te);

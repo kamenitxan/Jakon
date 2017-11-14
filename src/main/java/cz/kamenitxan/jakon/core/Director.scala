@@ -10,7 +10,8 @@ import cz.kamenitxan.jakon.core.model.Dao.{DBHelper, MongoHelper}
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.core.template.Pebble
 import cz.kamenitxan.jakon.core.template.TemplateUtils
-import cz.kamenitxan.jakon.webui.{Authentication, Routes}
+import cz.kamenitxan.jakon.webui.Routes
+import cz.kamenitxan.jakon.webui.controler.Authentication
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -43,6 +44,7 @@ object Director {
 			user.lastName = "Admin"
 			user.email = "admin@admin.cz"
 			user.password = "admin"
+			user.enabled = true
 			Authentication.createUser(user)
 		}
 		logger.info("Jakon default init complete")

@@ -2,9 +2,10 @@ package cz.kamenitxan.jakon.core.model
 
 import javax.persistence._
 
-import cz.kamenitxan.jakon.webui.Authentication.hashPassword
+import cz.kamenitxan.jakon.webui.controler.Authentication.hashPassword
 import cz.kamenitxan.jakon.webui.entity.JakonField
-import cz.kamenitxan.jakon.webui.{Authentication, ObjectSettings}
+import cz.kamenitxan.jakon.webui.ObjectSettings
+import cz.kamenitxan.jakon.webui.controler.Authentication
 
 import scala.beans.BeanProperty
 
@@ -20,6 +21,7 @@ class JakonUser(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser
 	@BeanProperty @Column var firstName: String = ""
 	@BeanProperty @Column var lastName: String = ""
 	@BeanProperty @Column var password: String = ""
+	@BeanProperty @Column var enabled: Boolean = false
 
 
 	def this() = this(u=())

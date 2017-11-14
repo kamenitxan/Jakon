@@ -1,8 +1,9 @@
-package cz.kamenitxan.jakon.webui
+package cz.kamenitxan.jakon.webui.controler
 
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper.getSession
 import cz.kamenitxan.jakon.core.model.JakonUser
+import cz.kamenitxan.jakon.webui.Context
 import org.hibernate.criterion.Restrictions
 import org.mindrot.jbcrypt.BCrypt
 import spark.{ModelAndView, Request, Response}
@@ -26,11 +27,35 @@ object Authentication {
 			val user = criteria.add(Restrictions.eq("email", email) ).uniqueResult().asInstanceOf[JakonUser]
 			if (user == null) {
 
-			} else if (checkPassword(password, user.password)){
+			} else if (checkPassword(password, user.password) && user.enabled){
 				req.session(true).attribute("user", user.email)
 				res.redirect("/admin/index")
 			}
 		}
+		new Context(null, "login")
+	}
+
+	def registrationGet(response: Response): ModelAndView = {
+		new Context(null, "register")
+	}
+
+	def registrationPost(req: Request, res: Response): ModelAndView = {
+		val email = req.queryParams("email")
+		val password = req.queryParams("password")
+		val password2 = req.queryParams("password2")
+		val firstname = req.queryParams("firstname")
+		val lastname = req.queryParams("lastname")
+		if (!password.equals(password2)) {
+			// TODO: chyba
+			new Context(null, "register")
+		}
+		val user = new JakonUser()
+		user.email = email
+		user.username = email
+		user.password = password
+		user.firstName = firstname
+		user.lastName = lastname
+		createUser(user)
 		new Context(null, "login")
 	}
 

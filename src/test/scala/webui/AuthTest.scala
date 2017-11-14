@@ -2,7 +2,7 @@ package webui
 
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonUser
-import cz.kamenitxan.jakon.webui.Authentication
+import cz.kamenitxan.jakon.webui.controler.Authentication
 import org.scalatest.FunSuite
 
 /**
