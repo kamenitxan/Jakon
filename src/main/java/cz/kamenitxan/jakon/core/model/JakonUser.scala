@@ -16,12 +16,12 @@ import scala.beans.BeanProperty
 @Entity
 class JakonUser(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser].getName) {
 
-	@BeanProperty @Column var username: String = ""
-	@BeanProperty @Column var email: String = ""
-	@BeanProperty @Column var firstName: String = ""
-	@BeanProperty @Column var lastName: String = ""
-	@BeanProperty @Column var password: String = ""
-	@BeanProperty @Column var enabled: Boolean = false
+	@BeanProperty @Column @JakonField var username: String = ""
+	@BeanProperty @Column @JakonField var email: String = ""
+	@BeanProperty @Column @JakonField var firstName: String = ""
+	@BeanProperty @Column @JakonField var lastName: String = ""
+	@BeanProperty @Column @JakonField var password: String = ""
+	@BeanProperty @Column @JakonField var enabled: Boolean = false
 
 
 	def this() = this(u=())

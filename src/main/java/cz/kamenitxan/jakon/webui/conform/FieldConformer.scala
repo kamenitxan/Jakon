@@ -11,6 +11,7 @@ object FieldConformer {
 	val S = classOf[String]
 	val B = classOf[Boolean]
 	val D = classOf[java.lang.Double]
+	val I = classOf[java.lang.Integer]
 	val DATE = classOf[Date]
 
 	implicit class StringConformer(val s: String) {
@@ -23,6 +24,7 @@ object FieldConformer {
 			c match {
 				case B => s toBoolean
 				case D => s toDouble
+				case I => s toInt
 				case DATE => {
 					val sdf = new SimpleDateFormat("MM/dd/yyyy")
 					sdf.parse(s)
