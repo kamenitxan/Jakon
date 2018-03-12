@@ -13,5 +13,6 @@ public @interface JakonField {
 	boolean disabled() default false;
 	boolean shown() default true;
 	String htmlClass() default "";
+	int htmlMaxLength() default 255;
 	String inputTemplate() default "";
 }

@@ -1,8 +1,6 @@
 package cz.kamenitxan.jakon.core.deploy
 
-import java.io.File
-import java.time.LocalDateTime
-
+import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.configuration.{SettingValue, Settings}
 import cz.kamenitxan.jakon.core.deploy.entity.Server
 import net.liftweb.json.{DefaultFormats, JsonParser}
@@ -13,6 +11,7 @@ object DeployDirector {
 
 	val servers: List[Server] = {
 		implicit val formats = DefaultFormats
+		//TODO: cacht exception when file not found
 		val json = JsonParser.parse(Source.fromFile("servers.json").mkString)
 		json.extract[List[Server]]
 	}
@@ -26,6 +25,7 @@ object DeployDirector {
 	}
 
 	def deploy() = {
+		Director.render()
 		servers.foreach( s => {
 			deployer.deploy(s)
 			//s.lastDeploy = LocalDateTime.now()

@@ -15,14 +15,14 @@ import scala.collection.JavaConverters._
   * Created by TPa on 08.09.16.
   */
 object ObjectControler {
-	val excludedFields = List("url", "sectionName", "objectSettings")
+	val excludedFields = List("url", "sectionName", "objectSettings", "childClass")
 
 	def getList(req: Request, res: Response): ModelAndView = {
 		val objectName = req.params(":name")
 		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(objectName)).head
 		if (objectClass != null) {
 			val objects = DBHelper.getSession.createCriteria(objectClass).list()
-			val fields = objectClass.getDeclaredFields.map(f => f.getName).filter(n => !excludedFields.contains(n)).toList.asJava
+			val fields = Utils.getFieldsUpTo(objectClass, classOf[Object]).map(f => f.getName).filter(n => !excludedFields.contains(n)).asJava
 			new Context(Map[String, Any](
 				"objectName" -> objectName,
 				"objects" -> objects,

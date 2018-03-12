@@ -23,8 +23,8 @@ object DBHelper {
 	prop.setProperty("hibernate.hbm2ddl.auto", "update")
 	prop.setProperty("hibernate.c3p0.min_size", "1")
 	prop.setProperty("hibernate.c3p0.max_size", "1")
-	//prop.setProperty("hibernate.show_sql", "true")
-  	//prop.setProperty("hibernate.format_sql", "true")
+	prop.setProperty("hibernate.show_sql", "true")
+  	prop.setProperty("hibernate.format_sql", "true")
 
 
 

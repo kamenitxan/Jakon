@@ -23,7 +23,7 @@
                                id="dataTables-example">
                             <thead>
                             <tr>
-                                <th>Id</th>
+                                <!--th>Id</th-->
                                 {% for field in fields %}
                                     <th>{{ field }}</th>
                                 {% endfor %}
@@ -33,7 +33,7 @@
                             <tbody>
                             {% for object in objects %}
                                 <tr>
-                                    <td>{{ getAttr(object, "id") }}</td>
+                                    <!--td>{{ getAttr(object, "id") }}</td-->
                                     {% for field in fields %}
                                         <td>{{ getAttr(object, field) }}</td>
                                     {% endfor %}
