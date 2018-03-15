@@ -27,7 +27,7 @@ public class Routes {
 
 		get("/admin", (request, response) -> Authentication.loginGet(response), te);
 		post("/admin", Authentication::loginPost, te);
-		get("/admin/index", Dashboard::getDashboard, te);
+		get("/admin/index", (request, response) -> AdminSettings.dashboardController().apply(request, response), te);
 		get("/admin/register",  (request, response) -> Authentication.registrationGet(response), te);
 		post("/admin/register", Authentication::registrationPost, te);
 
@@ -38,12 +38,13 @@ public class Routes {
 		get("/admin/object/:name/:id", ObjectControler::getItem, te);
 		post("/admin/object/:name/:id", ObjectControler::updateItem, te);
 
-		path("/admin/files", () -> {
-			get("/", FileManagerControler::getManager, te);
-			get("/frame", FileManagerControler::getManagerFrame, te);
+		if (AdminSettings.enableFiles()) {
+			path("/admin/files", () -> {
+				get("/", FileManagerControler::getManager, te);
+				get("/frame", FileManagerControler::getManagerFrame, te);
 
-			get("/:method", FileManagerControler::executeGet);
-			post("/:method", FileManagerControler::executePost);
+				get("/:method", FileManagerControler::executeGet);
+				post("/:method", FileManagerControler::executePost);
 
 			/*post("/listUrl", FileManagerControler::getManager, te);
 			post("/uploadUrl", FileManagerControler::getManager, te);
@@ -60,12 +61,15 @@ public class Routes {
 			post("/extractUrl", FileManagerControler::getManager, te);
 			post("/permissionsUrl", FileManagerControler::getManager, te);
 			post("/basePath", FileManagerControler::getManager, te);*/
-		});
-
-		path("/admin/deploy", () -> {
-			get("/", DeployControler::getOverview, te);
-			get("/start", DeployControler::deploy, te);
-		});
+			});
+		}
+		if (AdminSettings.enableDeploy()) {
+			path("/admin/deploy", () -> {
+				get("/", DeployControler::getOverview, te);
+				get("/start", DeployControler::deploy, te);
+			});
+		}
+		AdminSettings.customControllers().forEach(c -> get(c.path(), c::render, te));
 
 	}
 }

@@ -15,7 +15,10 @@ class Context(var model: Map[String, Any], viewName: String) extends ModelAndVie
 	def getAdminContext: Map[String, Any] = {
 		val modelClasses = DBHelper.getDaoClasses.map(_.getSimpleName).asJavaCollection
 		val context = Map[String, Any](
-			"modelClasses" -> modelClasses
+			"modelClasses" -> modelClasses,
+			"enableFiles" -> AdminSettings.enableFiles,
+			"enableDeploy" -> AdminSettings.enableDeploy,
+			"customControllers" -> AdminSettings.customControllers
 		)
 		context
 	}

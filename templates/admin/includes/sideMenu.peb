@@ -39,12 +39,21 @@
                     </ul>
                     <!-- /.nav-second-level -->
                 </li>
+                {% for c in customControllers %}
+                <li>
+                    <a href="/admin/{{ c.path }}"><i class="fa fa-files-o fa-fw"></i> {{ c.name }}</a>
+                </li>
+                {% endfor %}
+                {% if enableFiles %}
                 <li>
                     <a href="/admin/files/"><i class="fa fa-files-o fa-fw"></i> Files</a>
                 </li>
+                {% endif %}
+                {% if enableDeploy %}
                 <li>
                     <a href="/admin/deploy/"><i class="fa fa-server fa-fw"></i> Deploy</a>
                 </li>
+                {% endif %}
                 {#<li>
                     <a href="forms.html"><i class="fa fa-edit fa-fw"></i> Forms</a>
                 </li>

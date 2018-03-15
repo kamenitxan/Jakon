@@ -1,0 +1,79 @@
+package cz.kamenitxan.jakon.webui.util
+
+import java.io._
+
+import com.mitchellbosecke.pebble.error.LoaderException
+import com.mitchellbosecke.pebble.loader.FileLoader
+import cz.kamenitxan.jakon.core.configuration.Settings
+
+class JakonFileLoader extends FileLoader {
+	val ADMIN_TMPL_DIR = "templates/admin"
+
+	override def getReader(tmpl: String): Reader = {
+		var isr: InputStreamReader = null
+		var reader: Reader = null
+
+		var is: InputStream = null
+		is = loadFile(ADMIN_TMPL_DIR, tmpl)
+		if (is == null) {
+			is = loadFile(Settings.getTemplateDir, tmpl)
+		}
+
+		if (is == null) {
+			throw new LoaderException(null, "Could not find template \"" + getPathBuilder(ADMIN_TMPL_DIR).toString() + tmpl + "\""
+				+ " or \"" + getPathBuilder(Settings.getTemplateDir).toString() + tmpl + "\"")
+		}
+
+		try {
+			isr = new InputStreamReader(is, getCharset)
+			reader = new BufferedReader(isr)
+		} catch {
+			case e: UnsupportedEncodingException =>
+
+		}
+		reader
+	}
+
+	def loadFile(prefix: String, tmpl: String): FileInputStream = {
+		// add the prefix and ensure the prefix ends with a separator character
+		val path = getPathBuilder(prefix)
+
+		var templateName = tmpl + (if (getSuffix == null) "" else getSuffix)
+
+		//logger.debug("Looking for template in {}{}.", path.toString, templateName)
+
+		/*
+		 * if template name contains path segments, move those segments into the
+		 * path variable. The below technique needs to know the difference
+		 * between the path and file name.
+		 */
+		val pathSegments = templateName.split("\\\\|/")
+
+		if (pathSegments.length > 1) { // file name is the last segment
+			templateName = pathSegments(pathSegments.length - 1)
+		}
+		for (i <- 0 until pathSegments.length - 1) {
+			path.append(pathSegments(i)).append(File.separatorChar)
+		}
+
+		// try to load File
+
+		val file = new File(path.toString, templateName)
+		if (file.exists && file.isFile) try
+			return new FileInputStream(file)
+		catch {
+			case e: FileNotFoundException =>
+
+		}
+		null
+	}
+
+	def getPathBuilder(prefix: String): StringBuilder = {
+		val sb = new StringBuilder("")
+		if (prefix != null) {
+			sb.append(prefix)
+			if (!prefix.endsWith(String.valueOf(File.separatorChar))) sb.append(File.separatorChar)
+		}
+		sb
+	}
+}

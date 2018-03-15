@@ -4,7 +4,8 @@ import com.mitchellbosecke.pebble.loader.FileLoader;
 import cz.kamenitxan.jakon.core.model.DeployMode;
 import cz.kamenitxan.jakon.core.template.Pebble;
 import cz.kamenitxan.jakon.core.template.TemplateEngine;
-import cz.kamenitxan.jakon.webui.functions.FixedPebbleTemplateEngine;
+import cz.kamenitxan.jakon.core.template.FixedPebbleTemplateEngine;
+import cz.kamenitxan.jakon.webui.util.JakonFileLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,8 +55,7 @@ public abstract class Settings {
 
 		}
 
-		FileLoader loader = new FileLoader();
-		loader.setPrefix("templates/admin");
+		FileLoader loader = new JakonFileLoader();
 		loader.setSuffix(".peb");
 		adminEngine = new FixedPebbleTemplateEngine(loader);
 		setTemplateEngine(new Pebble());
