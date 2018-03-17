@@ -1,15 +1,11 @@
-package cz.kamenitxan.jakon.webui.controler
+package cz.kamenitxan.jakon.webui.controler.impl
 
-import cz.kamenitxan.jakon.core.model.Dao.{AbstractHibernateDao, DBHelper}
+import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.Context
-import cz.kamenitxan.jakon.utils.Utils._
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
 import spark.{ModelAndView, Request, Response}
-import cz.kamenitxan.jakon.webui.conform.FieldConformer._
-
-import scala.collection.JavaConverters._
 
 /**
   * Created by TPa on 08.09.16.

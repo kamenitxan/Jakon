@@ -17,7 +17,8 @@ object FieldConformer {
 	val DATE = classOf[Date]
 	val DATETIME = classOf[LocalDateTime]
 
-	val DATE_FORMAT = "MM/dd/yyyy"
+	//val DATE_FORMAT = "MM/dd/yyyy"
+	val DATE_FORMAT = "yyyy-MM-dd"
 	val DATETIME_FORMAT = "MM/dd/yyyy'T'HH:mm"
 
 	implicit class StringConformer(val s: String) {

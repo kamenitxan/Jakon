@@ -11,7 +11,7 @@ import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.core.template.Pebble
 import cz.kamenitxan.jakon.core.template.TemplateUtils
 import cz.kamenitxan.jakon.webui.Routes
-import cz.kamenitxan.jakon.webui.controler.Authentication
+import cz.kamenitxan.jakon.webui.controler.impl.Authentication
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

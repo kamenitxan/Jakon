@@ -1,5 +1,17 @@
-<textarea name="{{ field.name }}" cols="80" rows="5" id="editor-container{{ fieldHash }}">{{ field.value | raw }}</textarea>
+<div>
+    <textarea class="form-control" name="{{ field.name }}" cols="80" rows="5" id="editor-container{{ fieldHash }}">{{ field.value | raw }}</textarea>
+</div>
 
 <script>
-        var simplemde = new SimpleMDE({ element: document.getElementById("editor-container{{ fieldHash }}") });
+    //var megamark = require('megamark');
+    woofmark(document.querySelector("#editor-container{{ fieldHash }}")/* ,
+        {
+            parseMarkdown: megamark(),
+            defaultMode: 'wysiwyg',
+            html: false
+        }*/);
+
+
+
+
 </script>

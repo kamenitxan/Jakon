@@ -1,12 +1,9 @@
-package cz.kamenitxan.jakon.webui.controler
+package cz.kamenitxan.jakon.webui.controler.impl
 
 import cz.kamenitxan.jakon.core.configuration.{SettingValue, Settings}
 import cz.kamenitxan.jakon.core.deploy.DeployDirector
 import cz.kamenitxan.jakon.webui.Context
 import spark.{ModelAndView, Request, Response}
-
-import scala.collection.JavaConverters._
-
 
 object DeployControler {
 

@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.webui.controler
+package cz.kamenitxan.jakon.webui.controler.impl
 
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper.getSession
@@ -7,7 +7,6 @@ import cz.kamenitxan.jakon.webui.Context
 import org.hibernate.criterion.Restrictions
 import org.mindrot.jbcrypt.BCrypt
 import spark.{ModelAndView, Request, Response}
-
 
 /**
   * Created by TPa on 03.09.16.

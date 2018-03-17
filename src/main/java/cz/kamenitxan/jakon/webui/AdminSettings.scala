@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.webui
 
-import cz.kamenitxan.jakon.webui.controler.{CustomController, Dashboard}
+import cz.kamenitxan.jakon.webui.controler.CustomController
+import cz.kamenitxan.jakon.webui.controler.impl.Dashboard
 import spark.{Request, Response}
 
 

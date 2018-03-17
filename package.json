@@ -1,0 +1,9 @@
+{
+  "name": "Jakon",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "megamark": "^3.3.0",
+    "woofmark": "^4.2.3"
+  }
+}
