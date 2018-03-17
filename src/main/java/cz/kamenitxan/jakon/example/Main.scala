@@ -17,6 +17,7 @@ object Main {
 			}
 		})
 
-		new JakonApp().run()
+		val app =new JakonApp()
+		app.run()
 	}
 }

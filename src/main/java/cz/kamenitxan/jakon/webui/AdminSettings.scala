@@ -1,17 +1,19 @@
 package cz.kamenitxan.jakon.webui
 
-import cz.kamenitxan.jakon.webui.controler.CustomController
+import cz.kamenitxan.jakon.webui.controler.AbstractController
 import cz.kamenitxan.jakon.webui.controler.impl.Dashboard
 import spark.{Request, Response}
 
+import scala.collection.mutable
+import scala.collection.JavaConverters._
 
 object AdminSettings {
 	var dashboardController = (req: Request, res: Response) => Dashboard.getDashboard(req ,res)
 	var enableFiles = true
-	var enableDeploy = true
-	val customControllers = new java.util.ArrayList[CustomController]
+	val customControllers = new mutable.ListBuffer[Class[_ <: AbstractController]]
+	val customControllersJava = {customControllers.asJava}
 
-	def registerCustomController(controller: CustomController): Unit = {
-		customControllers.add(controller)
+	def registerCustomController[T <: AbstractController](controller: Class[T]): Unit = {
+		customControllers += controller
 	}
 }

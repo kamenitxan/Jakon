@@ -1,5 +1,7 @@
 package cz.kamenitxan.jakon.webui
 
+import java.util.stream.Collectors
+
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import spark.ModelAndView
 
@@ -17,8 +19,7 @@ class Context(var model: Map[String, Any], viewName: String) extends ModelAndVie
 		val context = Map[String, Any](
 			"modelClasses" -> modelClasses,
 			"enableFiles" -> AdminSettings.enableFiles,
-			"enableDeploy" -> AdminSettings.enableDeploy,
-			"customControllers" -> AdminSettings.customControllers
+			"customControllers" -> AdminSettings.customControllers.map(c => c.newInstance()).asJava
 		)
 		context
 	}

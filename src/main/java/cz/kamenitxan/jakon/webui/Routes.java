@@ -2,11 +2,19 @@ package cz.kamenitxan.jakon.webui;
 
 import cz.kamenitxan.jakon.core.configuration.Settings;
 import cz.kamenitxan.jakon.core.model.DeployMode;
-import cz.kamenitxan.jakon.webui.controler.Authentication;
-import cz.kamenitxan.jakon.webui.controler.DeployControler;
-import cz.kamenitxan.jakon.webui.controler.FileManagerControler;
-import cz.kamenitxan.jakon.webui.controler.ObjectControler;
+import cz.kamenitxan.jakon.webui.controler.AbstractController;
+import cz.kamenitxan.jakon.webui.controler.ExecuteFun;
+import cz.kamenitxan.jakon.webui.controler.impl.Authentication;
+import cz.kamenitxan.jakon.webui.controler.impl.FileManagerControler;
+import cz.kamenitxan.jakon.webui.controler.impl.ObjectControler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import spark.Request;
+import spark.Response;
 import spark.TemplateEngine;
+
+import java.lang.reflect.Method;
+import java.util.List;
 
 import static spark.Spark.*;
 
@@ -14,7 +22,7 @@ import static spark.Spark.*;
  * Created by TPa on 03.09.16.
  */
 public class Routes {
-
+	private static Logger logger = LoggerFactory.getLogger(Routes.class);
 	public static void init() {
 		TemplateEngine te = Settings.getAdminEngine();
 
@@ -63,13 +71,33 @@ public class Routes {
 			post("/basePath", FileManagerControler::getManager, te);*/
 			});
 		}
-		if (AdminSettings.enableDeploy()) {
+		/*if (AdminSettings.enableDeploy()) {
 			path("/admin/deploy", () -> {
-				get("/", DeployControler::getOverview, te);
-				get("/start", DeployControler::deploy, te);
+				//get("/", DeployControler::getOverview, te);
+				//get("/start", DeployControler::deploy, te);
 			});
-		}
-		AdminSettings.customControllers().forEach(c -> get(c.path(), c::render, te));
+		}*/
+		AdminSettings.customControllersJava().forEach(c -> {
+			try {
+				AbstractController instance = c.newInstance();
+				get("/admin/" + instance.path(), instance::doRender, te);
 
+				Method[] methods = c.getDeclaredMethods();
+				for (Method m : methods) {
+					ExecuteFun an = m.getAnnotation(ExecuteFun.class);
+					if (an != null) {
+						m.setAccessible(true);
+						switch (an.method()) {
+							case get: get("/admin/" + an.path(), ((req, res) -> (Context) m.invoke(instance, req, res)) , te);
+							case post: post("/admin/" + an.path(), ((req, res) -> (Context) m.invoke(instance, req, req)) , te);
+						}
+					}
+				}
+				logger.info("Custom admin controller registered: " + instance.getClass().getSimpleName());
+			} catch (InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+
+		});
 	}
 }

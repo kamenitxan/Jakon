@@ -15,5 +15,7 @@ class JakonApp extends JakonInit{
 	Director.registerCustomPage(new IndexPage)
 	Director.registerControler(new PageControler)
 
-
+	override def adminControllers(): Unit = {
+		super.adminControllers()
+	}
 }
