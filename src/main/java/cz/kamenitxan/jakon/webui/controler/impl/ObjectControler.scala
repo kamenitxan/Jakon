@@ -62,7 +62,9 @@ object ObjectControler {
 		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(objectName)).head
 		var obj: JakonObject = null
 		if (objectId.nonEmpty) {
-			obj = Option(DBHelper.getSession.load(objectClass, objectId.get)).getOrElse(objectClass.newInstance())
+			val session = DBHelper.getSession
+			obj = Option(session.load(objectClass, objectId.get)).getOrElse(objectClass.newInstance())
+			session.close()
 		} else {
 			obj = objectClass.newInstance()
 		}
@@ -90,7 +92,7 @@ object ObjectControler {
 		val objectId = req.params(":id").toOptInt.get
 		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(objectName)).head
 		val obj = DBHelper.getSession.load(objectClass, objectId)
-		DBHelper.getSession.delete(obj)
+		obj.delete()
 		res.redirect("/admin/object/" + objectName)
 		new Context(Map[String, Any](), "objects/list")
 	}

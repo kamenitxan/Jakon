@@ -54,6 +54,14 @@ abstract class JakonObject(@BeanProperty
 		session.close()
 	}
 
+	def delete(): Unit = {
+		val session = DBHelper.getSession
+		session.beginTransaction()
+		session.delete(this)
+		session.getTransaction.commit()
+		session.close()
+	}
+
 	def toJson = {
 		val writer = new StringWriter
 		val generator = Json.createGenerator(writer)

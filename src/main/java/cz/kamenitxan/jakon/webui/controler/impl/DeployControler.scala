@@ -1,5 +1,6 @@
 package cz.kamenitxan.jakon.webui.controler.impl
 
+import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.configuration.{SettingValue, Settings}
 import cz.kamenitxan.jakon.core.deploy.DeployDirector
 import cz.kamenitxan.jakon.webui.Context
@@ -17,6 +18,13 @@ class DeployControler extends AbstractController {
 	@ExecuteFun(path = "deploy/start", method = HttpMethod.get)
 	def deploy(req: Request, res: Response): Context = {
 		DeployDirector.deploy()
+		res.redirect("/admin/deploy")
+		new Context(Map[String, Any](), template)
+	}
+
+	@ExecuteFun(path = "deploy/generate", method = HttpMethod.get)
+	def generate(req: Request, res: Response): Context = {
+		Director.render()
 		res.redirect("/admin/deploy")
 		new Context(Map[String, Any](), template)
 	}

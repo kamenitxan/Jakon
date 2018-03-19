@@ -51,7 +51,13 @@ object DBHelper {
 
 
 	@throws[HibernateException]
-	def getSession: Session = concreteSessionFactory.openSession
+	def getSession: Session = {
+		try {
+			concreteSessionFactory.getCurrentSession
+		} catch {
+			case _: HibernateException => concreteSessionFactory.openSession
+		}
+	}
 
 	def getDaoClasses = objects
 
