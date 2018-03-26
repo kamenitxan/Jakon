@@ -7,6 +7,7 @@ import cz.kamenitxan.jakon.utils.Utils._
 import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
+import javax.persistence.criteria.{CriteriaQuery, Expression, Root, Selection}
 import spark.{ModelAndView, Request, Response}
 
 import scala.collection.JavaConverters._
@@ -17,18 +18,48 @@ import scala.collection.JavaConverters._
 object ObjectControler {
 	val excludedFields = List("url", "sectionName", "objectSettings", "childClass")
 
+	val pageNumber = 1
+	val pageSize = 2
+
 	def getList(req: Request, res: Response): ModelAndView = {
 		val objectName = req.params(":name")
-		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(objectName)).head
-		if (objectClass != null) {
-			val objects = DBHelper.getSession.createCriteria(objectClass).list()
-			val fields = Utils.getFieldsUpTo(objectClass, classOf[Object]).map(f => f.getName).filter(n => !excludedFields.contains(n)).asJava
+		val objectClass = DBHelper.getDaoClasses.find(c => c.getName.contains(objectName))
+		if (objectClass.isDefined) {
+			val session = DBHelper.getSession
+			try {
+				val criteriaBuilder = session.getCriteriaBuilder
+
+				// pocet objektu
+				val countQuery = criteriaBuilder.createQuery(classOf[java.lang.Long])
+				val root = countQuery.from(classOf[JakonObject])
+				countQuery.select(criteriaBuilder.count(root))
+				val count = session.createQuery(countQuery).getSingleResult
+
+				// seznam objektu
+				/*val cls = classOf[JakonObject]
+				val ocls: java.lang.Class[_ <: JakonObject] = objectClass.get
+
+				val criteriaQuery = criteriaBuilder.createQuery(ocls)
+				val from = criteriaQuery.from(ocls)
+				val select = criteriaQuery.select(from)
+				val typedQuery = session.createQuery(select)
+				typedQuery.setFirstResult((pageNumber - 1) * pageSize)
+				typedQuery.setMaxResults(pageNumber * pageSize )
+				val page = typedQuery.getResultList
+				print(page)*/
+			} finally {
+				session.close()
+			}
+
+			val objects = DBHelper.getSession.createCriteria(objectClass.get).list()
+			val fields = Utils.getFieldsUpTo(objectClass.get, classOf[Object]).map(f => f.getName).filter(n => !excludedFields.contains(n)).asJava
 			new Context(Map[String, Any](
 				"objectName" -> objectName,
 				"objects" -> objects,
 				"fields" -> fields
 			), "objects/list")
 		} else {
+			// TODO: osetri neexistujici objekt
 			new Context(Map[String, Any](), "objects/list")
 		}
 	}
