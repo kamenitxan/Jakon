@@ -11,6 +11,7 @@ import javax.persistence.criteria.{CriteriaQuery, Expression, Root, Selection}
 import spark.{ModelAndView, Request, Response}
 
 import scala.collection.JavaConverters._
+import scala.util.Try
 
 /**
   * Created by TPa on 08.09.16.
@@ -18,11 +19,12 @@ import scala.collection.JavaConverters._
 object ObjectControler {
 	val excludedFields = List("url", "sectionName", "objectSettings", "childClass")
 
-	val pageNumber = 1
-	val pageSize = 2
+	val pageSize = 10
 
 	def getList(req: Request, res: Response): ModelAndView = {
 		val objectName = req.params(":name")
+		val page = req.queryParams("page")
+		val pageNumber = Try(Integer.parseInt(page)).getOrElse(1)
 		val objectClass = DBHelper.getDaoClasses.find(c => c.getName.contains(objectName))
 		if (objectClass.isDefined) {
 			val session = DBHelper.getSession
@@ -36,28 +38,29 @@ object ObjectControler {
 				val count = session.createQuery(countQuery).getSingleResult
 
 				// seznam objektu
-				/*val cls = classOf[JakonObject]
-				val ocls: java.lang.Class[_ <: JakonObject] = objectClass.get
+				val ocls: Class[JakonObject] = objectClass.get.asInstanceOf[Class[JakonObject]]
 
-				val criteriaQuery = criteriaBuilder.createQuery(ocls)
-				val from = criteriaQuery.from(ocls)
-				val select = criteriaQuery.select(from)
+				val criteriaQuery: CriteriaQuery[JakonObject] = criteriaBuilder.createQuery(ocls)
+				val from: Root[JakonObject] = criteriaQuery.from(ocls)
+				val select: CriteriaQuery[JakonObject] = criteriaQuery.select(from)
 				val typedQuery = session.createQuery(select)
+				val first = (pageNumber - 1) * pageSize
 				typedQuery.setFirstResult((pageNumber - 1) * pageSize)
-				typedQuery.setMaxResults(pageNumber * pageSize )
-				val page = typedQuery.getResultList
-				print(page)*/
+				typedQuery.setMaxResults(10)
+				val pageItems = typedQuery.getResultList
+
+				//val objects = DBHelper.getSession.createCriteria(objectClass.get).list()
+				val fields = Utils.getFieldsUpTo(objectClass.get, classOf[Object]).map(f => f.getName).filter(n => !excludedFields.contains(n)).asJava
+				new Context(Map[String, Any](
+					"objectName" -> objectName,
+					"objects" -> pageItems,
+					"pageNumber" -> pageNumber,
+					"objectCount" -> count,
+					"fields" -> fields
+				), "objects/list")
 			} finally {
 				session.close()
 			}
-
-			val objects = DBHelper.getSession.createCriteria(objectClass.get).list()
-			val fields = Utils.getFieldsUpTo(objectClass.get, classOf[Object]).map(f => f.getName).filter(n => !excludedFields.contains(n)).asJava
-			new Context(Map[String, Any](
-				"objectName" -> objectName,
-				"objects" -> objects,
-				"fields" -> fields
-			), "objects/list")
 		} else {
 			// TODO: osetri neexistujici objekt
 			new Context(Map[String, Any](), "objects/list")
