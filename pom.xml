@@ -22,6 +22,13 @@
 		</repository>
 	</repositories>
 
+	<distributionManagement>
+		<snapshotRepository>
+			<id>nexus-snapshots</id>
+			<url>http://artifactory.kamenitxan.eu/nexus/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.scala-lang</groupId>
@@ -76,7 +83,7 @@
 		<dependency>
 			<groupId>org.scalatest</groupId>
             <artifactId>scalatest_2.12</artifactId>
-			<version>3.0.3</version>
+			<version>3.0.5</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -223,6 +230,25 @@
                     </execution>
                 </executions>
             </plugin>
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.5.1</version>
+				<executions>
+					<execution>
+						<id>default-deploy</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>deploy</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<serverId>nexus</serverId>
+					<nexusUrl>http://artifactory.kamenitxan.eu/nexus/</nexusUrl>
+					<skipStaging>true</skipStaging>
+				</configuration>
+			</plugin>
         </plugins>
 	</build>
 

@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 
 import cz.kamenitxan.jakon.webui.entity.JakonField;
 import scala.collection.JavaConverters;
+import scala.collection.JavaConverters.*;
 
 /**
  * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.

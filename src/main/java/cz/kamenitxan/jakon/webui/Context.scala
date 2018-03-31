@@ -12,6 +12,8 @@ import scala.collection.JavaConverters._
 class Context(var model: Map[String, Any], viewName: String) extends ModelAndView(model, viewName) {
 	if (model != null) {
 		model = model ++ getAdminContext
+	} else {
+		model = getAdminContext
 	}
 
 	def getAdminContext: Map[String, Any] = {

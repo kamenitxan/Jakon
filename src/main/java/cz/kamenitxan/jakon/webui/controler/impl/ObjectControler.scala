@@ -33,7 +33,7 @@ object ObjectControler {
 
 				// pocet objektu
 				val countQuery = criteriaBuilder.createQuery(classOf[java.lang.Long])
-				val root = countQuery.from(classOf[JakonObject])
+				val root = countQuery.from(objectClass.get)
 				countQuery.select(criteriaBuilder.count(root))
 				val count = session.createQuery(countQuery).getSingleResult
 
@@ -45,7 +45,7 @@ object ObjectControler {
 				val select: CriteriaQuery[JakonObject] = criteriaQuery.select(from)
 				val typedQuery = session.createQuery(select)
 				val first = (pageNumber - 1) * pageSize
-				typedQuery.setFirstResult((pageNumber - 1) * pageSize)
+				typedQuery.setFirstResult(first)
 				typedQuery.setMaxResults(10)
 				val pageItems = typedQuery.getResultList
 
@@ -55,6 +55,7 @@ object ObjectControler {
 					"objectName" -> objectName,
 					"objects" -> pageItems,
 					"pageNumber" -> pageNumber,
+					"pageCount" -> Math.max(Math.ceil(count / pageSize.toFloat), 1),
 					"objectCount" -> count,
 					"fields" -> fields
 				), "objects/list")

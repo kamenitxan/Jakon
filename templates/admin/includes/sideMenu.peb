@@ -1,3 +1,8 @@
+{# @pebvariable name="enableFiles" type="java.lang.Boolean" #}
+{# @pebvariable name="objectName" type="java.lang.String" #}
+{# @pebvariable name="modelClasses" type="java.util.List" #}
+
+
 <!-- Navigation -->
 <nav class="navbar navbar-default navbar-static-top" style="margin-bottom: 0">
     <div class="navbar-header">
@@ -28,26 +33,26 @@
                 <li>
                     <a href="/admin/index"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                 </li>
-                <li>
+                <li{%if modelClasses contains objectName %} class="active"{% endif %}>
                     <a href="#"><i class="fa fa-edit fa-fw"></i> Objects<span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
-                        {% for model in modelClasses %}
-                            <li>
-                                <a href="/admin/object/{{ model }}">{{ model }}</a>
-                            </li>
-                        {% endfor %}
+                    {% for model in modelClasses %}
+                        <li>
+                            <a href="/admin/object/{{ model }}"{% if objectName == model %} class="active"{% endif %}>{{ model }}</a>
+                        </li>
+                    {% endfor %}
                     </ul>
                     <!-- /.nav-second-level -->
                 </li>
                 {% for c in customControllers %}
-                <li>
-                    <a href="/admin/{{ c.path }}"><i class="fa {{ c.icon }} fa-fw"></i> {{ c.name }}</a>
-                </li>
+                    <li>
+                        <a href="/admin/{{ c.path }}"><i class="fa {{ c.icon }} fa-fw"></i> {{ c.name }}</a>
+                    </li>
                 {% endfor %}
                 {% if enableFiles %}
-                <li>
-                    <a href="/admin/files/"><i class="fa fa-files-o fa-fw"></i> Files</a>
-                </li>
+                    <li>
+                        <a href="/admin/files/"><i class="fa fa-files-o fa-fw"></i> Files</a>
+                    </li>
                 {% endif %}
                 {#<li>
                     <a href="forms.html"><i class="fa fa-edit fa-fw"></i> Forms</a>
