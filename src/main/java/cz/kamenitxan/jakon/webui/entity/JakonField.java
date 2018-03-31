@@ -11,7 +11,12 @@ import java.lang.annotation.Target;
 public @interface JakonField {
 	boolean required() default true;
 	boolean disabled() default false;
-	boolean shown() default true;
+
+	boolean shownInEdit() default true;
+
+	boolean shownInList() default true;
+
+	int listOrder() default 0;
 	String htmlClass() default "";
 	int htmlMaxLength() default 255;
 	String inputTemplate() default "";

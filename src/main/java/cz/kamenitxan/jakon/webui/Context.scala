@@ -1,7 +1,5 @@
 package cz.kamenitxan.jakon.webui
 
-import java.util.stream.Collectors
-
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import spark.ModelAndView
 
@@ -20,6 +18,7 @@ class Context(var model: Map[String, Any], viewName: String) extends ModelAndVie
 		val modelClasses = DBHelper.getDaoClasses.map(_.getSimpleName).asJavaCollection
 		val context = Map[String, Any](
 			"modelClasses" -> modelClasses,
+			"objectSettings" -> DBHelper.getDaoClasses.map(o => (o.getSimpleName, o.newInstance().getObjectSettings)).toMap.asJava,
 			"enableFiles" -> AdminSettings.enableFiles,
 			"customControllers" -> AdminSettings.customControllers.map(c => c.newInstance()).asJava
 		)
@@ -29,7 +28,14 @@ class Context(var model: Map[String, Any], viewName: String) extends ModelAndVie
 	override def getModel: AnyRef = {
 		val map = new java.util.HashMap[String, Any]
 		if (model != null) {
-			model.foreach { p => map.put(p._1, p._2) }
+			model.foreach { p => {
+				map.put(p._1, p._2 match {
+					case list: List[Any] => list.asJava
+					case map: Map[Any, Any] => map.asJava
+					case _ => p._2
+				})
+			}
+			}
 		}
 		map
 	}

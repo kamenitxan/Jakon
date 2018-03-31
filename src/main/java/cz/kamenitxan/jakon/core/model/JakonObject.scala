@@ -22,7 +22,7 @@ abstract class JakonObject(@BeanProperty
 	@BeanProperty
 	@Id
 	@GeneratedValue
-	@JakonField(disabled = true, required = false)
+	@JakonField(disabled = true, required = false, listOrder = -99)
 	val id: Int = 0
 	@BeanProperty
 	@Column
@@ -32,7 +32,8 @@ abstract class JakonObject(@BeanProperty
 	@JakonField var sectionName: String = ""
 	@BeanProperty
 	@Column
-	@JakonField var published: Boolean = true
+	@JakonField(listOrder = -95)
+	var published: Boolean = true
 
 	val objectSettings: ObjectSettings
 

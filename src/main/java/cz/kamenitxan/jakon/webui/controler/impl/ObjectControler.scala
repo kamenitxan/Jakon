@@ -1,5 +1,7 @@
 package cz.kamenitxan.jakon.webui.controler.impl
 
+import javax.persistence.criteria.{CriteriaQuery, Root}
+
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.utils.Utils
@@ -7,7 +9,6 @@ import cz.kamenitxan.jakon.utils.Utils._
 import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
-import javax.persistence.criteria.{CriteriaQuery, Expression, Root, Selection}
 import spark.{ModelAndView, Request, Response}
 
 import scala.collection.JavaConverters._
@@ -50,14 +51,14 @@ object ObjectControler {
 				val pageItems = typedQuery.getResultList
 
 				//val objects = DBHelper.getSession.createCriteria(objectClass.get).list()
-				val fields = Utils.getFieldsUpTo(objectClass.get, classOf[Object]).map(f => f.getName).filter(n => !excludedFields.contains(n)).asJava
+				val fields = Utils.getFieldsUpTo(objectClass.get, classOf[Object]).filter(n => !excludedFields.contains(n.getName))
 				new Context(Map[String, Any](
 					"objectName" -> objectName,
 					"objects" -> pageItems,
 					"pageNumber" -> pageNumber,
 					"pageCount" -> Math.max(Math.ceil(count / pageSize.toFloat), 1),
 					"objectCount" -> count,
-					"fields" -> fields
+					"fields" -> FieldConformer.getEmptyFieldInfos(fields)
 				), "objects/list")
 			} finally {
 				session.close()
@@ -69,7 +70,7 @@ object ObjectControler {
 	}
 
 
-	def getItem(req: Request, res: Response) = {
+	def getItem(req: Request, res: Response): Context = {
 		val objectName = req.params(":name")
 		val objectId = req.params(":id").toOptInt
 		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(objectName)).head
@@ -90,7 +91,7 @@ object ObjectControler {
 		), "objects/single")
 	}
 
-	def updateItem(req: Request, res: Response) = {
+	def updateItem(req: Request, res: Response): Context = {
 		val params = req.queryParams().asScala
 		val objectName = req.params(":name")
 		val objectId = req.params(":id").toOptInt
@@ -122,7 +123,7 @@ object ObjectControler {
 		new Context(Map[String, Any](), "objects/list")
 	}
 
-	def deleteItem(req: Request, res: Response) = {
+	def deleteItem(req: Request, res: Response): Context = {
 		val objectName = req.params(":name")
 		val objectId = req.params(":id").toOptInt.get
 		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(objectName)).head

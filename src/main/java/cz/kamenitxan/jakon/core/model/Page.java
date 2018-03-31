@@ -46,6 +46,7 @@ public class Page extends JakonObject {
 	}
 
 	public String getContent() {
+		if (content == null) return "";
 		// TODO: parsovani funkci
 		// (\{)((?:[a-z][a-z]+)).*?(\})
 
@@ -104,6 +105,6 @@ public class Page extends JakonObject {
 
 	@Override
 	public ObjectSettings objectSettings() {
-		return new ObjectSettings(JavaConverters.asScalaBuffer(new ArrayList<String>()).toList(), JavaConverters.asScalaBuffer(new ArrayList<String>()).toList());
+		return new ObjectSettings("fa-file-text-o");
 	}
 }

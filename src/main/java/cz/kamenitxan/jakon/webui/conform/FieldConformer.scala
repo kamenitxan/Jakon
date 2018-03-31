@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 
 import cz.kamenitxan.jakon.core.model.JakonObject
-import cz.kamenitxan.jakon.webui.entity.{FieldInfo, JakonField}
+import cz.kamenitxan.jakon.webui.entity.{FieldInfo, HtmlType, JakonField}
 
 object FieldConformer {
 	val S = classOf[String]
@@ -52,38 +52,48 @@ object FieldConformer {
 			val an = f.getAnnotation(classOf[JakonField])
 			if (an != null) {
 				f.setAccessible(true)
-				val templateName = if (an.inputTemplate().isEmpty) {f.getType.getSimpleName} else {an.inputTemplate()}
 				f.getType match {
 					case B =>  {
 						val fv = f.get(obj)
-						infos = new FieldInfo(an.required(), an.disabled(), "checkbox", an.htmlClass(), an.htmlMaxLength(), if (fv != null) fv.toString else null, f.getName, templateName) :: infos
+						infos = new FieldInfo(an, HtmlType.CHECKBOX, f, if (fv != null) fv.toString else null) :: infos
 					}
 					case DATE => {
 						val sdf =  new SimpleDateFormat(DATE_FORMAT)
 						if (f.get(obj) != null) {
 							val value = sdf.format(f.get(obj))
-							infos = new FieldInfo(an.required(), an.disabled(), "date", an.htmlClass(), an.htmlMaxLength(), value, f.getName, templateName) :: infos
+							infos = new FieldInfo(an, HtmlType.DATE, f, value) :: infos
 						} else {
-							infos = new FieldInfo(an.required(), an.disabled(), "date", an.htmlClass(), an.htmlMaxLength(), value = "", f.getName, templateName) :: infos
+							infos = new FieldInfo(an, HtmlType.DATE, f, value = "") :: infos
 						}
 					}
 					case DATETIME => {
 						val sdf = DateTimeFormatter.ofPattern(DATETIME_FORMAT)
 						if (f.get(obj) != null) {
 							val value = f.get(obj).asInstanceOf[LocalDateTime].format(sdf)
-							infos = new FieldInfo(an.required(), an.disabled(), "datetime-local", an.htmlClass(), an.htmlMaxLength(), value, f.getName, templateName) :: infos
+							infos = new FieldInfo(an, HtmlType.DATETIME, f, value) :: infos
 						} else {
-							infos = new FieldInfo(an.required(), an.disabled(), "datetime-local", an.htmlClass(), an.htmlMaxLength(), value = "", f.getName, templateName) :: infos
+							infos = new FieldInfo(an, HtmlType.DATETIME, f, value = "") :: infos
 						}
 					}
 					case _ => {
 						val fv = f.get(obj)
-						infos = new FieldInfo(an.required(), an.disabled(), "text", an.htmlClass(), an.htmlMaxLength(), if (fv != null) fv.toString else null, f.getName, templateName) :: infos
+						infos = new FieldInfo(an, HtmlType.TEXT, f, if (fv != null) fv.toString else null) :: infos
 					}
 				}
 			}
 		})
 		infos
+	}
+
+	def getEmptyFieldInfos(fields: List[Field]): List[FieldInfo] = {
+		var infos = List[FieldInfo]()
+		fields.foreach(f => {
+			val an = f.getAnnotation(classOf[JakonField])
+			if (an != null) {
+				infos = new FieldInfo(an, f) :: infos
+			}
+		})
+		infos.sortBy(fi => fi.an.listOrder)
 	}
 
 }

@@ -12,5 +12,5 @@ class StaticPage(templateName: String, url: String) extends CustomPage {
 		engine.render(templateName, url, null)
 	}
 
-	override val objectSettings: ObjectSettings = new ObjectSettings(null, null)
+	override val objectSettings: ObjectSettings = new ObjectSettings()
 }

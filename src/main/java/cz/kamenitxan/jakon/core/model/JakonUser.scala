@@ -27,7 +27,7 @@ class JakonUser(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser
 	def this() = this(u=())
 
 	@Transient
-	override val objectSettings: ObjectSettings = new ObjectSettings(null, null)
+	override val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-user")
 
 	override def create(): Unit = {
 		Authentication.createUser(this)
