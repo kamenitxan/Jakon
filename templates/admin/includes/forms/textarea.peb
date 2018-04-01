@@ -3,5 +3,6 @@
 </div>
 
 <script>
-    require("src/frontend/admin/js/forms/j_textarea.js");
+    const JTextarea = require("forms/j_textarea.js");
+    new JTextarea().init({{ fieldHash }})
 </script>

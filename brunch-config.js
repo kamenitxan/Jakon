@@ -36,3 +36,14 @@ exports.npm = {
         bootstrap: ['dist/css/bootstrap.css']
     }
 };
+
+exports.modules = {
+    nameCleaner(path) {
+        return path
+        // Strip app/ and app/externals/ prefixes
+            .replace(/^app\/(?:externals\/)?/, '')
+            // Allow -x.y[.z…] version suffixes in mantisses
+            .replace("src/frontend/admin/js/", '')
+    }
+};
+
