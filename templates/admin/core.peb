@@ -7,6 +7,11 @@
 
     <title>JakonUI</title>
 
+    <script src="/jakon/js/vendor.js"></script>
+    <script src="/jakon/js/jakon.js"></script>
+    <link href="/jakon/css/vendor.css" rel="stylesheet">
+    <link href="/jakon/css/jakon.css" rel="stylesheet">
+
     <!-- Bootstrap Core CSS -->
     <link href="/jakon/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <!-- MetisMenu CSS -->
@@ -16,9 +21,6 @@
     <link href="/jakon/css/jquery-ui.min.css" rel="stylesheet">
     <link href="/jakon/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href="/jakon/css/custom.css" rel="stylesheet">
-    <link href="/jakon/css/woofmark.css" rel="stylesheet">
-    <script src="/jakon/js/megamark.min.js"></script>
-    <script src="/jakon/js/woofmark.js"></script>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -27,9 +29,6 @@
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <!-- jQuery -->
-    <script src="/jakon/vendor/jquery/jquery.min.js"></script>
-    <script src="/jakon/js/jquery-ui.min.js"></script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
     <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
