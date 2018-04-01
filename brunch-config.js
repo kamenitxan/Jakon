@@ -1,6 +1,6 @@
 // See http://brunch.io for documentation.
 exports.paths = {
-    watched: ['src'],
+    watched: ['src/frontend'],
     public: 'static/jakon'
 };
 

@@ -3,15 +3,5 @@
 </div>
 
 <script>
-    //var megamark = require('megamark');
-    woofmark(document.querySelector("#editor-container{{ fieldHash }}")/* ,
-        {
-            parseMarkdown: megamark(),
-            defaultMode: 'wysiwyg',
-            html: false
-        }*/);
-
-
-
-
+    require("src/frontend/admin/js/forms/j_textarea.js");
 </script>

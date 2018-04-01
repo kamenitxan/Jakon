@@ -30,8 +30,9 @@ public abstract class Settings {
 	static {
 		try {
 			init(null);
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			logger.error("Config loading failed. Shuting down!", e);
+			System.exit(-1);
 		}
 	}
 
@@ -53,6 +54,9 @@ public abstract class Settings {
 				logger.error("Cant load setting value", e);
 			}
 
+		}
+		if (getStaticDir().equals(getOutputDir())) {
+			throw new IllegalArgumentException("Static and output directory must not be same");
 		}
 
 		FileLoader loader = new JakonFileLoader();
