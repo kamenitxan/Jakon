@@ -49,10 +49,11 @@ abstract class JakonObject(@BeanProperty
 
 	def update(): Unit = {
 		val session = DBHelper.getSession
-		session.beginTransaction()
+		if (!session.getTransaction.isActive) {
+			session.beginTransaction()
+		}
 		session.update(this)
 		session.getTransaction.commit()
-		session.close()
 	}
 
 	def delete(): Unit = {
@@ -63,7 +64,7 @@ abstract class JakonObject(@BeanProperty
 		session.close()
 	}
 
-	def toJson = {
+	def toJson: String = {
 		val writer = new StringWriter
 		val generator = Json.createGenerator(writer)
 		generator.writeStartObject.write(id).write(url).writeEnd

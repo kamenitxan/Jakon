@@ -82,7 +82,7 @@ object FieldConformer {
 				}
 			}
 		})
-		infos
+		infos.sortBy(fi => fi.an.listOrder)
 	}
 
 	def getEmptyFieldInfos(fields: List[Field]): List[FieldInfo] = {

@@ -20,22 +20,22 @@ import java.util.regex.Pattern;
 public class Post extends JakonObject {
 
 	@Column
-	@JakonField
+	@JakonField(listOrder = 4)
 	private Date date;
 	@Column
-	@JakonField(required = false)
+	@JakonField(required = false, listOrder = 2)
 	private String perex;
 	@ManyToOne
-	@JakonField(required = false, inputTemplate = "String")
+	@JakonField(required = false, inputTemplate = "String", listOrder = 5)
 	private Category category;
 	@Column
-	@JakonField
+	@JakonField(listOrder = 1)
 	private String title;
 	@Column
-	@JakonField(inputTemplate = "textarea")
+	@JakonField(inputTemplate = "textarea", listOrder = 3)
 	private String content;
 	@Column
-	@JakonField
+	@JakonField(listOrder = 6)
 	private boolean showComments = false;
 
 

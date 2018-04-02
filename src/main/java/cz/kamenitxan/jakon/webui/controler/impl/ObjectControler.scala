@@ -30,6 +30,7 @@ object ObjectControler {
 		if (objectClass.isDefined) {
 			val session = DBHelper.getSession
 			try {
+				session.beginTransaction()
 				val criteriaBuilder = session.getCriteriaBuilder
 
 				// pocet objektu
@@ -61,6 +62,7 @@ object ObjectControler {
 					"fields" -> FieldConformer.getEmptyFieldInfos(fields)
 				), "objects/list")
 			} finally {
+				session.getTransaction.commit()
 				session.close()
 			}
 		} else {
@@ -76,7 +78,13 @@ object ObjectControler {
 		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(objectName)).head
 		var obj: JakonObject = null
 		if (objectId.nonEmpty) {
-			obj = Option(DBHelper.getSession.get(objectClass, objectId.get)).getOrElse(objectClass.newInstance())
+			val session = DBHelper.getSession
+			session.beginTransaction()
+			try {
+				obj = Option(session.get(objectClass, objectId.get)).getOrElse(objectClass.newInstance())
+			} finally {
+				session.getTransaction.commit()
+			}
 		} else {
 			obj = objectClass.newInstance()
 		}
@@ -99,8 +107,9 @@ object ObjectControler {
 		var obj: JakonObject = null
 		if (objectId.nonEmpty) {
 			val session = DBHelper.getSession
-			obj = Option(session.load(objectClass, objectId.get)).getOrElse(objectClass.newInstance())
-			session.close()
+			session.beginTransaction()
+			obj = Option(session.find(objectClass, objectId.get)).getOrElse(objectClass.newInstance())
+			session.getTransaction.commit()
 		} else {
 			obj = objectClass.newInstance()
 		}
@@ -127,7 +136,10 @@ object ObjectControler {
 		val objectName = req.params(":name")
 		val objectId = req.params(":id").toOptInt.get
 		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(objectName)).head
-		val obj = DBHelper.getSession.load(objectClass, objectId)
+		val session = DBHelper.getSession
+		session.beginTransaction()
+		val obj = session.load(objectClass, objectId)
+		session.getTransaction.commit()
 		obj.delete()
 		res.redirect("/admin/object/" + objectName)
 		new Context(Map[String, Any](), "objects/list")

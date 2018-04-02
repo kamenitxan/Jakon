@@ -19,7 +19,10 @@ class PageControler extends IControler {
 	def generate() {
 		val e: TemplateEngine = TemplateUtils.getEngine
 		try {
-			val pages = DBHelper.getSession.createCriteria(classOf[Page]).list().asInstanceOf[java.util.List[Page]]
+			val session = DBHelper.getSession
+			session.beginTransaction()
+			val pages = session.createCriteria(classOf[Page]).list().asInstanceOf[java.util.List[Page]]
+			session.getTransaction.commit()
 			pages.foreach(p => {
 				val context = new util.HashMap[String, AnyRef]
 				context.put("page", p)

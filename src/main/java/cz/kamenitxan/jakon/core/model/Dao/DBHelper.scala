@@ -7,12 +7,14 @@ import cz.kamenitxan.jakon.core.model._
 import org.hibernate.{HibernateException, Session, SessionFactory}
 import org.hibernate.cfg.Configuration
 
+import scala.collection.mutable
+
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 20.12.15.
   */
 object DBHelper {
 	private var concreteSessionFactory: SessionFactory = _
-	val objects = scala.collection.mutable.Set[Class[_ <: JakonObject]]()
+	val objects: mutable.Set[Class[_ <: JakonObject]] = scala.collection.mutable.Set[Class[_ <: JakonObject]]()
 
 
 	val prop = new Properties()
@@ -23,8 +25,11 @@ object DBHelper {
 	prop.setProperty("hibernate.hbm2ddl.auto", "update")
 	prop.setProperty("hibernate.c3p0.min_size", "1")
 	prop.setProperty("hibernate.c3p0.max_size", "1")
-	prop.setProperty("hibernate.show_sql", "false")
+	prop.setProperty("hibernate.show_sql", "true")
   	prop.setProperty("hibernate.format_sql", "true")
+	prop.setProperty("hibernate.enable_lazy_load_no_trans", "true")
+	prop.setProperty("hibernate.current_session_context_class", "thread")
+	//prop.setProperty("hibernate.connection.autocommit", "true")
 
 
 
@@ -35,31 +40,38 @@ object DBHelper {
 		val conf = new Configuration().addProperties(prop)
 		objects.foreach(o => conf.addAnnotatedClass(o))
 		concreteSessionFactory = conf.buildSessionFactory()
+
 	}
 
 	val postDao = new AbstractHibernateDao[Post](classOf[Post])
-	def getPostDao = postDao
+
+	def getPostDao: AbstractHibernateDao[Post] = postDao
 
 	val pageDao = new AbstractHibernateDao[Page](classOf[Page])
-	def getPageDao = pageDao
+
+	def getPageDao: AbstractHibernateDao[Page] = pageDao
 
 	val categoryDao = new AbstractHibernateDao[Category](classOf[Category])
-	def getCategoryDao = categoryDao
+
+	def getCategoryDao: AbstractHibernateDao[Category] = categoryDao
 
 	val userDao = new AbstractHibernateDao[JakonUser](classOf[JakonUser])
-	def getUserDao = userDao
+
+	def getUserDao: AbstractHibernateDao[JakonUser] = userDao
 
 
 	@throws[HibernateException]
 	def getSession: Session = {
 		try {
-			concreteSessionFactory.getCurrentSession
+			val session = concreteSessionFactory.getCurrentSession
+			session
 		} catch {
-			case _: HibernateException => concreteSessionFactory.openSession
+			case e: HibernateException => e.printStackTrace()
+				null //concreteSessionFactory.openSession
 		}
 	}
 
-	def getDaoClasses = objects
+	def getDaoClasses: mutable.Set[Class[_ <: JakonObject]] = objects
 
 	/**
 	  * @param id      searched JakonObject id

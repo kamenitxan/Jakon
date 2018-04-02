@@ -16,8 +16,13 @@ public class AbstractHibernateDao< T extends Serializable> {
 	public T findOne( long id ){
 		return (T) getCurrentSession().get( clazz, id );
 	}
-	public List< T > findAll(){
-		return getCurrentSession().createQuery( "from " + clazz.getName() ).list();
+
+	public List<T> findAll() {
+		Session session = getCurrentSession();
+		session.beginTransaction();
+		List<T> all = session.createQuery("from " + clazz.getName()).list();
+		session.getTransaction().commit();
+		return all;
 	}
 
 	public void create( T entity ){
