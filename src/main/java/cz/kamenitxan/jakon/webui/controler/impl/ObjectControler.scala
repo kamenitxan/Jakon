@@ -115,6 +115,7 @@ object ObjectControler {
 		}
 
 		for (p <- params.filter(p => !p.equals("id"))) {
+			//TODO optimalizovat
 			val fieldRef = Utils.getFieldsUpTo(objectClass, classOf[Object]).find(f => f.getName.equals(p)).get
 			fieldRef.setAccessible(true)
 			val ftype = fieldRef.getType
