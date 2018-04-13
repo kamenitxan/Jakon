@@ -7,7 +7,7 @@ class FieldInfo(val required: Boolean,
                 val htmlType: String,
                 val htmlClass: String,
                 val htmlMaxLength: Int,
-                val value: String,
+                val value: Any,
                 val name: String,
                 val objectName: String,
                 val an: JakonField) {
@@ -19,6 +19,9 @@ class FieldInfo(val required: Boolean,
 			} else {
 				an.inputTemplate()
 			}, an)
+	}
+	def this(an: JakonField, htmlType: HtmlType, f: Field, value: Any, template: String) = {
+		this(an.required(), an.disabled(), htmlType.typeName, an.htmlClass(), an.htmlMaxLength(), value, f.getName, template, an)
 	}
 
 	def this(an: JakonField, field: Field) = {

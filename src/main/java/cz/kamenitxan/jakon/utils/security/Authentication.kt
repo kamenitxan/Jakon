@@ -9,8 +9,10 @@ object Authentication {
 
 	fun checkLogin(email: String, password: String): JakonUser?  {
 		val ses = DBHelper.getSession()
+		ses.beginTransaction()
 		val criteria = ses.createCriteria(JakonUser::class.java)
 		val user: JakonUser? = criteria.add(Restrictions.eq("email", email) ).uniqueResult() as? JakonUser
+		ses.transaction.commit()
 		if (user == null) {
 			return null
 		} else if (checkPassword(password, user.password) && user.enabled){

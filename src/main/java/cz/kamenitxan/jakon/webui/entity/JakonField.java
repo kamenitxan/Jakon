@@ -12,14 +12,10 @@ public @interface JakonField {
 	boolean required() default true;
 	boolean disabled() default false;
 
-	/**
-	 * shown in admin edit view
-	 */
+	/** shown in admin edit view */
 	boolean shownInEdit() default true;
-
 	/** shown in admin list view */
 	boolean shownInList() default true;
-
 	/** order of column in list and edit view */
 	int listOrder() default 0;
 	String htmlClass() default "";

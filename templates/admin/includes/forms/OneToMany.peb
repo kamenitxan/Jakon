@@ -1,0 +1,6 @@
+<select class="form-control" name="{{ field.name }}" id="{{ field.name }}" {% if field.disabled %}disabled{% endif %}>
+{% for o in field.value %}
+    <option value="{{ o.id }}">{{ o }}</option>
+{% endfor %} %}
+
+</select> 

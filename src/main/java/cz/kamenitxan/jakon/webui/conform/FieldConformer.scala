@@ -8,6 +8,7 @@ import java.util.Date
 
 import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.webui.entity.{FieldInfo, HtmlType, JakonField}
+import javax.persistence.{ManyToMany, ManyToOne, OneToMany}
 
 object FieldConformer {
 	val S = classOf[String]
@@ -52,35 +53,44 @@ object FieldConformer {
 			val an = f.getAnnotation(classOf[JakonField])
 			if (an != null) {
 				f.setAccessible(true)
-				f.getType match {
-					case B =>  {
-						val fv = f.get(obj)
-						infos = new FieldInfo(an, HtmlType.CHECKBOX, f, if (fv != null) fv.toString else null) :: infos
-					}
-					case DATE => {
-						val sdf =  new SimpleDateFormat(DATE_FORMAT)
-						if (f.get(obj) != null) {
-							val value = sdf.format(f.get(obj))
-							infos = new FieldInfo(an, HtmlType.DATE, f, value) :: infos
-						} else {
-							infos = new FieldInfo(an, HtmlType.DATE, f, value = "") :: infos
+				if (f.getAnnotation(classOf[ManyToOne]) != null) {
+					val fv = f.get(obj)
+					infos = new FieldInfo(an, HtmlType.CHECKBOX, f, fv, "ManyToOne") :: infos
+				} else if (f.getAnnotation(classOf[OneToMany]) != null) {
+					val fv = f.get(obj)
+					infos = new FieldInfo(an, HtmlType.CHECKBOX, f, fv, "OneToMany") :: infos
+				} else {
+					f.getType match {
+						case B =>  {
+							val fv = f.get(obj)
+							infos = new FieldInfo(an, HtmlType.CHECKBOX, f, if (fv != null) fv.toString else null) :: infos
 						}
-					}
-					case DATETIME => {
-						val sdf = DateTimeFormatter.ofPattern(DATETIME_FORMAT)
-						if (f.get(obj) != null) {
-							val value = f.get(obj).asInstanceOf[LocalDateTime].format(sdf)
-							infos = new FieldInfo(an, HtmlType.DATETIME, f, value) :: infos
-						} else {
-							infos = new FieldInfo(an, HtmlType.DATETIME, f, value = "") :: infos
+						case DATE => {
+							val sdf =  new SimpleDateFormat(DATE_FORMAT)
+							if (f.get(obj) != null) {
+								val value = sdf.format(f.get(obj))
+								infos = new FieldInfo(an, HtmlType.DATE, f, value) :: infos
+							} else {
+								infos = new FieldInfo(an, HtmlType.DATE, f, value = "") :: infos
+							}
 						}
-					}
-					case _ => {
-						val fv = f.get(obj)
-						infos = new FieldInfo(an, HtmlType.TEXT, f, if (fv != null) fv.toString else null) :: infos
+						case DATETIME => {
+							val sdf = DateTimeFormatter.ofPattern(DATETIME_FORMAT)
+							if (f.get(obj) != null) {
+								val value = f.get(obj).asInstanceOf[LocalDateTime].format(sdf)
+								infos = new FieldInfo(an, HtmlType.DATETIME, f, value) :: infos
+							} else {
+								infos = new FieldInfo(an, HtmlType.DATETIME, f, value = "") :: infos
+							}
+						}
+						case _ => {
+							val fv = f.get(obj)
+							infos = new FieldInfo(an, HtmlType.TEXT, f, if (fv != null) fv.toString else null) :: infos
+						}
 					}
 				}
-			}
+				}
+
 		})
 		infos.sortBy(fi => fi.an.listOrder)
 	}
