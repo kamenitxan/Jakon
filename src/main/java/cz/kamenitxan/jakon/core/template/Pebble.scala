@@ -8,6 +8,8 @@ import com.mitchellbosecke.pebble.error.PebbleException
 import com.mitchellbosecke.pebble.loader.FileLoader
 import com.mitchellbosecke.pebble.template.PebbleTemplate
 import cz.kamenitxan.jakon.core.configuration.Settings
+import cz.kamenitxan.jakon.core.model.DeployMode
+import cz.kamenitxan.jakon.devtools.DevRender
 import cz.kamenitxan.jakon.webui.functions.PebbleExtension
 
 /**
@@ -39,5 +41,8 @@ class Pebble extends TemplateEngine {
 		}
 		val output = writer.toString
 		TemplateUtils.saveRenderedPage(output, path)
+		if (Settings.getDeployMode == DeployMode.DEVEL) {
+			DevRender.registerPath(path)
+		}
 	}
 }

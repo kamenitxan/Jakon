@@ -20,8 +20,8 @@ import org.slf4j.LoggerFactory
   * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
   */
 object Director {
-	private var customPages = List[CustomPage]()
-	private var controlers = List[IControler]()
+	var customPages: List[IControler] = List[IControler]()
+	var controllers: List[IControler] = List[IControler]()
 	final private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
 	def init() {
@@ -53,7 +53,7 @@ object Director {
 
 	def render() {
 		TemplateUtils.clean(Settings.getOutputDir)
-		controlers.foreach(i => {
+		controllers.foreach(i => {
 			val startTime = System.currentTimeMillis()
 			i.generate()
 			val stopTime = System.currentTimeMillis()
@@ -62,7 +62,7 @@ object Director {
 		})
 		customPages.foreach(i => {
 			val startTime = System.currentTimeMillis()
-			i.render()
+			i.generate()
 			val stopTime = System.currentTimeMillis()
 			val elapsedTime = stopTime - startTime
 			logger.info(i.getClass.getSimpleName + " generated in " + elapsedTime + " ms")
@@ -82,6 +82,6 @@ object Director {
 	}
 
 	def registerControler(controler: IControler) {
-		controlers = controlers.::(controler)
+		controllers = controllers.::(controler)
 	}
 }

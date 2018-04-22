@@ -3,13 +3,15 @@ package cz.kamenitxan.jakon
 import java.io.IOException
 
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
-import cz.kamenitxan.jakon.core.model.{Category, Page, Post}
+import cz.kamenitxan.jakon.core.model.{Category, DeployMode, Page, Post}
 import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.configuration.Settings
+import cz.kamenitxan.jakon.devtools.DevRender
 import cz.kamenitxan.jakon.webui.AdminSettings
 import cz.kamenitxan.jakon.webui.controler.impl.DeployControler
 import org.slf4j.LoggerFactory
-import spark.Spark.{port, staticFiles}
+import spark.{Filter, Request, Response}
+import spark.Spark.{before, port, staticFiles}
 
 class JakonInit {
 	private val logger = LoggerFactory.getLogger(this.getClass)
@@ -41,6 +43,12 @@ class JakonInit {
 		adminControllers()
 		Director.start()
 
+		if (Settings.getDeployMode == DeployMode.DEVEL) {
+			before((request: Request, _: Response) => {
+					DevRender.rerender(request.pathInfo())
+				}
+			)
+		}
 		routesSetup()
 
 	}
