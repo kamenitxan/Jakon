@@ -22,7 +22,7 @@ abstract class JakonObject(@BeanProperty
 	@BeanProperty
 	@Id
 	@GeneratedValue
-	@JakonField(disabled = true, required = false, listOrder = -99)
+	@JakonField(disabled = true, required = false, listOrder = -99, searched = true)
 	val id: Int = 0
 	@BeanProperty
 	@Column

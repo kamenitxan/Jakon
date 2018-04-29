@@ -3,7 +3,6 @@ package cz.kamenitxan.jakon.devtools
 import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.controler.IControler
 import cz.kamenitxan.jakon.core.customPages.{CustomPage, StaticPage}
-import jdk.internal.reflect.Reflection
 
 import scala.collection.mutable
 
@@ -12,7 +11,7 @@ object DevRender {
 	private val registeredPaths = mutable.HashMap[String, IControler]()
 	
 	def registerPath(path: String): Unit = {
-		Reflection.getCallerClass(1)
+		//Reflection.getCallerClass(1)
 		val caller = {
 			val stc = Thread.currentThread.getStackTrace(){3}.getClassName
 			if (stc.equals("cz.kamenitxan.jakon.core.customPages.StaticPage")) {

@@ -1,7 +1,9 @@
 package cz.kamenitxan.jakon.webui;
 
+import com.google.gson.Gson;
 import cz.kamenitxan.jakon.core.configuration.Settings;
 import cz.kamenitxan.jakon.core.model.DeployMode;
+import cz.kamenitxan.jakon.webui.api.Api;
 import cz.kamenitxan.jakon.webui.controler.AbstractController;
 import cz.kamenitxan.jakon.webui.controler.ExecuteFun;
 import cz.kamenitxan.jakon.webui.controler.impl.Authentication;
@@ -25,6 +27,7 @@ public class Routes {
 	private static Logger logger = LoggerFactory.getLogger(Routes.class);
 	public static void init() {
 		TemplateEngine te = Settings.getAdminEngine();
+		Gson gson = new Gson();
 
 		before("/admin/*", (request, response) -> {
 			if (Settings.getDeployMode() == DeployMode.DEVEL || request.pathInfo().equals("/admin/register")) return;
@@ -77,6 +80,11 @@ public class Routes {
 				//get("/start", DeployControler::deploy, te);
 			});
 		}*/
+
+		path("/admin/api", () -> {
+			post("/search", Api::search, gson::toJson);
+		});
+
 		AdminSettings.customControllersJava().forEach(c -> {
 			try {
 				AbstractController instance = c.newInstance();

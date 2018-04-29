@@ -15,7 +15,7 @@ import javax.persistence.Id;
 @Entity
 public class Category extends JakonObject {
 	@Column
-	@JakonField
+	@JakonField(searched = true)
 	private String name;
 	@Column
 	@JakonField

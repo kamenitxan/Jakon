@@ -1,6 +1,11 @@
-<select class="form-control" name="{{ field.name }}" id="{{ field.name }}" {% if field.disabled %}disabled{% endif %}>
+<input id="js_foreign_{{ fieldHash }}" class="hidden js_foreign">
+<select class="form-control" name="{{ field.name }}" id="{{ fieldHash }}" {% if field.disabled %}disabled{% endif %}>
 {% for o in field.value %}
     <option value="{{ o.id }}">{{ o }}</option>
 {% endfor %} %}
 
-</select> 
+</select>
+<script>
+    const ForeignObjectSelector = require("forms/j_foreign_object.js");
+    new ForeignObjectSelector("{{ objectName }}", "{{ fieldHash }}");
+</script>

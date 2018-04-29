@@ -21,4 +21,9 @@ public @interface JakonField {
 	String htmlClass() default "";
 	int htmlMaxLength() default 255;
 	String inputTemplate() default "";
+
+	/**
+	 * property is searchable in admin, including in select search box
+	 */
+	boolean searched() default false;
 }

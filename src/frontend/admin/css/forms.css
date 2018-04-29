@@ -44,3 +44,13 @@ textarea {
 .wk-switchboard {
 	display: inline-block;
 }
+
+/** selectbox */
+.select_wrapper {
+	position: relative;
+}
+
+.js_foreign {
+	position: absolute;
+	top: -30px;
+}

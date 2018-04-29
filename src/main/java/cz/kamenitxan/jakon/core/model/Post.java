@@ -29,7 +29,7 @@ public class Post extends JakonObject {
 	@JakonField(required = false, inputTemplate = "String", listOrder = 5)
 	private Category category;
 	@Column
-	@JakonField(listOrder = 1)
+	@JakonField(listOrder = 1, searched = true)
 	private String title;
 	@Column
 	@JakonField(inputTemplate = "textarea", listOrder = 3)
