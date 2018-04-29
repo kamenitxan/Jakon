@@ -10,13 +10,15 @@ import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.webui.entity.{FieldInfo, HtmlType, JakonField}
 import javax.persistence.{ManyToMany, ManyToOne, OneToMany}
 
+import scala.language.postfixOps
+
 object FieldConformer {
-	val S = classOf[String]
-	val B = classOf[Boolean]
-	val D = classOf[java.lang.Double]
-	val I = classOf[java.lang.Integer]
-	val DATE = classOf[Date]
-	val DATETIME = classOf[LocalDateTime]
+	private val S = classOf[String]
+	private val B = classOf[Boolean]
+	private val D = classOf[java.lang.Double]
+	private val I = classOf[java.lang.Integer]
+	private val DATE = classOf[Date]
+	private val DATETIME = classOf[LocalDateTime]
 
 	//val DATE_FORMAT = "MM/dd/yyyy"
 	val DATE_FORMAT = "yyyy-MM-dd"
@@ -41,7 +43,15 @@ object FieldConformer {
 					val sdf = new SimpleDateFormat()
 					sdf.parse(s)
 				}
-				case _ => s
+				case _ => {
+					if (classOf[JakonObject].isAssignableFrom(c)) {
+						val obj = c.newInstance().asInstanceOf[JakonObject]
+						obj.id = s.toInt
+						obj
+					} else {
+						s
+					}
+				}
 			}
 		}
 

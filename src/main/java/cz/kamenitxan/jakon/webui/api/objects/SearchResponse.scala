@@ -7,6 +7,6 @@ import cz.kamenitxan.jakon.webui.api.AbstractResponse
   * Created by TPa on 29.04.18.
   */
 class SearchResponse(success: Boolean,
-                     result: List[JakonObject]) extends AbstractResponse(success) {
+                     val result: java.util.List[JakonObject]) extends AbstractResponse(success) {
 
 }

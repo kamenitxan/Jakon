@@ -36,8 +36,24 @@ class ForeignObjectSelector {
                 objectName: this.objectName,
                 query: this.searchbox.value
             })
-            .then(data => console.log(data))
+            .then(data => {
+                console.log(data);
+                this.fillSelect(data);
+            })
             .catch(error => console.error(error))
+    }
+
+    fillSelect(data) {
+        const itemCount = this.selectbox.options.length;
+        for (let i = 0; i <= itemCount; i++) {
+            this.selectbox.remove(i);
+        }
+        data.result.forEach(e => {
+            let opt = document.createElement("option");
+            opt.value = e.id;
+            opt.text = "Id: " + e.id;
+            this.selectbox.add(opt);
+        })
     }
 
 }

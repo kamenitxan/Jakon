@@ -45,4 +45,12 @@ public class Category extends JakonObject {
 	public ObjectSettings objectSettings() {
 		return null;
 	}
+
+	@Override
+	public String toString() {
+		return "Category{" +
+				"id='" + id() + '\'' +
+				", name='" + name + '\'' +
+				"} ";
+	}
 }

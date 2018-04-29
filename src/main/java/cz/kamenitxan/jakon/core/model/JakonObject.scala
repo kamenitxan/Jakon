@@ -23,7 +23,7 @@ abstract class JakonObject(@BeanProperty
 	@Id
 	@GeneratedValue
 	@JakonField(disabled = true, required = false, listOrder = -99, searched = true)
-	val id: Int = 0
+	var id: Int = 0
 	@BeanProperty
 	@Column
 	@JakonField var url: String = ""
