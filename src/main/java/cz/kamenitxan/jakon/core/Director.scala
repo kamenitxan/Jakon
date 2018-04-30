@@ -54,18 +54,10 @@ object Director {
 	def render() {
 		TemplateUtils.clean(Settings.getOutputDir)
 		controllers.foreach(i => {
-			val startTime = System.currentTimeMillis()
-			i.generate()
-			val stopTime = System.currentTimeMillis()
-			val elapsedTime = stopTime - startTime
-			logger.info(i.getClass.getSimpleName + " generated in " + elapsedTime + " ms")
+			i.generateRun()
 		})
 		customPages.foreach(i => {
-			val startTime = System.currentTimeMillis()
-			i.generate()
-			val stopTime = System.currentTimeMillis()
-			val elapsedTime = stopTime - startTime
-			logger.info(i.getClass.getSimpleName + " generated in " + elapsedTime + " ms")
+			i.generateRun()
 		})
 
 		if (Settings.getStaticDir != null && Settings.getOutputDir != null) {
