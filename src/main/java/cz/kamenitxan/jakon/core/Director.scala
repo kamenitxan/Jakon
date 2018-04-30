@@ -7,7 +7,7 @@ import cz.kamenitxan.jakon.core.controler.IControler
 import cz.kamenitxan.jakon.core.controler.PageControler
 import cz.kamenitxan.jakon.core.customPages.CustomPage
 import cz.kamenitxan.jakon.core.model.Dao.{DBHelper, MongoHelper}
-import cz.kamenitxan.jakon.core.model.JakonUser
+import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
 import cz.kamenitxan.jakon.core.template.Pebble
 import cz.kamenitxan.jakon.core.template.TemplateUtils
 import cz.kamenitxan.jakon.webui.Routes
@@ -39,12 +39,18 @@ object Director {
 		DBHelper.addDao(new JakonUser().getClass)
 		val adminUser = DBHelper.getUserDao.findAll()
 		if (adminUser == null || adminUser.isEmpty) {
+			val acl = new AclRule()
+			acl.name = "Admin"
+			acl.masterAdmin = true
+			acl.adminAllowed = true
+
 			val user = new JakonUser()
 			user.firstName = "Admin"
 			user.lastName = "Admin"
 			user.email = "admin@admin.cz"
 			user.password = "admin"
 			user.enabled = true
+			user.acl = acl
 			Authentication.createUser(user)
 		}
 		logger.info("Jakon default init complete")

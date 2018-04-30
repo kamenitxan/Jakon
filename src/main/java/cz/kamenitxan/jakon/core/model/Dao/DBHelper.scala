@@ -32,7 +32,7 @@ object DBHelper {
 	//prop.setProperty("hibernate.connection.autocommit", "true")
 
 
-
+	addDao(classOf[AclRule])
 	addDao(classOf[JakonUser])
 
 	def addDao[T <: JakonObject](jobject: Class[T]) {

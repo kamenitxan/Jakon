@@ -22,6 +22,9 @@ class JakonUser(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser
 	@BeanProperty @Column @JakonField var lastName: String = ""
 	@BeanProperty @Column @JakonField var password: String = ""
 	@BeanProperty @Column @JakonField var enabled: Boolean = false
+	@BeanProperty
+	@ManyToOne
+	@JakonField(required = true) var acl: AclRule = _
 
 
 	def this() = this(u=())
