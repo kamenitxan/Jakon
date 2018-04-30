@@ -14,7 +14,7 @@ import scala.beans.BeanProperty
   * Created by TPa on 31.08.16.
   */
 @Entity
-class JakonUser(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser].getName) {
+class JakonUser(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser].getName) with Serializable {
 
 	@BeanProperty @Column @JakonField var username: String = ""
 	@BeanProperty @Column @JakonField var email: String = ""

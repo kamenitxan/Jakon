@@ -61,6 +61,6 @@ object Api {
 		}
 
 
-		new SearchResponse(true, null)
+		new SearchResponse(true, List[JakonObject]() asJava)
 	}
 }

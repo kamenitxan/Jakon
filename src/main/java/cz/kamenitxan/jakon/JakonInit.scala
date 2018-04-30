@@ -29,7 +29,7 @@ class JakonInit {
 	}
 
 	def run(): Unit = {
-		staticFiles.externalLocation(Settings.getOutputDir)
+		staticFiles.externalLocation(Settings.getStaticDir)
 		port(Settings.getPort)
 
 		try

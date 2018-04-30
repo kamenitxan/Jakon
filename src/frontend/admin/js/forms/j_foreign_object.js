@@ -7,29 +7,33 @@ class ForeignObjectSelector {
         this.selectbox = document.getElementById(this.objectHash);
         this.searchbox = document.getElementById("js_foreign_" + this.objectHash);
 
-        this.selectbox.addEventListener("click", (e) => {
-            this.showSearch(e);
-        });
+        /* this.selectbox.addEventListener("click", (e) => {
+             this.showSearch(e);
+         }); */
         this.selectbox.addEventListener("blur", (e) => {
             this.hideSearch(e);
         });
         this.searchbox.addEventListener("keyup", (e) => {
             this.handleSearch(e);
         });
+        this.searchbox.addEventListener("blur", (e) => {
+            this.handleSearch(e);
+        });
+        this.handleSearch();
     }
 
-    showSearch(evt) {
+    showSearch() {
         this.searchbox.classList.remove("hidden");
         this.searchbox.focus();
     }
 
-    hideSearch(evt) {
+    hideSearch() {
         if (document.activeElement !== this.searchbox) {
             //this.searchbox.classList.add("hidden");
         }
     }
 
-    handleSearch(evt) {
+    handleSearch() {
         const Ajax = require("utils/Ajax.js");
         Ajax.post(this.endPoint,
             {
@@ -51,7 +55,7 @@ class ForeignObjectSelector {
         data.result.forEach(e => {
             let opt = document.createElement("option");
             opt.value = e.id;
-            opt.text = "Id: " + e.id;
+            opt.text = `Id: ${e.id} - ${e.name}`;
             this.selectbox.add(opt);
         })
     }

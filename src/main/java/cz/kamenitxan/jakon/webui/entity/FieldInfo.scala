@@ -14,7 +14,7 @@ class FieldInfo(val required: Boolean,
                 val template: String
                ) {
 
-	def this(an: JakonField, htmlType: HtmlType, f: Field, value: String) = {
+	def this(an: JakonField, htmlType: HtmlType, f: Field, value: Any) = {
 		this(an.required(), an.disabled(), htmlType.typeName, an.htmlClass(), an.htmlMaxLength(), value, f.getName, f.getType.getSimpleName, an,
 			if (an.inputTemplate().isEmpty) {
 				f.getType.getSimpleName

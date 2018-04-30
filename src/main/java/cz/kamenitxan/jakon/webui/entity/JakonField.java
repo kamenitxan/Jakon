@@ -17,7 +17,7 @@ public @interface JakonField {
 	/** shown in admin list view */
 	boolean shownInList() default true;
 	/** order of column in list and edit view */
-	int listOrder() default 0;
+	int listOrder() default 999;
 	String htmlClass() default "";
 	int htmlMaxLength() default 255;
 	String inputTemplate() default "";

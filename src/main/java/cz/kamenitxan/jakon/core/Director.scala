@@ -43,6 +43,7 @@ object Director {
 			acl.name = "Admin"
 			acl.masterAdmin = true
 			acl.adminAllowed = true
+			acl.create()
 
 			val user = new JakonUser()
 			user.firstName = "Admin"

@@ -1,5 +1,6 @@
 package cz.kamenitxan.jakon.webui.controler.impl
 
+import java.lang.reflect.Field
 import javax.persistence.criteria.{CriteriaQuery, Root}
 
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
@@ -116,10 +117,9 @@ object ObjectControler {
 
 		for (p <- params.filter(p => !p.equals("id"))) {
 			//TODO optimalizovat
-			val fieldRef = Utils.getFieldsUpTo(objectClass, classOf[Object]).find(f => f.getName.equals(p)).get
+			val fieldRef: Field = Utils.getFieldsUpTo(objectClass, classOf[Object]).find(f => f.getName.equals(p)).get
 			fieldRef.setAccessible(true)
-			val ftype = fieldRef.getType
-			val value = req.queryParams(p).conform(ftype)
+			val value = req.queryParams(p).conform(fieldRef)
 			if (value != null) {
 				fieldRef.set(obj, value)
 			}

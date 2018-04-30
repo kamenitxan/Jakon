@@ -14,15 +14,15 @@ import scala.beans.BeanProperty
 class AclRule(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser].getName) {
 	@BeanProperty
 	@Column
-	@JakonField(searched = true)
+	@JakonField(searched = true, listOrder = 0)
 	var name: String = ""
 	@BeanProperty
 	@Column
-	@JakonField
+	@JakonField(listOrder = 1)
 	var masterAdmin: Boolean = false
 	@BeanProperty
 	@Column
-	@JakonField
+	@JakonField(listOrder = 2)
 	var adminAllowed: Boolean = false
 	@BeanProperty
 	@ElementCollection
@@ -37,4 +37,7 @@ class AclRule(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser].
 
 	@Transient
 	override val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-unlock-alt")
+
+
+	override def toString = s"AclRule($name)"
 }

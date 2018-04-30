@@ -8,6 +8,8 @@ import org.hibernate.criterion.Restrictions
 import org.mindrot.jbcrypt.BCrypt
 import spark.{ModelAndView, Request, Response}
 
+import scala.tools.nsc.interpreter.session
+
 /**
   * Created by TPa on 03.09.16.
   */
@@ -22,12 +24,14 @@ object Authentication {
 		val password = req.queryParams("password")
 		if (email != null && password != null) {
 			val ses = DBHelper.getSession
+			ses.beginTransaction()
 			val criteria = getSession.createCriteria(classOf[JakonUser])
 			val user = criteria.add(Restrictions.eq("email", email) ).uniqueResult().asInstanceOf[JakonUser]
+			ses.getTransaction.commit()
 			if (user == null) {
 
 			} else if (checkPassword(password, user.password) && user.enabled){
-				req.session(true).attribute("user", user.email)
+				req.session(true).attribute("user", user)
 				res.redirect("/admin/index")
 			}
 		}

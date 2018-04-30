@@ -1,15 +1,16 @@
 package cz.kamenitxan.jakon.webui.conform
 
-import java.lang.reflect.Field
+import java.lang.reflect.{Field, ParameterizedType, Type}
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Date
+import javax.persistence.{ManyToOne, OneToMany}
 
 import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.webui.entity.{FieldInfo, HtmlType, JakonField}
-import javax.persistence.{ManyToMany, ManyToOne, OneToMany}
 
+import scala.collection.JavaConverters._
 import scala.language.postfixOps
 
 object FieldConformer {
@@ -17,6 +18,7 @@ object FieldConformer {
 	private val B = classOf[Boolean]
 	private val D = classOf[java.lang.Double]
 	private val I = classOf[java.lang.Integer]
+	private val LIST = classOf[java.util.List[Any]]
 	private val DATE = classOf[Date]
 	private val DATETIME = classOf[LocalDateTime]
 
@@ -27,11 +29,21 @@ object FieldConformer {
 	implicit class StringConformer(val s: String) {
 
 
-		def conform(c: Class[_]): Any = {
+		def conform(f: Field): Any = {
 			if (s == null || s.isEmpty) {
 				return null
 			}
-			c match {
+			var gft: Array[Type] = null
+			try {
+				gft = f.getGenericType.asInstanceOf[ParameterizedType].getActualTypeArguments
+			} catch {
+				case _: Exception =>
+			}
+			conform(f.getType, if (gft != null) gft.head else null)
+		}
+
+		private def conform(t: Class[_], genericType: Type): Any = {
+			t match {
 				case B => s toBoolean
 				case D => s toDouble
 				case I => s toInt
@@ -43,9 +55,12 @@ object FieldConformer {
 					val sdf = new SimpleDateFormat()
 					sdf.parse(s)
 				}
+				case LIST => {
+					s.split("\r\n").map(line => line.conform(Class.forName(genericType.getTypeName), null)).toList.asJava
+				}
 				case _ => {
-					if (classOf[JakonObject].isAssignableFrom(c)) {
-						val obj = c.newInstance().asInstanceOf[JakonObject]
+					if (classOf[JakonObject].isAssignableFrom(t)) {
+						val obj = t.newInstance().asInstanceOf[JakonObject]
 						obj.id = s.toInt
 						obj
 					} else {
@@ -54,8 +69,9 @@ object FieldConformer {
 				}
 			}
 		}
-
 	}
+
+
 
 	def getFieldInfos(obj: JakonObject, fields: List[Field]): List[FieldInfo] = {
 		var infos = List[FieldInfo]()
@@ -95,7 +111,7 @@ object FieldConformer {
 						}
 						case _ => {
 							val fv = f.get(obj)
-							infos = new FieldInfo(an, HtmlType.TEXT, f, if (fv != null) fv.toString else null) :: infos
+							infos = new FieldInfo(an, HtmlType.TEXT, f, fv) :: infos
 						}
 					}
 				}

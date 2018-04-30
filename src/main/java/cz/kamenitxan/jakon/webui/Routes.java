@@ -3,6 +3,7 @@ package cz.kamenitxan.jakon.webui;
 import com.google.gson.Gson;
 import cz.kamenitxan.jakon.core.configuration.Settings;
 import cz.kamenitxan.jakon.core.model.DeployMode;
+import cz.kamenitxan.jakon.core.model.JakonUser;
 import cz.kamenitxan.jakon.webui.api.Api;
 import cz.kamenitxan.jakon.webui.controler.AbstractController;
 import cz.kamenitxan.jakon.webui.controler.ExecuteFun;
@@ -11,12 +12,9 @@ import cz.kamenitxan.jakon.webui.controler.impl.FileManagerControler;
 import cz.kamenitxan.jakon.webui.controler.impl.ObjectControler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spark.Request;
-import spark.Response;
 import spark.TemplateEngine;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
 import static spark.Spark.*;
 
@@ -31,7 +29,8 @@ public class Routes {
 
 		before("/admin/*", (request, response) -> {
 			if (Settings.getDeployMode() == DeployMode.DEVEL || request.pathInfo().equals("/admin/register")) return;
-			if (request.session().attribute("user") == null) {
+			JakonUser user = request.session().attribute("user");
+			if (request.session().attribute("user") == null || !user.acl().adminAllowed() && !user.acl().masterAdmin()) {
 				response.redirect("/admin", 401);
 			}
 		});
