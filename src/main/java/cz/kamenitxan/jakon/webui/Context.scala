@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.webui
 
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
+import cz.kamenitxan.jakon.utils.PageContext
 import spark.ModelAndView
 
 import scala.collection.JavaConverters._
@@ -15,9 +16,18 @@ class Context(var model: Map[String, Any], viewName: String) extends ModelAndVie
 	}
 
 	def getAdminContext: Map[String, Any] = {
-		val modelClasses = DBHelper.getDaoClasses.map(_.getSimpleName).asJavaCollection
+		val user = PageContext.getInstance().getLoggedUser
+		var modelClasses: List[String] = null
+		if (user.nonEmpty && !user.get.acl.masterAdmin) {
+			modelClasses = DBHelper.getDaoClasses
+			  .filter(c => user.get.acl.allowedControllers.contains(c.getCanonicalName))
+			  .map(_.getSimpleName).toList
+		} else {
+			modelClasses = DBHelper.getDaoClasses
+			  .map(_.getSimpleName).toList
+		}
 		val context = Map[String, Any](
-			"modelClasses" -> modelClasses,
+			"modelClasses" -> modelClasses.asJavaCollection,
 			"objectSettings" -> DBHelper.getDaoClasses.map(o => (o.getSimpleName, o.newInstance().getObjectSettings)).toMap.asJava,
 			"enableFiles" -> AdminSettings.enableFiles,
 			"customControllers" -> AdminSettings.customControllers.map(c => c.newInstance()).asJava

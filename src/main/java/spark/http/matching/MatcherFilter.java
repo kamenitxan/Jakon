@@ -27,6 +27,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cz.kamenitxan.jakon.utils.PageContext;
 import spark.CustomErrorPages;
 import spark.HaltException;
 import spark.RequestResponseFactory;
@@ -118,8 +119,8 @@ public class MatcherFilter implements Filter {
 
 		try {
 			try {
-
 				BeforeFilters.execute(context);
+				PageContext.init(context.requestWrapper().getDelegate(), response);
 				// handle static resources
 				boolean consumedByStaticFile = staticFiles.consume(httpRequest, httpResponse);
 				if (consumedByStaticFile) {

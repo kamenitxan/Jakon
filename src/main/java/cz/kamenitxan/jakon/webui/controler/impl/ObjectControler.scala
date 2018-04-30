@@ -5,7 +5,7 @@ import javax.persistence.criteria.{CriteriaQuery, Root}
 
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonObject
-import cz.kamenitxan.jakon.utils.Utils
+import cz.kamenitxan.jakon.utils.{PageContext, Utils}
 import cz.kamenitxan.jakon.utils.Utils._
 import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
@@ -29,6 +29,11 @@ object ObjectControler {
 		val pageNumber = Try(Integer.parseInt(page)).getOrElse(1)
 		val objectClass = DBHelper.getDaoClasses.find(c => c.getName.contains(objectName))
 		if (objectClass.isDefined) {
+			if (!isAuthorized(objectClass.get)) {
+				return new Context(Map[String, Any](
+					"objectName" -> objectName
+				), "pages/unauthorized")
+			}
 			val session = DBHelper.getSession
 			try {
 				session.beginTransaction()
@@ -79,6 +84,11 @@ object ObjectControler {
 		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(objectName)).head
 		var obj: JakonObject = null
 		if (objectId.nonEmpty) {
+			if (!isAuthorized(objectClass)) {
+				return new Context(Map[String, Any](
+					"objectName" -> objectName
+				), "pages/unauthorized")
+			}
 			val session = DBHelper.getSession
 			session.beginTransaction()
 			try {
@@ -107,6 +117,11 @@ object ObjectControler {
 		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(objectName)).head
 		var obj: JakonObject = null
 		if (objectId.nonEmpty) {
+			if (!isAuthorized(objectClass)) {
+				return new Context(Map[String, Any](
+					"objectName" -> objectName
+				), "pages/unauthorized")
+			}
 			val session = DBHelper.getSession
 			session.beginTransaction()
 			obj = Option(session.find(objectClass, objectId.get)).getOrElse(objectClass.newInstance())
@@ -137,6 +152,11 @@ object ObjectControler {
 		val objectName = req.params(":name")
 		val objectId = req.params(":id").toOptInt.get
 		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(objectName)).head
+		if (!isAuthorized(objectClass)) {
+			return new Context(Map[String, Any](
+				"objectName" -> objectName
+			), "pages/unauthorized")
+		}
 		val session = DBHelper.getSession
 		session.beginTransaction()
 		val obj = session.load(objectClass, objectId)
@@ -144,5 +164,14 @@ object ObjectControler {
 		obj.delete()
 		res.redirect("/admin/object/" + objectName)
 		new Context(Map[String, Any](), "objects/list")
+	}
+
+	private def isAuthorized(objectClass: Class[_]): Boolean = {
+		val user = PageContext.getInstance().getLoggedUser
+		if (user.isEmpty || user.get.acl.masterAdmin) {
+			true
+		} else {
+			user.get.acl.allowedControllers.contains(objectClass.getCanonicalName)
+		}
 	}
 }
