@@ -20,13 +20,14 @@ class Context(var model: Map[String, Any], viewName: String) extends ModelAndVie
 		var modelClasses: List[String] = null
 		if (user.nonEmpty && !user.get.acl.masterAdmin) {
 			modelClasses = DBHelper.getDaoClasses
-			  .filter(c => user.get.acl.allowedControllers.contains(c.getCanonicalName))
+			  .filter(c => user.get.acl.masterAdmin || user.get.acl.allowedControllers.contains(c.getCanonicalName))
 			  .map(_.getSimpleName).toList
 		} else {
 			modelClasses = DBHelper.getDaoClasses
 			  .map(_.getSimpleName).toList
 		}
 		val context = Map[String, Any](
+			"user" -> user.orNull,
 			"modelClasses" -> modelClasses.asJavaCollection,
 			"objectSettings" -> DBHelper.getDaoClasses.map(o => (o.getSimpleName, o.newInstance().getObjectSettings)).toMap.asJava,
 			"enableFiles" -> AdminSettings.enableFiles,

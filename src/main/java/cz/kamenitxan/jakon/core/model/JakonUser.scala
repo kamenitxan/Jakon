@@ -36,8 +36,4 @@ class JakonUser(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser
 		Authentication.createUser(this)
 	}
 
-	override def update(): Unit = {
-		this.password = hashPassword(this.password)
-		super.update()
-	}
 }

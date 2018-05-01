@@ -27,11 +27,11 @@ class AclRule(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser].
 	@BeanProperty
 	@ElementCollection
 	@JakonField
-	var allowedControllers: java.util.List[String] = _
+	var allowedControllers: java.util.List[String] = new java.util.ArrayList[String]()
 	@BeanProperty
 	@ElementCollection
 	@JakonField
-	var allowedFrontendPrefixes: java.util.List[String] = _
+	var allowedFrontendPrefixes: java.util.List[String] = new java.util.ArrayList[String]()
 
 	def this() = this(u = ())
 

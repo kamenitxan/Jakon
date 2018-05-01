@@ -48,6 +48,7 @@ object Director {
 			val user = new JakonUser()
 			user.firstName = "Admin"
 			user.lastName = "Admin"
+			user.username = "admin"
 			user.email = "admin@admin.cz"
 			user.password = "admin"
 			user.enabled = true

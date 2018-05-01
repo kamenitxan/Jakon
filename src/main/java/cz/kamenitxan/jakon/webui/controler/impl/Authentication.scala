@@ -38,6 +38,12 @@ object Authentication {
 		new Context(null, "login")
 	}
 
+	def logoutPost(req: Request, res: Response): ModelAndView = {
+		req.session().invalidate()
+		res.redirect("/admin")
+		new Context(null, "login")
+	}
+
 	def registrationGet(response: Response): ModelAndView = {
 		new Context(null, "register")
 	}

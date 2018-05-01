@@ -136,7 +136,13 @@ object ObjectControler {
 			fieldRef.setAccessible(true)
 			val value = req.queryParams(p).conform(fieldRef)
 			if (value != null) {
-				fieldRef.set(obj, value)
+				if (p.equals("password")) {
+					if (!value.asInstanceOf[String].startsWith("$2a$")) {
+						fieldRef.set(obj, value)
+					}
+				} else {
+					fieldRef.set(obj, value)
+				}
 			}
 		}
 		if (objectId.nonEmpty) {

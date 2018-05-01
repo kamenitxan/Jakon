@@ -10,6 +10,7 @@ import cz.kamenitxan.jakon.webui.controler.ExecuteFun;
 import cz.kamenitxan.jakon.webui.controler.impl.Authentication;
 import cz.kamenitxan.jakon.webui.controler.impl.FileManagerControler;
 import cz.kamenitxan.jakon.webui.controler.impl.ObjectControler;
+import cz.kamenitxan.jakon.webui.controler.impl.UserControler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.TemplateEngine;
@@ -27,8 +28,19 @@ public class Routes {
 		TemplateEngine te = Settings.getAdminEngine();
 		Gson gson = new Gson();
 
+
+		before("/admin", (request, response) -> {
+			JakonUser user = request.session().attribute("user");
+			if (request.session().attribute("user") != null && (user.acl().adminAllowed() || user.acl().masterAdmin())) {
+				response.redirect("/admin/index", 302);
+			}
+		});
 		before("/admin/*", (request, response) -> {
-			if (Settings.getDeployMode() == DeployMode.DEVEL || request.pathInfo().equals("/admin/register")) return;
+			if (Settings.getDeployMode() == DeployMode.DEVEL
+					|| request.pathInfo().equals("/admin/register")
+					|| request.pathInfo().equals("/admin/logout")) {
+				return;
+			}
 			JakonUser user = request.session().attribute("user");
 			if (request.session().attribute("user") == null || !user.acl().adminAllowed() && !user.acl().masterAdmin()) {
 				response.redirect("/admin", 401);
@@ -40,6 +52,9 @@ public class Routes {
 		get("/admin/index", (request, response) -> AdminSettings.dashboardController().apply(request, response), te);
 		get("/admin/register",  (request, response) -> Authentication.registrationGet(response), te);
 		post("/admin/register", Authentication::registrationPost, te);
+		get("/admin/logout", Authentication::logoutPost, te);
+		get("/admin/profile", UserControler::render, te);
+		post("/admin/profile", UserControler::update, te);
 
 		get("/admin/object/:name", ObjectControler::getList, te);
 		get("/admin/object/create/:name", ObjectControler::getItem, te);
