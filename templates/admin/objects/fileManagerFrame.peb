@@ -15,6 +15,7 @@
     <link href="/jakon/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
     <!-- jQuery -->
+    <script src="/jakon/js/vendor.js"></script>
     <script src="/jakon/vendor/jquery/jquery.min.js"></script>
     <script src="/jakon/js/jquery-ui.min.js"></script>
 
