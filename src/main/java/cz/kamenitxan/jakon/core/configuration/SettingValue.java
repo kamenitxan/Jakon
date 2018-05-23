@@ -10,7 +10,8 @@ public enum SettingValue {
 	DB_PASS("databasePass"),
 	PORT("port", true),
 	DEPLOY_MODE("deployMode", true),
-	DEPLOY_TYPE("DEPLOY.type");
+	DEPLOY_TYPE("DEPLOY.type"),
+	DEFAULT_LOCALE("defaultLocale");
 
 
 	public String name;

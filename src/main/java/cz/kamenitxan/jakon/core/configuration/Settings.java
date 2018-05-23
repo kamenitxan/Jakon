@@ -5,6 +5,7 @@ import cz.kamenitxan.jakon.core.model.DeployMode;
 import cz.kamenitxan.jakon.core.template.Pebble;
 import cz.kamenitxan.jakon.core.template.TemplateEngine;
 import cz.kamenitxan.jakon.core.template.FixedPebbleTemplateEngine;
+import cz.kamenitxan.jakon.utils.Utils;
 import cz.kamenitxan.jakon.webui.util.JakonFileLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,10 +14,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
@@ -127,6 +125,10 @@ public abstract class Settings {
 
 	public static void setPort(int port) {
 		settings.put(SettingValue.PORT, String.valueOf(port));
+	}
+
+	public static Locale getDefaultLocale() {
+		return Utils.stringToLocale(settings.get(SettingValue.DEFAULT_LOCALE));
 	}
 
 	public static String getProperty(SettingValue name) {

@@ -2,6 +2,7 @@ package cz.kamenitxan.jakon.utils
 
 import java.lang.reflect.Field
 import java.util
+import java.util.Locale
 
 import scala.collection.JavaConversions._
 import scala.collection.immutable.Nil
@@ -28,5 +29,11 @@ object Utils {
 			currentClassFields = parentClassFields ::: currentClassFields
 		}
 		currentClassFields
+	}
+
+	def stringToLocale(s: String): Locale = {
+		if (s == null) return null
+		val split = s.split("_")
+		new Locale(split(0), split(1))
 	}
 }

@@ -17,8 +17,8 @@
         </div>
     </div>
 {% endfor %}
-    <input type="submit" class="btn btn-primary" value="Uložit">
-{% if withDelete %}<a href="/admin/object/delete/{{ objectName }}/{{ id }}" class="btn btn-danger">Smazat</a>{% endif %}
+    <input type="submit" class="btn btn-primary" value="{{ i18n("common","SAVE_BTN") }}">
+{% if withDelete %}<a href="/admin/object/delete/{{ objectName }}/{{ id }}" class="btn btn-danger">{{ i18n("common","DELETE_BTN") }}</a>{% endif %}
 
 </form>
 <script>

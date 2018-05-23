@@ -14,7 +14,7 @@
             <h1 class="page-header">{{ objectName }}</h1>
         </div>
         <div class="col-lg-12">
-            <a href="/admin/object/create/{{ objectName }}" class="btn btn-primary">Create</a>
+            <a href="/admin/object/create/{{ objectName }}" class="btn btn-primary">{{ i18n("common","CREATE_BTN") }}</a>
         </div>
         <!-- /.col-lg-12 -->
     </div>
@@ -42,8 +42,7 @@
                             {% for field in fields %}
                                 <td>{{ getAttr(object, field.name) }}</td>
                             {% endfor %}
-                            <td><a href="/admin/object/{{ objectName }}/{{ getAttr(object, "id") }}"
-                                   class="btn btn-default">Edit</a></td>
+                            <td><a href="/admin/object/{{ objectName }}/{{ getAttr(object, "id") }}"class="btn btn-default">{{ i18n("common","EDIT_BTN") }}</a></td>
                         </tr>
                         {% endfor %}
 

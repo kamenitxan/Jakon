@@ -3,11 +3,14 @@ package cz.kamenitxan.jakon.webui.controler.impl
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper.getSession
 import cz.kamenitxan.jakon.core.model.JakonUser
+import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.webui.Context
+import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import org.hibernate.criterion.Restrictions
 import org.mindrot.jbcrypt.BCrypt
 import spark.{ModelAndView, Request, Response}
 
+import scala.language.postfixOps
 import scala.tools.nsc.interpreter.session
 
 /**
@@ -29,7 +32,7 @@ object Authentication {
 			val user = criteria.add(Restrictions.eq("email", email) ).uniqueResult().asInstanceOf[JakonUser]
 			ses.getTransaction.commit()
 			if (user == null) {
-
+				PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "WRONG_EMAIL_OR_PASSWORD")
 			} else if (checkPassword(password, user.password) && user.enabled){
 				req.session(true).attribute("user", user)
 				res.redirect("/admin/index")

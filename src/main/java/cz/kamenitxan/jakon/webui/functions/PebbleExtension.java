@@ -19,6 +19,7 @@ public class PebbleExtension extends AbstractExtension {
 			put("getAttr", new GetAttributeFun());
 			put("getAttrType", new GetAttributeTypeFun());
 			put("link", new LinkFun());
+			put("i18n", new i18nFun());
 		}};
 	}
 }

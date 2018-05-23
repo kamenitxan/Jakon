@@ -31,7 +31,8 @@ class Context(var model: Map[String, Any], viewName: String) extends ModelAndVie
 			"modelClasses" -> modelClasses.asJavaCollection,
 			"objectSettings" -> DBHelper.getDaoClasses.map(o => (o.getSimpleName, o.newInstance().getObjectSettings)).toMap.asJava,
 			"enableFiles" -> AdminSettings.enableFiles,
-			"customControllers" -> AdminSettings.customControllers.map(c => c.newInstance()).asJava
+			"customControllers" -> AdminSettings.customControllers.map(c => c.newInstance()).asJava,
+			"jakon_messages" -> PageContext.getInstance().messages.asJava
 		)
 		context
 	}

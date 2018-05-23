@@ -1,7 +1,10 @@
 package cz.kamenitxan.jakon.utils
 
 import cz.kamenitxan.jakon.core.model.JakonUser
+import cz.kamenitxan.jakon.webui.entity.Message
 import spark.{Request, Response}
+
+import scala.collection.mutable
 
 /**
   * Created by TPa on 30.04.18.
@@ -28,6 +31,8 @@ object PageContext {
 }
 
 case class PageContext(req: Request, res: Response) {
+	val messages = new mutable.MutableList[Message]()
+
 	def getLoggedUser: Option[JakonUser] = {
 		Option.apply(req.session.attribute("user"))
 	}

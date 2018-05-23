@@ -14,11 +14,11 @@
         </div>
         <div class="navbar-user-holder">
             <div class="navbar-user-tooltip">
-                <span>Signed as: {{ user.username }}</span>
+                <span>{{ i18n("common","SIGNED_AS") }}: {{ user.username }}</span>
                 <hr/>
-                <a href="/admin/profile">Edit profile </a>
+                <a href="/admin/profile">{{ i18n("common","EDIT_PROFILE") }}</a>
                 <hr/>
-                <a href="/admin/logout">Log out</a>
+                <a href="/admin/logout">{{ i18n("common","LOGOUT") }}</a>
             </div>
         </div>
     </div>
