@@ -63,3 +63,12 @@
 .navbar-user-tooltip a, .navbar-user-tooltip span {
 	margin-left: 5px;
 }
+
+#jakon_messages {
+	position: absolute;
+	top: 25px;
+	width: 60%;
+	z-index: 200;
+	padding: 0 20px 0 20px;
+	left: 25%;
+}
