@@ -1,6 +1,7 @@
 {# @pebvariable name="objectName" type="java.lang.String" #}
 {# @pebvariable name="fields" type="java.util.List" #}
 {# @pebvariable name="objects" type="java.util.List" #}
+{# @pebvariable name="field" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
 
 
 {% extends "core" %}
@@ -30,7 +31,7 @@
                         <tr>
                             <!--th>Id</th-->
                             {% for field in fields %}
-                                <th>{{ field.name }}</th>
+                                <th>{{ i18n(bundle="objects", key=objectName + "_" + field.name, def=field.name) }}</th>
                             {% endfor %}
                             <th></th>
                         </tr>
@@ -38,7 +39,6 @@
                         <tbody>
                         {% for object in objects %}
                         <tr>
-                            <!--td>{{ getAttr(object, "id") }}</td-->
                             {% for field in fields %}
                                 <td>{{ getAttr(object, field.name) }}</td>
                             {% endfor %}
