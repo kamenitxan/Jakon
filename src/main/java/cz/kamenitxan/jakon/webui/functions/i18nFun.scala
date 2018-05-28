@@ -32,8 +32,10 @@ class i18nFun extends i18nFunction {
 		try {
 			if (bundle.containsKey(key)) {
 				phraseObject = bundle.getString(key)
-			} else {
+			} else if (default != null) {
 				phraseObject = bundle.getString(default)
+			} else {
+				throw new MissingResourceException("", "", "")
 			}
 		} catch {
 			case _: MissingResourceException => {
@@ -41,8 +43,10 @@ class i18nFun extends i18nFunction {
 				try {
 					if (bundle.containsKey(key)) {
 						phraseObject = bundle.getString(key)
-					} else {
+					} else if (default != null) {
 						phraseObject = bundle.getString(default)
+					} else {
+						throw new MissingResourceException("", "", "")
 					}
 				} catch {
 					case _: MissingResourceException => phraseObject = if (default != null && !default.isEmpty) default else key

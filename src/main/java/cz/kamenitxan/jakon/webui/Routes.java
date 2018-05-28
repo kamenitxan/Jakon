@@ -117,7 +117,7 @@ public class Routes {
 				}
 				logger.info("Custom admin controller registered: " + instance.getClass().getSimpleName());
 			} catch (InstantiationException | IllegalAccessException e) {
-				e.printStackTrace();
+				logger.error("Failed to register custom controler", e);
 			}
 
 		});
