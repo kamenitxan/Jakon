@@ -11,6 +11,7 @@
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<scala.version>2.12.5</scala.version>
         <kotlin.version>1.2.31</kotlin.version>
     </properties>
@@ -35,11 +36,6 @@
 			<artifactId>scala-library</artifactId>
 			<version>${scala.version}</version>
 		</dependency>
-		<dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-library</artifactId>
-            <version>${scala.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
@@ -238,6 +234,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+				<version>3.7.0</version>
                 <executions>
                     <execution>
                         <id>compile</id>
