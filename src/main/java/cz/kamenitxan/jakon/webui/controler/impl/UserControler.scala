@@ -11,6 +11,7 @@ import cz.kamenitxan.jakon.webui.controler.impl.ObjectControler.excludedFields
 import spark.{ModelAndView, Request, Response}
 
 import scala.collection.JavaConverters._
+import scala.language.postfixOps
 
 /**
   * Created by TPa on 01.05.18.

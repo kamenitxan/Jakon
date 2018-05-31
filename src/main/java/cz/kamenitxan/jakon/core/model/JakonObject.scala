@@ -45,7 +45,11 @@ abstract class JakonObject(@BeanProperty
 		session.save(this)
 		session.getTransaction.commit()
 		session.close()
+		afterCreate()
+		afterAll()
 	}
+
+	def afterCreate(): Unit = {}
 
 	def update(): Unit = {
 		val session = DBHelper.getSession
@@ -54,7 +58,11 @@ abstract class JakonObject(@BeanProperty
 		}
 		session.update(this)
 		session.getTransaction.commit()
+		afterUpdate()
+		afterAll()
 	}
+
+	def afterUpdate(): Unit = {}
 
 	def delete(): Unit = {
 		val session = DBHelper.getSession
@@ -62,7 +70,13 @@ abstract class JakonObject(@BeanProperty
 		session.delete(this)
 		session.getTransaction.commit()
 		session.close()
+		afterDelete()
+		afterAll()
 	}
+
+	def afterDelete(): Unit = {}
+
+	def afterAll(): Unit = {}
 
 	def toJson: String = {
 		val writer = new StringWriter

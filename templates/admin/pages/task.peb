@@ -9,7 +9,7 @@
 <div id="page-wrapper">
     <div class="row">
         <div class="col-lg-12">
-            <h1 class="page-header">{{ i18n("common","TASK_CNTRL_NAME") }}</h1>
+            <h1 class="page-header"><i class="fa fa-tasks"></i> {{ i18n("common","TASK_CNTRL_NAME") }}</h1>
         </div>
         <!-- /.col-lg-12 -->
     </div>
@@ -34,7 +34,7 @@
                             <td>{{ task.name }}</td>
                             <td>{{ task.lastRun }}</td>
                             <td>{{ task.lastExecutionTime }}</td>
-                            <td><a href="/admin/task/run/{{ task.name }}"><i class="fa fa-run"></i>run</a></td>
+                            <td><a href="/admin/task/run/{{ task.name }}"><i class="fa fa-play"></i></a></td>
                         </tr>
                         {% endfor %}
                         </tbody>
