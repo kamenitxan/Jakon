@@ -75,9 +75,10 @@ object Authentication {
 		user.password = hashPassword(user.password)
 		val session = DBHelper.getSession
 		session.beginTransaction()
-		session.save(user)
+		val id = session.save(user)
 		session.getTransaction.commit()
 		session.close()
+		user.setId(id.asInstanceOf[Int])
 		user
 	}
 

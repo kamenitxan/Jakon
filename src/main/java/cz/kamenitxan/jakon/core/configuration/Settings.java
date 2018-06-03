@@ -1,7 +1,6 @@
 package cz.kamenitxan.jakon.core.configuration;
 
 import com.mitchellbosecke.pebble.loader.FileLoader;
-import cz.kamenitxan.jakon.core.model.DeployMode;
 import cz.kamenitxan.jakon.core.template.Pebble;
 import cz.kamenitxan.jakon.core.template.TemplateEngine;
 import cz.kamenitxan.jakon.core.template.FixedPebbleTemplateEngine;

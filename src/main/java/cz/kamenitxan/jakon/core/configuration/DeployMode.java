@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.core.model;
+package cz.kamenitxan.jakon.core.configuration;
 
 /**
  * Created by tomaspavel on 6.6.17.

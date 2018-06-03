@@ -5,7 +5,7 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import cz.kamenitxan.jakon.core.configuration.Settings;
-import cz.kamenitxan.jakon.core.model.DeployMode;
+import cz.kamenitxan.jakon.core.configuration.DeployMode;
 import cz.kamenitxan.jakon.webui.functions.PebbleExtension;
 import spark.ModelAndView;
 import spark.TemplateEngine;

@@ -8,6 +8,7 @@ public enum HtmlType {
 	DATE("date"),
 	DATETIME("datetime-local"),
 	SELECT("select"),
+	NUMBER("number"),
 	CHECKBOX("checkbox");
 
 	String typeName;

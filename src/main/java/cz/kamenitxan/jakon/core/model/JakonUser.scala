@@ -26,14 +26,13 @@ class JakonUser(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser
 	@ManyToOne
 	@JakonField(required = true) var acl: AclRule = _
 
-
 	def this() = this(u=())
 
 	@Transient
 	override val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-user")
 
-	override def create(): Unit = {
-		Authentication.createUser(this)
+	override def create(): Int = {
+		Authentication.createUser(this).id
 	}
 
 }

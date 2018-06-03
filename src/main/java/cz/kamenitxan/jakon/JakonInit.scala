@@ -4,9 +4,9 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
-import cz.kamenitxan.jakon.core.model.{Category, DeployMode, Page, Post}
+import cz.kamenitxan.jakon.core.model.{Category, Page, Post}
 import cz.kamenitxan.jakon.core.Director
-import cz.kamenitxan.jakon.core.configuration.Settings
+import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.task.{RenderTask, TaskRunner}
 import cz.kamenitxan.jakon.devtools.DevRender
 import cz.kamenitxan.jakon.utils.PageContext
@@ -15,6 +15,8 @@ import cz.kamenitxan.jakon.webui.controler.impl.{DeployControler, TaskController
 import org.slf4j.LoggerFactory
 import spark.{Filter, Request, Response}
 import spark.Spark.{afterAfter, before, port, staticFiles}
+import spark.debug.DebugScreen.enableDebugScreen
+
 
 class JakonInit {
 	private val logger = LoggerFactory.getLogger(this.getClass)
@@ -57,6 +59,7 @@ class JakonInit {
 					DevRender.rerender(request.pathInfo())
 				}
 			)
+			enableDebugScreen()
 		}
 		routesSetup()
 		taskSetup()

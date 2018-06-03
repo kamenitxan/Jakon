@@ -17,7 +17,9 @@ object FieldConformer {
 	private val S = classOf[String]
 	private val B = classOf[Boolean]
 	private val D = classOf[java.lang.Double]
+	private val D_s = classOf[Double]
 	private val I = classOf[java.lang.Integer]
+	private val I_s = classOf[Int]
 	private val LIST = classOf[java.util.List[Any]]
 	private val DATE = classOf[Date]
 	private val DATETIME = classOf[LocalDateTime]
@@ -45,8 +47,8 @@ object FieldConformer {
 		private def conform(t: Class[_], genericType: Type): Any = {
 			t match {
 				case B => s toBoolean
-				case D => s toDouble
-				case I => s toInt
+				case D | D_s => s toDouble
+				case I | I_s => s toInt
 				case DATE => {
 					val sdf = new SimpleDateFormat(DATE_FORMAT)
 					sdf.parse(s)
@@ -90,6 +92,10 @@ object FieldConformer {
 						case B =>  {
 							val fv = f.get(obj)
 							infos = new FieldInfo(an, HtmlType.CHECKBOX, f, if (fv != null) fv.toString else null) :: infos
+						}
+						case I | I_s => {
+							val fv = f.get(obj)
+							infos = new FieldInfo(an, HtmlType.NUMBER, f, fv) :: infos
 						}
 						case DATE => {
 							val sdf =  new SimpleDateFormat(DATE_FORMAT)

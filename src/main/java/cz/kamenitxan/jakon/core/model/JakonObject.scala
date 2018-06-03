@@ -7,8 +7,10 @@ import java.io.StringWriter
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.JakonField
+import org.hibernate.Session
 
 import scala.beans.BeanProperty
+import scala.language.postfixOps
 
 /**
   * Created by TPa on 22.04.16.
@@ -24,7 +26,6 @@ abstract class JakonObject(@BeanProperty
 	@GeneratedValue
 	@JakonField(disabled = true, required = false, listOrder = -99, searched = true)
 	var id: Int = 0
-	@BeanProperty
 	@Column
 	@JakonField var url: String = ""
 	@BeanProperty
@@ -39,44 +40,67 @@ abstract class JakonObject(@BeanProperty
 
 	def getObjectSettings: ObjectSettings = objectSettings
 
-	def create(): Unit = {
+	def setUrl(url: String) = this.url = url
+
+	def getUrl: String = url
+
+	private def execute(fun: Session => Unit) = {
 		val session = DBHelper.getSession
-		session.beginTransaction()
-		session.save(this)
+		if (!session.getTransaction.isActive) {
+			session.beginTransaction()
+		}
+		fun.apply(session)
+		afterAll()
 		session.getTransaction.commit()
 		session.close()
-		afterCreate()
+	}
+
+	private def executeWithId(fun: Session => Int): Int = {
+		val session = DBHelper.getSession
+		if (!session.getTransaction.isActive) {
+			session.beginTransaction()
+		}
+		val id = fun.apply(session)
 		afterAll()
+		session.getTransaction.commit()
+		session.close()
+		id
+	}
+
+	def create(): Int = {
+		executeWithId( session => {
+			val id = session.save(this)
+			afterCreate()
+			id.asInstanceOf[Int]
+		})
 	}
 
 	def afterCreate(): Unit = {}
 
 	def update(): Unit = {
-		val session = DBHelper.getSession
-		if (!session.getTransaction.isActive) {
-			session.beginTransaction()
-		}
-		session.update(this)
-		session.getTransaction.commit()
-		afterUpdate()
-		afterAll()
+		execute(session => {
+			session.update(this)
+			afterUpdate()
+		})
 	}
 
 	def afterUpdate(): Unit = {}
 
 	def delete(): Unit = {
-		val session = DBHelper.getSession
-		session.beginTransaction()
-		session.delete(this)
-		session.getTransaction.commit()
-		session.close()
-		afterDelete()
-		afterAll()
+		execute(session => {
+			session.delete(this)
+			afterDelete()
+		})
 	}
 
 	def afterDelete(): Unit = {}
 
 	def afterAll(): Unit = {}
+
+
+	override def toString: String = {
+		childClass + "(id: " + id + ")"
+	}
 
 	def toJson: String = {
 		val writer = new StringWriter

@@ -31,7 +31,9 @@
                         <tr>
                             <!--th>Id</th-->
                             {% for field in fields %}
-                                <th>{{ i18n(bundle="objects", key=objectName + "_" + field.name, def=field.name) }}</th>
+                                {% if field.an.shownInList %}
+                                    <th>{{ i18n(bundle="objects", key=objectName + "_" + field.name, def=field.name) }}</th>
+                                {% endif %}
                             {% endfor %}
                             <th></th>
                         </tr>
@@ -40,7 +42,9 @@
                         {% for object in objects %}
                         <tr>
                             {% for field in fields %}
-                                <td>{{ getAttr(object, field.name) }}</td>
+                                {% if field.an.shownInList %}
+                                    <td>{{ getAttr(object, field.name) }}</td>
+                                {% endif %}
                             {% endfor %}
                             <td><a href="/admin/object/{{ objectName }}/{{ getAttr(object, "id") }}"class="btn btn-default">{{ i18n("common","EDIT_BTN") }}</a></td>
                         </tr>

@@ -2,10 +2,10 @@ import java.io.File
 
 import cz.kamenitxan.jakon.core.customPages.StaticPage
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
-import cz.kamenitxan.jakon.core.model.{DeployMode, JakonUser, Page}
+import cz.kamenitxan.jakon.core.model.{JakonUser, Page}
 import cz.kamenitxan.jakon.core.template.Pebble
 import cz.kamenitxan.jakon.core.Director
-import cz.kamenitxan.jakon.core.configuration.Settings
+import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import functions.LinkTest
 import org.scalatest.{BeforeAndAfterAll, Suites}
 import webui.AuthTest
@@ -26,8 +26,8 @@ class TestRunner extends Suites(new RenderTest, new LinkTest, new AuthTest) with
 		DBHelper.addDao(classOf[JakonUser])
 
 		val page = new Page
-		page.setTitle("test page 1")
-		page.setContent("test content")
+		page.title = "test page 1"
+		page.content = "test content"
 		page.setUrl("/page/testpage1")
 		//DBHelper.getPageDao.createIfNotExists(page)
 
