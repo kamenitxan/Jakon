@@ -1,12 +1,10 @@
 package cz.kamenitxan.jakon.utils
 
 import java.lang.reflect.Field
-import java.util
 import java.util.Locale
 
 import scala.collection.JavaConversions._
-import scala.collection.immutable.Nil
-import scala.collection.mutable
+import scala.language.postfixOps
 import scala.util.Try
 
 /**

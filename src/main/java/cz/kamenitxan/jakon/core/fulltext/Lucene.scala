@@ -3,6 +3,7 @@ package cz.kamenitxan.jakon.core.fulltext
 import java.io.File
 
 import cz.kamenitxan.jakon.core.model.JakonObject
+import cz.kamenitxan.jakon.webui.entity.{FieldInfo, JakonField}
 import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.document.{Document, Field, StringField, TextField}
 import org.apache.lucene.index.IndexWriterConfig.OpenMode
@@ -16,21 +17,26 @@ import scala.language.postfixOps
 
 object Lucene {
 	val indexDirectory = "fulltext"
-
-
-
 	val index = FSDirectory.open(new File(indexDirectory).toPath)
-
 	val analyzer = new StandardAnalyzer()
 	val iwc = new IndexWriterConfig(analyzer)
 	iwc.setOpenMode(OpenMode.CREATE_OR_APPEND)
-
 	val writer = new IndexWriter(index, iwc)
 
+	def dropIndex(): Unit = {
+		writer.deleteAll()
+		writer.commit()
+	}
+
 	def indexObject(obj: JakonObject): Unit = {
+		val indexedText = obj.getClass.getFields.filter(f => {
+			val ann = f.getAnnotation(classOf[JakonField])
+			ann != null && ann.searched()
+		}).map(f => f.get(obj).toString).fold("") {(acc, f) => acc + " " + f}
+
 		val doc = new Document()
-		doc.add(new TextField("index", "title text", Field.Store.YES))
-		// use a string field for isbn because we don't want it tokenized
+		doc.add(new TextField("index", indexedText, Field.Store.YES))
+		// use a string field because we don't want it tokenized
 		doc.add(new StringField("jakonId", obj.id toString, Field.Store.YES))
 		writer.addDocument(doc)
 	}
@@ -51,11 +57,6 @@ object Lucene {
 		val query = new QueryParser("index", analyzer).parse(queryString)
 		val result = searcher.search(query, 10).scoreDocs
 		result.map( d => searcher.doc(d.doc)) toList
-	}
-
-	def main(args: Array[String]): Unit = {
-		Lucene.indexObject(null)
-		Lucene.search("title text")
 	}
 
 }

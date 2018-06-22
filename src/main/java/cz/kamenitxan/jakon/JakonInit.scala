@@ -7,7 +7,7 @@ import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.{Category, Page, Post}
 import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
-import cz.kamenitxan.jakon.core.task.{RenderTask, TaskRunner}
+import cz.kamenitxan.jakon.core.task.{FulltextTask, RenderTask, TaskRunner}
 import cz.kamenitxan.jakon.devtools.DevRender
 import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.webui.AdminSettings
@@ -36,6 +36,7 @@ class JakonInit {
 
 	def taskSetup(): Unit = {
 		TaskRunner.registerTask(new RenderTask(10, TimeUnit.MINUTES))
+		TaskRunner.registerTask(new FulltextTask)
 	}
 
 	def run(): Unit = {
