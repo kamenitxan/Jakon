@@ -9,7 +9,7 @@ import cz.kamenitxan.jakon.webui.conform.FieldConformer
 
 import scala.language.postfixOps
 
-class FulltextTask() extends AbstractTask(classOf[RenderTask].getSimpleName, 0, TimeUnit.MINUTES) {
+class FulltextTask() extends AbstractTask(classOf[FulltextTask].getSimpleName, 0, TimeUnit.MINUTES) {
 
 	override def start(): Unit = {
 		val classes = DBHelper.objects

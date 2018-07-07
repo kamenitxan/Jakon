@@ -9,20 +9,26 @@ import com.mitchellbosecke.pebble.loader.FileLoader
 import com.mitchellbosecke.pebble.template.PebbleTemplate
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.controler.IControler
+import cz.kamenitxan.jakon.core.template.pebble.PebbleExtension
 import cz.kamenitxan.jakon.devtools.DevRender
-import cz.kamenitxan.jakon.webui.functions.PebbleExtension
 
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
   */
 class Pebble extends TemplateEngine {
-	val loader = new FileLoader
+	private val loader = new FileLoader
 	loader.setPrefix(Settings.getTemplateDir)
 	loader.setSuffix(".peb")
-	val engine = new PebbleEngine.Builder()
-	  .loader(loader)
-	    .extension(new PebbleExtension)
-	  .strictVariables(true).build()
+	private val builder = new PebbleEngine.Builder()
+	builder.loader(loader)
+	builder.extension(new PebbleExtension)
+	builder.strictVariables(true)
+	if (Settings.getDeployMode == DeployMode.DEVEL) {
+		builder.templateCache(null)
+		builder.tagCache(null)
+		builder.cacheActive(false)
+	}
+	private val engine = builder.build()
 
 	def render(templateName: String, path: String, context: util.Map[String, AnyRef])(implicit caller: IControler) {
 		var compiledTemplate: PebbleTemplate = null

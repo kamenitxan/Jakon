@@ -16,8 +16,7 @@ import webui.{AuthTest}
 class TestRunner extends Suites(
 	new RenderTest,
 	new LinkTest,
-	new AuthTest//,
-	//new MenuTest
+	new AuthTest
 ) with BeforeAndAfterAll {
 
 	override def beforeAll() {
@@ -40,6 +39,7 @@ class TestRunner extends Suites(
 		page.setUrl("/page/testpage1")
 		//DBHelper.getPageDao.createIfNotExists(page)
 
+		Thread.sleep(1000)
 		Director.render()
 	}
 

@@ -6,7 +6,7 @@ import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import cz.kamenitxan.jakon.core.configuration.Settings;
 import cz.kamenitxan.jakon.core.configuration.DeployMode;
-import cz.kamenitxan.jakon.webui.functions.PebbleExtension;
+import cz.kamenitxan.jakon.webui.functions.AdminPebbleExtension;
 import spark.ModelAndView;
 import spark.TemplateEngine;
 
@@ -37,7 +37,7 @@ public class FixedPebbleTemplateEngine extends TemplateEngine {
 	 * Construct a new template engine using pebble with an engine using a special loader.
 	 */
 	public FixedPebbleTemplateEngine(Loader loader) {
-		PebbleEngine.Builder builder = new PebbleEngine.Builder().loader(loader).extension(new PebbleExtension());
+		PebbleEngine.Builder builder = new PebbleEngine.Builder().loader(loader).extension(new AdminPebbleExtension());
 		if (DeployMode.DEVEL.equals(Settings.getDeployMode())) {
 			builder.templateCache(null);
 			builder.tagCache(null);

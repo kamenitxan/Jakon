@@ -6,7 +6,7 @@
     <h1> Index page </h1>
     <p>Welcome to Jakon!</p>
     <ul>
-        <li>Pages</li>
+        <li>{{ i18n("common","PAGE") }}</li>
         <li>Static Page - {{ link(2) | raw }}</li>
     </ul>
 {% endblock %}

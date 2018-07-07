@@ -56,7 +56,6 @@ object Director {
 			Authentication.createUser(user)
 		}
 		logger.info("Jakon default init complete")
-		Director.render()
 	}
 
 	def render() {
