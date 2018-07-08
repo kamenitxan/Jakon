@@ -40,11 +40,11 @@ abstract class JakonObject(@BeanProperty
 
 	def getObjectSettings: ObjectSettings = objectSettings
 
-	def setUrl(url: String) = this.url = url
+	def setUrl(url: String): Unit = this.url = url
 
 	def getUrl: String = url
 
-	private def execute(fun: Session => Unit) = {
+	private def execute(fun: Session => Unit): Unit = {
 		val session = DBHelper.getSession
 		if (!session.getTransaction.isActive) {
 			session.beginTransaction()

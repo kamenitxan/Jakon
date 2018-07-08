@@ -37,7 +37,7 @@ class TestRunner extends Suites(
 		page.title = "test page 1"
 		page.content = "test content"
 		page.setUrl("/page/testpage1")
-		//DBHelper.getPageDao.createIfNotExists(page)
+		page.create()
 
 		Thread.sleep(1000)
 		Director.render()

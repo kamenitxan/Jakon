@@ -10,7 +10,7 @@ object DevRender {
 	private val registeredPaths = mutable.HashMap[String, IControler]()
 
 	def registerPath(path: String, caller: IControler): Unit = {
-		val controler = controllers.find(c => c.getClass.getCanonicalName.equals(caller.getClass.getCanonicalName))
+		val controler = controllers.find(c => c.getClass.getCanonicalName != null && c.getClass.getCanonicalName.equals(caller.getClass.getCanonicalName))
 		if (controler.isEmpty) return
 		registeredPaths += ("/" + path + ".html" -> controler.get)
 	}

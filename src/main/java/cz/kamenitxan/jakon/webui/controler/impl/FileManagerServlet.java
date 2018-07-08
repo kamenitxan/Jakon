@@ -1,67 +1,40 @@
 package cz.kamenitxan.jakon.webui.controler.impl;
 
-		import java.io.BufferedInputStream;
-		import java.io.BufferedOutputStream;
-		import java.io.BufferedReader;
-		import java.io.ByteArrayOutputStream;
-		import java.io.File;
-		import java.io.IOException;
-		import java.io.InputStream;
-		import java.io.PrintWriter;
-		import java.net.URI;
-		import java.nio.ByteBuffer;
-		import java.nio.channels.SeekableByteChannel;
-		import java.text.SimpleDateFormat;
-		import java.util.ArrayList;
-		import java.util.Date;
-		import java.util.HashMap;
-		import java.util.List;
-		import java.util.Map;
-		import java.util.Set;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.JSONValue;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-		import java.nio.file.Path;
-		import java.nio.file.Paths;
-		import java.nio.file.DirectoryStream;
-		import java.nio.file.FileAlreadyExistsException;
-		import java.nio.file.FileSystem;
-		import java.nio.file.FileSystems;
-		import java.nio.file.FileVisitResult;
-		import java.nio.file.Files;
-		import java.nio.file.SimpleFileVisitor;
-		import java.nio.file.StandardCopyOption;
-		import java.nio.file.attribute.BasicFileAttributes;
-		import java.nio.file.attribute.PosixFileAttributeView;
-		import java.nio.file.attribute.PosixFileAttributes;
-		import java.nio.file.attribute.PosixFilePermission;
-		import java.nio.file.attribute.PosixFilePermissions;
-		import java.util.regex.Pattern;
-		import java.util.zip.ZipEntry;
-		import java.util.zip.ZipOutputStream;
-
-		import javax.mail.internet.MimeUtility;
-		import javax.servlet.ServletException;
-		import javax.servlet.http.HttpServlet;
-		import javax.servlet.http.HttpServletRequest;
-		import javax.servlet.http.HttpServletResponse;
-
-		import net.minidev.json.JSONArray;
-		import net.minidev.json.JSONObject;
-		import net.minidev.json.JSONValue;
-
-		import org.apache.commons.fileupload.FileItem;
-		import org.apache.commons.fileupload.FileUploadException;
-		import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-		import org.apache.commons.fileupload.servlet.ServletFileUpload;
-		import org.apache.commons.io.FileUtils;
-		import org.slf4j.Logger;
-		import org.slf4j.LoggerFactory;
+import javax.mail.internet.MimeUtility;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URI;
+import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.file.*;
+import java.nio.file.FileSystem;
+import java.nio.file.attribute.*;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * This servlet serve angular-filemanager call<br>
  * It's here for example purpouse, to use it you have to put it in your java web
  * project<br>
  * Put in web.xml the servlet mapping
- *
+ * <p>
  * <pre>
  * &ltservlet&gt
  * 	&ltservlet-name&gtFileManagerServlet&lt/servlet-name&gt
@@ -72,11 +45,11 @@ package cz.kamenitxan.jakon.webui.controler.impl;
  * 	&lturl-pattern&gt/fm/*&lt/url-pattern&gt
  * &lt/servlet-mapping&gt
  * </pre>
- *
+ * <p>
  * that catch all request to path /fm/*<br>
  * in angular-filemanager-master/index.html uncomment links to js files<br>
  * in my assest/config.js I have :
- *
+ * <p>
  * <pre>
  * listUrl : "/fm/listUrl",
  * uploadUrl : "/fm/uploadUrl",
@@ -91,7 +64,7 @@ package cz.kamenitxan.jakon.webui.controler.impl;
  * extractUrl : "/fm/extractUrl",
  * permissionsUrl : "/fm/permissionsUrl",
  * </pre>
- *
+ * <p>
  * During initialization this servlet load some config properties from a file
  * called angular-filemanager.properties in your classes folder. You can set
  * repository.base.url and date.format <br>
@@ -111,12 +84,6 @@ public class FileManagerServlet extends HttpServlet {
 	private static final long serialVersionUID = -8453502699403909016L;
 
 	private Map<Mode, Boolean> enabledAction = null;
-
-	enum Mode {
-
-		list, rename, move, copy, remove, edit, getContent, createFolder, changePermissions, compress, extract, upload
-	}
-
 	private String REPOSITORY_BASE_PATH = "upload";
 	// private String DATE_FORMAT = "yyyy-MM-dd hh:mm:ss"; // (2001-07-04 12:08:56)
 	private String DATE_FORMAT = "EEE, d MMM yyyy HH:mm:ss z"; // (Wed, 4 Jul 2001 12:08:56)
@@ -137,25 +104,25 @@ public class FileManagerServlet extends HttpServlet {
 			DATE_FORMAT = configValue;
 		}
 
-			//final String enabledActions = getInitParameter("enabled.action").toLowerCase();
-			String enabledActions = "createfolder, rename, remove, upload";
-			Pattern movePattern = Pattern.compile("\\bmove\\b");
-			enabledAction = new HashMap<>();
-			enabledAction.put(Mode.rename, enabledActions.contains("rename"));
-			enabledAction.put(Mode.move, movePattern.matcher(enabledActions).find());
-			enabledAction.put(Mode.remove, enabledActions.contains("remove"));
-			enabledAction.put(Mode.edit, enabledActions.contains("edit"));
-			enabledAction.put(Mode.createFolder, enabledActions.contains("createfolder"));
-			enabledAction.put(Mode.changePermissions, enabledActions.contains("changepermissions"));
-			enabledAction.put(Mode.compress, enabledActions.contains("compress"));
-			enabledAction.put(Mode.extract, enabledActions.contains("extract"));
-			enabledAction.put(Mode.copy, enabledActions.contains("copy"));
-			enabledAction.put(Mode.upload, enabledActions.contains("upload"));
+		//final String enabledActions = getInitParameter("enabled.action").toLowerCase();
+		String enabledActions = "createfolder, rename, remove, upload";
+		Pattern movePattern = Pattern.compile("\\bmove\\b");
+		enabledAction = new HashMap<>();
+		enabledAction.put(Mode.rename, enabledActions.contains("rename"));
+		enabledAction.put(Mode.move, movePattern.matcher(enabledActions).find());
+		enabledAction.put(Mode.remove, enabledActions.contains("remove"));
+		enabledAction.put(Mode.edit, enabledActions.contains("edit"));
+		enabledAction.put(Mode.createFolder, enabledActions.contains("createfolder"));
+		enabledAction.put(Mode.changePermissions, enabledActions.contains("changepermissions"));
+		enabledAction.put(Mode.compress, enabledActions.contains("compress"));
+		enabledAction.put(Mode.extract, enabledActions.contains("extract"));
+		enabledAction.put(Mode.copy, enabledActions.contains("copy"));
+		enabledAction.put(Mode.upload, enabledActions.contains("upload"));
 
 	}
 
 	@Override
-	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// Catch download requests
 
 		// [$config.downloadFileUrl]?mode=download&preview=true&path=/public_html/image.jpg
@@ -175,7 +142,7 @@ public class FileManagerServlet extends HttpServlet {
 			try (SeekableByteChannel channel = Files.newByteChannel(file.toPath())) {
 				byte[] buffer = new byte[256 * 1024];
 				ByteBuffer byteBuffer = ByteBuffer.wrap(buffer);
-				for (int length = 0; (length = channel.read(byteBuffer)) != -1;) {
+				for (int length; (length = channel.read(byteBuffer)) != -1; ) {
 					response.getOutputStream().write(buffer, 0, length);
 					byteBuffer.clear();
 				}
@@ -197,7 +164,7 @@ public class FileManagerServlet extends HttpServlet {
 						zos.putNextEntry(zipEntry);
 						byte buffer[] = new byte[2048];
 						try (BufferedInputStream bis = new BufferedInputStream(Files.newInputStream(path))) {
-							int bytesRead = 0;
+							int bytesRead;
 							while ((bytesRead = bis.read(buffer)) != -1) {
 								zos.write(buffer, 0, bytesRead);
 							}
@@ -216,7 +183,7 @@ public class FileManagerServlet extends HttpServlet {
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		try {
 			// if request contains multipart-form-data
 			if (ServletFileUpload.isMultipartContent(request)) {
@@ -241,7 +208,7 @@ public class FileManagerServlet extends HttpServlet {
 		return Boolean.TRUE.equals(enabledAction.get(mode));
 	}
 
-	private JSONObject notSupportFeature(Mode mode) throws ServletException {
+	private JSONObject notSupportFeature(Mode mode) {
 		return error("This implementation not support " + mode + " feature");
 	}
 
@@ -326,10 +293,9 @@ public class FileManagerServlet extends HttpServlet {
 		}
 	}
 
-	private void fileOperation(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		JSONObject responseJsonObject = null;
+	private void fileOperation(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		JSONObject responseJsonObject;
 		try {
-			// legge il parametro json
 			StringBuilder sb = new StringBuilder();
 			try (BufferedReader br = request.getReader()) {
 				String str;
@@ -338,7 +304,6 @@ public class FileManagerServlet extends HttpServlet {
 				}
 			}
 			JSONObject params = JSONValue.parse(sb.toString(), JSONObject.class);
-			// legge mode e chiama il metodo aapropriato
 			Mode mode = Mode.valueOf(params.getAsString("action"));
 			switch (mode) {
 				case createFolder:
@@ -389,7 +354,7 @@ public class FileManagerServlet extends HttpServlet {
 		out.flush();
 	}
 
-	private JSONObject list(JSONObject params) throws ServletException {
+	private JSONObject list(JSONObject params) {
 		try {
 			boolean onlyFolders = "true".equalsIgnoreCase(params.getAsString("onlyFolders"));
 			String path = params.getAsString("path");
@@ -414,6 +379,7 @@ public class FileManagerServlet extends HttpServlet {
 					resultList.add(el);
 				}
 			} catch (IOException ex) {
+				LOG.error("Error while listing files", ex);
 			}
 			JSONObject json = new JSONObject();
 			json.put("result", resultList);
@@ -424,7 +390,7 @@ public class FileManagerServlet extends HttpServlet {
 		}
 	}
 
-	private JSONObject move(JSONObject params) throws ServletException {
+	private JSONObject move(JSONObject params) {
 		try {
 			JSONArray paths = ((JSONArray) params.get("items"));
 			Path newpath = Paths.get(REPOSITORY_BASE_PATH, params.getAsString("newPath"));
@@ -448,7 +414,7 @@ public class FileManagerServlet extends HttpServlet {
 		}
 	}
 
-	private JSONObject rename(JSONObject params) throws ServletException {
+	private JSONObject rename(JSONObject params) {
 		try {
 			String path = params.getAsString("item");
 			String newpath = params.getAsString("newItemPath");
@@ -468,7 +434,7 @@ public class FileManagerServlet extends HttpServlet {
 		}
 	}
 
-	private JSONObject copy(JSONObject params) throws ServletException {
+	private JSONObject copy(JSONObject params) {
 		try {
 			JSONArray paths = ((JSONArray) params.get("items"));
 			Path newpath = Paths.get(REPOSITORY_BASE_PATH, params.getAsString("newPath"));
@@ -520,7 +486,7 @@ public class FileManagerServlet extends HttpServlet {
 		}
 	}
 
-	private JSONObject getContent(JSONObject params) throws ServletException {
+	private JSONObject getContent(JSONObject params) {
 		try {
 			JSONObject json = new JSONObject();
 			json.put("result", FileUtils.readFileToString(Paths.get(REPOSITORY_BASE_PATH,
@@ -532,7 +498,7 @@ public class FileManagerServlet extends HttpServlet {
 		}
 	}
 
-	private JSONObject editFile(JSONObject params) throws ServletException {
+	private JSONObject editFile(JSONObject params) {
 		// get content
 		try {
 			String path = params.getAsString("item");
@@ -548,7 +514,7 @@ public class FileManagerServlet extends HttpServlet {
 		}
 	}
 
-	private JSONObject createFolder(JSONObject params) throws ServletException {
+	private JSONObject createFolder(JSONObject params) {
 		try {
 			Path path = Paths.get(REPOSITORY_BASE_PATH, params.getAsString("newPath"));
 			LOG.debug("createFolder path: {} name: {}", path);
@@ -562,7 +528,7 @@ public class FileManagerServlet extends HttpServlet {
 		}
 	}
 
-	private JSONObject changePermissions(JSONObject params) throws ServletException {
+	private JSONObject changePermissions(JSONObject params) {
 		try {
 			JSONArray paths = ((JSONArray) params.get("items"));
 			String perms = params.getAsString("perms"); // "rw-r-x-wx"
@@ -580,7 +546,7 @@ public class FileManagerServlet extends HttpServlet {
 		}
 	}
 
-	private JSONObject compress(JSONObject params) throws ServletException {
+	private JSONObject compress(JSONObject params) {
 		try {
 			JSONArray paths = ((JSONArray) params.get("items"));
 			String paramDest = params.getAsString("destination");
@@ -636,7 +602,7 @@ public class FileManagerServlet extends HttpServlet {
 		}
 	}
 
-	private JSONObject extract(JSONObject params) throws ServletException {
+	private JSONObject extract(JSONObject params) {
 		boolean genFolder = false;
 		Path dest = Paths.get(REPOSITORY_BASE_PATH, params.getAsString("destination"));
 		final Path folder = dest.resolve(params.getAsString("folderName"));
@@ -652,7 +618,7 @@ public class FileManagerServlet extends HttpServlet {
 				Files.walkFileTree(zipfs.getPath("/"), new SimpleFileVisitor<Path>() {
 
 					@Override
-					public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+					public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
 						if (file.getNameCount() > 0) {
 							Path dest = folder.resolve(file.getNameCount() < 1 ? "" : file.subpath(0, file.getNameCount()).toString());
 							LOG.debug("extract {} to {}", file, dest);
@@ -724,6 +690,10 @@ public class FileManagerServlet extends HttpServlet {
 		JSONObject json = new JSONObject();
 		json.put("result", result);
 		return json;
+	}
+
+	enum Mode {
+		list, rename, move, copy, remove, edit, getContent, createFolder, changePermissions, compress, extract, upload
 	}
 
 }
