@@ -13,6 +13,7 @@ class FulltextTask() extends AbstractTask(classOf[FulltextTask].getSimpleName, 0
 
 	override def start(): Unit = {
 		val classes = DBHelper.objects
+		Lucene.dropIndex()
 		classes.par.foreach( jo => {
 			val infos = FieldConformer.getEmptyFieldInfos(jo.getFields toList)
 			val indexed = infos.exists( fi => fi.an.searched())

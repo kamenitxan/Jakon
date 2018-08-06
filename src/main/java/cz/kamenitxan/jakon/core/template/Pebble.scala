@@ -23,7 +23,7 @@ class Pebble extends TemplateEngine {
 	builder.loader(loader)
 	builder.extension(new PebbleExtension)
 	builder.strictVariables(true)
-	if (Settings.getDeployMode == DeployMode.DEVEL) {
+	if (DeployMode.DEVEL == Settings.getDeployMode) {
 		builder.templateCache(null)
 		builder.tagCache(null)
 		builder.cacheActive(false)
