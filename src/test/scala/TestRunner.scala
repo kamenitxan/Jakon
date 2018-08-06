@@ -8,7 +8,7 @@ import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.example.Main
 import functions.LinkTest
 import org.scalatest.{BeforeAndAfterAll, Suites}
-import webui.{AuthTest}
+import webui.{AuthTest, MenuTest}
 
 /**
   * Created by TPa on 27.08.16.
@@ -16,7 +16,8 @@ import webui.{AuthTest}
 class TestRunner extends Suites(
 	new RenderTest,
 	new LinkTest,
-	new AuthTest
+	new AuthTest,
+	new MenuTest
 ) with BeforeAndAfterAll {
 
 	override def beforeAll() {

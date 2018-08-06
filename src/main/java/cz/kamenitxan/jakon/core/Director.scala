@@ -1,19 +1,14 @@
 package cz.kamenitxan.jakon.core
 
-import com.mongodb.MongoClient
 import cz.kamenitxan.jakon.core.configuration.Settings
-import cz.kamenitxan.jakon.example.Main.logger
 import cz.kamenitxan.jakon.core.controler.IControler
-import cz.kamenitxan.jakon.core.controler.PageControler
 import cz.kamenitxan.jakon.core.customPages.CustomPage
-import cz.kamenitxan.jakon.core.model.Dao.{DBHelper, MongoHelper}
+import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
-import cz.kamenitxan.jakon.core.template.Pebble
-import cz.kamenitxan.jakon.core.template.TemplateUtils
+import cz.kamenitxan.jakon.core.template.{Pebble, TemplateUtils}
 import cz.kamenitxan.jakon.webui.Routes
 import cz.kamenitxan.jakon.webui.controler.impl.Authentication
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import org.slf4j.{Logger, LoggerFactory}
 
 
 /**
