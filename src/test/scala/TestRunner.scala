@@ -23,6 +23,7 @@ class TestRunner extends Suites(
 		println("Before!")
 		Director.init()
 		Settings.init(null)
+		Settings.setDatabaseConnPath("jdbc:sqlite:jakonUnitTest.sqlite")
 		Settings.setTemplateEngine(new Pebble)
 		Settings.setDeployMode(DeployMode.PRODUCTION)
 		Settings.setPort(Settings.getPort - 1)
@@ -45,6 +46,6 @@ class TestRunner extends Suites(
 
 	override def afterAll() {
 		println("After!")  // shut down the web server
-		new File("JakonTest.sqlite").delete()
+		new File("jakonUnitTest.sqlite").delete()
 	}
 }
