@@ -19,13 +19,13 @@ import spark.{Request, Response}
 class JakonInit {
 	private val logger = LoggerFactory.getLogger(this.getClass)
 
-	var daoSetup = () => {
+	var daoSetup: () => Unit = () => {
 		//DBHelper.addDao(classOf[Post])
 		//DBHelper.addDao(classOf[Page])
 		//DBHelper.addDao(classOf[Category])
 	}
 
-	var routesSetup = () => {}
+	var routesSetup: () => Unit = () => {}
 
 	def adminControllers() {
 		AdminSettings.registerCustomController(new DeployControler().getClass)
