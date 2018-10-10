@@ -13,10 +13,11 @@ addons:
   firefox: "latest"
 
 before_install:
-  - wget https://github.com/mozilla/geckodriver/releases/download/v0.21.0/geckodriver-v0.21.0-linux64.tar.gz
+- wget https://github.com/mozilla/geckodriver/releases/download/v0.23.0/geckodriver-v0.23.0-linux64.tar.gz
   - mkdir geckodriver
-  - tar -xzf geckodriver-v0.21.0-linux64.tar.gz -C geckodriver
+- tar -xzf geckodriver-v0.23.0-linux64.tar.gz -C geckodriver
   - export PATH=$PATH:$PWD/geckodriver
+- echo $PATH
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"
 
 after_success:
