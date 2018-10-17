@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon
 
-import java.io.IOException
+import java.io.{File, IOException}
 import java.util.concurrent.TimeUnit
 
 import cz.kamenitxan.jakon.core.Director
@@ -41,11 +41,6 @@ class JakonInit {
 		staticFiles.externalLocation(Settings.getStaticDir)
 		port(Settings.getPort)
 
-		try
-			Settings.init(null)
-		catch {
-			case e: IOException => logger.error("Jdufanit: cant load jakon settings", e)
-		}
 		logger.info("Starting in " + Settings.getDeployMode + " mode")
 
 		daoSetup()

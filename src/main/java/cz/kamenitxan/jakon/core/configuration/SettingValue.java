@@ -11,11 +11,18 @@ public enum SettingValue {
 	PORT("port", true),
 	DEPLOY_MODE("deployMode", true),
 	DEPLOY_TYPE("DEPLOY.type"),
-	DEFAULT_LOCALE("defaultLocale");
+	DEFAULT_LOCALE("defaultLocale"),
+	MAIL_AUTH("MAIL.auth", false, "false"),
+	MAIL_TLS("MAIL.tls", false, "false"),
+	MAIL_HOST("MAIL.host", false, "localhost"),
+	MAIL_PORT("MAIL.port", false, "25"),
+	MAIL_USERNAME("MAIL.username", false, ""),
+	MAIL_PASSWORD("MAIL.password", false, "");
 
 
 	public String name;
 	public boolean required;
+	public String defaultValue;
 
 	SettingValue(String name) {
 		this.name = name;
@@ -25,6 +32,12 @@ public enum SettingValue {
 	SettingValue(String name, boolean required) {
 		this.name = name;
 		this.required = required;
+	}
+
+	SettingValue(String name, boolean required, String defaultValue) {
+		this.name = name;
+		this.required = required;
+		this.defaultValue = defaultValue;
 	}
 
 	public static SettingValue fromName(String name) {

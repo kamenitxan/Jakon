@@ -23,7 +23,6 @@ class TestRunner extends Suites(
 	override def beforeAll() {
 		println("Before!")
 		Director.init()
-		Settings.init(null)
 		Settings.setDatabaseConnPath("jdbc:sqlite:jakonUnitTest.sqlite")
 		Settings.setTemplateEngine(new Pebble)
 		Settings.setDeployMode(DeployMode.PRODUCTION)
