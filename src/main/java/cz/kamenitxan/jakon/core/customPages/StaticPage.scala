@@ -13,7 +13,7 @@ abstract class StaticPage(templateName: String, url: String) extends CustomPage 
 
 	override def generate() {
 		val engine = TemplateUtils.getEngine
-		engine.render(templateName, url, null)
+		engine.render(templateName, url, Map[String, AnyRef]())
 	}
 
 	override val objectSettings: ObjectSettings = new ObjectSettings()

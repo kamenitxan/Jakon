@@ -5,6 +5,7 @@ import java.util._
 
 import cz.kamenitxan.jakon.core.template.{FixedPebbleTemplateEngine, Pebble, TemplateEngine}
 import cz.kamenitxan.jakon.utils.Utils
+import cz.kamenitxan.jakon.utils.mail.EmailTypeHandler
 import cz.kamenitxan.jakon.webui.util.JakonFileLoader
 import org.slf4j.LoggerFactory
 
@@ -18,6 +19,7 @@ object Settings {
 	private var engine: TemplateEngine = _
 	private var adminEngine: spark.TemplateEngine = _
 	private val settings = mutable.Map[SettingValue, String]()
+	private var emailTypeHandler: EmailTypeHandler = _
 
 	init(new File("jakon_config.properties"))
 
@@ -88,7 +90,13 @@ object Settings {
 
 	def getDefaultLocale: Locale = Utils.stringToLocale(settings.get(SettingValue.DEFAULT_LOCALE).orNull)
 
-	def getProperty(name: SettingValue): String = settings.get(name).orNull
+	def getProperty(name: SettingValue): String = {
+		val prop = settings.get(name)
+		if (prop.isEmpty && name.defaultValue != null) {
+			return name.defaultValue
+		}
+		prop.orNull
+	}
 
 	def getDeployMode: DeployMode = {
 		val mode = settings.get(SettingValue.DEPLOY_MODE)
@@ -98,5 +106,11 @@ object Settings {
 
 	def setDeployMode(mode: DeployMode): Unit = settings.put(SettingValue.DEPLOY_MODE, mode.name)
 
+	def getEmailTypeHandler: EmailTypeHandler = emailTypeHandler
 
+	def setEmailTypeHandler(handler: EmailTypeHandler): Unit = emailTypeHandler = handler
+
+	def isEmailEnabled: Boolean = {
+		getProperty(SettingValue.MAIL_ENABLED).toBoolean
+	}
 }

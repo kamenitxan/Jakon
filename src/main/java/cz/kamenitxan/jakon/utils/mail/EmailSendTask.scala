@@ -11,7 +11,8 @@ import javax.mail._
 import javax.mail.internet.{InternetAddress, MimeBodyPart, MimeMessage}
 import org.slf4j.LoggerFactory
 
-class EmailSendTask extends AbstractTask(classOf[EmailSendTask].getSimpleName, 0, TimeUnit.MINUTES){
+
+class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[EmailSendTask].getSimpleName, period, unit){
 	private val logger = LoggerFactory.getLogger(this.getClass)
 
 	override def start(): Unit = {
@@ -43,16 +44,25 @@ class EmailSendTask extends AbstractTask(classOf[EmailSendTask].getSimpleName, 0
 			})
 			emails.forEach(e => {
 				val message = new MimeMessage(mailSession)
-				message.setFrom(new InternetAddress(e.from))
+
 				message.setRecipients(Message.RecipientType.TO, "to@gmail.com")
 				message.setSubject(e.subject)
 
 				val msg = "This is my first email using JavaMailer"
+				if (e.template != null) {
+					val tmpl = session.get(classOf[EmailTemplateEntity], e.template)
 
-				val mimeBodyPart = new MimeBodyPart()
-				mimeBodyPart.setContent(msg, "text/html")
+					message.setFrom(new InternetAddress(tmpl.from))
+
+					val te = Settings.getTemplateEngine
+					te.renderTemplate(tmpl.template, e.params)
+					val mimeBodyPart = new MimeBodyPart()
+					mimeBodyPart.setContent(msg, "text/html")
+				}
+
 				if (e.emailType != null) {
-
+					val fun = Settings.getEmailTypeHandler.handle(e.emailType)
+					fun.apply(message, e.params)
 				}
 				Transport.send(message)
 			})

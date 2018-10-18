@@ -4,10 +4,12 @@ import java.io.{File, IOException}
 import java.util.concurrent.TimeUnit
 
 import cz.kamenitxan.jakon.core.Director
-import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
+import cz.kamenitxan.jakon.core.configuration.{DeployMode, SettingValue, Settings}
+import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.task.{FulltextTask, RenderTask, TaskRunner}
 import cz.kamenitxan.jakon.devtools.{DevRender, StaticFilesController}
 import cz.kamenitxan.jakon.utils.PageContext
+import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.webui.AdminSettings
 import cz.kamenitxan.jakon.webui.controler.impl.{DeployControler, TaskController}
 import org.slf4j.LoggerFactory
@@ -35,6 +37,12 @@ class JakonInit {
 	def taskSetup(): Unit = {
 		TaskRunner.registerTask(new RenderTask(10, TimeUnit.MINUTES))
 		TaskRunner.registerTask(new FulltextTask)
+		if (Settings.isEmailEnabled) {
+			DBHelper.addDao(classOf[EmailEntity])
+			DBHelper.addDao(classOf[EmailTemplateEntity])
+			TaskRunner.registerTask(new EmailSendTask(1, TimeUnit.MINUTES))
+		}
+
 	}
 
 	def run(): Unit = {
