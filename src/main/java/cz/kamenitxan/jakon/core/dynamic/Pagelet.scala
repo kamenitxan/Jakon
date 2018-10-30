@@ -17,4 +17,5 @@ abstract class Pagelet extends TemplateViewRoute{
 	val engine = new PebbleTemplateEngine(loader)
 
 	def render(context: util.Map[String, AnyRef], templatePath: String): String = engine.render(new ModelAndView(context, templatePath))
+
 }

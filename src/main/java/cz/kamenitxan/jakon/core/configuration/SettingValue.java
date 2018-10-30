@@ -4,6 +4,7 @@ public enum SettingValue {
 	TEMPLATE_DIR("templateDir", true),
 	STATIC_DIR("staticDir", true),
 	OUTPUT_DIR("outputDir", true),
+	PACKAGE("package", true),
 	DB_DRIVER("databaseDriver", true),
 	DB_URL("databaseConnPath", true),
 	DB_USER("databaseUser"),

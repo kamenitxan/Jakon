@@ -4,7 +4,7 @@ import java.io.{File, IOException}
 import java.util.concurrent.TimeUnit
 
 import cz.kamenitxan.jakon.core.Director
-import cz.kamenitxan.jakon.core.configuration.{DeployMode, SettingValue, Settings}
+import cz.kamenitxan.jakon.core.configuration.{AnnotationScanner, DeployMode, SettingValue, Settings}
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.task.{FulltextTask, RenderTask, TaskRunner}
 import cz.kamenitxan.jakon.devtools.{DevRender, StaticFilesController}
@@ -66,6 +66,7 @@ class JakonInit {
 			notFound((req: Request, res: Response) => new StaticFilesController().doGet(req, res))
 		}
 		routesSetup()
+		AnnotationScanner.scan()
 		taskSetup()
 	}
 }

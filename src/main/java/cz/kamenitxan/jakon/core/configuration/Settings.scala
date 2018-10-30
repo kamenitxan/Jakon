@@ -76,6 +76,8 @@ object Settings {
 
 	def setOutputDir(outputDir: String): Unit = settings.put(SettingValue.OUTPUT_DIR, outputDir)
 
+	def getPackage: String = settings.get(SettingValue.PACKAGE).orNull
+
 	def getDatabaseDriver: String = settings.get(SettingValue.DB_DRIVER).orNull
 
 	def setDatabaseDriver(databaseDriver: String): Unit = settings.put(SettingValue.DB_DRIVER, databaseDriver)
