@@ -7,6 +7,9 @@ import cz.kamenitxan.jakon.core.configuration.Settings
 import spark.{ModelAndView, TemplateViewRoute}
 import spark.template.pebble.PebbleTemplateEngine
 
+import scala.collection.JavaConverters._
+
+
 /**
   * Created by tomaspavel on 29.5.17.
   */
@@ -18,4 +21,5 @@ abstract class Pagelet extends TemplateViewRoute{
 
 	def render(context: util.Map[String, AnyRef], templatePath: String): String = engine.render(new ModelAndView(context, templatePath))
 
+	def render(context: Map[String, AnyRef], templatePath: String): String = engine.render(new ModelAndView(context.asJava, templatePath))
 }
