@@ -8,12 +8,13 @@ import spark.{ModelAndView, TemplateViewRoute}
 import spark.template.pebble.PebbleTemplateEngine
 
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 
 
 /**
   * Created by tomaspavel on 29.5.17.
   */
-abstract class Pagelet extends TemplateViewRoute{
+abstract class AbstractPagelet extends TemplateViewRoute{
 	val loader = new FileLoader
 	loader.setPrefix(Settings.getTemplateDir)
 	loader.setSuffix(".peb")
@@ -21,5 +22,5 @@ abstract class Pagelet extends TemplateViewRoute{
 
 	def render(context: util.Map[String, AnyRef], templatePath: String): String = engine.render(new ModelAndView(context, templatePath))
 
-	def render(context: Map[String, AnyRef], templatePath: String): String = engine.render(new ModelAndView(context.asJava, templatePath))
+	def render(context: mutable.Map[String, AnyRef], templatePath: String): String = engine.render(new ModelAndView(context.asJava, templatePath))
 }

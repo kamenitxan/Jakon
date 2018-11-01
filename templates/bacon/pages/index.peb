@@ -9,4 +9,7 @@
         <li>{{ i18n("common","PAGE") }}</li>
         <li>Static Page - {{ link(2) | raw }}</li>
     </ul>
+<form action="/pagelet/post" method="post">
+    <input type="submit" value="send">
+</form>
 {% endblock %}
