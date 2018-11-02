@@ -17,7 +17,7 @@ object AnnotationScanner {
 	def scan(): Unit = {
 		val scanResult: ScanResult = new ClassGraph()
 		  .enableAllInfo()
-  		.verbose()
+  		//.verbose()
 		  .whitelistPackages("cz.kamenitxan.jakon", Settings.getPackage)
 		  .scan()
 		try {
