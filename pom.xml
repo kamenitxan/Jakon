@@ -100,7 +100,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>26.0-jre</version>
+			<version>25.0-jre</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.persistence</groupId>
@@ -141,7 +141,7 @@
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
-			<version>3.14.0</version>
+			<version>3.141.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

@@ -21,6 +21,7 @@ class TestRunner extends Suites(
 ) with BeforeAndAfterAll {
 
 	override def beforeAll() {
+		new File("jakonUnitTest.sqlite").delete()
 		println("Before!")
 		Director.init()
 		Settings.setDatabaseConnPath("jdbc:sqlite:jakonUnitTest.sqlite")
