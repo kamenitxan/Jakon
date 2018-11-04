@@ -4,7 +4,7 @@ import java.util
 
 import com.mitchellbosecke.pebble.loader.FileLoader
 import cz.kamenitxan.jakon.core.configuration.Settings
-import spark.{ModelAndView, TemplateViewRoute}
+import spark.{ModelAndView, Request, Response, TemplateViewRoute}
 import spark.template.pebble.PebbleTemplateEngine
 
 import scala.collection.JavaConverters._
@@ -23,4 +23,20 @@ abstract class AbstractPagelet extends TemplateViewRoute{
 	def render(context: util.Map[String, AnyRef], templatePath: String): String = engine.render(new ModelAndView(context, templatePath))
 
 	def render(context: mutable.Map[String, AnyRef], templatePath: String): String = engine.render(new ModelAndView(context.asJava, templatePath))
+
+	def beforeGet(req: Request, res: Response, data: AnyRef): Unit = {
+
+	}
+
+	def afterGet(req: Request, res: Response, data: AnyRef, context: mutable.Map[String, AnyRef]): Unit = {
+
+	}
+
+	def beforePost(req: Request, res: Response, data: AnyRef): Unit = {
+
+	}
+
+	def afterPost(req: Request, res: Response, data: AnyRef, context: mutable.Map[String, AnyRef]): Unit = {
+
+	}
 }

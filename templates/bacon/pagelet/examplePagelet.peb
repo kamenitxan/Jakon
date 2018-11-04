@@ -1,0 +1,16 @@
+{% extends "core" %}
+
+{% block title %} Index page {% endblock %}
+
+{% block content %}
+<h1>Example Pagelet</h1>
+<p>PushedValue: {{ pushed }}</p>
+<form action="/pagelet/post" method="post">
+	<input type="submit" value="send">
+</form>
+<form action="/pagelet/post" method="post">
+	<input type="hidden" value="true" name="validate">
+	<input type="text" name="name">
+	<input type="submit" value="validate">
+</form>
+{% endblock %}

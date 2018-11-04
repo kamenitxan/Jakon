@@ -392,6 +392,7 @@ public class FileManagerServlet extends HttpServlet {
 
 	private JSONObject move(JSONObject params) {
 		try {
+			//TODO: minidev json should be rewrited to gson
 			JSONArray paths = ((JSONArray) params.get("items"));
 			Path newpath = Paths.get(REPOSITORY_BASE_PATH, params.getAsString("newPath"));
 			for (Object obj : paths) {

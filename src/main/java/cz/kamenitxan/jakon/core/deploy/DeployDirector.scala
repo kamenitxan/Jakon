@@ -12,6 +12,7 @@ object DeployDirector {
 	val servers: List[Server] = {
 		implicit val formats = DefaultFormats
 		//TODO: cacht exception when file not found
+		//TODO: rewrite to gson
 		val json = JsonParser.parse(Source.fromFile("servers.json").mkString)
 		json.extract[List[Server]]
 	}

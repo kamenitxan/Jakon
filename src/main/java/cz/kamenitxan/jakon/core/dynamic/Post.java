@@ -10,4 +10,5 @@ import java.lang.annotation.Target;
 public @interface Post {
 	String path();
 	String template();
+	boolean validate() default true;
 }

@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.core.model.Dao
 
 import java.util.Properties
+import java.util.logging.{Level, Logger}
 
 import cz.kamenitxan.jakon.core.configuration.{SettingValue, Settings}
 import cz.kamenitxan.jakon.core.model._

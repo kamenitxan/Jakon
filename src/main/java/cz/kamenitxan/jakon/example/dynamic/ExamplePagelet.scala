@@ -1,27 +1,31 @@
 package cz.kamenitxan.jakon.example.dynamic
 
 import cz.kamenitxan.jakon.core.dynamic.{AbstractPagelet, Get, Pagelet, Post}
-import spark.{ModelAndView, Request, Response}
 import javax.validation.Validation
-import javax.validation.ValidatorFactory
 import org.slf4j.LoggerFactory
+import spark.{ModelAndView, Request, Response}
+
+import scala.collection.mutable
 
 @Pagelet(path = "/pagelet")
-class ExamplePagelet extends AbstractPagelet{
+class ExamplePagelet extends AbstractPagelet {
 	private val logger = LoggerFactory.getLogger(this.getClass)
 
-	@Get(path = "/get", template = "")
+	@Get(path = "/get", template = "pagelet/examplePagelet")
 	def get(req: Request, res: Response) = {
-
+		val context = mutable.Map[String, Any](
+			"pushed" -> "someValue"
+		)
+		context
 	}
 
-		@Post(path = "/post", template = "")
-		def post(req: Request, res: Response, data: PageletData) = {
-			val factory = Validation.buildDefaultValidatorFactory
-			val validator = factory.getValidator
-			val violations = validator.validate(data)
-			violations.forEach(v => logger.error(v.getMessage))
-		}
+	@Post(path = "/post", template = "pagelet/examplePagelet")
+	def post(req: Request, res: Response, data: PageletData) = {
+		val context = mutable.Map[String, Any](
+			"pushed" -> "post done"
+		)
+		context
+	}
 
 	override def handle(request: Request, response: Response): ModelAndView = ???
 }
