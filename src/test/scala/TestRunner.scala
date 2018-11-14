@@ -8,6 +8,7 @@ import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.example.Main
 import functions.LinkTest
 import org.scalatest.{BeforeAndAfterAll, Suites}
+import utils.AesEncryptorTest
 import webui.{AuthTest, MenuTest}
 
 /**
@@ -17,6 +18,7 @@ class TestRunner extends Suites(
 	new RenderTest,
 	new LinkTest,
 	new AuthTest,
+	new AesEncryptorTest,
 	new MenuTest
 ) with BeforeAndAfterAll {
 

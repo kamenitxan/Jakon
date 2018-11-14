@@ -13,6 +13,7 @@ public enum SettingValue {
 	DEPLOY_MODE("deployMode", true),
 	DEPLOY_TYPE("DEPLOY.type"),
 	DEFAULT_LOCALE("defaultLocale"),
+	ENCRYPTION_SECRET("encryptionSecret", false, "reallyRandomStin"),
 	MAIL_ENABLED("MAIL.enabled", false, "false"),
 	MAIL_AUTH("MAIL.auth", false, "false"),
 	MAIL_TLS("MAIL.tls", false, "false"),

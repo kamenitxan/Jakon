@@ -2,9 +2,11 @@ package cz.kamenitxan.jakon.webui.controler.impl
 
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper.getSession
-import cz.kamenitxan.jakon.core.model.JakonUser
+import cz.kamenitxan.jakon.core.model.{JakonUser, Ordered}
 import cz.kamenitxan.jakon.utils.PageContext
+import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailTemplateEntity}
 import cz.kamenitxan.jakon.webui.Context
+import cz.kamenitxan.jakon.webui.controler.impl.ObjectControler.fetchVisibleOrder
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import org.hibernate.criterion.Restrictions
 import org.mindrot.jbcrypt.BCrypt
@@ -68,6 +70,26 @@ object Authentication {
 		user.firstName = firstname
 		user.lastName = lastname
 		createUser(user)
+
+		val session = DBHelper.getSession
+		session.beginTransaction()
+		try {
+			val criteria = getSession.createCriteria(classOf[JakonUser])
+			val tmpl = criteria.add(Restrictions.eq("name", "REGISTRATION") ).uniqueResult().asInstanceOf[EmailTemplateEntity]
+			val email = new EmailEntity(tmpl.template, user.email, tmpl.subject, Map[String, AnyRef](
+				"username" -> user.username,
+
+			))
+
+		} finally {
+			session.getTransaction.commit()
+			session.close()
+		}
+		val emailTaskEntity = new EmailEntity(
+			"REGISTRATION",
+
+		)
+
 		new Context(null, "login")
 	}
 

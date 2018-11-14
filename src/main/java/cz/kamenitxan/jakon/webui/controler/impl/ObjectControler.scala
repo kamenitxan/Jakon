@@ -108,7 +108,9 @@ object ObjectControler {
 			session.beginTransaction()
 			try {
 				obj = Option(session.get(objectClass, objectId.get)).getOrElse(objectClass.newInstance())
-				fetchVisibleOrder(obj, objectClass)
+				if (obj.getClass.getInterfaces.contains(classOf[Ordered])) {
+					fetchVisibleOrder(obj, objectClass)
+				}
 			} finally {
 				session.getTransaction.commit()
 				session.close()
