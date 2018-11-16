@@ -71,26 +71,25 @@ object Authentication {
 		user.lastName = lastname
 		createUser(user)
 
+		sendRegistrationEmail(user)
+
+		new Context(null, "login")
+	}
+
+	def sendRegistrationEmail(user: JakonUser): Unit = {
 		val session = DBHelper.getSession
 		session.beginTransaction()
 		try {
-			val criteria = getSession.createCriteria(classOf[JakonUser])
+			val criteria = getSession.createCriteria(classOf[EmailTemplateEntity])
 			val tmpl = criteria.add(Restrictions.eq("name", "REGISTRATION") ).uniqueResult().asInstanceOf[EmailTemplateEntity]
 			val email = new EmailEntity(tmpl.template, user.email, tmpl.subject, Map[String, AnyRef](
-				"username" -> user.username,
-
+				"username" -> user.username
 			))
-
+			email.create()
 		} finally {
 			session.getTransaction.commit()
 			session.close()
 		}
-		val emailTaskEntity = new EmailEntity(
-			"REGISTRATION",
-
-		)
-
-		new Context(null, "login")
 	}
 
 	def createUser(user: JakonUser): JakonUser = {

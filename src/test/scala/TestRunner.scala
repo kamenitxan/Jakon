@@ -9,6 +9,7 @@ import cz.kamenitxan.jakon.example.Main
 import functions.LinkTest
 import org.scalatest.{BeforeAndAfterAll, Suites}
 import utils.AesEncryptorTest
+import utils.mail.EmailTest
 import webui.{AuthTest, MenuTest}
 
 /**
@@ -19,6 +20,7 @@ class TestRunner extends Suites(
 	new LinkTest,
 	new AuthTest,
 	new AesEncryptorTest,
+	new EmailTest,
 	new MenuTest
 ) with BeforeAndAfterAll {
 

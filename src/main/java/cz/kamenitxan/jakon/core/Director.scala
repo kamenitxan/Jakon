@@ -4,10 +4,13 @@ import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.controler.IControler
 import cz.kamenitxan.jakon.core.customPages.CustomPage
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
+import cz.kamenitxan.jakon.core.model.Dao.DBHelper.getSession
 import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
 import cz.kamenitxan.jakon.core.template.{Pebble, TemplateUtils}
+import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailTemplateEntity}
 import cz.kamenitxan.jakon.webui.Routes
 import cz.kamenitxan.jakon.webui.controler.impl.Authentication
+import org.hibernate.criterion.Restrictions
 import org.slf4j.{Logger, LoggerFactory}
 
 
@@ -50,6 +53,19 @@ object Director {
 			user.acl = acl
 			Authentication.createUser(user)
 		}
+
+		getSession.beginTransaction()
+		val criteria = getSession.createCriteria(classOf[EmailTemplateEntity])
+		val tmpl = criteria.add(Restrictions.eq("name", "REGISTRATION") ).uniqueResult().asInstanceOf[EmailTemplateEntity]
+		if (tmpl == null) {
+			val emailTemplateEntity = new EmailTemplateEntity()
+			emailTemplateEntity.subject = "Jakon Registration"
+			emailTemplateEntity.from = "admin@jakon.cz"
+			emailTemplateEntity.name = "REGISTRATION"
+			emailTemplateEntity.template = "registration"
+			emailTemplateEntity.create()
+		}
+
 		logger.info("Jakon default init complete")
 	}
 

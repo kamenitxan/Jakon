@@ -53,6 +53,7 @@ class JakonInit {
 
 		daoSetup()
 		adminControllers()
+		taskSetup()
 		Director.start()
 
 		afterAfter((_: Request, _: Response) => PageContext.destroy())
@@ -67,6 +68,6 @@ class JakonInit {
 		}
 		routesSetup()
 		AnnotationScanner.scan()
-		taskSetup()
+
 	}
 }
