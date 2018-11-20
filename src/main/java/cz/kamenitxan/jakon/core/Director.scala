@@ -2,7 +2,7 @@ package cz.kamenitxan.jakon.core
 
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.controler.IControler
-import cz.kamenitxan.jakon.core.customPages.CustomPage
+import cz.kamenitxan.jakon.core.customPages.AbstractCustomPage
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper.getSession
 import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
@@ -54,9 +54,10 @@ object Director {
 			Authentication.createUser(user)
 		}
 
-		getSession.beginTransaction()
+		val session = getSession.beginTransaction()
 		val criteria = getSession.createCriteria(classOf[EmailTemplateEntity])
 		val tmpl = criteria.add(Restrictions.eq("name", "REGISTRATION") ).uniqueResult().asInstanceOf[EmailTemplateEntity]
+		session.commit()
 		if (tmpl == null) {
 			val emailTemplateEntity = new EmailTemplateEntity()
 			emailTemplateEntity.subject = "Jakon Registration"
@@ -86,7 +87,7 @@ object Director {
 		logger.info("Render complete")
 	}
 
-	def registerCustomPage(page: CustomPage) {
+	def registerCustomPage(page: AbstractCustomPage) {
 		customPages = customPages.::(page)
 
 	}

@@ -1,6 +1,6 @@
 import java.io.File
 
-import cz.kamenitxan.jakon.core.customPages.StaticPage
+import cz.kamenitxan.jakon.core.customPages.AbstractStaticPage
 import cz.kamenitxan.jakon.core.model.Page
 import cz.kamenitxan.jakon.core.template.Pebble
 import cz.kamenitxan.jakon.core.Director
@@ -19,9 +19,9 @@ class TestRunner extends Suites(
 	new RenderTest,
 	new LinkTest,
 	new AuthTest,
-	new AesEncryptorTest,
-	new EmailTest,
-	new MenuTest
+	//new EmailTest,
+	//new MenuTest
+	new AesEncryptorTest
 ) with BeforeAndAfterAll {
 
 	override def beforeAll() {
@@ -35,7 +35,7 @@ class TestRunner extends Suites(
 
 		Main.main(Array[String]())
 
-		val staticPage = new StaticPage("staticPage", "static") {}
+		val staticPage = new AbstractStaticPage("staticPage", "static") {}
 		Director.registerCustomPage(staticPage)
 
 

@@ -1,7 +1,7 @@
 package cz.kamenitxan.jakon.example.pages
 
-import cz.kamenitxan.jakon.core.customPages.StaticPage
+import cz.kamenitxan.jakon.core.customPages.AbstractStaticPage
 
-class IndexPage extends StaticPage(templateName = "pages/index", url = "index") {
+class IndexPage extends AbstractStaticPage(templateName = "pages/index", url = "index") {
 
 }

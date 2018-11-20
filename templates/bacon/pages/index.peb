@@ -9,5 +9,6 @@
         <li>{{ i18n("common","PAGE") }}</li>
         <li>Static Page - {{ link(2) | raw }}</li>
     </ul>
+    <a href="/admin/index">Admin</a><br>
     <a href="/pagelet/get">Example Pagelet</a>
 {% endblock %}
