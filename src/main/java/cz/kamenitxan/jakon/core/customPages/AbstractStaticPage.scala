@@ -5,7 +5,7 @@ import cz.kamenitxan.jakon.webui.ObjectSettings
 /**
   * Created by TPa on 13.08.16.
   */
-abstract class AbstractStaticPage(templateName: String, url: String) extends AbstractCustomPage {
+abstract class AbstractStaticPage(val templateName: String, url: String) extends AbstractCustomPage {
 	super.setUrl(url)
 
 

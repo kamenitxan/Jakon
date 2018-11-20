@@ -12,7 +12,6 @@ class JakonApp extends JakonInit{
 	DBHelper.addDao(classOf[Post])
 	DBHelper.addDao(classOf[Page])
 
-	Director.registerCustomPage(new IndexPage)
 	Director.registerControler(new PageControler)
 
 	override def adminControllers(): Unit = {

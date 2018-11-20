@@ -18,7 +18,7 @@ object PageletInitializer {
 	private val logger = LoggerFactory.getLogger(this.getClass)
 	private val METHOD_VALDIATE = "validate"
 
-	def initControllers(controllers: List[Class[_]]): Unit = {
+	def initControllers(controllers: Seq[Class[_]]): Unit = {
 		logger.info("Initializing pagelets")
 		controllers.foreach(c => {
 			logger.info("Initializing pagelet: " + c.getSimpleName)
