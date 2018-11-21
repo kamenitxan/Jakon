@@ -2,7 +2,6 @@
 {# @pebvariable name="message" type="cz.kamenitxan.jakon.webui.entity.Message" #}
 
 <div id="jakon_messages">
-<!-- div class="alert alert-danger" role="alert">test</div -->
 {% for message in jakon_messages %}
     <div class="alert {{ message.severity }}" role="alert">{{ i18n("messages",message.text, message.params) }}</div>
 {% endfor %}

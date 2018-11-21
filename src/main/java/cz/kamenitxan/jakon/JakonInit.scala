@@ -68,6 +68,7 @@ class JakonInit {
 		}
 		routesSetup()
 		AnnotationScanner.scan()
+		Director.render()
 
 	}
 }

@@ -3,6 +3,8 @@
 {% block content %}
     <div class="row">
         <div class="col-md-4 col-md-offset-4">
+			<br />
+            {% include "includes/components/messagesList" %}
             <div class="login-panel panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">Registration</h3>

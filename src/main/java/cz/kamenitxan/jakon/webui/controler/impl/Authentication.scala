@@ -2,18 +2,16 @@ package cz.kamenitxan.jakon.webui.controler.impl
 
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper.getSession
-import cz.kamenitxan.jakon.core.model.{JakonUser, Ordered}
+import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailTemplateEntity}
 import cz.kamenitxan.jakon.webui.Context
-import cz.kamenitxan.jakon.webui.controler.impl.ObjectControler.fetchVisibleOrder
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import org.hibernate.criterion.Restrictions
 import org.mindrot.jbcrypt.BCrypt
 import spark.{ModelAndView, Request, Response}
 
 import scala.language.postfixOps
-import scala.tools.nsc.interpreter.session
 
 /**
   * Created by TPa on 03.09.16.
@@ -60,8 +58,8 @@ object Authentication {
 		val firstname = req.queryParams("firstname")
 		val lastname = req.queryParams("lastname")
 		if (!password.equals(password2)) {
-			// TODO: chyba
-			new Context(null, "register")
+			PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "REGISTRATION_PASSWORD_NOT_SAME")
+			return new Context(null, "register")
 		}
 		val user = new JakonUser()
 		user.email = email
@@ -73,23 +71,24 @@ object Authentication {
 
 		sendRegistrationEmail(user)
 
+		PageContext.getInstance().messages += new Message(MessageSeverity.SUCCESS, "REGISTRATION_SUCCESSFUL")
 		new Context(null, "login")
 	}
 
 	def sendRegistrationEmail(user: JakonUser): Unit = {
-		val session = DBHelper.getSession
-		session.beginTransaction()
-		try {
+			val session = DBHelper.getSession
+			session.beginTransaction()
 			val criteria = getSession.createCriteria(classOf[EmailTemplateEntity])
 			val tmpl = criteria.add(Restrictions.eq("name", "REGISTRATION") ).uniqueResult().asInstanceOf[EmailTemplateEntity]
-			val email = new EmailEntity(tmpl.template, user.email, tmpl.subject, Map[String, AnyRef](
+
+			session.getTransaction.commit()
+			session.close()
+
+			val email = new EmailEntity("REGISTRATION", user.email, tmpl.subject, Map[String, AnyRef](
 				"username" -> user.username
 			))
 			email.create()
-		} finally {
-			session.getTransaction.commit()
-			session.close()
-		}
+
 	}
 
 	def createUser(user: JakonUser): JakonUser = {

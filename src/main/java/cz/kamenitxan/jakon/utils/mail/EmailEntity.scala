@@ -32,6 +32,7 @@ class EmailEntity(u: Unit = ()) extends JakonObject(classOf[EmailEntity].getName
 
 	def this(template: String, to: String, subject: String, params: Map[String, AnyRef]) = {
 		this(u=())
+		this.template = template
 		this.to = to
 		this.subject = subject
 		this.params = params
@@ -39,6 +40,7 @@ class EmailEntity(u: Unit = ()) extends JakonObject(classOf[EmailEntity].getName
 
 	def this(template: String, to: String, subject: String, params: Map[String, AnyRef], emailType: String) = {
 		this(u=())
+		this.template = template
 		this.to = to
 		this.subject = subject
 		this.params = params

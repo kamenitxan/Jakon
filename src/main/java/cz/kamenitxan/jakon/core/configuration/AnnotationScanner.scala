@@ -18,6 +18,7 @@ object AnnotationScanner {
 		try {
 			// Use scanResult here
 			loadControllers(scanResult)
+			loadCustomPages(scanResult)
 		} finally {
 			scanResult.close()
 		}

@@ -27,6 +27,8 @@
                             <input type="submit" class="btn btn-lg btn-success btn-block" value="{{ i18n("common","LOGIN_BTN") }}" />
                         </fieldset>
                     </form>
+                    <br>
+					<a class="btn btn-default" href="/admin/register" role="button">{{ i18n("common","REGISTRATION") }}</a>
                 </div>
             </div>
         </div>

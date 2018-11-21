@@ -3,7 +3,7 @@ package cz.kamenitxan.jakon.utils.mail
 import java.util.Properties
 import java.util.concurrent.TimeUnit
 
-import cz.kamenitxan.jakon.core.configuration.{SettingValue, Settings}
+import cz.kamenitxan.jakon.core.configuration.{DeployMode, SettingValue, Settings}
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.task.AbstractTask
 import javax.persistence.criteria.{CriteriaQuery, Predicate, Root}
@@ -44,20 +44,29 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 			})
 			emails.forEach(e => {
 				val message = new MimeMessage(mailSession)
-
-				message.setRecipients(Message.RecipientType.TO, "to@gmail.com")
+				message.setRecipients(Message.RecipientType.TO, e.to)
 				message.setSubject(e.subject)
 
-				val msg = "This is my first email using JavaMailer"
-				if (e.template != null) {
-					val tmpl = session.get(classOf[EmailTemplateEntity], e.template)
 
-					message.setFrom(new InternetAddress(tmpl.from))
+				if (e.template != null) {
+					val criteriaQuery: CriteriaQuery[EmailTemplateEntity] = criteriaBuilder.createQuery(classOf[EmailTemplateEntity])
+					val from: Root[EmailTemplateEntity] = criteriaQuery.from(classOf[EmailTemplateEntity])
+					val predicate: Predicate = criteriaBuilder.equal(from.get("name"), e.template)
+					criteriaQuery.where(predicate, predicate)
+					criteriaQuery.select(from)
+
+					val tmpl: EmailTemplateEntity = session.createQuery(criteriaQuery).getSingleResult
+
+					if (Settings.getDeployMode.equals(DeployMode.DEVEL)) {
+						message.setFrom(new InternetAddress(Settings.getProperty(SettingValue.MAIL_USERNAME)))
+					} else {
+						message.setFrom(new InternetAddress(tmpl.from))
+					}
+
 
 					val te = Settings.getTemplateEngine
 					te.renderTemplate(tmpl.template, e.params)
-					val mimeBodyPart = new MimeBodyPart()
-					mimeBodyPart.setContent(msg, "text/html")
+					message.setContent(tmpl.template, "text/html")
 				}
 
 				if (e.emailType != null) {
@@ -65,10 +74,9 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 					fun.apply(message, e.params)
 				}
 				Transport.send(message)
+				e.sent = true
+				e.update()
 			})
-
-		} catch {
-			case ex : Exception => logger.error("Error while sending email", ex)
 		} finally {
 			session.getTransaction.commit()
 			session.close()
