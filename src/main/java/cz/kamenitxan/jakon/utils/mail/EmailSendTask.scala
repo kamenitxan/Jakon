@@ -5,11 +5,16 @@ import java.util.concurrent.TimeUnit
 
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, SettingValue, Settings}
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
+import cz.kamenitxan.jakon.core.model.Dao.DBHelper.getSession
 import cz.kamenitxan.jakon.core.task.AbstractTask
 import javax.persistence.criteria.{CriteriaQuery, Predicate, Root}
 import javax.mail._
 import javax.mail.internet.{InternetAddress, MimeBodyPart, MimeMessage}
+import org.hibernate.criterion.Restrictions
 import org.slf4j.LoggerFactory
+
+import scala.collection.JavaConverters._
+
 
 
 class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[EmailSendTask].getSimpleName, period, unit){
@@ -42,20 +47,16 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 			val mailSession = Session.getInstance(prop, new Authenticator() {
 				override protected def getPasswordAuthentication = new PasswordAuthentication(Settings.getProperty(SettingValue.MAIL_USERNAME), Settings.getProperty(SettingValue.MAIL_PASSWORD))
 			})
-			emails.forEach(e => {
+			//TODO: remove filter
+			emails.asScala.filter(e => !e.sent).foreach(e => {
 				val message = new MimeMessage(mailSession)
 				message.setRecipients(Message.RecipientType.TO, e.to)
 				message.setSubject(e.subject)
 
 
 				if (e.template != null) {
-					val criteriaQuery: CriteriaQuery[EmailTemplateEntity] = criteriaBuilder.createQuery(classOf[EmailTemplateEntity])
-					val from: Root[EmailTemplateEntity] = criteriaQuery.from(classOf[EmailTemplateEntity])
-					val predicate: Predicate = criteriaBuilder.equal(from.get("name"), e.template)
-					criteriaQuery.where(predicate, predicate)
-					criteriaQuery.select(from)
-
-					val tmpl: EmailTemplateEntity = session.createQuery(criteriaQuery).getSingleResult
+					val criteria = getSession.createCriteria(classOf[EmailTemplateEntity])
+					val tmpl: EmailTemplateEntity = criteria.add(Restrictions.eq("name", e.template) ).uniqueResult().asInstanceOf[EmailTemplateEntity]
 
 					if (Settings.getDeployMode.equals(DeployMode.DEVEL)) {
 						message.setFrom(new InternetAddress(Settings.getProperty(SettingValue.MAIL_USERNAME)))

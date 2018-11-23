@@ -10,11 +10,9 @@ import scala.collection.JavaConverters._
 object AnnotationScanner {
 
 	def scan(): Unit = {
-		val scanResult: ScanResult = new ClassGraph()
-		  .enableAllInfo()
-  		//.verbose()
-		  .whitelistPackages("cz.kamenitxan.jakon", Settings.getPackage)
-		  .scan()
+		val scanResult: ScanResult = new ClassGraph().enableAllInfo()
+			  .whitelistPackages(Settings.getPackage:_*)
+			  .scan()
 		try {
 			// Use scanResult here
 			loadControllers(scanResult)
@@ -42,4 +40,5 @@ object AnnotationScanner {
 			cil.loadClasses().asScala
 		}
 	}
+
 }
