@@ -8,9 +8,7 @@ class AesEncryptorTest extends FunSuite {
 	test("encrypt&decrypt") {
 		val toenc = "slaninaabůček534534345354345345345345432543254432543254325"
 		val enc = AesEncryptor.encrypt(toenc)
-		System.out.println(enc)
 		val dec = AesEncryptor.decrypt(enc)
-		System.out.println(dec)
 		assert(toenc == dec)
 	}
 }

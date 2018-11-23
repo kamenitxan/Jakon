@@ -1,17 +1,22 @@
 package cz.kamenitxan.jakon.webui.controler.impl
 
+import java.util.Date
+import java.util.Calendar
+
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper.getSession
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailTemplateEntity}
+import cz.kamenitxan.jakon.utils.security.AesEncryptor
 import cz.kamenitxan.jakon.webui.Context
-import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
+import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, Message, MessageSeverity}
 import org.hibernate.criterion.Restrictions
 import org.mindrot.jbcrypt.BCrypt
 import spark.{ModelAndView, Request, Response}
 
 import scala.language.postfixOps
+import scala.util.Random
 
 /**
   * Created by TPa on 03.09.16.
@@ -29,11 +34,11 @@ object Authentication {
 			val ses = DBHelper.getSession
 			ses.beginTransaction()
 			val criteria = getSession.createCriteria(classOf[JakonUser])
-			val user = criteria.add(Restrictions.eq("email", email) ).uniqueResult().asInstanceOf[JakonUser]
+			val user = criteria.add(Restrictions.eq("email", email)).uniqueResult().asInstanceOf[JakonUser]
 			ses.getTransaction.commit()
 			if (user == null) {
 				PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "WRONG_EMAIL_OR_PASSWORD")
-			} else if (checkPassword(password, user.password) && user.enabled){
+			} else if (checkPassword(password, user.password) && user.enabled) {
 				req.session(true).attribute("user", user)
 				res.redirect("/admin/index")
 			}
@@ -75,19 +80,37 @@ object Authentication {
 		new Context(null, "login")
 	}
 
+	def confirmEmailGet(req: Request, res: Response): ModelAndView = {
+		PageContext.getInstance().messages += new Message(MessageSeverity.SUCCESS, "REGISTRATION_EMAIL_CONFIRMED")
+		new Context(null, "login")
+	}
+
 	def sendRegistrationEmail(user: JakonUser): Unit = {
-			val session = DBHelper.getSession
-			session.beginTransaction()
-			val criteria = getSession.createCriteria(classOf[EmailTemplateEntity])
-			val tmpl = criteria.add(Restrictions.eq("name", "REGISTRATION") ).uniqueResult().asInstanceOf[EmailTemplateEntity]
+		val session = DBHelper.getSession
+		session.beginTransaction()
+		val criteria = getSession.createCriteria(classOf[EmailTemplateEntity])
+		val tmpl = criteria.add(Restrictions.eq("name", "REGISTRATION")).uniqueResult().asInstanceOf[EmailTemplateEntity]
 
-			session.getTransaction.commit()
-			session.close()
+		session.getTransaction.commit()
+		session.close()
 
-			val email = new EmailEntity("REGISTRATION", user.email, tmpl.subject, Map[String, AnyRef](
-				"username" -> user.username
-			))
-			email.create()
+		val confirmEmailEntity = new ConfirmEmailEntity()
+		confirmEmailEntity.user = user
+		confirmEmailEntity.secret = Random.alphanumeric.take(10).mkString
+		confirmEmailEntity.token = AesEncryptor.encrypt(confirmEmailEntity.secret)
+		confirmEmailEntity.expirationDate = {
+			val cal: Calendar = Calendar.getInstance
+			cal.setTime(new Date)
+			cal.add(Calendar.DATE, 2)
+			cal.getTime
+		}
+		confirmEmailEntity.create()
+
+		val email = new EmailEntity("REGISTRATION", user.email, tmpl.subject, Map[String, AnyRef](
+			"username" -> user.username,
+			"token" -> confirmEmailEntity.token
+		))
+		email.create()
 
 	}
 
@@ -107,8 +130,8 @@ object Authentication {
 		BCrypt.hashpw(password_plaintext, salt)
 	}
 
-	def checkPassword(password_plaintext: String, stored_hash: String) =  {
-		if(null == stored_hash || !stored_hash.startsWith("$2a$"))
+	def checkPassword(password_plaintext: String, stored_hash: String) = {
+		if (null == stored_hash || !stored_hash.startsWith("$2a$"))
 			throw new java.lang.IllegalArgumentException("Invalid hash provided for comparison")
 
 		BCrypt.checkpw(password_plaintext, stored_hash)

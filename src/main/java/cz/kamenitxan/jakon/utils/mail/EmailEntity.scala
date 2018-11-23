@@ -18,7 +18,7 @@ class EmailEntity(u: Unit = ()) extends JakonObject(classOf[EmailEntity].getName
 	var subject: String = ""
 	@BeanProperty @Column @JakonField
 	var sent: Boolean = false
-	@BeanProperty @Column @JakonField
+	@BeanProperty @Column @JakonField(disabled = true)
 	var sentDate: Date = _
 	@BeanProperty @Column @JakonField
 	var template: String = _
