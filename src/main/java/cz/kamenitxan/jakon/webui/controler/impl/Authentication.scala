@@ -87,6 +87,8 @@ object Authentication {
 	}
 
 	def sendRegistrationEmail(user: JakonUser): Unit = {
+		if (!Settings.isEmailEnabled) return
+
 		val session = DBHelper.getSession
 		session.beginTransaction()
 		val criteria = getSession.createCriteria(classOf[EmailTemplateEntity])

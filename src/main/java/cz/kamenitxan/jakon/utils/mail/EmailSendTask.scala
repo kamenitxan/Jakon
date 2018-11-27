@@ -81,7 +81,9 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 				e.update()
 			})
 		} finally {
-			session.getTransaction.commit()
+			if (session.getTransaction.isActive) {
+				session.getTransaction.commit()
+			}
 			session.close()
 		}
 	}

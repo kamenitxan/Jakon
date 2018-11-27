@@ -39,4 +39,7 @@ class JakonUser(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser
 		Authentication.createUser(this).id
 	}
 
+	override def toString: String = {
+		s"JakonUser(id: $id)"
+	}
 }

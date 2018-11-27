@@ -71,6 +71,19 @@ object Director {
 			emailTemplateEntity.create()
 		}
 
+		val session2 = getSession.beginTransaction()
+		val criteria2 = getSession.createCriteria(classOf[EmailTemplateEntity])
+		val tmpl2 = criteria2.add(Restrictions.eq("name", "FORGET_PASSWORD")).uniqueResult().asInstanceOf[EmailTemplateEntity]
+		session2.commit()
+		if (tmpl2 == null) {
+			val emailTemplateEntity = new EmailTemplateEntity()
+			emailTemplateEntity.subject = "Forget password"
+			emailTemplateEntity.from = "admin@jakon.cz"
+			emailTemplateEntity.name = "FORGET_PASSWORD"
+			emailTemplateEntity.template = "forgetPassword"
+			emailTemplateEntity.create()
+		}
+
 		logger.info("Jakon default init complete")
 	}
 

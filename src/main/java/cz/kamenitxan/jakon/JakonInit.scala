@@ -12,6 +12,7 @@ import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.webui.AdminSettings
 import cz.kamenitxan.jakon.webui.controler.impl.{DeployControler, TaskController}
+import cz.kamenitxan.jakon.webui.entity.ResetPasswordEmailEntity
 import org.slf4j.LoggerFactory
 import spark.Spark._
 import spark.debug.DebugScreen.enableDebugScreen
@@ -40,6 +41,7 @@ class JakonInit {
 		if (Settings.isEmailEnabled) {
 			DBHelper.addDao(classOf[EmailEntity])
 			DBHelper.addDao(classOf[EmailTemplateEntity])
+			DBHelper.addDao(classOf[ResetPasswordEmailEntity])
 			TaskRunner.registerTask(new EmailSendTask(1, TimeUnit.MINUTES))
 		}
 

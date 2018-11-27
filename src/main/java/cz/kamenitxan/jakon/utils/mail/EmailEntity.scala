@@ -24,7 +24,9 @@ class EmailEntity(u: Unit = ()) extends JakonObject(classOf[EmailEntity].getName
 	var template: String = _
 	@BeanProperty @Column @JakonField
 	var emailType: String = _
-	@BeanProperty @Column @JakonField
+	@BeanProperty
+	@Column
+	@JakonField(shownInList = false)
 	@Convert(converter = classOf[ScalaMapConverter])
 	var params: Map[String, AnyRef] = _
 

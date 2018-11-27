@@ -33,7 +33,7 @@ object ObjectControler {
 		val objectName = req.params(":name")
 		val page = req.queryParams("page")
 		val pageNumber = Try(Integer.parseInt(page)).getOrElse(1)
-		val objectClass = DBHelper.getDaoClasses.find(c => c.getName.contains(objectName))
+		val objectClass = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(objectName))
 		if (objectClass.isDefined) {
 			if (!isAuthorized(objectClass.get)) {
 				return new Context(Map[String, Any](
