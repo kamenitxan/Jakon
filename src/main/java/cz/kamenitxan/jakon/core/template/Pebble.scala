@@ -3,15 +3,17 @@ package cz.kamenitxan.jakon.core.template
 import java.io.StringWriter
 import java.util
 
-import collection.JavaConverters._
 import com.mitchellbosecke.pebble.PebbleEngine
 import com.mitchellbosecke.pebble.error.PebbleException
-import com.mitchellbosecke.pebble.loader.{FileLoader, StringLoader}
+import com.mitchellbosecke.pebble.loader.StringLoader
 import com.mitchellbosecke.pebble.template.PebbleTemplate
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.controler.IControler
 import cz.kamenitxan.jakon.core.template.pebble.PebbleExtension
 import cz.kamenitxan.jakon.devtools.DevRender
+import cz.kamenitxan.jakon.webui.util.JakonFileLoader
+
+import scala.collection.JavaConverters._
 
 
 
@@ -19,8 +21,7 @@ import cz.kamenitxan.jakon.devtools.DevRender
   * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
   */
 class Pebble extends TemplateEngine {
-	private val loader = new FileLoader
-	loader.setPrefix(Settings.getTemplateDir)
+	private val loader = new JakonFileLoader
 	loader.setSuffix(".peb")
 	private val builder = new PebbleEngine.Builder()
 	builder.loader(loader)

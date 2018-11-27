@@ -27,5 +27,4 @@ class ExamplePagelet extends AbstractPagelet {
 		context
 	}
 
-	override def handle(request: Request, response: Response): ModelAndView = ???
 }

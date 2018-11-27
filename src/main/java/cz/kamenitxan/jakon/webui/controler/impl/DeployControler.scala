@@ -37,7 +37,7 @@ class DeployControler extends AbstractController {
 		), template)
 	}
 
-	override def name(): String = "Deploy"
+	override def name(): String = "DEPLOY"
 
 	override def path(): String = "deploy"
 }

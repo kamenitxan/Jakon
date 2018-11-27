@@ -1,8 +1,8 @@
 package cz.kamenitxan.jakon.webui;
 
 import com.google.gson.Gson;
-import cz.kamenitxan.jakon.core.configuration.Settings;
 import cz.kamenitxan.jakon.core.configuration.DeployMode;
+import cz.kamenitxan.jakon.core.configuration.Settings;
 import cz.kamenitxan.jakon.core.model.JakonUser;
 import cz.kamenitxan.jakon.webui.api.Api;
 import cz.kamenitxan.jakon.webui.controler.AbstractController;
@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import spark.TemplateEngine;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
 import static spark.Spark.*;
 

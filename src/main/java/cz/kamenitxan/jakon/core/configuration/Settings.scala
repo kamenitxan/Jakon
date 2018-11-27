@@ -90,7 +90,7 @@ object Settings {
 
 	def setPort(port: Int): Unit = settings.put(SettingValue.PORT, String.valueOf(port))
 
-	def getDefaultLocale: Locale = Utils.stringToLocale(settings.get(SettingValue.DEFAULT_LOCALE).orNull)
+	def getDefaultLocale: Locale = Utils.stringToLocale(settings.getOrElse(SettingValue.DEFAULT_LOCALE, "en_US"))
 
 	def getProperty(name: SettingValue): String = {
 		val prop = settings.get(name)

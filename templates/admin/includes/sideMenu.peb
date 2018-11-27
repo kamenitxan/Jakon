@@ -22,10 +22,10 @@
                     <!-- /input-group -->
                 </li>
                 <li>
-                    <a href="/admin/index"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+					<a href="/admin/index"><i class="fa fa-dashboard fa-fw"></i> {{ i18n("common","DASHBOARD") }}</a>
                 </li>
                 <li{%if modelClasses contains objectName %} class="active"{% endif %}>
-                    <a href="#"><i class="fa fa-edit fa-fw"></i> Objects<span class="fa arrow"></span></a>
+					<a href="#"><i class="fa fa-edit fa-fw"></i> {{ i18n("common","JAKON_OBJECTS") }}<span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
                     {% for model in modelClasses %}
                         <li>
@@ -38,12 +38,12 @@
                 </li>
                 {% for c in customControllers %}
                     <li>
-                        <a href="/admin/{{ c.path }}"><i class="fa {{ c.icon }} fa-fw"></i> {{ c.name }}</a>
+						<a href="/admin/{{ c.path }}"><i class="fa {{ c.icon }} fa-fw"></i> {{ i18n("common", c.name) }}</a>
                     </li>
                 {% endfor %}
                 {% if enableFiles %}
                     <li>
-                        <a href="/admin/files/"><i class="fa fa-files-o fa-fw"></i> Files</a>
+						<a href="/admin/files/"><i class="fa fa-files-o fa-fw"></i> {{ i18n("common", "FILES") }}</a>
                     </li>
                 {% endif %}
                 {#<li>

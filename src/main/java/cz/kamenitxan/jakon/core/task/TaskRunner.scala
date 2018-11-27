@@ -25,7 +25,10 @@ object TaskRunner {
 
 	def registerTask(task: AbstractTask): Unit = {
 		taskList += task
-		if (task.period > 0) schedule(task)
 		logger.info("Task " + task.name + " was registered")
+	}
+
+	def startTaskRunner(): Unit = {
+		taskList.foreach(task => if (task.period > 0) schedule(task))
 	}
 }

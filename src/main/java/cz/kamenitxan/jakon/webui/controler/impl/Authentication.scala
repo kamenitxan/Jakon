@@ -3,11 +3,12 @@ package cz.kamenitxan.jakon.webui.controler.impl
 import java.util.Date
 import java.util.Calendar
 
+import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper.getSession
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.utils.PageContext
-import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailTemplateEntity}
+import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.utils.security.AesEncryptor
 import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, Message, MessageSeverity}
@@ -108,7 +109,9 @@ object Authentication {
 
 		val email = new EmailEntity("REGISTRATION", user.email, tmpl.subject, Map[String, AnyRef](
 			"username" -> user.username,
-			"token" -> confirmEmailEntity.token
+			"token" -> confirmEmailEntity.token,
+			EmailSendTask.TMPL_LANG -> Settings.getDefaultLocale.getCountry
+
 		))
 		email.create()
 

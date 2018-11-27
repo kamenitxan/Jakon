@@ -36,12 +36,14 @@ object DBHelper {
 	addDao(classOf[AclRule])
 	addDao(classOf[JakonUser])
 
-	def addDao[T <: JakonObject](jobject: Class[T]) {
-		objects += jobject
+	def createSessionFactory(): Unit = {
 		val conf = new Configuration().addProperties(prop)
 		objects.foreach(o => conf.addAnnotatedClass(o))
 		concreteSessionFactory = conf.buildSessionFactory()
+	}
 
+	def addDao[T <: JakonObject](jobject: Class[T]) {
+		objects += jobject
 	}
 
 	val postDao = new AbstractHibernateDao[Post](classOf[Post])

@@ -6,6 +6,7 @@ import cz.kamenitxan.jakon.core.customPages.AbstractCustomPage
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper.getSession
 import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
+import cz.kamenitxan.jakon.core.task.TaskRunner
 import cz.kamenitxan.jakon.core.template.{Pebble, TemplateUtils}
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailTemplateEntity}
 import cz.kamenitxan.jakon.webui.Routes
@@ -32,9 +33,11 @@ object Director {
 	}
 
 	def start(): Unit = {
+		DBHelper.addDao(new JakonUser().getClass)
+		DBHelper.createSessionFactory()
+		TaskRunner.startTaskRunner()
 		logger.info("Jakon started")
 		Routes.init()
-		DBHelper.addDao(new JakonUser().getClass)
 		val adminUser = DBHelper.getUserDao.findAll()
 		if (adminUser == null || adminUser.isEmpty) {
 			val acl = new AclRule()
@@ -50,6 +53,7 @@ object Director {
 			user.email = "admin@admin.cz"
 			user.password = "admin"
 			user.enabled = true
+			user.emailConfirmed = true
 			user.acl = acl
 			Authentication.createUser(user)
 		}

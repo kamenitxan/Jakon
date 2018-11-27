@@ -29,6 +29,7 @@
                     </form>
                     <br>
 					<a class="btn btn-default" href="/admin/register" role="button">{{ i18n("common","REGISTRATION") }}</a>
+					<a class="btn btn-default" href="/admin/resetPassword" role="button">{{ i18n("common","RESET_PASSWORD") }}</a>
                 </div>
             </div>
         </div>

@@ -21,7 +21,10 @@ class JakonUser(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser
 	@BeanProperty @Column @JakonField var emailConfirmed: Boolean = false
 	@BeanProperty @Column @JakonField var firstName: String = ""
 	@BeanProperty @Column @JakonField var lastName: String = ""
-	@BeanProperty @Column @JakonField var password: String = ""
+	@BeanProperty
+	@Column
+	@JakonField(shownInList = false)
+	var password: String = ""
 	@BeanProperty @Column @JakonField var enabled: Boolean = false
 	@BeanProperty
 	@ManyToOne

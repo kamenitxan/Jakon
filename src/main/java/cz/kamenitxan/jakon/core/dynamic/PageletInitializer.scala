@@ -67,7 +67,8 @@ object PageletInitializer {
 			if (m.getParameterCount == 3){
 				val dataType: Class[_] = m.getParameterTypes.drop(2).head
 				val data = dataType.newInstance().asInstanceOf[AnyRef]
-				dataType.getFields.foreach(f => {
+				dataType.getDeclaredFields.foreach(f => {
+					f.setAccessible(true)
 					f.set(data, req.queryParams(f.getName).conform(f))
 				})
 				if ("true".equals(req.queryParams(METHOD_VALDIATE))) {

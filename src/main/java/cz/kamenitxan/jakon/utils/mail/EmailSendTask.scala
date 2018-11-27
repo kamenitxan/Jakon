@@ -7,7 +7,7 @@ import cz.kamenitxan.jakon.core.configuration.{DeployMode, SettingValue, Setting
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper.getSession
 import cz.kamenitxan.jakon.core.task.AbstractTask
-import javax.persistence.criteria.{CriteriaQuery, Predicate, Root}
+import javax.persistence.criteria.{CriteriaQuery, Expression, Predicate, Root}
 import javax.mail._
 import javax.mail.internet.{InternetAddress, MimeBodyPart, MimeMessage}
 import org.hibernate.criterion.Restrictions
@@ -15,7 +15,9 @@ import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConverters._
 
-
+object EmailSendTask {
+	val TMPL_LANG = "tmplLanguage"
+}
 
 class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[EmailSendTask].getSimpleName, period, unit){
 	private val logger = LoggerFactory.getLogger(this.getClass)
@@ -31,9 +33,9 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 			val ocls: Class[EmailEntity] = classOf[EmailEntity]
 			val criteriaQuery: CriteriaQuery[EmailEntity] = criteriaBuilder.createQuery(ocls)
 			val from: Root[EmailEntity] = criteriaQuery.from(ocls)
-			val predicate: Predicate = criteriaBuilder.equal(from.get("sent"), false)
+			val predicate: Expression[java.lang.Boolean] = criteriaBuilder.equal(from.get("sent"), false)
 			// TODO: waaat
-			criteriaQuery.where(predicate, predicate)
+			criteriaQuery.where(predicate)
 			criteriaQuery.select(from)
 
 			val emails = session.createQuery(criteriaQuery).list()
@@ -64,9 +66,9 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 						message.setFrom(new InternetAddress(tmpl.from))
 					}
 
-
+					val tmplLangSuffix = e.params.getOrElse("tmplLanguage", "")
 					val te = Settings.getTemplateEngine
-					te.renderTemplate(tmpl.template, e.params)
+					te.renderTemplate(tmpl.template + tmplLangSuffix, e.params)
 					message.setContent(tmpl.template, "text/html")
 				}
 

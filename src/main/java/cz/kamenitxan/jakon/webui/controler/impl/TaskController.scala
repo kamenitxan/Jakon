@@ -15,7 +15,7 @@ class TaskController extends AbstractController {
 	override val template: String = "pages/task"
 	override val icon: String = "fa-tasks"
 
-	override def name(): String = "Tasks"
+	override def name(): String = "TASKS"
 
 	override def path(): String = "task"
 
