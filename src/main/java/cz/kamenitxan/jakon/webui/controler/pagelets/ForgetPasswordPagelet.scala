@@ -56,7 +56,7 @@ class ForgetPasswordPagelet extends AbstractAdminPagelet {
 		redirect(req, res, "/admin")
 	}
 
-	def sendForgetPasswordEmail(user: JakonUser): Unit = {
+	private def sendForgetPasswordEmail(user: JakonUser): Unit = {
 		if (!Settings.isEmailEnabled) return
 
 		val session = DBHelper.getSession

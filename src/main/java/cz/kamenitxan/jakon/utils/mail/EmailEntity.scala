@@ -2,6 +2,7 @@ package cz.kamenitxan.jakon.utils.mail
 
 import java.util.Date
 
+import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.core.model.converters.ScalaMapConverter
 import cz.kamenitxan.jakon.webui.ObjectSettings
@@ -23,6 +24,8 @@ class EmailEntity(u: Unit = ()) extends JakonObject(classOf[EmailEntity].getName
 	@BeanProperty @Column @JakonField
 	var template: String = _
 	@BeanProperty @Column @JakonField
+	var lang: String = _
+	@BeanProperty @Column @JakonField
 	var emailType: String = _
 	@BeanProperty
 	@Column
@@ -37,6 +40,7 @@ class EmailEntity(u: Unit = ()) extends JakonObject(classOf[EmailEntity].getName
 		this.template = template
 		this.to = to
 		this.subject = subject
+		this.lang = Settings.getDefaultLocale.getCountry
 		this.params = params
 	}
 
@@ -47,6 +51,7 @@ class EmailEntity(u: Unit = ()) extends JakonObject(classOf[EmailEntity].getName
 		this.subject = subject
 		this.params = params
 		this.emailType = emailType
+		this.lang = Settings.getDefaultLocale.getCountry
 	}
 
 	override val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-envelope")
