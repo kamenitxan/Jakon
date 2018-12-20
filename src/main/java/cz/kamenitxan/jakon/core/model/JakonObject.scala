@@ -68,11 +68,8 @@ abstract class JakonObject(@BeanProperty
 	}
 
 	def create(): Int = {
-		executeWithId( session => {
-			val id = session.save(this)
-			afterCreate()
-			id.asInstanceOf[Int]
-		})
+		var joSQL = "INSERT INTO JakonObject () "
+		1
 	}
 
 	def afterCreate(): Unit = {}

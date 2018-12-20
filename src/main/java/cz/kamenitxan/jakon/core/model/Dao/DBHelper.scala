@@ -1,12 +1,17 @@
 package cz.kamenitxan.jakon.core.model.Dao
 
+import java.lang.reflect.Field
+import java.sql.{Connection, PreparedStatement, ResultSet, ResultSetMetaData}
 import java.util.Properties
-import java.util.logging.{Level, Logger}
 
+import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
 import cz.kamenitxan.jakon.core.configuration.{SettingValue, Settings}
 import cz.kamenitxan.jakon.core.model._
+import cz.kamenitxan.jakon.utils.Utils
+import javax.persistence.ManyToOne
 import org.hibernate.{HibernateException, Session, SessionFactory}
 import org.hibernate.cfg.Configuration
+import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.mutable
 
@@ -14,6 +19,8 @@ import scala.collection.mutable
   * Created by Kamenitxan (kamenitxan@me.com) on 20.12.15.
   */
 object DBHelper {
+	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
+
 	private var concreteSessionFactory: SessionFactory = _
 	val objects: mutable.Set[Class[_ <: JakonObject]] = scala.collection.mutable.Set[Class[_ <: JakonObject]]()
 
@@ -35,6 +42,16 @@ object DBHelper {
 
 	addDao(classOf[AclRule])
 	addDao(classOf[JakonUser])
+
+	val config = new HikariConfig
+	config.setJdbcUrl(Settings.getDatabaseConnPath)
+	config.setUsername(Settings.getProperty(SettingValue.DB_USER))
+	config.setPassword(Settings.getProperty(SettingValue.DB_PASS))
+	config.addDataSourceProperty("cachePrepStmts", "true")
+	config.addDataSourceProperty("prepStmtCacheSize", "250")
+	config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
+
+	val ds = new HikariDataSource(config)
 
 	def createSessionFactory(): Unit = {
 		val conf = new Configuration().addProperties(prop)
@@ -90,5 +107,69 @@ object DBHelper {
 	def getObjectById(id: Integer): JakonObject = {
 		getObjectById(id, refresh = false)
 	}
+
+	def getConnection: Connection = {
+		//TODO: single conn for request
+		val conn = ds.getConnection
+		logger.info("Got DB connection - " + conn)
+		conn
+	}
+
+	def getPreparedStatement(sql: String): PreparedStatement = {
+		getConnection.prepareStatement(sql)
+	}
+
+	def execute(stmt: PreparedStatement): ResultSet = {
+		stmt.executeQuery()
+	}
+
+	private val S = classOf[String]
+	private val B = classOf[Boolean]
+	private def createJakonObject(rs: ResultSet, rsmd: ResultSetMetaData, cls: Class[_ <: JakonObject]): QueryResult = {
+		val obj = cls.newInstance()
+		var foreignIds = Map[String, Int]()
+		val columnCount = rsmd.getColumnCount
+
+		Iterator.from(1).takeWhile(i => i <= columnCount).foreach(i => {
+			val columnName = rsmd.getColumnName(i)
+			val fieldName = if (columnName.endsWith("_id")) {
+				columnName.substring(0, columnName.length - 3)
+			} else {
+				columnName
+			}
+			val fieldRef = Utils.getFieldsUpTo(cls, classOf[Object]).find(f => f.getName.equals(fieldName))
+			if (fieldRef.nonEmpty) {
+				val field = fieldRef.get
+				field.setAccessible(true)
+				field.getType match {
+					case S => field.set(obj, rs.getString(columnName))
+					case B => field.set(obj, rs.getBoolean(columnName))
+					case _ => {
+						val ann = field.getAnnotation(classOf[ManyToOne])
+						if (ann != null) {
+							foreignIds += (columnName -> rs.getInt(columnName))
+						}
+					}
+				}
+
+			}
+		})
+		new QueryResult(obj,foreignIds)
+	}
+
+	def select(stmt: PreparedStatement, cls: Class[_ <: JakonObject]): List[QueryResult] = {
+		val rs = execute(stmt)
+		val rsmd = rs.getMetaData
+		Iterator.from(0).takeWhile(_ => rs.next()).map(_ => {
+			createJakonObject(rs, rsmd, cls)
+		}).toList
+	}
+
+	def selectSingle(stmt: PreparedStatement, cls: Class[_ <: JakonObject]): QueryResult = {
+		val rs = execute(stmt)
+		val rsmd = rs.getMetaData
+		createJakonObject(rs, rsmd, cls)
+	}
+
 
 }
