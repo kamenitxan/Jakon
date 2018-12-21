@@ -35,6 +35,8 @@ object Director {
 	def start(): Unit = {
 		DBHelper.addDao(new JakonUser().getClass)
 		DBHelper.createSessionFactory()
+		DBHelper.createTables()
+
 		TaskRunner.startTaskRunner()
 		logger.info("Jakon started")
 		Routes.init()

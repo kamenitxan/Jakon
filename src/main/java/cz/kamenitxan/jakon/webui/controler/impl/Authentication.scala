@@ -50,7 +50,7 @@ object Authentication {
 			val user = result.entity.asInstanceOf[JakonUser]
 			if (checkPassword(password, user.password) && user.enabled) {
 				val stmt = DBHelper.getPreparedStatement(SQL_FIND_ACL)
-				stmt.setInt(1, result.foreignIds.getOrElse("acl_id", 0))
+				stmt.setInt(1, result.foreignIds.getOrElse("acl_id", null).id)
 				val aclResult = DBHelper.selectSingle(stmt, classOf[AclRule])
 				user.acl = aclResult.entity.asInstanceOf[AclRule]
 

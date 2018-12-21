@@ -1,8 +1,6 @@
 package cz.kamenitxan.jakon.core.model
 
 import javax.persistence._
-
-import cz.kamenitxan.jakon.webui.controler.impl.Authentication.hashPassword
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.controler.impl.Authentication

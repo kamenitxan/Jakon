@@ -3,8 +3,9 @@ package cz.kamenitxan.jakon.core.model
 import javax.json.Json
 import javax.persistence._
 import java.io.StringWriter
+import java.sql.{PreparedStatement, SQLException, Statement}
 
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper
+import cz.kamenitxan.jakon.core.model.Dao.{Crud, DBHelper}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import org.hibernate.Session
@@ -20,7 +21,7 @@ import scala.language.postfixOps
 abstract class JakonObject(@BeanProperty
                            @Column
                            @JakonField var childClass: String
-                          ) extends Serializable {
+                          ) extends Serializable with Crud {
 	@BeanProperty
 	@Id
 	@GeneratedValue
@@ -67,9 +68,23 @@ abstract class JakonObject(@BeanProperty
 		id
 	}
 
+	def executeInsert(stmt: PreparedStatement): Int = {
+		val affectedRows = stmt.executeUpdate
+		if (affectedRows == 0) {
+			throw new SQLException("Creating JakonObject failed, no rows affected.")
+		}
+		stmt.getGeneratedKeys.next()
+		stmt.getGeneratedKeys.getInt(1)
+	}
+
 	def create(): Int = {
-		var joSQL = "INSERT INTO JakonObject () "
-		1
+		val joSQL = "INSERT INTO JakonObject (url, sectionName, published, childClass) VALUES (?, ?, ?, ?)"
+		val stmt = DBHelper.getPreparedStatement(joSQL, Statement.RETURN_GENERATED_KEYS)
+		stmt.setString(1, url)
+		stmt.setString(2, sectionName)
+		stmt.setBoolean(3, published)
+		stmt.setString(4, childClass)
+		executeInsert(stmt)
 	}
 
 	def afterCreate(): Unit = {}
@@ -84,10 +99,10 @@ abstract class JakonObject(@BeanProperty
 	def afterUpdate(): Unit = {}
 
 	def delete(): Unit = {
-		execute(session => {
-			session.delete(this)
-			afterDelete()
-		})
+		val sql = "DELETE FROM JakonObject WHERE id = ?"
+		val stmt = DBHelper.getPreparedStatement(sql)
+		stmt.setInt(1, id)
+		stmt.executeUpdate()
 	}
 
 	def afterDelete(): Unit = {}

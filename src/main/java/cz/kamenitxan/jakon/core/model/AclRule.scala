@@ -1,7 +1,9 @@
 package cz.kamenitxan.jakon.core.model
 
-import javax.persistence._
+import java.sql.{SQLException, Statement}
 
+import cz.kamenitxan.jakon.core.model.Dao.{Crud, DBHelper}
+import javax.persistence._
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.JakonField
 
@@ -34,6 +36,17 @@ class AclRule(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser].
 	var allowedFrontendPrefixes: java.util.List[String] = new java.util.ArrayList[String]()
 
 	def this() = this(u = ())
+
+	override def create(): Int = {
+		val jid = super.create()
+		val sql = "INSERT INTO AclRule (id, name, masterAdmin, adminAllowed) VALUES (?, ?, ?, ?)"
+		val stmt = DBHelper.getPreparedStatement(sql, Statement.RETURN_GENERATED_KEYS)
+		stmt.setInt(1, jid)
+		stmt.setString(2, name)
+		stmt.setBoolean(3, masterAdmin)
+		stmt.setBoolean(4, adminAllowed)
+		executeInsert(stmt)
+	}
 
 	@Transient
 	override val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-unlock-alt")
