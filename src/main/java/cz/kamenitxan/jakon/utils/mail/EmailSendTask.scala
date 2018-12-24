@@ -17,28 +17,20 @@ import scala.collection.JavaConverters._
 
 object EmailSendTask {
 	val TMPL_LANG = "tmplLanguage"
+
+	val UNSENT_SQL = "SELECT * FROM EmailEntity WHERE sent = 0"
 }
 
 class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[EmailSendTask].getSimpleName, period, unit){
 	private val logger = LoggerFactory.getLogger(this.getClass)
 
 	override def start(): Unit = {
-		val session = DBHelper.getSession
+		val conn = DBHelper.getConnection
 		try {
+			val stmt = conn.prepareStatement(EmailSendTask.UNSENT_SQL)
+			DBHelper.select(stmt, classOf[EmailEntity])
 
-
-			session.beginTransaction()
-			val criteriaBuilder = session.getCriteriaBuilder
-
-			val ocls: Class[EmailEntity] = classOf[EmailEntity]
-			val criteriaQuery: CriteriaQuery[EmailEntity] = criteriaBuilder.createQuery(ocls)
-			val from: Root[EmailEntity] = criteriaQuery.from(ocls)
-			val predicate: Expression[java.lang.Boolean] = criteriaBuilder.equal(from.get("sent"), false)
-			// TODO: waaat
-			criteriaQuery.where(predicate)
-			criteriaQuery.select(from)
-
-			val emails = session.createQuery(criteriaQuery).list()
+			val emails = DBHelper.select(stmt, classOf[EmailEntity]).map(qr => qr.entity.asInstanceOf[EmailEntity])
 			if (emails.isEmpty) return
 
 			val prop = new Properties()
@@ -50,7 +42,7 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 				override protected def getPasswordAuthentication = new PasswordAuthentication(Settings.getProperty(SettingValue.MAIL_USERNAME), Settings.getProperty(SettingValue.MAIL_PASSWORD))
 			})
 			//TODO: remove filter
-			emails.asScala.filter(e => !e.sent).foreach(e => {
+			emails.filter(e => !e.sent).foreach(e => {
 				val message = new MimeMessage(mailSession)
 				message.setRecipients(Message.RecipientType.TO, e.to)
 				message.setSubject(e.subject)
@@ -81,10 +73,7 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 				e.update()
 			})
 		} finally {
-			if (session.getTransaction.isActive) {
-				session.getTransaction.commit()
-			}
-			session.close()
+			conn.close()
 		}
 	}
 }

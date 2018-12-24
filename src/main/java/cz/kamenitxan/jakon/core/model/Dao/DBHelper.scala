@@ -1,5 +1,6 @@
 package cz.kamenitxan.jakon.core.model.Dao
 
+import java.io.File
 import java.lang.reflect.Field
 import java.sql._
 import java.util.Properties
@@ -14,6 +15,7 @@ import org.hibernate.cfg.Configuration
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.mutable
+import scala.io.Source
 
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 20.12.15.
@@ -52,6 +54,7 @@ object DBHelper {
 	config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
 
 	val ds = new HikariDataSource(config)
+	ds.setLeakDetectionThreshold(60 * 1000)
 
 	def createSessionFactory(): Unit = {
 		val conf = new Configuration().addProperties(prop)
@@ -70,24 +73,42 @@ object DBHelper {
 
 
 	def createTables(): Unit = {
-		for (o <- objects){
+		val dbobj = objects + classOf[JakonObject]
+		val conn = getConnection
+		for (o <- dbobj) {
 			val className = o.getSimpleName
 			val check = "SELECT 1 FROM " + className + " LIMIT 1"
-			val stmt = getConnection.createStatement()
+
+			val stmt = conn.createStatement()
 			var found = false
 			try {
 				stmt.executeQuery(check)
 				found = true
 			} catch {
-				case e: SQLException =>
+				case _: SQLException =>
 			}
+			stmt.close()
 
 			if (found) {
 				logger.debug(className + " found in DB")
 			} else {
 				logger.info(className + " not found in DB")
+				val resource = this.getClass.getResource(s"/sql/$className.sql")
+				if (resource != null) {
+					val file = new File(resource.getFile)
+					val bufferedSource = Source.fromFile(file)
+					val sql = bufferedSource.getLines().mkString("\n")
+					val stmt = conn.createStatement()
+					stmt.execute(sql)
+					stmt.close()
+					bufferedSource.close
+				} else {
+					logger.error(s"Table definition for $className not found")
+				}
 			}
+
 		}
+		conn.close()
 	}
 
 
@@ -175,15 +196,19 @@ object DBHelper {
 	def select(stmt: PreparedStatement, cls: Class[_ <: JakonObject]): List[QueryResult] = {
 		val rs = execute(stmt)
 		val rsmd = rs.getMetaData
-		Iterator.from(0).takeWhile(_ => rs.next()).map(_ => {
+		val res = Iterator.from(0).takeWhile(_ => rs.next()).map(_ => {
 			createJakonObject(rs, rsmd, cls)
 		}).toList
+		stmt.close()
+		res
 	}
 
 	def selectSingle(stmt: PreparedStatement, cls: Class[_ <: JakonObject]): QueryResult = {
 		val rs = execute(stmt)
 		val rsmd = rs.getMetaData
-		createJakonObject(rs, rsmd, cls)
+		val res = createJakonObject(rs, rsmd, cls)
+		stmt.close()
+		res
 	}
 
 	def selectSingleDeep(stmt: PreparedStatement, cls: Class[_ <: JakonObject]): JakonObject = {
@@ -195,6 +220,7 @@ object DBHelper {
 				val stmt = getPreparedStatement(sql)
 				stmt.setInt(1, fki.id)
 				val r = selectSingleDeep(stmt, cls.asInstanceOf[Class[JakonObject]])
+				stmt.close()
 				fki.field.set(res.entity, r)
 			})
 		}
