@@ -1,14 +1,11 @@
 package cz.kamenitxan.jakon.core.controler
 
-import cz.kamenitxan.jakon.core.model.Dao.{AbstractHibernateDao, DBHelper}
-import cz.kamenitxan.jakon.core.template.TemplateEngine
-import cz.kamenitxan.jakon.core.template.TemplateUtils
 import java.sql.SQLException
 import java.util
 
+import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.Page
-
-import scala.collection.JavaConversions._
+import cz.kamenitxan.jakon.core.template.{TemplateEngine, TemplateUtils}
 
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 01.05.16.
@@ -16,13 +13,14 @@ import scala.collection.JavaConversions._
 class PageControler extends IControler {
 	val template = "page"
 
+	val ALL_PAGES_SQL = "SELECT * FROM Page"
+
 	def generate() {
 		val e: TemplateEngine = TemplateUtils.getEngine
+		val conn = DBHelper.getConnection
 		try {
-			val session = DBHelper.getSession
-			session.beginTransaction()
-			val pages = session.createCriteria(classOf[Page]).list().asInstanceOf[java.util.List[Page]]
-			session.getTransaction.commit()
+			val stmt = conn.createStatement()
+			val pages = DBHelper.select(stmt, ALL_PAGES_SQL, classOf[Page]).map(qr => qr.entity.asInstanceOf[Page])
 			pages.foreach(p => {
 				val context = new util.HashMap[String, AnyRef]
 				context.put("page", p)
@@ -30,6 +28,8 @@ class PageControler extends IControler {
 			})
 		} catch {
 			case ex: SQLException => ex.printStackTrace()
+		} finally {
+			conn.close()
 		}
 	}
 }

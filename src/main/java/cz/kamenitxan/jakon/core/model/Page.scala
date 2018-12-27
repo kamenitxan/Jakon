@@ -1,9 +1,11 @@
 package cz.kamenitxan.jakon.core.model
 
 import java.io.StringWriter
+import java.sql.{Statement, Types}
 import java.util.regex.Pattern
 
 import cz.kamenitxan.jakon.core.function.FunctionHelper
+import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.json.Json
@@ -52,6 +54,24 @@ class Page(u: Unit = ()) extends JakonObject(classOf[Page].getName) with Ordered
 	}
 
 	override def getUrl: String = "/page/" + title.replaceAll(" ", "_").toLowerCase
+
+
+	override def create(): Int = {
+		val jid = super.create()
+		val sql = "INSERT INTO Page (id, title, parent_id, showComments, objectOrder, content) VALUES (?, ?, ?, ?, ?, ?)"
+		val stmt = DBHelper.getPreparedStatement(sql, Statement.RETURN_GENERATED_KEYS)
+		stmt.setInt(1, jid)
+		stmt.setString(2, title)
+		if (parent == null) {
+			stmt.setNull(3, Types.INTEGER)
+		} else {
+			stmt.setInt(3, parent.id)
+		}
+		stmt.setBoolean(4, showComments)
+		stmt.setDouble(5, objectOrder)
+		stmt.setString(6, content)
+		executeInsert(stmt)
+	}
 
 	override def getObjectOrder: Double = objectOrder
 

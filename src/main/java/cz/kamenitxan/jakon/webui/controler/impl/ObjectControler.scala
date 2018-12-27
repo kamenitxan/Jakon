@@ -4,22 +4,19 @@ import java.lang.reflect.Field
 import java.util.Collections
 
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
-import cz.kamenitxan.jakon.core.model.JakonObject
+import cz.kamenitxan.jakon.core.model.{JakonObject, Ordered}
 import cz.kamenitxan.jakon.utils.Utils._
 import cz.kamenitxan.jakon.utils.{PageContext, Utils}
 import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
-import cz.kamenitxan.jakon.core.model.Ordered
 import javax.persistence.criteria.{CriteriaQuery, Root}
 import org.hibernate.Session
 import spark.{ModelAndView, Request, Response}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
-import scala.runtime.Nothing$
 import scala.util.Try
-import scala.util.control.Breaks._
 
 /**
   * Created by TPa on 08.09.16.

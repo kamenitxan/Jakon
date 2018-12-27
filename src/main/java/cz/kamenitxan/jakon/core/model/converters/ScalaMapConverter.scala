@@ -1,11 +1,11 @@
 package cz.kamenitxan.jakon.core.model.converters
 
-import com.google.gson.Gson
-import javax.persistence.AttributeConverter
 import java.util
 
+import com.google.gson.Gson
+import javax.persistence.AttributeConverter
+
 import scala.collection.JavaConverters._
-import scala.collection.mutable
 import scala.language.postfixOps
 
 

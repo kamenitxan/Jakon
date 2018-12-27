@@ -1,9 +1,12 @@
 package cz.kamenitxan.jakon.core.model
 
-import javax.persistence._
-import cz.kamenitxan.jakon.webui.entity.JakonField
+import java.sql.{Statement, Types}
+
+import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.controler.impl.Authentication
+import cz.kamenitxan.jakon.webui.entity.JakonField
+import javax.persistence._
 
 import scala.beans.BeanProperty
 
@@ -34,7 +37,25 @@ class JakonUser(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser
 	override val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-user")
 
 	override def create(): Int = {
-		Authentication.createUser(this).id
+		this.password = Authentication.hashPassword(this.password)
+		val jid = super.create()
+		val sql = "INSERT INTO JakonUser (id, username, email, emailConfirmed, firstName, lastName, password, enabled, acl_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+		val stmt = DBHelper.getPreparedStatement(sql, Statement.RETURN_GENERATED_KEYS)
+		stmt.setInt(1, jid)
+		stmt.setString(2, username)
+		stmt.setString(3, email)
+		stmt.setBoolean(4, emailConfirmed)
+		stmt.setString(5, firstName)
+		stmt.setString(6, lastName)
+		stmt.setString(7, password)
+		stmt.setBoolean(8, enabled)
+		if (acl != null) {
+			stmt.setInt(9, acl.id)
+		} else {
+			stmt.setNull(9, Types.INTEGER)
+		}
+
+		executeInsert(stmt)
 	}
 
 	override def toString: String = {

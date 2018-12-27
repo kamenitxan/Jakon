@@ -10,8 +10,8 @@ import javax.validation.Validation
 import org.slf4j.LoggerFactory
 import spark.Spark
 
-import scala.collection.mutable
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 
 
 object PageletInitializer {

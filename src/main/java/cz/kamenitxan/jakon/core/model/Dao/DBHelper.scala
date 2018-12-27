@@ -1,7 +1,6 @@
 package cz.kamenitxan.jakon.core.model.Dao
 
 import java.io.File
-import java.lang.reflect.Field
 import java.sql._
 import java.util.Properties
 
@@ -10,8 +9,8 @@ import cz.kamenitxan.jakon.core.configuration.{SettingValue, Settings}
 import cz.kamenitxan.jakon.core.model._
 import cz.kamenitxan.jakon.utils.Utils
 import javax.persistence.ManyToOne
-import org.hibernate.{HibernateException, Session, SessionFactory}
 import org.hibernate.cfg.Configuration
+import org.hibernate.{HibernateException, Session, SessionFactory}
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.mutable
@@ -65,12 +64,6 @@ object DBHelper {
 	def addDao[T <: JakonObject](jobject: Class[T]) {
 		objects += jobject
 	}
-
-
-	val userDao = new AbstractHibernateDao[JakonUser](classOf[JakonUser])
-
-	def getUserDao: AbstractHibernateDao[JakonUser] = userDao
-
 
 	def createTables(): Unit = {
 		val dbobj = objects + classOf[JakonObject]
@@ -159,9 +152,15 @@ object DBHelper {
 		stmt.executeQuery()
 	}
 
+	def execute(stmt: Statement, sql: String): ResultSet = {
+		stmt.executeQuery(sql)
+	}
+
 	private val S = classOf[String]
 	private val B = classOf[Boolean]
-	private def createJakonObject(rs: ResultSet, rsmd: ResultSetMetaData, cls: Class[_ <: JakonObject]): QueryResult = {
+
+	def createJakonObject(rs: ResultSet, cls: Class[_ <: JakonObject]): QueryResult = {
+		val rsmd = rs.getMetaData
 		val obj = cls.newInstance()
 		var foreignIds = Map[String, ForeignKeyInfo]()
 		val columnCount = rsmd.getColumnCount
@@ -195,9 +194,17 @@ object DBHelper {
 
 	def select(stmt: PreparedStatement, cls: Class[_ <: JakonObject]): List[QueryResult] = {
 		val rs = execute(stmt)
-		val rsmd = rs.getMetaData
 		val res = Iterator.from(0).takeWhile(_ => rs.next()).map(_ => {
-			createJakonObject(rs, rsmd, cls)
+			createJakonObject(rs, cls)
+		}).toList
+		stmt.close()
+		res
+	}
+
+	def select(stmt: Statement, sql: String, cls: Class[_ <: JakonObject]): List[QueryResult] = {
+		val rs = execute(stmt, sql)
+		val res = Iterator.from(0).takeWhile(_ => rs.next()).map(_ => {
+			createJakonObject(rs, cls)
 		}).toList
 		stmt.close()
 		res
@@ -205,8 +212,19 @@ object DBHelper {
 
 	def selectSingle(stmt: PreparedStatement, cls: Class[_ <: JakonObject]): QueryResult = {
 		val rs = execute(stmt)
-		val rsmd = rs.getMetaData
-		val res = createJakonObject(rs, rsmd, cls)
+		var res: QueryResult = null
+		if (rs.next()) {
+			res = createJakonObject(rs, cls)
+		} else {
+			res = new QueryResult(null, null)
+		}
+		stmt.close()
+		res
+	}
+
+	def selectSingle(stmt: Statement, sql: String, cls: Class[_ <: JakonObject]): QueryResult = {
+		val rs = execute(stmt, sql)
+		val res = createJakonObject(rs, cls)
 		stmt.close()
 		res
 	}

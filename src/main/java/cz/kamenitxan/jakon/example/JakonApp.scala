@@ -5,7 +5,6 @@ import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.controler.PageControler
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.{Category, Page, Post}
-import cz.kamenitxan.jakon.example.pages.IndexPage
 import org.slf4j.impl.SimpleLogger
 
 class JakonApp extends JakonInit{

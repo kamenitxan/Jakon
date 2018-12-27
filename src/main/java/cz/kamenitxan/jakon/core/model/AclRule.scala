@@ -1,11 +1,11 @@
 package cz.kamenitxan.jakon.core.model
 
-import java.sql.{SQLException, Statement}
+import java.sql.Statement
 
-import cz.kamenitxan.jakon.core.model.Dao.{Crud, DBHelper}
-import javax.persistence._
+import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.JakonField
+import javax.persistence._
 
 import scala.beans.BeanProperty
 

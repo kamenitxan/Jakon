@@ -1,13 +1,13 @@
 package cz.kamenitxan.jakon.core.model
 
-import javax.json.Json
-import javax.persistence._
 import java.io.StringWriter
 import java.sql.{PreparedStatement, SQLException, Statement}
 
 import cz.kamenitxan.jakon.core.model.Dao.{Crud, DBHelper}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.JakonField
+import javax.json.Json
+import javax.persistence._
 import org.hibernate.Session
 
 import scala.beans.BeanProperty
@@ -56,17 +56,6 @@ abstract class JakonObject(@BeanProperty
 		session.close()
 	}
 
-	private def executeWithId(fun: Session => Int): Int = {
-		val session = DBHelper.getSession
-		if (!session.getTransaction.isActive) {
-			session.beginTransaction()
-		}
-		val id = fun.apply(session)
-		afterAll()
-		session.getTransaction.commit()
-		session.close()
-		id
-	}
 
 	def executeInsert(stmt: PreparedStatement): Int = {
 		val affectedRows = stmt.executeUpdate

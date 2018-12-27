@@ -1,7 +1,5 @@
 package cz.kamenitxan.jakon.core.dynamic
 
-import java.util
-
 import com.mitchellbosecke.pebble.loader.FileLoader
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.utils.PageContext

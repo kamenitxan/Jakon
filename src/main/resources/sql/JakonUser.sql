@@ -8,7 +8,7 @@ CREATE TABLE JakonUser
   password       varchar(255),
   username       varchar(255),
   id             integer NOT NULL REFERENCES JakonObject (id) ON DELETE CASCADE,
-  acl_id         integer,
+  acl_id         integer NULL REFERENCES AclRule (id),
   primary key (id)
 )
 

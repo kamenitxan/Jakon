@@ -4,8 +4,8 @@ import cz.kamenitxan.jakon.webui.controler.AbstractController
 import cz.kamenitxan.jakon.webui.controler.impl.Dashboard
 import spark.{Request, Response}
 
-import scala.collection.mutable
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 
 object AdminSettings {
 	var dashboardController: (Request, Response) => Context = (req: Request, res: Response) => Dashboard.getDashboard(req, res)

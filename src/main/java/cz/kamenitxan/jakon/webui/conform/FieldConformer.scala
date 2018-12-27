@@ -5,10 +5,10 @@ import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Date
-import javax.persistence.{ManyToOne, OneToMany}
 
 import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.webui.entity.{FieldInfo, HtmlType, JakonField}
+import javax.persistence.{ManyToOne, OneToMany}
 
 import scala.collection.JavaConverters._
 import scala.language.postfixOps

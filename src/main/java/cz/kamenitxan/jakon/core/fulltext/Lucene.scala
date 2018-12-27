@@ -3,7 +3,7 @@ package cz.kamenitxan.jakon.core.fulltext
 import java.io.File
 
 import cz.kamenitxan.jakon.core.model.JakonObject
-import cz.kamenitxan.jakon.webui.entity.{FieldInfo, JakonField}
+import cz.kamenitxan.jakon.webui.entity.JakonField
 import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.document.{Document, Field, StringField, TextField}
 import org.apache.lucene.index.IndexWriterConfig.OpenMode

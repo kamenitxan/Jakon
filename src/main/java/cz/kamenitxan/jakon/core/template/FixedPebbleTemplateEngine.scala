@@ -1,17 +1,14 @@
 package cz.kamenitxan.jakon.core.template
 
+import java.io.{IOException, StringWriter}
+import java.util
+
 import com.mitchellbosecke.pebble.PebbleEngine
 import com.mitchellbosecke.pebble.error.PebbleException
 import com.mitchellbosecke.pebble.loader.Loader
-import com.mitchellbosecke.pebble.template.PebbleTemplate
-import cz.kamenitxan.jakon.core.configuration.Settings
-import cz.kamenitxan.jakon.core.configuration.DeployMode
+import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.webui.functions.AdminPebbleExtension
 import spark.ModelAndView
-import spark.TemplateEngine
-import java.io.IOException
-import java.io.StringWriter
-import java.util
 
 /**
   * Template Engine based on Pebble.

@@ -1,18 +1,15 @@
 package cz.kamenitxan.jakon.webui.controler.impl
 
-import java.util.Date
-import java.util.Calendar
+import java.util.{Calendar, Date}
 
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper.getSession
 import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
 import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.utils.security.AesEncryptor
 import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, Message, MessageSeverity}
-import org.hibernate.criterion.Restrictions
 import org.mindrot.jbcrypt.BCrypt
 import org.slf4j.{Logger, LoggerFactory}
 import spark.{ModelAndView, Request, Response}
@@ -28,6 +25,7 @@ object Authentication {
 
 	private val SQL_FIND_USER = "SELECT id, username, password, enabled, acl_id FROM JakonUser WHERE email = ?"
 	private val SQL_FIND_ACL = "SELECT id, name, adminAllowed, masterAdmin FROM AclRule WHERE id = ?"
+	private val SQL_SELECT_EMAIL_TMPL = "SELECT subject FROM EmailTemplateEntity WHERE name = \"REGISTRATION\""
 
 	def loginGet(response: Response): ModelAndView = {
 		new Context(null, "login")
@@ -90,7 +88,7 @@ object Authentication {
 		user.password = password
 		user.firstName = firstname
 		user.lastName = lastname
-		createUser(user)
+		user.create()
 
 		sendRegistrationEmail(user)
 
@@ -106,53 +104,42 @@ object Authentication {
 	def sendRegistrationEmail(user: JakonUser): Unit = {
 		if (!Settings.isEmailEnabled) return
 
-		val session = DBHelper.getSession
-		session.beginTransaction()
-		val criteria = getSession.createCriteria(classOf[EmailTemplateEntity])
-		val tmpl = criteria.add(Restrictions.eq("name", "REGISTRATION")).uniqueResult().asInstanceOf[EmailTemplateEntity]
+		val conn = DBHelper.getConnection
+		try {
+			val stmt = conn.createStatement()
+			val tmpl = DBHelper.selectSingle(stmt, SQL_SELECT_EMAIL_TMPL, classOf[EmailTemplateEntity]).entity.asInstanceOf[EmailTemplateEntity]
 
-		session.getTransaction.commit()
-		session.close()
+			val confirmEmailEntity = new ConfirmEmailEntity()
+			confirmEmailEntity.user = user
+			confirmEmailEntity.secret = Random.alphanumeric.take(10).mkString
+			confirmEmailEntity.token = AesEncryptor.encrypt(confirmEmailEntity.secret)
+			confirmEmailEntity.expirationDate = {
+				val cal: Calendar = Calendar.getInstance
+				cal.setTime(new Date)
+				cal.add(Calendar.DATE, 2)
+				cal.getTime
+			}
+			confirmEmailEntity.create()
 
-		val confirmEmailEntity = new ConfirmEmailEntity()
-		confirmEmailEntity.user = user
-		confirmEmailEntity.secret = Random.alphanumeric.take(10).mkString
-		confirmEmailEntity.token = AesEncryptor.encrypt(confirmEmailEntity.secret)
-		confirmEmailEntity.expirationDate = {
-			val cal: Calendar = Calendar.getInstance
-			cal.setTime(new Date)
-			cal.add(Calendar.DATE, 2)
-			cal.getTime
+			val email = new EmailEntity("REGISTRATION", user.email, tmpl.subject, Map[String, AnyRef](
+				"username" -> user.username,
+				"token" -> confirmEmailEntity.token,
+				EmailSendTask.TMPL_LANG -> Settings.getDefaultLocale.getCountry
+
+			))
+			email.create()
+		} finally {
+			conn.close()
 		}
-		confirmEmailEntity.create()
-
-		val email = new EmailEntity("REGISTRATION", user.email, tmpl.subject, Map[String, AnyRef](
-			"username" -> user.username,
-			"token" -> confirmEmailEntity.token,
-			EmailSendTask.TMPL_LANG -> Settings.getDefaultLocale.getCountry
-
-		))
-		email.create()
-
 	}
 
-	def createUser(user: JakonUser): JakonUser = {
-		user.password = hashPassword(user.password)
-		val session = DBHelper.getSession
-		session.beginTransaction()
-		val id = session.save(user)
-		session.getTransaction.commit()
-		session.close()
-		user.setId(id.asInstanceOf[Int])
-		user
-	}
 
-	def hashPassword(password_plaintext: String) = {
+	def hashPassword(password_plaintext: String): String = {
 		val salt = BCrypt.gensalt(12)
 		BCrypt.hashpw(password_plaintext, salt)
 	}
 
-	def checkPassword(password_plaintext: String, stored_hash: String) = {
+	def checkPassword(password_plaintext: String, stored_hash: String): Boolean = {
 		if (null == stored_hash || !stored_hash.startsWith("$2a$"))
 			throw new java.lang.IllegalArgumentException("Invalid hash provided for comparison")
 

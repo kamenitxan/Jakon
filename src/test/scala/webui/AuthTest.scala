@@ -21,7 +21,7 @@ class AuthTest extends FunSuite{
 		user.email = email
 		user.password = password
 
-		assert(Authentication.createUser(user) != null)
+		assert(user.create() > 0)
 	}
 
 	test("check password") {

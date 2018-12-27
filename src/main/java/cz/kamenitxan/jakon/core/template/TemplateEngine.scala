@@ -1,9 +1,10 @@
 package cz.kamenitxan.jakon.core.template
 
 import java.util
-import collection.JavaConverters._
 
 import cz.kamenitxan.jakon.core.controler.IControler
+
+import scala.collection.JavaConverters._
 
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.

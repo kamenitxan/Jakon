@@ -1,9 +1,8 @@
 package cz.kamenitxan.jakon.example.dynamic
 
 import cz.kamenitxan.jakon.core.dynamic.{AbstractPagelet, Get, Pagelet, Post}
-import javax.validation.Validation
 import org.slf4j.LoggerFactory
-import spark.{ModelAndView, Request, Response}
+import spark.{Request, Response}
 
 import scala.collection.mutable
 

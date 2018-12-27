@@ -1,7 +1,7 @@
 package cz.kamenitxan.jakon.core.function
 
 import java.util
-import java.util.regex.{Matcher, Pattern}
+import java.util.regex.Pattern
 
 /**
   * Created by TPa on 25.05.16.

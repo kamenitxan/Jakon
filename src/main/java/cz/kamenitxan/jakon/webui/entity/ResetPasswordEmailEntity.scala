@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon.webui.entity
 
-import java.sql.{SQLException, Statement}
+import java.sql.Statement
 import java.util.Date
 
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper

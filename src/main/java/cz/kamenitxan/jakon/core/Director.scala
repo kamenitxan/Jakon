@@ -4,14 +4,11 @@ import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.controler.IControler
 import cz.kamenitxan.jakon.core.customPages.AbstractCustomPage
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper.getSession
 import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
 import cz.kamenitxan.jakon.core.task.TaskRunner
 import cz.kamenitxan.jakon.core.template.{Pebble, TemplateUtils}
-import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailTemplateEntity}
+import cz.kamenitxan.jakon.utils.mail.EmailTemplateEntity
 import cz.kamenitxan.jakon.webui.Routes
-import cz.kamenitxan.jakon.webui.controler.impl.Authentication
-import org.hibernate.criterion.Restrictions
 import org.slf4j.{Logger, LoggerFactory}
 
 
@@ -22,6 +19,8 @@ object Director {
 	var customPages: List[IControler] = List[IControler]()
 	var controllers: List[IControler] = List[IControler]()
 	final private val logger: Logger = LoggerFactory.getLogger(this.getClass)
+
+	private val SELECT_EMAIL_TMPL_SQL = "SELECT addressFrom, template FROM EmailTemplateEntity WHERE name = ?"
 
 	def init() {
 		Settings.setTemplateDir("templates/bacon/")
@@ -40,50 +39,58 @@ object Director {
 		TaskRunner.startTaskRunner()
 		logger.info("Jakon started")
 		Routes.init()
-		val adminUser = DBHelper.getUserDao.findAll()
-		if (adminUser == null || adminUser.isEmpty) {
-			val acl = new AclRule()
-			acl.name = "Admin"
-			acl.masterAdmin = true
-			acl.adminAllowed = true
-			acl.create()
 
-			val user = new JakonUser()
-			user.firstName = "Admin"
-			user.lastName = "Admin"
-			user.username = "admin"
-			user.email = "admin@admin.cz"
-			user.password = "admin"
-			user.enabled = true
-			user.emailConfirmed = true
-			user.acl = acl
-			Authentication.createUser(user)
-		}
 
-		val session = getSession.beginTransaction()
-		val criteria = getSession.createCriteria(classOf[EmailTemplateEntity])
-		val tmpl = criteria.add(Restrictions.eq("name", "REGISTRATION") ).uniqueResult().asInstanceOf[EmailTemplateEntity]
-		session.commit()
-		if (tmpl == null) {
-			val emailTemplateEntity = new EmailTemplateEntity()
-			emailTemplateEntity.subject = "Jakon Registration"
-			emailTemplateEntity.from = "admin@jakon.cz"
-			emailTemplateEntity.name = "REGISTRATION"
-			emailTemplateEntity.template = "registration"
-			emailTemplateEntity.create()
-		}
+		val conn = DBHelper.getConnection
+		try {
+			val usr_stmt = conn.createStatement()
+			val rs = usr_stmt.executeQuery("SELECT count(*) FROM JakonUser")
+			val userCount = rs.getInt(1)
+			usr_stmt.close()
+			if (userCount == 0) {
+				val acl = new AclRule()
+				acl.name = "Admin"
+				acl.masterAdmin = true
+				acl.adminAllowed = true
+				acl.create()
 
-		val session2 = getSession.beginTransaction()
-		val criteria2 = getSession.createCriteria(classOf[EmailTemplateEntity])
-		val tmpl2 = criteria2.add(Restrictions.eq("name", "FORGET_PASSWORD")).uniqueResult().asInstanceOf[EmailTemplateEntity]
-		session2.commit()
-		if (tmpl2 == null) {
-			val emailTemplateEntity = new EmailTemplateEntity()
-			emailTemplateEntity.subject = "Forget password"
-			emailTemplateEntity.from = "admin@jakon.cz"
-			emailTemplateEntity.name = "FORGET_PASSWORD"
-			emailTemplateEntity.template = "forgetPassword"
-			emailTemplateEntity.create()
+				val user = new JakonUser()
+				user.firstName = "Admin"
+				user.lastName = "Admin"
+				user.username = "admin"
+				user.email = "admin@admin.cz"
+				user.password = "admin"
+				user.enabled = true
+				user.emailConfirmed = true
+				user.acl = acl
+				user.create()
+			}
+
+			val stmt = conn.prepareStatement(SELECT_EMAIL_TMPL_SQL)
+			stmt.setString(1, "REGISTRATION")
+			val tmpl = DBHelper.selectSingle(stmt, classOf[EmailTemplateEntity]).entity.asInstanceOf[EmailTemplateEntity]
+			if (tmpl == null) {
+				val emailTemplateEntity = new EmailTemplateEntity()
+				emailTemplateEntity.subject = "Jakon Registration"
+				emailTemplateEntity.from = "admin@jakon.cz"
+				emailTemplateEntity.name = "REGISTRATION"
+				emailTemplateEntity.template = "registration"
+				emailTemplateEntity.create()
+			}
+
+			val stmt2 = conn.prepareStatement(SELECT_EMAIL_TMPL_SQL)
+			stmt2.setString(1, "FORGET_PASSWORD")
+			val tmpl2 = DBHelper.selectSingle(stmt2, classOf[EmailTemplateEntity]).entity.asInstanceOf[EmailTemplateEntity]
+			if (tmpl2 == null) {
+				val emailTemplateEntity = new EmailTemplateEntity()
+				emailTemplateEntity.subject = "Forget password"
+				emailTemplateEntity.from = "admin@jakon.cz"
+				emailTemplateEntity.name = "FORGET_PASSWORD"
+				emailTemplateEntity.template = "forgetPassword"
+				emailTemplateEntity.create()
+			}
+		} finally {
+			conn.close()
 		}
 
 		logger.info("Jakon default init complete")

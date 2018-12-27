@@ -1,10 +1,9 @@
 package cz.kamenitxan.jakon
 
-import java.io.{File, IOException}
 import java.util.concurrent.TimeUnit
 
 import cz.kamenitxan.jakon.core.Director
-import cz.kamenitxan.jakon.core.configuration.{AnnotationScanner, DeployMode, SettingValue, Settings}
+import cz.kamenitxan.jakon.core.configuration.{AnnotationScanner, DeployMode, Settings}
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.task.{FulltextTask, RenderTask, TaskRunner}
 import cz.kamenitxan.jakon.devtools.{DevRender, StaticFilesController}
