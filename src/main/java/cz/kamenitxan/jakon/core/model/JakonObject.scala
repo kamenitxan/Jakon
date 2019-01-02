@@ -67,13 +67,16 @@ abstract class JakonObject(@BeanProperty
 	}
 
 	def create(): Int = {
+		val conn = DBHelper.getConnection
 		val joSQL = "INSERT INTO JakonObject (url, sectionName, published, childClass) VALUES (?, ?, ?, ?)"
 		val stmt = DBHelper.getPreparedStatement(joSQL, Statement.RETURN_GENERATED_KEYS)
 		stmt.setString(1, url)
 		stmt.setString(2, sectionName)
 		stmt.setBoolean(3, published)
 		stmt.setString(4, childClass)
-		executeInsert(stmt)
+		val jid = executeInsert(stmt)
+		conn.close()
+		jid
 	}
 
 	def afterCreate(): Unit = {}

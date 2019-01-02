@@ -106,6 +106,7 @@ object DBHelper {
 
 
 	@throws[HibernateException]
+	@Deprecated
 	def getSession: Session = {
 		try {
 			val session = concreteSessionFactory.getCurrentSession

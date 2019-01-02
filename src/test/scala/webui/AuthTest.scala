@@ -1,10 +1,8 @@
 package webui
 
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper.getSession
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.webui.controler.impl.Authentication
-import org.hibernate.criterion.Restrictions
 import org.scalatest.FunSuite
 
 /**
@@ -25,11 +23,13 @@ class AuthTest extends FunSuite{
 	}
 
 	test("check password") {
-		val ses = DBHelper.getSession
-		ses.beginTransaction()
-		val criteria = getSession.createCriteria(classOf[JakonUser])
-		val user = criteria.add(Restrictions.eq("email", email)).uniqueResult().asInstanceOf[JakonUser]
-		ses.getTransaction.commit()
+		val sql = "SELECT id, username, password, enabled, acl_id FROM JakonUser WHERE email = ?"
+		val stmt = DBHelper.getPreparedStatement(sql)
+		stmt.setString(1, email)
+		val result = DBHelper.selectSingle(stmt, classOf[JakonUser])
+		val user = result.entity.asInstanceOf[JakonUser]
+
+
 		assert(Authentication.checkPassword(password, user.password))
 	}
 }

@@ -1,17 +1,17 @@
 package cz.kamenitxan.jakon.webui.controler.impl
 
 import java.lang.reflect.Field
+import java.sql.Connection
 import java.util.Collections
 
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
-import cz.kamenitxan.jakon.core.model.{JakonObject, Ordered}
+import cz.kamenitxan.jakon.core.model.{BasicJakonObject, JakonObject, Ordered}
 import cz.kamenitxan.jakon.utils.Utils._
 import cz.kamenitxan.jakon.utils.{PageContext, Utils}
 import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
 import javax.persistence.criteria.{CriteriaQuery, Root}
-import org.hibernate.Session
 import spark.{ModelAndView, Request, Response}
 
 import scala.collection.JavaConverters._
@@ -38,6 +38,7 @@ object ObjectControler {
 				), "pages/unauthorized")
 			}
 			implicit val session = DBHelper.getSession
+			implicit val conn = DBHelper.getConnection
 			try {
 				session.beginTransaction()
 				val criteriaBuilder = session.getCriteriaBuilder
@@ -81,6 +82,7 @@ object ObjectControler {
 			} finally {
 				session.getTransaction.commit()
 				session.close()
+				conn.close()
 			}
 		} else {
 			// TODO: osetri neexistujici objekt
@@ -102,6 +104,7 @@ object ObjectControler {
 		var obj: JakonObject = null
 		if (objectId.nonEmpty) {
 			implicit val session = DBHelper.getSession
+			implicit val conn = DBHelper.getConnection
 			session.beginTransaction()
 			try {
 				obj = Option(session.get(objectClass, objectId.get)).getOrElse(objectClass.newInstance())
@@ -111,6 +114,7 @@ object ObjectControler {
 			} finally {
 				session.getTransaction.commit()
 				session.close()
+				conn.close()
 			}
 		} else {
 			obj = objectClass.newInstance()
@@ -204,18 +208,19 @@ object ObjectControler {
 		}
 	}
 
-	private def fetchVisibleOrder(objects: java.util.List[JakonObject], objectClass: Class[_])(implicit session: Session): java.util.List[JakonObject] = {
-		val query = session.createNativeQuery("SELECT id FROM " + objectClass.getSimpleName + " ORDER BY objectOrder ASC")
+	private def fetchVisibleOrder(objects: java.util.List[JakonObject], objectClass: Class[_])(implicit conn: Connection): java.util.List[JakonObject] = {
+		val stmt = conn.createStatement()
+		val result = DBHelper.select(stmt, "SELECT id FROM " + objectClass.getSimpleName + " ORDER BY objectOrder ASC", classOf[BasicJakonObject])
 		var i = 0
-		val allObjects = query.getResultList.asScala.map(id => {
+		val allObjects = result.map(qr => {
 			i += 1
-			(id.asInstanceOf[Int], i)
+			(qr.entity.asInstanceOf[Int], i)
 		}).toMap
 		objects.forEach(o => o.asInstanceOf[JakonObject with  Ordered].visibleOrder = allObjects(o.id))
 		objects
 	}
 
-	private def fetchVisibleOrder(obj: JakonObject, objectClass: Class[_])(implicit session: Session): JakonObject = {
+	private def fetchVisibleOrder(obj: JakonObject, objectClass: Class[_])(implicit conn: Connection): JakonObject = {
 		fetchVisibleOrder(Collections.singletonList(obj), objectClass).get(0)
 	}
 
@@ -238,6 +243,7 @@ object ObjectControler {
 		}
 		val obj = objs.asInstanceOf[JakonObject with Ordered]
 		implicit val session = DBHelper.getSession
+		implicit val conn = DBHelper.getConnection
 		session.beginTransaction()
 		val persistedObj = session.get(objectClass, obj.id).asInstanceOf[JakonObject with Ordered]
 		fetchVisibleOrder(persistedObj, objectClass)
@@ -254,6 +260,7 @@ object ObjectControler {
 		}).filter(t => t._1 != obj.id).toVector
 		session.getTransaction.commit()
 		session.close()
+		conn.close()
 
 		val requiredOrder = if (formOrder < 0) 0 else if (formOrder > allObjects.size) allObjects.size else formOrder - 1
 		val earlier = if (allObjects.lift(requiredOrder-1).isDefined && allObjects.lift(requiredOrder-1).get._1 != obj.id) {

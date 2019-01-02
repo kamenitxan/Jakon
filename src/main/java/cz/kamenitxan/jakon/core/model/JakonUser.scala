@@ -39,8 +39,9 @@ class JakonUser(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser
 	override def create(): Int = {
 		this.password = Authentication.hashPassword(this.password)
 		val jid = super.create()
+		val conn = DBHelper.getConnection
 		val sql = "INSERT INTO JakonUser (id, username, email, emailConfirmed, firstName, lastName, password, enabled, acl_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
-		val stmt = DBHelper.getPreparedStatement(sql, Statement.RETURN_GENERATED_KEYS)
+		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
 		stmt.setInt(1, jid)
 		stmt.setString(2, username)
 		stmt.setString(3, email)
@@ -55,7 +56,9 @@ class JakonUser(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser
 			stmt.setNull(9, Types.INTEGER)
 		}
 
-		executeInsert(stmt)
+		val id = executeInsert(stmt)
+		conn.close()
+		id
 	}
 
 	override def toString: String = {

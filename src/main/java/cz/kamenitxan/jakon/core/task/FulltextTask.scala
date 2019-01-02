@@ -18,9 +18,7 @@ class FulltextTask() extends AbstractTask(classOf[FulltextTask].getSimpleName, 0
 			val infos = FieldConformer.getEmptyFieldInfos(jo.getFields toList)
 			val indexed = infos.exists( fi => fi.an.searched())
 			if (indexed) {
-				val session = DBHelper.getSession
-				val objects = session.createCriteria(jo).list()
-				objects.forEach( obj => Lucene.indexObject(obj.asInstanceOf[JakonObject]))
+				// TODO
 			}
 		})
 	}

@@ -2,17 +2,16 @@ package cz.kamenitxan.jakon.webui.controler.pagelets
 
 import java.util.{Calendar, Date}
 
+import cz.kamenitxan.jakon.core.Director.SELECT_EMAIL_TMPL_SQL
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.dynamic.{Get, Pagelet, Post}
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper.getSession
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.utils.security.AesEncryptor
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity, ResetPasswordEmailEntity}
 import javax.validation.Validation
-import org.hibernate.criterion.Restrictions
 import spark.{Request, Response}
 
 import scala.collection.JavaConverters._
@@ -25,6 +24,7 @@ import scala.util.Random
   */
 @Pagelet(path = "/admin")
 class ForgetPasswordPagelet extends AbstractAdminPagelet {
+	private val SQL_FIND_USER = "SELECT id, username, password, enabled, acl_id FROM JakonUser WHERE email = ?"
 
 	@Get(path = "/resetPassword", template = "resetPassword")
 	def get(req: Request, res: Response) = {
@@ -36,21 +36,23 @@ class ForgetPasswordPagelet extends AbstractAdminPagelet {
 		val factory = Validation.buildDefaultValidatorFactory
 		val validator = factory.getValidator
 		val violations = validator.validate(data).asScala
-		val result = violations.map(v => {
+		val validationResult = violations.map(v => {
 			this.getClass.getSimpleName + "_" + v.getPropertyPath.toString + "_" + v.getConstraintDescriptor.getAnnotation.annotationType().getSimpleName
 		})
-		if (result.nonEmpty) {
-			result.foreach(r => PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, r))
+		if (validationResult.nonEmpty) {
+			validationResult.foreach(r => PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, r))
 			return null
 		}
-		val ses = DBHelper.getSession
-		ses.beginTransaction()
-		val criteria = getSession.createCriteria(classOf[JakonUser])
-		val user = criteria.add(Restrictions.eq("email", data.email)).uniqueResult().asInstanceOf[JakonUser]
-		ses.getTransaction.commit()
-		if (user != null) {
+
+		val conn = DBHelper.getConnection
+		val stmt = DBHelper.getPreparedStatement(SQL_FIND_USER)
+		stmt.setString(1, data.email)
+		val result = DBHelper.selectSingle(stmt, classOf[JakonUser])
+		if (result.entity != null) {
+			val user = result.entity.asInstanceOf[JakonUser]
 			sendForgetPasswordEmail(user)
 		}
+		conn.close()
 
 		PageContext.getInstance().messages += new Message(MessageSeverity.SUCCESS, "PASSWORD_RESET_OK")
 		redirect(req, res, "/admin")
@@ -59,13 +61,11 @@ class ForgetPasswordPagelet extends AbstractAdminPagelet {
 	private def sendForgetPasswordEmail(user: JakonUser): Unit = {
 		if (!Settings.isEmailEnabled) return
 
-		val session = DBHelper.getSession
-		session.beginTransaction()
-		val criteria = getSession.createCriteria(classOf[EmailTemplateEntity])
-		val tmpl = criteria.add(Restrictions.eq("name", "FORGET_PASSWORD")).uniqueResult().asInstanceOf[EmailTemplateEntity]
-
-		session.getTransaction.commit()
-		session.close()
+		val conn = DBHelper.getConnection
+		val stmt = conn.prepareStatement(SELECT_EMAIL_TMPL_SQL)
+		stmt.setString(1, "FORGET_PASSWORD")
+		val tmpl = DBHelper.selectSingle(stmt, classOf[EmailTemplateEntity]).entity.asInstanceOf[EmailTemplateEntity]
+		conn.close()
 
 		val resetEmailEntity = new ResetPasswordEmailEntity()
 		resetEmailEntity.user = user
