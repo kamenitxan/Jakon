@@ -39,7 +39,7 @@ class AclRule(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser].
 
 	override def createObject(jid: Int, conn: Connection): Int = {
 		val sql = "INSERT INTO AclRule (id, name, masterAdmin, adminAllowed) VALUES (?, ?, ?, ?)"
-		val stmt = DBHelper.getPreparedStatement(sql, Statement.RETURN_GENERATED_KEYS)
+		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
 		stmt.setInt(1, jid)
 		stmt.setString(2, name)
 		stmt.setBoolean(3, masterAdmin)

@@ -2,15 +2,12 @@ package cz.kamenitxan.jakon.core.model.Dao
 
 import java.io.File
 import java.sql._
-import java.util.Properties
 
 import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
 import cz.kamenitxan.jakon.core.configuration.{SettingValue, Settings}
 import cz.kamenitxan.jakon.core.model._
 import cz.kamenitxan.jakon.utils.Utils
 import javax.persistence.ManyToOne
-import org.hibernate.cfg.Configuration
-import org.hibernate.{HibernateException, Session, SessionFactory}
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.mutable
@@ -22,23 +19,7 @@ import scala.io.Source
 object DBHelper {
 	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
-	private var concreteSessionFactory: SessionFactory = _
 	val objects: mutable.Set[Class[_ <: JakonObject]] = scala.collection.mutable.Set[Class[_ <: JakonObject]]()
-
-
-	val prop = new Properties()
-	prop.setProperty("hibernate.connection.url", Settings.getDatabaseConnPath)
-	prop.setProperty("hibernate.connection.username", Settings.getProperty(SettingValue.DB_USER))
-	prop.setProperty("hibernate.connection.password", Settings.getProperty(SettingValue.DB_PASS))
-	prop.setProperty("hibernate.dialect", "org.hibernate.dialect.SQLiteDialect")
-	//prop.setProperty("hibernate.hbm2ddl.auto", "update")
-	prop.setProperty("hibernate.c3p0.min_size", "1")
-	prop.setProperty("hibernate.c3p0.max_size", "1")
-	prop.setProperty("hibernate.show_sql", "false")
-	prop.setProperty("hibernate.format_sql", "true")
-	prop.setProperty("hibernate.enable_lazy_load_no_trans", "true")
-	prop.setProperty("hibernate.current_session_context_class", "thread")
-	//prop.setProperty("hibernate.connection.autocommit", "true")
 
 
 	addDao(classOf[AclRule])
@@ -56,11 +37,6 @@ object DBHelper {
 	val ds = new HikariDataSource(config)
 	ds.setLeakDetectionThreshold(60 * 1000)
 
-	def createSessionFactory(): Unit = {
-		val conf = new Configuration().addProperties(prop)
-		objects.foreach(o => conf.addAnnotatedClass(o))
-		concreteSessionFactory = conf.buildSessionFactory()
-	}
 
 	def addDao[T <: JakonObject](jobject: Class[T]) {
 		objects += jobject
@@ -106,17 +82,6 @@ object DBHelper {
 	}
 
 
-	@throws[HibernateException]
-	@Deprecated
-	def getSession: Session = {
-		try {
-			val session = concreteSessionFactory.getCurrentSession
-			session
-		} catch {
-			case e: HibernateException => e.printStackTrace()
-				null //concreteSessionFactory.openSession
-		}
-	}
 
 	def getDaoClasses: mutable.Set[Class[_ <: JakonObject]] = objects
 
@@ -163,6 +128,7 @@ object DBHelper {
 	private val S = classOf[String]
 	private val B = classOf[Boolean]
 	private val I = classOf[Int]
+	private val D = classOf[Double]
 
 	def createJakonObject(rs: ResultSet, cls: Class[_ <: JakonObject]): QueryResult = {
 		val rsmd = rs.getMetaData
@@ -185,6 +151,7 @@ object DBHelper {
 					case S => field.set(obj, rs.getString(columnName))
 					case B => field.set(obj, rs.getBoolean(columnName))
 					case I => field.set(obj, rs.getInt(columnName))
+					case D => field.set(obj, rs.getDouble(columnName))
 					case _ => {
 						val ann = field.getAnnotation(classOf[ManyToOne])
 						if (ann != null) {
