@@ -1,7 +1,7 @@
 package cz.kamenitxan.jakon.core.model
 
 import java.io.StringWriter
-import java.sql.{Statement, Types}
+import java.sql.{Connection, Statement, Types}
 import java.util.regex.Pattern
 
 import cz.kamenitxan.jakon.core.function.FunctionHelper
@@ -56,10 +56,9 @@ class Page(u: Unit = ()) extends JakonObject(classOf[Page].getName) with Ordered
 	override def getUrl: String = "/page/" + title.replaceAll(" ", "_").toLowerCase
 
 
-	override def create(): Int = {
-		val jid = super.create()
+	override def createObject(jid: Int, conn: Connection): Int = {
 		val sql = "INSERT INTO Page (id, title, parent_id, showComments, objectOrder, content) VALUES (?, ?, ?, ?, ?, ?)"
-		val stmt = DBHelper.getPreparedStatement(sql, Statement.RETURN_GENERATED_KEYS)
+		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
 		stmt.setInt(1, jid)
 		stmt.setString(2, title)
 		if (parent == null) {
@@ -71,6 +70,22 @@ class Page(u: Unit = ()) extends JakonObject(classOf[Page].getName) with Ordered
 		stmt.setDouble(5, objectOrder)
 		stmt.setString(6, content)
 		executeInsert(stmt)
+	}
+
+	override def updateObject(jid: Int, conn: Connection): Unit = {
+		val sql = "UPDATE Page SET title = ?, parent_id = ?, showComments = ?, objectOrder = ?, content = ? WHERE id = ?"
+		val stmt = conn.prepareStatement(sql)
+		stmt.setString(1, title)
+		if (parent == null) {
+			stmt.setNull(2, Types.INTEGER)
+		} else {
+			stmt.setInt(2, parent.id)
+		}
+		stmt.setBoolean(3, showComments)
+		stmt.setDouble(4, objectOrder)
+		stmt.setString(5, content)
+		stmt.setInt(6, id)
+		stmt.executeUpdate()
 	}
 
 	override def getObjectOrder: Double = objectOrder
@@ -87,5 +102,6 @@ class Page(u: Unit = ()) extends JakonObject(classOf[Page].getName) with Ordered
 
 	@Transient
 	override val objectSettings = new ObjectSettings("fa-file-text-o")
+
 
 }

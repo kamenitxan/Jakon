@@ -4,7 +4,8 @@ CREATE TABLE Page
   objectOrder  double precision not null,
   showComments boolean,
   title        varchar(255),
-  id           integer          NOT NULL REFERENCES JakonObject (id) ON DELETE CASCADE,
+  id           integer          NOT NULL,
   parent_id    integer,
-  primary key (id)
+  primary key (id),
+  FOREIGN KEY (id) REFERENCES JakonObject (id) ON DELETE CASCADE
 )

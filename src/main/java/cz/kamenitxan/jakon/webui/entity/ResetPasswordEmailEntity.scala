@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon.webui.entity
 
-import java.sql.Statement
+import java.sql.{Connection, Statement}
 import java.util.Date
 
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
@@ -33,7 +33,7 @@ class ResetPasswordEmailEntity(u: Unit = ()) extends JakonObject(classOf[ResetPa
 	def this() = this(u = ())
 
 
-	override def create(): Int = {
+	override def createObject(jid: Int, conn: Connection): Int = {
 		val jid = super.create()
 		val sql = "INSERT INTO ResetPasswordEmailEntity (id, user, token, secret, expirationDate) VALUES (?, ?, ?, ?, ?)"
 		val stmt = DBHelper.getPreparedStatement(sql, Statement.RETURN_GENERATED_KEYS)
@@ -46,4 +46,6 @@ class ResetPasswordEmailEntity(u: Unit = ()) extends JakonObject(classOf[ResetPa
 	}
 
 	override val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-envelope")
+
+	override def updateObject(jid: Int, conn: Connection): Unit = ???
 }

@@ -1,5 +1,7 @@
 package cz.kamenitxan.jakon.core.model
 
+import java.sql.Connection
+
 import cz.kamenitxan.jakon.webui.ObjectSettings
 
 /**
@@ -8,4 +10,8 @@ import cz.kamenitxan.jakon.webui.ObjectSettings
 class BasicJakonObject extends JakonObject(classOf[BasicJakonObject].getName) {
 
 	override val objectSettings: ObjectSettings = new ObjectSettings()
+
+	override def createObject(jid: Int, conn: Connection): Int = ???
+
+	override def updateObject(jid: Int, conn: Connection): Unit = ???
 }

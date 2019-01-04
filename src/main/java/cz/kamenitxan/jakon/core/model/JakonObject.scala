@@ -1,14 +1,13 @@
 package cz.kamenitxan.jakon.core.model
 
 import java.io.StringWriter
-import java.sql.{PreparedStatement, SQLException, Statement}
+import java.sql._
 
 import cz.kamenitxan.jakon.core.model.Dao.{Crud, DBHelper}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.json.Json
 import javax.persistence._
-import org.hibernate.Session
 
 import scala.beans.BeanProperty
 import scala.language.postfixOps
@@ -45,17 +44,6 @@ abstract class JakonObject(@BeanProperty
 
 	def getUrl: String = url
 
-	private def execute(fun: Session => Unit): Unit = {
-		val session = DBHelper.getSession
-		if (!session.getTransaction.isActive) {
-			session.beginTransaction()
-		}
-		fun.apply(session)
-		afterAll()
-		session.getTransaction.commit()
-		session.close()
-	}
-
 
 	def executeInsert(stmt: PreparedStatement): Int = {
 		val affectedRows = stmt.executeUpdate
@@ -68,25 +56,58 @@ abstract class JakonObject(@BeanProperty
 
 	def create(): Int = {
 		val conn = DBHelper.getConnection
-		val joSQL = "INSERT INTO JakonObject (url, sectionName, published, childClass) VALUES (?, ?, ?, ?)"
-		val stmt = DBHelper.getPreparedStatement(joSQL, Statement.RETURN_GENERATED_KEYS)
-		stmt.setString(1, url)
-		stmt.setString(2, sectionName)
-		stmt.setBoolean(3, published)
-		stmt.setString(4, childClass)
-		val jid = executeInsert(stmt)
-		conn.close()
-		jid
+		conn.setAutoCommit(false)
+		try {
+			val joSQL = "INSERT INTO JakonObject (url, sectionName, published, childClass) VALUES (?, ?, ?, ?)"
+			val stmt = conn.prepareStatement(joSQL, Statement.RETURN_GENERATED_KEYS)
+			stmt.setString(1, url)
+			stmt.setString(2, sectionName)
+			stmt.setBoolean(3, published)
+			stmt.setString(4, childClass)
+			val jid = executeInsert(stmt)
+			val id = createObject(jid, conn)
+			if (id != jid) {
+				throw new SQLNonTransientException(s"Child object id($id) is not same as parent id($jid)")
+			}
+			conn.commit()
+			jid
+		} catch {
+			case e: Exception => {
+				conn.rollback()
+				throw e
+			}
+		} finally {
+			conn.close()
+		}
 	}
+
+	def createObject(jid: Int, conn: Connection): Int
 
 	def afterCreate(): Unit = {}
 
 	def update(): Unit = {
-		execute(session => {
-			session.update(this)
-			afterUpdate()
-		})
+		val conn = DBHelper.getConnection
+		conn.setAutoCommit(false)
+		try {
+			val joSQL = "UPDATE JakonObject SET url = ?, published = ?, sectionName = ? WHERE id = ?"
+			val stmt = conn.prepareStatement(joSQL)
+			stmt.setString(1, url)
+			stmt.setBoolean(2, published)
+			stmt.setString(3, sectionName)
+			stmt.setInt(4, id)
+			stmt.executeUpdate()
+			updateObject(id, conn)
+			conn.commit()
+		} catch {
+			case e: Exception =>
+				conn.rollback()
+				throw e
+		} finally {
+			conn.close()
+		}
 	}
+
+	def updateObject(jid: Int, conn: Connection): Unit
 
 	def afterUpdate(): Unit = {}
 

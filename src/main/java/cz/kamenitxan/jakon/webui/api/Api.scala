@@ -21,6 +21,7 @@ object Api {
 		val jsonReq = gson.fromJson(req.body(), classOf[SearchRequest])
 		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(jsonReq.objectName)).head
 
+		/*
 		val session = DBHelper.getSession
 		session.beginTransaction()
 		try {
@@ -59,6 +60,7 @@ object Api {
 			session.close()
 		}
 
+        */
 
 		new SearchResponse(true, List[JakonObject]() asJava)
 	}

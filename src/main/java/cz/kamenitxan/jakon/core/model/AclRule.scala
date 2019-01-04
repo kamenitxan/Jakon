@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon.core.model
 
-import java.sql.Statement
+import java.sql.{Connection, Statement}
 
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.webui.ObjectSettings
@@ -37,8 +37,7 @@ class AclRule(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser].
 
 	def this() = this(u = ())
 
-	override def create(): Int = {
-		val jid = super.create()
+	override def createObject(jid: Int, conn: Connection): Int = {
 		val sql = "INSERT INTO AclRule (id, name, masterAdmin, adminAllowed) VALUES (?, ?, ?, ?)"
 		val stmt = DBHelper.getPreparedStatement(sql, Statement.RETURN_GENERATED_KEYS)
 		stmt.setInt(1, jid)
@@ -53,4 +52,6 @@ class AclRule(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser].
 
 
 	override def toString = s"AclRule($name)"
+
+	override def updateObject(jid: Int, conn: Connection): Unit = ???
 }

@@ -2,7 +2,6 @@ package cz.kamenitxan.jakon.webui.controler.impl
 
 import java.lang.reflect.Field
 import java.sql.Connection
-import java.util.Collections
 
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.{BasicJakonObject, JakonObject, Ordered}
@@ -11,7 +10,6 @@ import cz.kamenitxan.jakon.utils.{PageContext, Utils}
 import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
-import javax.persistence.criteria.{CriteriaQuery, Root}
 import spark.{ModelAndView, Request, Response}
 
 import scala.collection.JavaConverters._
@@ -37,36 +35,35 @@ object ObjectControler {
 					"objectName" -> objectName
 				), "pages/unauthorized")
 			}
-			implicit val session = DBHelper.getSession
-			implicit val conn = DBHelper.getConnection
+			implicit val conn: Connection = DBHelper.getConnection
 			try {
-				session.beginTransaction()
-				val criteriaBuilder = session.getCriteriaBuilder
-
 				// pocet objektu
-				val countQuery = criteriaBuilder.createQuery(classOf[java.lang.Long])
-				val root = countQuery.from(objectClass.get)
-				countQuery.select(criteriaBuilder.count(root))
-				val count = session.createQuery(countQuery).getSingleResult
+				val countSql = s"SELECT count(*) FROM $objectName"
+				val stmt = conn.createStatement()
+				val rs = stmt.executeQuery(countSql)
+				rs.next()
+				val count = rs.getInt(1)
 
 				// seznam objektu
 				val ocls: Class[JakonObject] = objectClass.get.asInstanceOf[Class[JakonObject]]
 
-				val criteriaQuery: CriteriaQuery[JakonObject] = criteriaBuilder.createQuery(ocls)
-				val from: Root[JakonObject] = criteriaQuery.from(ocls)
-				val select = if (ocls.getInterfaces.contains(classOf[Ordered])) {
-					criteriaQuery.select(from).orderBy(criteriaBuilder.asc(from.get("objectOrder")))
-				} else {
-					criteriaQuery.select(from)
-				}
-				val typedQuery = session.createQuery(select)
+
 				val first = (pageNumber - 1) * pageSize
-				typedQuery.setFirstResult(first)
-				typedQuery.setMaxResults(10)
-				val pageItems = if(ocls.getInterfaces.contains(classOf[Ordered])) {
-					fetchVisibleOrder(typedQuery.getResultList, ocls)
+
+
+				val order = if (ocls.getInterfaces.contains(classOf[Ordered])) {
+					s"ORDER BY $objectName.objectOrder"
 				} else {
-					typedQuery.getResultList
+					""
+				}
+				val listSql = s"SELECT * FROM JakonObject INNER JOIN $objectName ON JakonObject.id = $objectName.id $order LIMIT $pageSize OFFSET $first"
+				val stmt2 = conn.createStatement()
+				val resultList = DBHelper.select(stmt2, listSql, ocls)
+				// TODO: nacist foreign key objekty
+				val pageItems: List[JakonObject] = if (ocls.getInterfaces.contains(classOf[Ordered])) {
+					fetchVisibleOrder(resultList.map(qr => qr.entity), ocls)
+				} else {
+					resultList.map(qr => qr.entity)
 				}
 
 				//val objects = DBHelper.getSession.createCriteria(objectClass.get).list()
@@ -80,8 +77,6 @@ object ObjectControler {
 					"fields" -> FieldConformer.getEmptyFieldInfos(fields)
 				), "objects/list")
 			} finally {
-				session.getTransaction.commit()
-				session.close()
 				conn.close()
 			}
 		} else {
@@ -190,11 +185,14 @@ object ObjectControler {
 				"objectName" -> objectName
 			), "pages/unauthorized")
 		}
-		val session = DBHelper.getSession
-		session.beginTransaction()
-		val obj = session.load(objectClass, objectId)
-		session.getTransaction.commit()
-		obj.delete()
+
+		val sql = "DELETE FROM JakonObject WHERE id = ?"
+		val conn = DBHelper.getConnection
+		val stmt = conn.prepareStatement(sql)
+		stmt.setInt(1, objectId)
+		stmt.executeUpdate()
+		conn.close()
+
 		res.redirect("/admin/object/" + objectName)
 		new Context(Map[String, Any](), "objects/list")
 	}
@@ -208,20 +206,20 @@ object ObjectControler {
 		}
 	}
 
-	private def fetchVisibleOrder(objects: java.util.List[JakonObject], objectClass: Class[_])(implicit conn: Connection): java.util.List[JakonObject] = {
+	private def fetchVisibleOrder(objects: List[JakonObject], objectClass: Class[_])(implicit conn: Connection): List[JakonObject] = {
 		val stmt = conn.createStatement()
 		val result = DBHelper.select(stmt, "SELECT id FROM " + objectClass.getSimpleName + " ORDER BY objectOrder ASC", classOf[BasicJakonObject])
 		var i = 0
 		val allObjects = result.map(qr => {
 			i += 1
-			(qr.entity.asInstanceOf[Int], i)
+			(qr.entity.asInstanceOf[BasicJakonObject].id, i)
 		}).toMap
-		objects.forEach(o => o.asInstanceOf[JakonObject with  Ordered].visibleOrder = allObjects(o.id))
+		objects.foreach(o => o.asInstanceOf[JakonObject with Ordered].visibleOrder = allObjects(o.id))
 		objects
 	}
 
 	private def fetchVisibleOrder(obj: JakonObject, objectClass: Class[_])(implicit conn: Connection): JakonObject = {
-		fetchVisibleOrder(Collections.singletonList(obj), objectClass).get(0)
+		fetchVisibleOrder(obj :: Nil, objectClass).head
 	}
 
 	private def updateNewOrder(objectClass: Class[_], obj: JakonObject, id: Int): Unit = {
@@ -237,6 +235,7 @@ object ObjectControler {
 		obj.update()
 	}
 
+	//TODO zmena poradi nefunguje
 	private def updateOrder(objectClass: Class[_], objs: JakonObject, formOrder: Int): JakonObject = {
 		if (!objectClass.getInterfaces.contains(classOf[Ordered])) {
 			return objs

@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon.core.model
 
-import java.sql.{Statement, Types}
+import java.sql.{Connection, Statement, Types}
 
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.webui.ObjectSettings
@@ -36,10 +36,8 @@ class JakonUser(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser
 	@Transient
 	override val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-user")
 
-	override def create(): Int = {
+	override def createObject(jid: Int, conn: Connection): Int = {
 		this.password = Authentication.hashPassword(this.password)
-		val jid = super.create()
-		val conn = DBHelper.getConnection
 		val sql = "INSERT INTO JakonUser (id, username, email, emailConfirmed, firstName, lastName, password, enabled, acl_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
 		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
 		stmt.setInt(1, jid)
@@ -56,12 +54,12 @@ class JakonUser(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser
 			stmt.setNull(9, Types.INTEGER)
 		}
 
-		val id = executeInsert(stmt)
-		conn.close()
-		id
+		executeInsert(stmt)
 	}
 
 	override def toString: String = {
 		s"JakonUser(id: $id)"
 	}
+
+	override def updateObject(jid: Int, conn: Connection): Unit = ???
 }
