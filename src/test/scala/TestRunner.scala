@@ -30,7 +30,7 @@ class TestRunner extends Suites(
 		Director.init()
 		Settings.setDatabaseConnPath("jdbc:sqlite:jakonUnitTest.sqlite")
 		Settings.setTemplateEngine(new Pebble)
-		Settings.setDeployMode(DeployMode.PRODUCTION)
+		Settings.setDeployMode(DeployMode.DEVEL)
 		Settings.setPort(Settings.getPort - 1)
 
 		Main.main(Array[String]())

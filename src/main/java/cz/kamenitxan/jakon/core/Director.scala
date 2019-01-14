@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon.core
 
-import cz.kamenitxan.jakon.core.configuration.Settings
+import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.controler.IControler
 import cz.kamenitxan.jakon.core.customPages.AbstractCustomPage
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
@@ -33,63 +33,66 @@ object Director {
 
 	def start(): Unit = {
 		DBHelper.addDao(new JakonUser().getClass)
-		DBHelper.createTables()
+		if (Settings.getDeployMode.equals(DeployMode.DEVEL)) {
+			DBHelper.createTables()
+		}
 
 		TaskRunner.startTaskRunner()
 		logger.info("Jakon started")
 		Routes.init()
 
+		if (Settings.getDeployMode.equals(DeployMode.DEVEL)) {
+			val conn = DBHelper.getConnection
+			try {
+				val usr_stmt = conn.createStatement()
+				val rs = usr_stmt.executeQuery("SELECT count(*) FROM JakonUser")
+				val userCount = rs.getInt(1)
+				usr_stmt.close()
+				if (userCount == 0) {
+					val acl = new AclRule()
+					acl.name = "Admin"
+					acl.masterAdmin = true
+					acl.adminAllowed = true
+					acl.create()
 
-		val conn = DBHelper.getConnection
-		try {
-			val usr_stmt = conn.createStatement()
-			val rs = usr_stmt.executeQuery("SELECT count(*) FROM JakonUser")
-			val userCount = rs.getInt(1)
-			usr_stmt.close()
-			if (userCount == 0) {
-				val acl = new AclRule()
-				acl.name = "Admin"
-				acl.masterAdmin = true
-				acl.adminAllowed = true
-				acl.create()
+					val user = new JakonUser()
+					user.firstName = "Admin"
+					user.lastName = "Admin"
+					user.username = "admin"
+					user.email = "admin@admin.cz"
+					user.password = "admin"
+					user.enabled = true
+					user.emailConfirmed = true
+					user.acl = acl
+					user.create()
+				}
 
-				val user = new JakonUser()
-				user.firstName = "Admin"
-				user.lastName = "Admin"
-				user.username = "admin"
-				user.email = "admin@admin.cz"
-				user.password = "admin"
-				user.enabled = true
-				user.emailConfirmed = true
-				user.acl = acl
-				user.create()
+				val stmt = conn.prepareStatement(SELECT_EMAIL_TMPL_SQL)
+				stmt.setString(1, "REGISTRATION")
+				val tmpl = DBHelper.selectSingle(stmt, classOf[EmailTemplateEntity]).entity.asInstanceOf[EmailTemplateEntity]
+				if (tmpl == null) {
+					val emailTemplateEntity = new EmailTemplateEntity()
+					emailTemplateEntity.subject = "Jakon Registration"
+					emailTemplateEntity.from = "admin@jakon.cz"
+					emailTemplateEntity.name = "REGISTRATION"
+					emailTemplateEntity.template = "registration"
+					emailTemplateEntity.create()
+				}
+
+				val stmt2 = conn.prepareStatement(SELECT_EMAIL_TMPL_SQL)
+				stmt2.setString(1, "FORGET_PASSWORD")
+				val tmpl2 = DBHelper.selectSingle(stmt2, classOf[EmailTemplateEntity]).entity.asInstanceOf[EmailTemplateEntity]
+				if (tmpl2 == null) {
+					val emailTemplateEntity = new EmailTemplateEntity()
+					emailTemplateEntity.subject = "Forget password"
+					emailTemplateEntity.from = "admin@jakon.cz"
+					emailTemplateEntity.name = "FORGET_PASSWORD"
+					emailTemplateEntity.template = "forgetPassword"
+					emailTemplateEntity.create()
+				}
+			} finally {
+				conn.close()
 			}
-
-			val stmt = conn.prepareStatement(SELECT_EMAIL_TMPL_SQL)
-			stmt.setString(1, "REGISTRATION")
-			val tmpl = DBHelper.selectSingle(stmt, classOf[EmailTemplateEntity]).entity.asInstanceOf[EmailTemplateEntity]
-			if (tmpl == null) {
-				val emailTemplateEntity = new EmailTemplateEntity()
-				emailTemplateEntity.subject = "Jakon Registration"
-				emailTemplateEntity.from = "admin@jakon.cz"
-				emailTemplateEntity.name = "REGISTRATION"
-				emailTemplateEntity.template = "registration"
-				emailTemplateEntity.create()
-			}
-
-			val stmt2 = conn.prepareStatement(SELECT_EMAIL_TMPL_SQL)
-			stmt2.setString(1, "FORGET_PASSWORD")
-			val tmpl2 = DBHelper.selectSingle(stmt2, classOf[EmailTemplateEntity]).entity.asInstanceOf[EmailTemplateEntity]
-			if (tmpl2 == null) {
-				val emailTemplateEntity = new EmailTemplateEntity()
-				emailTemplateEntity.subject = "Forget password"
-				emailTemplateEntity.from = "admin@jakon.cz"
-				emailTemplateEntity.name = "FORGET_PASSWORD"
-				emailTemplateEntity.template = "forgetPassword"
-				emailTemplateEntity.create()
-			}
-		} finally {
-			conn.close()
 		}
 
 		logger.info("Jakon default init complete")
