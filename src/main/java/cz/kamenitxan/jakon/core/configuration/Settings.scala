@@ -43,10 +43,10 @@ object Settings {
 		}) {
 			val key = e.nextElement.asInstanceOf[String]
 			val value = prop.getProperty(key).trim
-			try settings.put(SettingValue.fromName(key), value)
-			catch {
-				case ignored: IllegalArgumentException =>
-					logger.error("Cant load setting value", e)
+			try {
+				settings.put(SettingValue.fromName(key), value)
+			} catch {
+				case _: IllegalArgumentException => logger.error("Cant load setting value", e)
 			}
 		}
 		if (getStaticDir == getOutputDir) throw new IllegalArgumentException("Static and output directory must not be same")
@@ -54,6 +54,18 @@ object Settings {
 		loader.setSuffix(".peb")
 		adminEngine = new FixedPebbleTemplateEngine(loader)
 		setTemplateEngine(new Pebble)
+
+		checkRequired()
+	}
+
+	private def checkRequired(): Unit = {
+		SettingValue.values().foreach(sv => {
+			if (sv.required && getProperty(sv) == null) {
+				throw new IllegalStateException(sv.name + " is required")
+			} else {
+				true
+			}
+		})
 	}
 
 	def getTemplateDir: String = settings.get(SettingValue.TEMPLATE_DIR).orNull

@@ -43,10 +43,18 @@
                         <tr>
                             {% for field in fields %}
                                 {% if field.an.shownInList %}
-                                    <td>{{ getAttr(object, field.name) }}</td>
+									<td>{{ getAttr(object, field.name) }}
+                                        {% if field.name == "visibleOrder" %}
+											<a href="/admin/object/moveUp/{{ objectName }}/{{ getAttr(object, "id") }}?currentOrder={{ getAttr(object, "visibleOrder") }}"
+											   class="fa fa-arrow-up changeOrder"></a>
+											<a href="/admin/object/moveDown/{{ objectName }}/{{ getAttr(object, "id") }}?currentOrder={{ getAttr(object, "visibleOrder") }}"
+											   class="fa fa-arrow-down changeOrder"></a>
+                                        {% endif %}
+									</td>
                                 {% endif %}
                             {% endfor %}
-                            <td><a href="/admin/object/{{ objectName }}/{{ getAttr(object, "id") }}"class="btn btn-default">{{ i18n("common","EDIT_BTN") }}</a></td>
+								<td><a href="/admin/object/{{ objectName }}/{{ getAttr(object, "id") }}"
+									   class="btn btn-default">{{ i18n("common","EDIT_BTN") }}</a></td>
                         </tr>
                         {% endfor %}
 

@@ -60,6 +60,8 @@ public class Routes {
 		get("/admin/object/create/:name", ObjectControler::getItem, te);
 		post("/admin/object/create/:name", ObjectControler::updateItem, te);
 		get("/admin/object/delete/:name/:id", ObjectControler::deleteItem, te);
+		get("/admin/object/moveUp/:name/:id", (req, res) -> ObjectControler.moveInList(req, res, true), te);
+		get("/admin/object/moveDown/:name/:id", (req, res) -> ObjectControler.moveInList(req, res, false), te);
 		get("/admin/object/:name/:id", ObjectControler::getItem, te);
 		post("/admin/object/:name/:id", ObjectControler::updateItem, te);
 

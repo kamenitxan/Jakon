@@ -10,6 +10,7 @@ import cz.kamenitxan.jakon.utils.{PageContext, Utils}
 import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
+import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import spark.{ModelAndView, Request, Response}
 
 import scala.collection.JavaConverters._
@@ -286,6 +287,34 @@ object ObjectControler {
 			10
 		}
 		obj.objectOrder = resultPos
+		// TODO: po zmene pozice se ma do DB rovnou ulozit nova, aby se nemusel aktualizovat cely objekt
 		obj
+	}
+
+	def moveInList(req: Request, res: Response, up: Boolean): Context = {
+		val objectName = req.params(":name")
+		val objectId = req.params(":id").toOptInt
+		val order = req.queryParams("currentOrder").toOptInt
+		if (objectId.isEmpty || order.isEmpty) {
+			PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "EMPTY ID")
+			res.redirect("/admin/object/" + objectName)
+			return null
+		}
+		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(objectName)).head
+		val newOrder = if (up) order.get - 1 else order.get + 1
+
+		val conn = DBHelper.getConnection
+		try {
+			val ps = conn.prepareStatement("SELECT * FROM " + objectName + " WHERE id = ?")
+			ps.setInt(1, objectId.get)
+			val obj = DBHelper.selectSingleDeep(ps, objectClass)
+			updateOrder(objectClass, obj, newOrder)
+			obj.update()
+		} finally {
+			conn.close()
+		}
+
+		res.redirect("/admin/object/" + objectName)
+		new Context(Map[String, Any](), "objects/list")
 	}
 }
