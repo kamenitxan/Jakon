@@ -1,7 +1,8 @@
 package cz.kamenitxan.jakon.core.model.Dao
 
-import java.io.File
+import java.io.{BufferedReader, File, InputStreamReader}
 import java.sql._
+import java.util.stream.Collectors
 
 import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
 import cz.kamenitxan.jakon.core.configuration.{SettingValue, Settings}
@@ -65,13 +66,10 @@ object DBHelper {
 				logger.info(className + " not found in DB")
 				val resource = this.getClass.getResource(s"/sql/$className.sql")
 				if (resource != null) {
-					val file = new File(resource.getFile)
-					val bufferedSource = Source.fromFile(file)
-					val sql = bufferedSource.getLines().mkString("\n")
+					val sql = new BufferedReader(new InputStreamReader(resource.openStream())).lines().collect(Collectors.joining("\n"))
 					val stmt = conn.createStatement()
 					stmt.execute(sql)
 					stmt.close()
-					bufferedSource.close
 				} else {
 					logger.error(s"Table definition for $className not found")
 				}

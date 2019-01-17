@@ -25,26 +25,37 @@
             <div class="panel panel-default">
                 <!-- /.panel-heading -->
                 <div class="panel-body">
+					<form method="get" action="/admin/object/{{ objectName }}">
                     <table width="100%" class="table table-striped table-bordered table-hover"
                            id="dataTables-example">
                         <thead>
-						<form method="get" action="/admin/object/{{ objectName }}">
+
 							<tr>
                             {% for field in fields %}
-                            {% if field.an.shownInList %}
-								<th>{{ i18n(bundle="objects", key=objectName + "_" + field.name, def=field.name) }}</th>
-                            {% endif %}
+                                {% if field.an.shownInList %}
+                                    <th>{{ i18n(bundle="objects", key=objectName + "_" + field.name, def=field.name) }}</th>
+                                {% endif %}
                             {% endfor %}
 							</tr>
 							<tr class="row_filter">
                             {% for field in fields %}
-                            {% if field.an.shownInList and field.an.searched %}
-								<th><input type="text" name="{{ field.name }}"></th>
-                            {% endif %}
+
+                                {% if field.an.shownInList %}
+								<th>
+                                    {% if field.an.searched %}
+										<!--suppress HtmlFormInputWithoutLabel -->
+										<input type="text" name="filter_{{ field.name }}">
+                                    {% endif %}
+								</th>
+                                {% endif %}
+
                             {% endfor %}
+                                <th>
+                                    <input type="submit" class="btn btn-default" value="{{ i18n("common","FILTER_BTN") }}">
+                                </th>
 							</tr>
 
-						</form>
+
                         </thead>
                         <tbody>
                         {% for object in objects %}
@@ -69,6 +80,7 @@
 
                         </tbody>
                     </table>
+					</form>
                     {% include "includes/pagination" with {"path":"/admin/object/"+ objectName} %}
                     <!-- /.table-responsive -->
                 </div>

@@ -29,6 +29,8 @@ object ObjectControler {
 		val objectName = req.params(":name")
 		val page = req.queryParams("page")
 		val pageNumber = Try(Integer.parseInt(page)).getOrElse(1)
+		val filterParams = req.queryMap().toMap.asScala.filter(kv => kv._1.startsWith("filter_") && !kv._2.head.isEmpty).map(kv => kv._1 -> kv._2.head)
+		val filterSql = parseFilterParams(filterParams)
 		val objectClass = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(objectName))
 		if (objectClass.isDefined) {
 			if (!isAuthorized(objectClass.get)) {
@@ -47,17 +49,13 @@ object ObjectControler {
 
 				// seznam objektu
 				val ocls: Class[JakonObject] = objectClass.get.asInstanceOf[Class[JakonObject]]
-
-
 				val first = (pageNumber - 1) * pageSize
-
-
 				val order = if (ocls.getInterfaces.contains(classOf[Ordered])) {
 					s"ORDER BY $objectName.objectOrder"
 				} else {
 					""
 				}
-				val listSql = s"SELECT * FROM JakonObject INNER JOIN $objectName ON JakonObject.id = $objectName.id $order LIMIT $pageSize OFFSET $first"
+				val listSql = s"SELECT * FROM JakonObject INNER JOIN $objectName ON JakonObject.id = $objectName.id $filterSql $order LIMIT $pageSize OFFSET $first"
 				val stmt2 = conn.createStatement()
 				val resultList = DBHelper.select(stmt2, listSql, ocls)
 				// TODO: nacist foreign key objekty
@@ -67,7 +65,6 @@ object ObjectControler {
 					resultList.map(qr => qr.entity)
 				}
 
-				//val objects = DBHelper.getSession.createCriteria(objectClass.get).list()
 				val fields = Utils.getFieldsUpTo(objectClass.get, classOf[Object]).filter(n => !excludedFields.contains(n.getName))
 				new Context(Map[String, Any](
 					"objectName" -> objectName,
@@ -75,7 +72,8 @@ object ObjectControler {
 					"pageNumber" -> pageNumber,
 					"pageCount" -> Math.max(Math.ceil(count / pageSize.toFloat), 1),
 					"objectCount" -> count,
-					"fields" -> FieldConformer.getEmptyFieldInfos(fields)
+					"fields" -> FieldConformer.getEmptyFieldInfos(fields),
+					"filterParams" -> filterParams
 				), "objects/list")
 			} finally {
 				conn.close()
@@ -84,6 +82,13 @@ object ObjectControler {
 			// TODO: osetri neexistujici objekt
 			new Context(Map[String, Any](), "objects/list")
 		}
+	}
+
+	private def parseFilterParams(kv: mutable.Map[String, String]): String = {
+		if (kv.isEmpty) {
+			return ""
+		}
+		""
 	}
 
 

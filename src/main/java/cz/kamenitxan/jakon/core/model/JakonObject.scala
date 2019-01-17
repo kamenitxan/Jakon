@@ -14,6 +14,7 @@ import scala.language.postfixOps
 
 /**
   * Created by TPa on 22.04.16.
+  * @param childClass java.lang.Class.getName()
   */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
