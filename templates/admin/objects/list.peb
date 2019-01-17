@@ -28,15 +28,23 @@
                     <table width="100%" class="table table-striped table-bordered table-hover"
                            id="dataTables-example">
                         <thead>
-                        <tr>
-                            <!--th>Id</th-->
+						<form method="get" action="/admin/object/{{ objectName }}">
+							<tr>
                             {% for field in fields %}
-                                {% if field.an.shownInList %}
-                                    <th>{{ i18n(bundle="objects", key=objectName + "_" + field.name, def=field.name) }}</th>
-                                {% endif %}
+                            {% if field.an.shownInList %}
+								<th>{{ i18n(bundle="objects", key=objectName + "_" + field.name, def=field.name) }}</th>
+                            {% endif %}
                             {% endfor %}
-                            <th></th>
-                        </tr>
+							</tr>
+							<tr class="row_filter">
+                            {% for field in fields %}
+                            {% if field.an.shownInList and field.an.searched %}
+								<th><input type="text" name="{{ field.name }}"></th>
+                            {% endif %}
+                            {% endfor %}
+							</tr>
+
+						</form>
                         </thead>
                         <tbody>
                         {% for object in objects %}

@@ -33,7 +33,7 @@ abstract class JakonObject(@BeanProperty
 	@JakonField var sectionName: String = ""
 	@BeanProperty
 	@Column
-	@JakonField(listOrder = -95)
+	@JakonField(listOrder = -95, searched = true)
 	var published: Boolean = true
 
 	val objectSettings: ObjectSettings

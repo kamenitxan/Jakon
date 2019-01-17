@@ -54,3 +54,7 @@ textarea {
 	position: absolute;
 	top: -30px;
 }
+
+.row_filter {
+	width: 100%;
+}
