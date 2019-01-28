@@ -95,7 +95,7 @@ class Page(u: Unit = ()) extends JakonObject(classOf[Page].getName) with Ordered
 	override def toJson: String = {
 		val writer = new StringWriter
 		val generator = Json.createGenerator(writer)
-		generator.writeStartObject.write(super.getId).write(title).write(getContent).write(parent.id).writeEnd
+		generator.writeStartObject.write(id).write(title).write(getContent).write(parent.id).writeEnd
 		generator.close()
 		writer.toString
 	}

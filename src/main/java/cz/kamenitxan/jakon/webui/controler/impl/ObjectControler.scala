@@ -22,6 +22,8 @@ import scala.util.Try
   */
 object ObjectControler {
 	val excludedFields = List("url", "sectionName", "objectSettings", "childClass")
+	private val numberTypes = classOf[Int] :: classOf[Integer] :: classOf[Double] :: classOf[Float] :: Nil
+	private val boolTypes = classOf[Boolean] :: classOf[java.lang.Boolean] :: Nil
 
 	val pageSize = 10
 
@@ -29,8 +31,7 @@ object ObjectControler {
 		val objectName = req.params(":name")
 		val page = req.queryParams("page")
 		val pageNumber = Try(Integer.parseInt(page)).getOrElse(1)
-		val filterParams = req.queryMap().toMap.asScala.filter(kv => kv._1.startsWith("filter_") && !kv._2.head.isEmpty).map(kv => kv._1 -> kv._2.head)
-		val filterSql = parseFilterParams(filterParams)
+		val filterParams = req.queryMap().toMap.asScala.filter(kv => kv._1.startsWith("filter_") && !kv._2.head.isEmpty).map(kv => kv._1.substring(7) -> kv._2.head)
 		val objectClass = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(objectName))
 		if (objectClass.isDefined) {
 			if (!isAuthorized(objectClass.get)) {
@@ -55,6 +56,7 @@ object ObjectControler {
 				} else {
 					""
 				}
+				val filterSql = parseFilterParams(filterParams, objectClass.get)
 				val listSql = s"SELECT * FROM JakonObject INNER JOIN $objectName ON JakonObject.id = $objectName.id $filterSql $order LIMIT $pageSize OFFSET $first"
 				val stmt2 = conn.createStatement()
 				val resultList = DBHelper.select(stmt2, listSql, ocls)
@@ -73,7 +75,7 @@ object ObjectControler {
 					"pageCount" -> Math.max(Math.ceil(count / pageSize.toFloat), 1),
 					"objectCount" -> count,
 					"fields" -> FieldConformer.getEmptyFieldInfos(fields),
-					"filterParams" -> filterParams
+					"filterParams" -> filterParams.asJava
 				), "objects/list")
 			} finally {
 				conn.close()
@@ -84,11 +86,48 @@ object ObjectControler {
 		}
 	}
 
-	private def parseFilterParams(kv: mutable.Map[String, String]): String = {
+	private def parseFilterParams(kv: mutable.Map[String, String], objectClass: Class[_]): String = {
 		if (kv.isEmpty) {
 			return ""
 		}
-		""
+		val sb = new mutable.StringBuilder()
+		sb.append("WHERE ")
+		for ((fieldName, v) <- kv) {
+			val clr = Utils.getClassByFieldName(objectClass, fieldName)
+			sb.append(clr._1.getSimpleName)
+			sb.append(".")
+			sb.append(fieldName)
+			v match {
+				case param if param.contains("*") =>
+					sb.append(" LIKE \"")
+					sb.append(param.replace("*", "%"))
+					sb.append("\"")
+				case param =>
+					sb.append(" = ")
+					if (numberTypes.contains(clr._2.getType)) {
+						try {
+							v.toDouble
+							sb.append(param)
+						} catch {
+							case _: NumberFormatException => sb.append("\"" + v + "\"")
+						}
+
+					} else if (boolTypes.contains(clr._2.getType)) {
+						try {
+							val pbv = v.toBoolean
+							if (pbv) sb.append(1) else sb.append(0)
+						} catch {
+							case _: IllegalArgumentException => sb.append("\"" + v + "\"")
+						}
+
+					} else {
+						sb.append("\"")
+						sb.append(v)
+						sb.append("\"")
+					}
+			}
+		}
+		sb.toString()
 	}
 
 
@@ -236,7 +275,7 @@ object ObjectControler {
 
 		val conn = DBHelper.getConnection
 		val stmt = conn.createStatement()
-		val rs =  stmt.executeQuery("SELECT objectOrder FROM " + objectClass.getSimpleName + " ORDER BY objectOrder DESC LIMIT 1")
+		val rs = stmt.executeQuery("SELECT objectOrder FROM " + objectClass.getSimpleName + " ORDER BY objectOrder DESC LIMIT 1")
 
 		if (rs.next()) {
 			val lastOrder = rs.getInt(1)
@@ -271,8 +310,8 @@ object ObjectControler {
 		conn.close()
 
 		val requiredOrder = if (formOrder < 0) 0 else if (formOrder > allObjects.size) allObjects.size else formOrder - 1
-		val earlier = if (allObjects.lift(requiredOrder-1).isDefined && allObjects.lift(requiredOrder-1).get.id != obj.id) {
-			allObjects.lift(requiredOrder-1)
+		val earlier = if (allObjects.lift(requiredOrder - 1).isDefined && allObjects.lift(requiredOrder - 1).get.id != obj.id) {
+			allObjects.lift(requiredOrder - 1)
 		} else {
 			Option.empty
 		}
@@ -286,7 +325,7 @@ object ObjectControler {
 			(latter.get.objectOrder + earlier.get.objectOrder) / 2.0
 		} else if (earlier.isDefined && latter.isEmpty) {
 			earlier.get.objectOrder + 10
-		} else if(earlier.isEmpty && latter.isDefined) {
+		} else if (earlier.isEmpty && latter.isDefined) {
 			latter.get.objectOrder / 2
 		} else {
 			10

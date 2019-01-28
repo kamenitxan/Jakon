@@ -1,5 +1,7 @@
 package cz.kamenitxan.jakon.core
 
+import java.nio.charset.Charset
+
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.controler.IControler
 import cz.kamenitxan.jakon.core.customPages.AbstractCustomPage
@@ -32,6 +34,11 @@ object Director {
 	}
 
 	def start(): Unit = {
+		val enc = Charset.defaultCharset()
+		if (Charset.forName("UTF-8") != enc) {
+			logger.warn(s"JVM character encoding $enc is not UTF-8")
+		}
+
 		DBHelper.addDao(new JakonUser().getClass)
 		if (Settings.getDeployMode.equals(DeployMode.DEVEL)) {
 			DBHelper.createTables()

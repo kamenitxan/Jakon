@@ -3,6 +3,7 @@ package cz.kamenitxan.jakon.utils
 import java.lang.reflect.Field
 import java.util.Locale
 
+import scala.annotation.tailrec
 import scala.collection.JavaConversions._
 import scala.language.postfixOps
 import scala.util.Try
@@ -27,6 +28,21 @@ object Utils {
 			currentClassFields = parentClassFields ::: currentClassFields
 		}
 		currentClassFields
+	}
+
+	@tailrec
+	def getClassByFieldName(startClass: Class[_], fieldName: String): (Class[_], Field) = {
+		var field: Option[Field] = null
+		try {
+			field = Option.apply(startClass.getDeclaredField(fieldName))
+		} catch {
+			case _: NoSuchFieldException => field = Option.empty
+		}
+		if (field.isEmpty) {
+			getClassByFieldName(startClass.getSuperclass, fieldName)
+		} else {
+			startClass -> field.get
+		}
 	}
 
 	def stringToLocale(s: String): Locale = {

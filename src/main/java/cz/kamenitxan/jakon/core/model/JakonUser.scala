@@ -14,20 +14,15 @@ import scala.beans.BeanProperty
 /**
   * Created by TPa on 31.08.16.
   */
-@Entity
 class JakonUser(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser].getName) with Serializable {
 
-	@BeanProperty @Column @JakonField var username: String = ""
-	@BeanProperty @Column @JakonField var email: String = ""
-	@BeanProperty @Column @JakonField var emailConfirmed: Boolean = false
-	@BeanProperty @Column @JakonField var firstName: String = ""
-	@BeanProperty @Column @JakonField var lastName: String = ""
-	@BeanProperty
-	@Column
-	@JakonField(shownInList = false)
-	var password: String = ""
-	@BeanProperty @Column @JakonField var enabled: Boolean = false
-	@BeanProperty
+	@JakonField(searched = true) var username: String = ""
+	@JakonField(searched = true) var email: String = ""
+	@JakonField(searched = true) var emailConfirmed: Boolean = false
+	@JakonField(searched = true) var firstName: String = ""
+	@JakonField(searched = true) var lastName: String = ""
+	@JakonField(shownInList = false, searched = true) var password: String = ""
+	@JakonField(searched = true) var enabled: Boolean = false
 	@ManyToOne
 	@JakonField(required = true) var acl: AclRule = _
 

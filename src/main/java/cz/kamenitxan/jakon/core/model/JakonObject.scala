@@ -16,24 +16,14 @@ import scala.language.postfixOps
   * Created by TPa on 22.04.16.
   * @param childClass java.lang.Class.getName()
   */
-@Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-abstract class JakonObject(@BeanProperty
-                           @Column
-                           @JakonField var childClass: String
+abstract class JakonObject(@JakonField var childClass: String
                           ) extends Serializable with Crud {
-	@BeanProperty
 	@Id
-	@GeneratedValue
 	@JakonField(disabled = true, required = false, listOrder = -99, searched = true)
 	var id: Int = 0
-	@Column
 	@JakonField var url: String = ""
-	@BeanProperty
-	@Column
 	@JakonField var sectionName: String = ""
-	@BeanProperty
-	@Column
 	@JakonField(listOrder = -95, searched = true)
 	var published: Boolean = true
 

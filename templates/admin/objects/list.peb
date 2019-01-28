@@ -1,6 +1,7 @@
 {# @pebvariable name="objectName" type="java.lang.String" #}
 {# @pebvariable name="fields" type="java.util.List" #}
 {# @pebvariable name="objects" type="java.util.List" #}
+{# @pebvariable name="filterParams" type="java.util.Map" #}
 {# @pebvariable name="field" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
 
 
@@ -44,7 +45,7 @@
 								<th>
                                     {% if field.an.searched %}
 										<!--suppress HtmlFormInputWithoutLabel -->
-										<input type="text" name="filter_{{ field.name }}">
+										<input type="text" name="filter_{{ field.name }}" value="{{ filterParams[field.name] }}" class="list_filter">
                                     {% endif %}
 								</th>
                                 {% endif %}
@@ -76,6 +77,11 @@
 									   class="btn btn-default">{{ i18n("common","EDIT_BTN") }}</a></td>
                         </tr>
                         {% endfor %}
+                        {% if objects is empty %}
+                               <tr>
+                                   <td colspan="{{ fields.size() }}">{{ i18n("common","EMPTY_OBJECT_LIST") }}</td>
+                               </tr>
+                        {% endif %}
 
 
                         </tbody>

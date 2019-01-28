@@ -12,7 +12,6 @@ import javax.persistence.ManyToOne
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.mutable
-import scala.io.Source
 
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 20.12.15.
