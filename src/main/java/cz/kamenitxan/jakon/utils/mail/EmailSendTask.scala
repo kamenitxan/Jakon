@@ -41,10 +41,15 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 				val message = new MimeMessage(mailSession)
 				message.setRecipients(Message.RecipientType.TO, e.to)
 				message.setSubject(e.subject)
+				var force_bcc = Settings.getProperty(SettingValue.MAIL_FORCE_BCC)
+				if (force_bcc != null) {
+					message.setRecipients(Message.RecipientType.BCC, force_bcc)
+				}
 
 
 				if (e.template != null) {
 					val stmt = conn.prepareStatement(EmailSendTask.SELECT_EMAIL_TMPL_SQL)
+
 					val tmpl = DBHelper.selectSingle(stmt, classOf[EmailTemplateEntity]).entity.asInstanceOf[EmailTemplateEntity]
 
 					if (Settings.getDeployMode.equals(DeployMode.DEVEL)) {

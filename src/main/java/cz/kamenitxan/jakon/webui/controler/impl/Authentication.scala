@@ -23,7 +23,7 @@ import scala.util.Random
 object Authentication {
 	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
-	private val SQL_FIND_USER = "SELECT id, username, password, enabled, acl_id FROM JakonUser WHERE email = ?"
+	private val SQL_FIND_USER = "SELECT * FROM JakonUser WHERE email = ?"
 	private val SQL_FIND_ACL = "SELECT id, name, adminAllowed, masterAdmin FROM AclRule WHERE id = ?"
 	private val SQL_SELECT_EMAIL_TMPL = "SELECT subject FROM EmailTemplateEntity WHERE name = \"REGISTRATION\""
 
@@ -35,28 +35,33 @@ object Authentication {
 		val email = req.queryParams("email")
 		val password = req.queryParams("password")
 		if (email != null && password != null) {
-			val stmt = DBHelper.getPreparedStatement(SQL_FIND_USER)
-			stmt.setString(1, email)
+			val conn = DBHelper.getConnection
+			try {
+				val stmt = conn.prepareStatement(SQL_FIND_USER)
+				stmt.setString(1, email)
 
-			val result = DBHelper.selectSingle(stmt, classOf[JakonUser])
-			if (result.entity == null) {
-				logger.info("User " + email + " not fould when loggin")
-				PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "WRONG_EMAIL_OR_PASSWORD")
-				return new Context(null, "login")
-			}
+				val result = DBHelper.selectSingle(stmt, classOf[JakonUser])
+				if (result.entity == null) {
+					logger.info("User " + email + " not fould when loggin")
+					PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "WRONG_EMAIL_OR_PASSWORD")
+					return new Context(null, "login")
+				}
 
-			val user = result.entity.asInstanceOf[JakonUser]
-			if (checkPassword(password, user.password) && user.enabled) {
-				val stmt = DBHelper.getPreparedStatement(SQL_FIND_ACL)
-				stmt.setInt(1, result.foreignIds.getOrElse("acl_id", null).id)
-				val aclResult = DBHelper.selectSingle(stmt, classOf[AclRule])
-				user.acl = aclResult.entity.asInstanceOf[AclRule]
+				val user = result.entity.asInstanceOf[JakonUser]
+				if (checkPassword(password, user.password) && user.enabled) {
+					val stmt = conn.prepareStatement(SQL_FIND_ACL)
+					stmt.setInt(1, result.foreignIds.getOrElse("acl_id", null).id)
+					val aclResult = DBHelper.selectSingle(stmt, classOf[AclRule])
+					user.acl = aclResult.entity.asInstanceOf[AclRule]
 
-				logger.info("User " + user.username + " logged in")
-				req.session(true).attribute("user", user)
-				res.redirect("/admin/index")
-			} else {
-				logger.info("User " + user.username + " failed to provide correct password")
+					logger.info("User " + user.username + " logged in")
+					req.session(true).attribute("user", user)
+					res.redirect("/admin/index")
+				} else {
+					logger.info("User " + user.username + " failed to provide correct password")
+				}
+			} finally {
+				conn.close()
 			}
 		}
 		new Context(null, "login")
@@ -121,7 +126,7 @@ object Authentication {
 			}
 			confirmEmailEntity.create()
 
-			val email = new EmailEntity("REGISTRATION", user.email, tmpl.subject, Map[String, AnyRef](
+			val email = new EmailEntity("REGISTRATION", user.email, tmpl.subject, Map[String, String](
 				"username" -> user.username,
 				"token" -> confirmEmailEntity.token,
 				EmailSendTask.TMPL_LANG -> Settings.getDefaultLocale.getCountry

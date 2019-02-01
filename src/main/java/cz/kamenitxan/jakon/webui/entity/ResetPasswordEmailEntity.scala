@@ -34,9 +34,8 @@ class ResetPasswordEmailEntity(u: Unit = ()) extends JakonObject(classOf[ResetPa
 
 
 	override def createObject(jid: Int, conn: Connection): Int = {
-		val jid = super.create()
 		val sql = "INSERT INTO ResetPasswordEmailEntity (id, user, token, secret, expirationDate) VALUES (?, ?, ?, ?, ?)"
-		val stmt = DBHelper.getPreparedStatement(sql, Statement.RETURN_GENERATED_KEYS)
+		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
 		stmt.setInt(1, jid)
 		stmt.setInt(2, user.id)
 		stmt.setString(3, token)

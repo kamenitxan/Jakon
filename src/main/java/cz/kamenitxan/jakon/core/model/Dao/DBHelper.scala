@@ -63,9 +63,9 @@ object DBHelper {
 				logger.debug(className + " found in DB")
 			} else {
 				logger.info(className + " not found in DB")
-				val resource = this.getClass.getResource(s"/sql/$className.sql")
+				val resource = this.getClass.getResourceAsStream(s"/sql/$className.sql")
 				if (resource != null) {
-					val sql = new BufferedReader(new InputStreamReader(resource.openStream())).lines().collect(Collectors.joining("\n"))
+					val sql = new BufferedReader(new InputStreamReader(resource)).lines().collect(Collectors.joining("\n"))
 					val stmt = conn.createStatement()
 					stmt.execute(sql)
 					stmt.close()

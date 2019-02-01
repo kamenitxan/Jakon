@@ -26,12 +26,17 @@ import scala.util.Random
 class ForgetPasswordPagelet extends AbstractAdminPagelet {
 	private val SQL_FIND_USER = "SELECT id, username, password, enabled, acl_id FROM JakonUser WHERE email = ?"
 
-	@Get(path = "/resetPassword", template = "resetPassword")
+	@Get(path = "/resetPassword", template = "pagelet/reset_password/resetPassword")
 	def get(req: Request, res: Response) = {
 
 	}
 
-	@Post(path = "/resetPassword", template = "resetPassword")
+	@Get(path = "/resetPasswordStep2", template = "pagelet/reset_password/resetPasswordStep2")
+	def getStep2(req: Request, res: Response) = {
+
+	}
+
+	@Post(path = "/resetPassword", template = "pagelet/reset_password/resetPassword")
 	def post(req: Request, res: Response, data: ForgetPasswordData): mutable.Map[String, Any] = {
 		val factory = Validation.buildDefaultValidatorFactory
 		val validator = factory.getValidator
@@ -45,20 +50,20 @@ class ForgetPasswordPagelet extends AbstractAdminPagelet {
 		}
 
 		val conn = DBHelper.getConnection
-		val stmt = DBHelper.getPreparedStatement(SQL_FIND_USER)
+		val stmt = conn.prepareStatement(SQL_FIND_USER)
 		stmt.setString(1, data.email)
 		val result = DBHelper.selectSingle(stmt, classOf[JakonUser])
+		conn.close()
 		if (result.entity != null) {
 			val user = result.entity.asInstanceOf[JakonUser]
-			sendForgetPasswordEmail(user)
+			sendForgetPasswordEmail(user, req)
 		}
-		conn.close()
 
 		PageContext.getInstance().messages += new Message(MessageSeverity.SUCCESS, "PASSWORD_RESET_OK")
 		redirect(req, res, "/admin")
 	}
 
-	private def sendForgetPasswordEmail(user: JakonUser): Unit = {
+	private def sendForgetPasswordEmail(user: JakonUser, req: Request): Unit = {
 		if (!Settings.isEmailEnabled) return
 
 		val conn = DBHelper.getConnection
@@ -79,9 +84,10 @@ class ForgetPasswordPagelet extends AbstractAdminPagelet {
 		}
 		resetEmailEntity.create()
 
-		val email = new EmailEntity("FORGET_PASSWORD", user.email, tmpl.subject, Map[String, AnyRef](
+		val email = new EmailEntity("FORGET_PASSWORD", user.email, tmpl.subject, Map[String, String](
 			"username" -> user.username,
 			"token" -> resetEmailEntity.token,
+			"host" -> req.host(),
 			EmailSendTask.TMPL_LANG -> Settings.getDefaultLocale.getCountry
 
 		))

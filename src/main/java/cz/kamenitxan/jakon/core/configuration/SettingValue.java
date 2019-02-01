@@ -20,7 +20,8 @@ public enum SettingValue {
 	MAIL_HOST("MAIL.host", false, "localhost"),
 	MAIL_PORT("MAIL.port", false, "25"),
 	MAIL_USERNAME("MAIL.username", false, ""),
-	MAIL_PASSWORD("MAIL.password", false, "");
+	MAIL_PASSWORD("MAIL.password", false, ""),
+	MAIL_FORCE_BCC("MAIL.force_bcc", false, null);
 
 
 	public String name;

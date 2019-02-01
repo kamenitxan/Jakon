@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon.utils.mail
 
-import java.sql.Connection
+import java.sql.{Connection, Statement}
 import java.util.Date
 
 import cz.kamenitxan.jakon.core.configuration.Settings
@@ -16,27 +16,25 @@ import scala.beans.BeanProperty
 class EmailEntity(u: Unit = ()) extends JakonObject(classOf[EmailEntity].getName) {
 	@BeanProperty @Column(name = "addressTo") @JakonField
 	var to: String = ""
-	@BeanProperty @Column @JakonField
+	@JakonField
 	var subject: String = ""
-	@BeanProperty @Column @JakonField
+	@JakonField
 	var sent: Boolean = false
-	@BeanProperty @Column @JakonField(disabled = true)
+	@JakonField(disabled = true)
 	var sentDate: Date = _
-	@BeanProperty @Column @JakonField
+	@JakonField
 	var template: String = _
-	@BeanProperty @Column @JakonField
+	@JakonField
 	var lang: String = _
-	@BeanProperty @Column @JakonField
+	@JakonField
 	var emailType: String = _
-	@BeanProperty
-	@Column
 	@JakonField(shownInList = false)
 	@Convert(converter = classOf[ScalaMapConverter])
-	var params: Map[String, AnyRef] = _
+	var params: Map[String, String] = _
 
 	def this() = this(u=())
 
-	def this(template: String, to: String, subject: String, params: Map[String, AnyRef]) = {
+	def this(template: String, to: String, subject: String, params: Map[String, String]) = {
 		this(u=())
 		this.template = template
 		this.to = to
@@ -45,7 +43,7 @@ class EmailEntity(u: Unit = ()) extends JakonObject(classOf[EmailEntity].getName
 		this.params = params
 	}
 
-	def this(template: String, to: String, subject: String, params: Map[String, AnyRef], emailType: String) = {
+	def this(template: String, to: String, subject: String, params: Map[String, String], emailType: String) = {
 		this(u=())
 		this.template = template
 		this.to = to
@@ -57,7 +55,18 @@ class EmailEntity(u: Unit = ()) extends JakonObject(classOf[EmailEntity].getName
 
 	override val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-envelope")
 
-	override def createObject(jid: Int, conn: Connection): Int = ???
+	override def createObject(jid: Int, conn: Connection): Int = {
+		val sql = "INSERT INTO EmailEntity (id, addressTo, subject, template, lang, emailType, params) VALUES (?, ?, ?, ?, ?, ?, ?)"
+		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+		stmt.setInt(1, jid)
+		stmt.setString(2, to)
+		stmt.setString(3, subject)
+		stmt.setString(4, template)
+		stmt.setString(5, lang)
+		stmt.setString(6, emailType)
+		stmt.setString(7, new ScalaMapConverter().convertToDatabaseColumn(params))
+		executeInsert(stmt)
+	}
 
 	override def updateObject(jid: Int, conn: Connection): Unit = ???
 }

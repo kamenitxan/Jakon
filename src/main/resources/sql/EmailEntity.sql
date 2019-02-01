@@ -3,7 +3,7 @@ CREATE TABLE EmailEntity
   emailType      varchar(255),
   objectSettings blob,
   params         varchar(255),
-  sent           boolean,
+  sent           boolean default false,
   sentDate       datetime,
   subject        varchar(255),
   template       varchar(255),
