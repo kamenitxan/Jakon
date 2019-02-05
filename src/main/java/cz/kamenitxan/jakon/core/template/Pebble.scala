@@ -33,6 +33,7 @@ class Pebble extends TemplateEngine {
 		builder.cacheActive(false)
 	}
 	private val engine = builder.build()
+	private val stringEngine = builder.loader(new StringLoader()).build()
 
 	def render(templateName: String, path: String, context: util.Map[String, AnyRef])(implicit caller: IControler) {
 
@@ -66,9 +67,8 @@ class Pebble extends TemplateEngine {
 	}
 
 	override def renderTemplate(template: String, context: Map[String, AnyRef]): String = {
-		val engine = new PebbleEngine.Builder().loader(new StringLoader()).build()
 		val writer = new StringWriter()
-		engine.getTemplate(template).evaluate(writer, mapAsJavaMap(context))
+		stringEngine.getTemplate(template).evaluate(writer, mapAsJavaMap(context))
 		writer.toString
 	}
 }

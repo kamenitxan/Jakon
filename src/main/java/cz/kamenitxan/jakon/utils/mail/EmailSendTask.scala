@@ -49,7 +49,7 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 
 				if (e.template != null) {
 					val stmt = conn.prepareStatement(EmailSendTask.SELECT_EMAIL_TMPL_SQL)
-
+					stmt.setString(1, e.template)
 					val tmpl = DBHelper.selectSingle(stmt, classOf[EmailTemplateEntity]).entity.asInstanceOf[EmailTemplateEntity]
 
 					if (Settings.getDeployMode.equals(DeployMode.DEVEL)) {
@@ -60,8 +60,8 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 
 					val tmplLangSuffix = e.params.getOrElse("tmplLanguage", "")
 					val te = Settings.getTemplateEngine
-					te.renderTemplate(tmpl.template + tmplLangSuffix, e.params)
-					message.setContent(tmpl.template, "text/html")
+					val renderedMessage = te.renderTemplate(tmpl.template + tmplLangSuffix, e.params)
+					message.setContent(renderedMessage, "text/html")
 				}
 
 				if (e.emailType != null) {

@@ -34,7 +34,7 @@
                         <tr>
                             <td>{{ task.name }}</td>
                             <td>{{ task.lastRun }}</td>
-                            <td>{{ task.lastExecutionTime }}</td>
+                            <td>{{ task.lastExecutionTime }}ms</td>
                             <td>{{ task.lastRunSuccessful }}</td>
                             <td><a href="/admin/task/run/{{ task.name }}"><i class="fa fa-play"></i></a></td>
                         </tr>

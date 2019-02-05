@@ -3,6 +3,7 @@ package cz.kamenitxan.jakon.utils.mail
 import java.sql.{Connection, Statement, Types}
 
 import cz.kamenitxan.jakon.core.model.JakonObject
+import cz.kamenitxan.jakon.core.model.converters.ScalaMapConverter
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence.{Column, Entity}
@@ -35,5 +36,14 @@ class EmailTemplateEntity(u: Unit = ()) extends JakonObject(classOf[EmailTemplat
 		executeInsert(stmt)
 	}
 
-	override def updateObject(jid: Int, conn: Connection): Unit = ???
+	override def updateObject(jid: Int, conn: Connection): Unit = {
+		val sql = "UPDATE EmailTemplateEntity SET name = ?, addressFrom = ?, subject = ?, template = ? WHERE id = ?"
+		val stmt = conn.prepareStatement(sql)
+		stmt.setString(1, name)
+		stmt.setString(2, from)
+		stmt.setString(3, subject)
+		stmt.setString(4, template)
+		stmt.setInt(5, jid)
+		stmt.executeUpdate()
+	}
 }

@@ -7,6 +7,7 @@ import java.util.stream.Collectors
 import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
 import cz.kamenitxan.jakon.core.configuration.{SettingValue, Settings}
 import cz.kamenitxan.jakon.core.model._
+import cz.kamenitxan.jakon.core.model.converters.ScalaMapConverter
 import cz.kamenitxan.jakon.utils.Utils
 import javax.persistence.ManyToOne
 import org.slf4j.{Logger, LoggerFactory}
@@ -126,6 +127,7 @@ object DBHelper {
 	private val B = classOf[Boolean]
 	private val I = classOf[Int]
 	private val D = classOf[Double]
+	private val MAP = classOf[Map[Any, Any]]
 
 	def createJakonObject(rs: ResultSet, cls: Class[_ <: JakonObject]): QueryResult = {
 		val rsmd = rs.getMetaData
@@ -149,6 +151,7 @@ object DBHelper {
 					case B => field.set(obj, rs.getBoolean(columnName))
 					case I => field.set(obj, rs.getInt(columnName))
 					case D => field.set(obj, rs.getDouble(columnName))
+					case MAP => field.set(obj, new ScalaMapConverter().convertToEntityAttribute(rs.getString(columnName)))
 					case _ => {
 						val ann = field.getAnnotation(classOf[ManyToOne])
 						if (ann != null) {

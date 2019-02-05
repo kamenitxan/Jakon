@@ -13,7 +13,7 @@ class ScalaMapConverter extends AttributeConverter[Map[String, String], String] 
 	private val gson = new Gson()
 
 	override def convertToDatabaseColumn(attribute: Map[String, String]): String = {
-		gson.toJson(attribute)
+		gson.toJson(attribute.asJava)
 	}
 
 	override def convertToEntityAttribute(dbData: String): Map[String, String] = {

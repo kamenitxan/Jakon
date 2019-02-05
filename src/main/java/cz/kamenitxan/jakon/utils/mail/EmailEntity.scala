@@ -29,7 +29,6 @@ class EmailEntity(u: Unit = ()) extends JakonObject(classOf[EmailEntity].getName
 	@JakonField
 	var emailType: String = _
 	@JakonField(shownInList = false)
-	@Convert(converter = classOf[ScalaMapConverter])
 	var params: Map[String, String] = _
 
 	def this() = this(u=())
@@ -68,5 +67,18 @@ class EmailEntity(u: Unit = ()) extends JakonObject(classOf[EmailEntity].getName
 		executeInsert(stmt)
 	}
 
-	override def updateObject(jid: Int, conn: Connection): Unit = ???
+	override def updateObject(jid: Int, conn: Connection): Unit = {
+		val sql = "UPDATE EmailEntity SET addressTo = ?, subject = ?, template = ?, lang = ?, emailType = ?, params = ? WHERE id = ?"
+		val stmt = conn.prepareStatement(sql)
+		stmt.setString(1, to)
+		stmt.setString(2, subject)
+		stmt.setString(3, template)
+		stmt.setString(4, lang)
+		stmt.setString(5, emailType)
+		// todo sent
+		throw new NotImplementedError()
+		stmt.setString(6, new ScalaMapConverter().convertToDatabaseColumn(params))
+		stmt.setInt(7, jid)
+		stmt.executeUpdate()
+	}
 }
