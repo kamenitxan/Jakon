@@ -2,36 +2,23 @@ package cz.kamenitxan.jakon.core.model
 
 import java.sql.{Connection, Statement}
 
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence._
-
-import scala.beans.BeanProperty
 
 /**
   * Created by TPa on 30.04.18.
   */
 @Entity
 class AclRule(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser].getName) {
-	@BeanProperty
-	@Column
 	@JakonField(searched = true, listOrder = 0)
 	var name: String = ""
-	@BeanProperty
-	@Column
 	@JakonField(listOrder = 1)
 	var masterAdmin: Boolean = false
-	@BeanProperty
-	@Column
 	@JakonField(listOrder = 2)
 	var adminAllowed: Boolean = false
-	@BeanProperty
-	@ElementCollection
 	@JakonField
 	var allowedControllers: java.util.List[String] = new java.util.ArrayList[String]()
-	@BeanProperty
-	@ElementCollection
 	@JakonField
 	var allowedFrontendPrefixes: java.util.List[String] = new java.util.ArrayList[String]()
 
@@ -53,5 +40,13 @@ class AclRule(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser].
 
 	override def toString = s"AclRule($name)"
 
-	override def updateObject(jid: Int, conn: Connection): Unit = ???
+	override def updateObject(jid: Int, conn: Connection): Unit = {
+		val sql = "UPDATE AclRule SET name = ?, masterAdmin = ?, adminAllowed = ? WHERE id = ?"
+		val stmt = conn.prepareStatement(sql)
+		stmt.setString(1, name)
+		stmt.setBoolean(2, masterAdmin)
+		stmt.setBoolean(3, adminAllowed)
+		stmt.setInt(4, jid)
+		stmt.executeUpdate()
+	}
 }

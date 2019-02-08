@@ -8,13 +8,12 @@ import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.core.model.converters.ScalaMapConverter
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.JakonField
-import javax.persistence.{Column, Convert, Entity}
+import javax.persistence.{Column, Entity}
 
-import scala.beans.BeanProperty
 
 @Entity
 class EmailEntity(u: Unit = ()) extends JakonObject(classOf[EmailEntity].getName) {
-	@BeanProperty @Column(name = "addressTo") @JakonField
+	@Column(name = "addressTo") @JakonField
 	var to: String = ""
 	@JakonField
 	var subject: String = ""
@@ -68,17 +67,17 @@ class EmailEntity(u: Unit = ()) extends JakonObject(classOf[EmailEntity].getName
 	}
 
 	override def updateObject(jid: Int, conn: Connection): Unit = {
-		val sql = "UPDATE EmailEntity SET addressTo = ?, subject = ?, template = ?, lang = ?, emailType = ?, params = ? WHERE id = ?"
+		val sql = "UPDATE EmailEntity SET addressTo = ?, subject = ?, template = ?, lang = ?, emailType = ?, params = ? sent = ?, sentDate = ? WHERE id = ?"
 		val stmt = conn.prepareStatement(sql)
 		stmt.setString(1, to)
 		stmt.setString(2, subject)
 		stmt.setString(3, template)
 		stmt.setString(4, lang)
 		stmt.setString(5, emailType)
-		// todo sent
-		throw new NotImplementedError()
 		stmt.setString(6, new ScalaMapConverter().convertToDatabaseColumn(params))
-		stmt.setInt(7, jid)
+		stmt.setBoolean(7, sent)
+		stmt.setDate(8, new java.sql.Date(sentDate.getTime))
+		stmt.setInt(9, jid)
 		stmt.executeUpdate()
 	}
 }

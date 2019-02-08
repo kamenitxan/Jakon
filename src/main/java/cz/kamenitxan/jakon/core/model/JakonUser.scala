@@ -2,13 +2,10 @@ package cz.kamenitxan.jakon.core.model
 
 import java.sql.{Connection, Statement, Types}
 
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.controler.impl.Authentication
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence._
-
-import scala.beans.BeanProperty
 
 
 /**
@@ -56,5 +53,22 @@ class JakonUser(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser
 		s"JakonUser(id: $id)"
 	}
 
-	override def updateObject(jid: Int, conn: Connection): Unit = ???
+	override def updateObject(jid: Int, conn: Connection): Unit = {
+		val sql = "UPDATE JakonUser SET username = ?, email = ?, emailConfirmed = ?, firstName = ?, lastName = ?, password = ? enabled = ?, acl_id = ? WHERE id = ?"
+		val stmt = conn.prepareStatement(sql)
+		stmt.setString(1, username)
+		stmt.setString(2, email)
+		stmt.setBoolean(3, emailConfirmed)
+		stmt.setString(4, firstName)
+		stmt.setString(5, lastName)
+		stmt.setString(6, password)
+		stmt.setBoolean(7, enabled)
+		if (acl != null) {
+			stmt.setInt(8, acl.id)
+		} else {
+			stmt.setNull(8, Types.INTEGER)
+		}
+		stmt.setInt(9, jid)
+		stmt.executeUpdate()
+	}
 }

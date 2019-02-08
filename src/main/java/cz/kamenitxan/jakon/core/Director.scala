@@ -28,9 +28,6 @@ object Director {
 		Settings.setTemplateDir("templates/bacon/")
 		Settings.setTemplateEngine(new Pebble)
 		Settings.setOutputDir("out")
-		Settings.setDatabaseDriver("org.sqlite.JDBC")
-		Settings.setDatabaseConnPath("jdbc:sqlite:jakon.sqlite")
-		//MongoHelper.setDbName("jakon")
 	}
 
 	def start(): Unit = {

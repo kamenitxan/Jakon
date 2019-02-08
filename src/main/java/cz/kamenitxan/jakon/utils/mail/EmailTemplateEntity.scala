@@ -1,9 +1,8 @@
 package cz.kamenitxan.jakon.utils.mail
 
-import java.sql.{Connection, Statement, Types}
+import java.sql.{Connection, Statement}
 
 import cz.kamenitxan.jakon.core.model.JakonObject
-import cz.kamenitxan.jakon.core.model.converters.ScalaMapConverter
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence.{Column, Entity}
@@ -18,7 +17,7 @@ class EmailTemplateEntity(u: Unit = ()) extends JakonObject(classOf[EmailTemplat
 	var from: String = ""
 	@BeanProperty @Column @JakonField
 	var subject: String = ""
-	@BeanProperty @Column @JakonField(inputTemplate = "textarea")
+	@BeanProperty @Column @JakonField(inputTemplate = "textarea", shownInList = false)
 	var template: String = ""
 
 	def this() = this(u=())

@@ -3,7 +3,7 @@ package cz.kamenitxan.jakon.utils.mail
 import java.util.Properties
 import java.util.concurrent.TimeUnit
 
-import cz.kamenitxan.jakon.core.configuration.{DeployMode, SettingValue, Settings}
+import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.task.AbstractTask
 import javax.mail._
@@ -30,18 +30,18 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 			if (emails.isEmpty) return
 
 			val prop = new Properties()
-			prop.put("mail.smtp.auth", Settings.getProperty(SettingValue.MAIL_AUTH))
-			prop.put("mail.smtp.starttls.enable", Settings.getProperty(SettingValue.MAIL_TLS))
-			prop.put("mail.smtp.host", Settings.getProperty(SettingValue.MAIL_HOST))
-			prop.put("mail.smtp.port", Settings.getProperty(SettingValue.MAIL_PORT))
+			prop.put("mail.smtp.auth", Settings.getEmailAuth)
+			//prop.put("mail.smtp.starttls.enable", Settings.getProperty(SettingValue.MAIL_TLS))
+			prop.put("mail.smtp.host", Settings.getEmailHost)
+			prop.put("mail.smtp.port", Settings.getEmailPort)
 			val mailSession = Session.getInstance(prop, new Authenticator() {
-				override protected def getPasswordAuthentication = new PasswordAuthentication(Settings.getProperty(SettingValue.MAIL_USERNAME), Settings.getProperty(SettingValue.MAIL_PASSWORD))
+				override protected def getPasswordAuthentication = new PasswordAuthentication(Settings.getEmailUserName, Settings.getEmailPassword)
 			})
 			emails.foreach(e => {
 				val message = new MimeMessage(mailSession)
 				message.setRecipients(Message.RecipientType.TO, e.to)
 				message.setSubject(e.subject)
-				var force_bcc = Settings.getProperty(SettingValue.MAIL_FORCE_BCC)
+				val force_bcc = Settings.getEmailForceBcc
 				if (force_bcc != null) {
 					message.setRecipients(Message.RecipientType.BCC, force_bcc)
 				}
@@ -53,7 +53,7 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 					val tmpl = DBHelper.selectSingle(stmt, classOf[EmailTemplateEntity]).entity.asInstanceOf[EmailTemplateEntity]
 
 					if (Settings.getDeployMode.equals(DeployMode.DEVEL)) {
-						message.setFrom(new InternetAddress(Settings.getProperty(SettingValue.MAIL_USERNAME)))
+						message.setFrom(new InternetAddress(Settings.getEmailUserName))
 					} else {
 						message.setFrom(new InternetAddress(tmpl.from))
 					}

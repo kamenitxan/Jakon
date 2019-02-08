@@ -1,11 +1,11 @@
 package cz.kamenitxan.jakon.core.model.Dao
 
-import java.io.{BufferedReader, File, InputStreamReader}
+import java.io.{BufferedReader, InputStreamReader}
 import java.sql._
 import java.util.stream.Collectors
 
 import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
-import cz.kamenitxan.jakon.core.configuration.{SettingValue, Settings}
+import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.model._
 import cz.kamenitxan.jakon.core.model.converters.ScalaMapConverter
 import cz.kamenitxan.jakon.utils.Utils
@@ -28,8 +28,8 @@ object DBHelper {
 
 	val config = new HikariConfig
 	config.setJdbcUrl(Settings.getDatabaseConnPath)
-	config.setUsername(Settings.getProperty(SettingValue.DB_USER))
-	config.setPassword(Settings.getProperty(SettingValue.DB_PASS))
+	config.setUsername(Settings.getDatabaseUser)
+	config.setPassword(Settings.getDatabasePass)
 	config.addDataSourceProperty("cachePrepStmts", "true")
 	config.addDataSourceProperty("prepStmtCacheSize", "250")
 	config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")

@@ -5,7 +5,7 @@ import java.security.{GeneralSecurityException, SecureRandom}
 import java.util.Base64
 
 import com.google.common.primitives.Bytes
-import cz.kamenitxan.jakon.core.configuration.{SettingValue, Settings}
+import cz.kamenitxan.jakon.core.configuration.Settings
 import javax.crypto.Cipher
 import javax.crypto.spec.{IvParameterSpec, SecretKeySpec}
 
@@ -13,7 +13,7 @@ import javax.crypto.spec.{IvParameterSpec, SecretKeySpec}
 
 object AesEncryptor {
 	// TODO: longer keys
-	var skeySpec: SecretKeySpec = new SecretKeySpec(Settings.getProperty(SettingValue.ENCRYPTION_SECRET).getBytes("UTF-8"), "AES")
+	var skeySpec: SecretKeySpec = new SecretKeySpec(Settings.getEncryptionSecret.getBytes("UTF-8"), "AES")
 	val AES_KEYLENGTH = 128
 	val UTF8 = "UTF-8"
 

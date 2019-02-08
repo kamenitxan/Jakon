@@ -87,6 +87,7 @@ class ForgetPasswordPagelet extends AbstractAdminPagelet {
 		val email = new EmailEntity("FORGET_PASSWORD", user.email, tmpl.subject, Map[String, String](
 			"username" -> user.username,
 			"token" -> resetEmailEntity.token,
+			"protocol" -> (if (req.raw().isSecure) "https" else "http"),
 			"host" -> req.host(),
 			EmailSendTask.TMPL_LANG -> Settings.getDefaultLocale.getCountry
 

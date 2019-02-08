@@ -1,7 +1,7 @@
 package cz.kamenitxan.jakon.core.deploy
 
 import cz.kamenitxan.jakon.core.Director
-import cz.kamenitxan.jakon.core.configuration.{SettingValue, Settings}
+import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.deploy.entity.Server
 import net.liftweb.json.{DefaultFormats, JsonParser}
 
@@ -17,7 +17,7 @@ object DeployDirector {
 		json.extract[List[Server]]
 	}
 	val deployer: IDeploy = {
-		val cls = Class.forName(Settings.getProperty(SettingValue.DEPLOY_TYPE))
+		val cls = Class.forName(Settings.getDeployType)
 		cls.newInstance().asInstanceOf[IDeploy]
 	}
 

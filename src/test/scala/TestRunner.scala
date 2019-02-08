@@ -1,15 +1,14 @@
 import java.io.File
 
+import cz.kamenitxan.jakon.core.Director
+import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.customPages.AbstractStaticPage
 import cz.kamenitxan.jakon.core.model.Page
 import cz.kamenitxan.jakon.core.template.Pebble
-import cz.kamenitxan.jakon.core.Director
-import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.example.Main
 import functions.LinkTest
 import org.scalatest.{BeforeAndAfterAll, Suites}
 import utils.AesEncryptorTest
-import utils.mail.EmailTest
 import webui.{AuthTest, MenuTest}
 
 /**
@@ -20,18 +19,16 @@ class TestRunner extends Suites(
 	new LinkTest,
 	new AuthTest,
 	//new EmailTest,
-	//new MenuTest
+	new MenuTest,
 	new AesEncryptorTest
 ) with BeforeAndAfterAll {
 
 	override def beforeAll() {
+
 		new File("jakonUnitTest.sqlite").delete()
 		println("Before!")
 		Director.init()
-		Settings.setDatabaseConnPath("jdbc:sqlite:jakonUnitTest.sqlite")
 		Settings.setTemplateEngine(new Pebble)
-		Settings.setDeployMode(DeployMode.DEVEL)
-		Settings.setPort(Settings.getPort - 1)
 
 		Main.main(Array[String]())
 

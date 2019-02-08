@@ -1,7 +1,7 @@
 package cz.kamenitxan.jakon.webui.controler.impl
 
 import cz.kamenitxan.jakon.core.Director
-import cz.kamenitxan.jakon.core.configuration.{SettingValue, Settings}
+import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.deploy.DeployDirector
 import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.controler.{AbstractController, ExecuteFun}
@@ -32,7 +32,7 @@ class DeployControler extends AbstractController {
 	override def render(req: Request, res: Response): Context = {
 		new Context(Map[String, Any](
 			"deployMode" -> Settings.getDeployMode,
-			"deployType" -> Settings.getProperty(SettingValue.DEPLOY_TYPE),
+			"deployType" -> Settings.getDeployType,
 			"servers" -> DeployDirector.servers.asJava
 		), template)
 	}

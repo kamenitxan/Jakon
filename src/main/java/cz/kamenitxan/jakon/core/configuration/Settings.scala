@@ -1,6 +1,5 @@
 package cz.kamenitxan.jakon.core.configuration
 
-import java.io.{File, FileInputStream, IOException}
 import java.util._
 
 import cz.kamenitxan.jakon.core.template.{FixedPebbleTemplateEngine, Pebble, TemplateEngine}
@@ -9,68 +8,92 @@ import cz.kamenitxan.jakon.utils.mail.EmailTypeHandler
 import cz.kamenitxan.jakon.webui.util.JakonFileLoader
 import org.slf4j.LoggerFactory
 
-import scala.collection.mutable
+import scala.language.postfixOps
 
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
   */
+//noinspection VarCouldBeVal,ScalaUnusedSymbol
+@Configuration
 object Settings {
 	private val logger = LoggerFactory.getLogger(this.getClass.getName)
 	private var engine: TemplateEngine = _
 	private var adminEngine: spark.TemplateEngine = _
-	private val settings = mutable.Map[SettingValue, String]()
 	private var emailTypeHandler: EmailTypeHandler = _
 
-	init(new File("jakon_config.properties"))
+	init()
 
-	@throws[IOException]
-	def init(configFile: File): Unit = {
-		if (configFile == null) {
-			try {
-				init(new File("jakon_config.properties"))
-			} catch {
-				case e: Exception =>
-					logger.error("Config loading failed. Shuting down!", e)
-					System.exit(-1)
-			}
-		}
-		val input = new FileInputStream(configFile)
-		val prop = new Properties
-		prop.load(input)
-		val e = prop.propertyNames
-		while ( {
-			e.hasMoreElements
-		}) {
-			val key = e.nextElement.asInstanceOf[String]
-			val value = prop.getProperty(key).trim
-			try {
-				settings.put(SettingValue.fromName(key), value)
-			} catch {
-				case _: IllegalArgumentException => logger.error("Cant load setting value", e)
-			}
-		}
-		if (getStaticDir == getOutputDir) throw new IllegalArgumentException("Static and output directory must not be same")
+
+	def init(): Unit = {
 		val loader = new JakonFileLoader
 		loader.setSuffix(".peb")
 		adminEngine = new FixedPebbleTemplateEngine(loader)
 		setTemplateEngine(new Pebble)
-
-		checkRequired()
 	}
 
-	private def checkRequired(): Unit = {
-		SettingValue.values().foreach(sv => {
-			if (sv.required && getProperty(sv) == null) {
-				throw new IllegalStateException(sv.name + " is required")
-			} else {
-				true
-			}
-		})
-	}
+	@ConfigurationValue(name = "templateDir", required = true, defaultValue = "templates/bacon")
+	private var templateDir: String = _
 
-	def getTemplateDir: String = settings.get(SettingValue.TEMPLATE_DIR).orNull
+	@ConfigurationValue(name = "staticDir", required = true, defaultValue = "static")
+	private var staticDir: String = _
 
-	def setTemplateDir(templateDir: String): Unit = settings.put(SettingValue.TEMPLATE_DIR, templateDir)
+	@ConfigurationValue(name = "outputDir", required = true, defaultValue = "out/")
+	private var outputDir: String = _
+
+	private var pckg: Array[String] = _
+
+	@ConfigurationValue(name = "databaseDriver", required = true, defaultValue = "org.sqlite.JDBC")
+	private var databaseDriver: String = _
+
+	@ConfigurationValue(name = "databaseConnPath", required = true, defaultValue = "jdbc:sqlite:jakonTest.sqlite")
+	private var databaseConnPath: String = _
+
+	@ConfigurationValue(name = "databaseUser", required = false, defaultValue = "")
+	private var databaseUser: String = _
+
+	@ConfigurationValue(name = "databasePass", required = false, defaultValue = "")
+	private var databasePass: String = _
+
+	@ConfigurationValue(name = "port", required = true, defaultValue = "4567")
+	private var port: Int = _
+
+	@ConfigurationValue(name = "defaultLocale", required = true, defaultValue = "en_US")
+	private var defaultLocale: Locale = _
+
+	@ConfigurationValue(name = "deployMode", required = true, defaultValue = "DEVEL")
+	private var deployMode: DeployMode = _
+
+	@ConfigurationValue(name = "deployType", required = true, defaultValue = "cz.kamenitxan.jakon.core.deploy.DummyDeploy")
+	private var deployType: String = _
+
+	@ConfigurationValue(name = "MAIL.enabled", required = true, defaultValue = "false")
+	private var emailEnabled: Boolean = _
+
+	@ConfigurationValue(name = "MAIL.auth", required = false)
+	private var emailAuth: String = _
+
+	@ConfigurationValue(name = "MAIL.host", required = false)
+	private var emailHost: String = _
+
+	@ConfigurationValue(name = "MAIL.port", required = false, defaultValue = "25")
+	private var emailPort: String = _
+
+	@ConfigurationValue(name = "MAIL.username", required = false)
+	private var emailUserName: String = _
+
+	@ConfigurationValue(name = "MAIL.password", required = false)
+	private var emailPassword: String = _
+
+	@ConfigurationValue(name = "MAIL.force_bcc", required = false)
+	private var emailForceBcc: String = _
+
+	@ConfigurationValue(name = "encryptionSecret", required = true, defaultValue = "reallyRandomStin")
+	private var encryptionSecret: String = _
+
+
+	def getTemplateDir: String = templateDir
+
+	def setTemplateDir(templateDir: String): Unit = this.templateDir = templateDir
 
 	def getTemplateEngine: TemplateEngine = engine
 
@@ -80,51 +103,69 @@ object Settings {
 
 	def setAdminEngine(adminEngine: spark.TemplateEngine): Unit = this.adminEngine = adminEngine
 
-	def getStaticDir: String = settings.get(SettingValue.STATIC_DIR).orNull
+	def getStaticDir: String = staticDir
 
-	def setStaticDir(staticDir: String): Unit = settings.put(SettingValue.STATIC_DIR, staticDir)
-
-	def getOutputDir: String = settings.get(SettingValue.OUTPUT_DIR).orNull
-
-	def setOutputDir(outputDir: String): Unit = settings.put(SettingValue.OUTPUT_DIR, outputDir)
-
-	def getPackage: Array[String] = settings.getOrElse(SettingValue.PACKAGE, "").split(";")
-
-	def getDatabaseDriver: String = settings.get(SettingValue.DB_DRIVER).orNull
-
-	def setDatabaseDriver(databaseDriver: String): Unit = settings.put(SettingValue.DB_DRIVER, databaseDriver)
-
-	def getDatabaseConnPath: String = settings.get(SettingValue.DB_URL).orNull
-
-	def setDatabaseConnPath(databaseConnPath: String): Unit = settings.put(SettingValue.DB_URL, databaseConnPath)
-
-	def getPort: Int = Integer.valueOf(settings.get(SettingValue.PORT).orNull)
-
-	def setPort(port: Int): Unit = settings.put(SettingValue.PORT, String.valueOf(port))
-
-	def getDefaultLocale: Locale = Utils.stringToLocale(settings.getOrElse(SettingValue.DEFAULT_LOCALE, "en_US"))
-
-	def getProperty(name: SettingValue): String = {
-		val prop = settings.get(name)
-		if (prop.isEmpty && name.defaultValue != null) {
-			return name.defaultValue
+	def setStaticDir(staticDir: String): Unit = {
+		if (outputDir != null && staticDir == outputDir) {
+			throw new IllegalArgumentException("Static and output directory must not be same")
 		}
-		prop.orNull
+		this.staticDir = staticDir
 	}
 
-	def getDeployMode: DeployMode = {
-		val mode = settings.get(SettingValue.DEPLOY_MODE)
-		if (mode != null) DeployMode.valueOf(mode.orNull)
-		else DeployMode.PRODUCTION
+	def getOutputDir: String = outputDir
+
+	def setOutputDir(outputDir: String): Unit = {
+		if (staticDir != null && staticDir == outputDir) {
+			throw new IllegalArgumentException("Static and output directory must not be same")
+		}
+		this.outputDir = outputDir
 	}
 
-	def setDeployMode(mode: DeployMode): Unit = settings.put(SettingValue.DEPLOY_MODE, mode.name)
+	def getPackage: Array[String] = {
+		if (pckg != null) return pckg
+		pckg = ConfigurationInitializer.getConf("package").split(";")
+		pckg
+	}
+
+	def getDatabaseDriver: String = databaseDriver
+
+	def getDatabaseConnPath: String = databaseConnPath
+
+	def getDatabaseUser: String = databaseUser
+
+	def getDatabasePass: String = databasePass
+
+	def getPort: Int = port
+
+	def setPort(port: String): Unit = this.port = port toInt
+
+	def getDefaultLocale: Locale = defaultLocale
+
+	def setDefaultLocale(locale: String): Unit = defaultLocale = Utils.stringToLocale(locale)
+
+	def getDeployMode: DeployMode = deployMode
+
+	def setDeployMode(deployMode: String): Unit = this.deployMode = DeployMode.valueOf(deployMode)
+
+	def getDeployType: String = deployType
 
 	def getEmailTypeHandler: EmailTypeHandler = emailTypeHandler
 
 	def setEmailTypeHandler(handler: EmailTypeHandler): Unit = emailTypeHandler = handler
 
-	def isEmailEnabled: Boolean = {
-		getProperty(SettingValue.MAIL_ENABLED).toBoolean
-	}
+	def isEmailEnabled: Boolean = emailEnabled
+
+	def getEmailAuth: String = emailAuth
+
+	def getEmailHost: String = emailHost
+
+	def getEmailPort: String = emailPort
+
+	def getEmailUserName: String = emailUserName
+
+	def getEmailPassword: String = emailPassword
+
+	def getEmailForceBcc: String = emailForceBcc
+
+	def getEncryptionSecret: String = encryptionSecret
 }

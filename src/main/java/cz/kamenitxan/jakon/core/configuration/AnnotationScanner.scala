@@ -8,13 +8,16 @@ import scala.collection.JavaConverters._
 
 
 object AnnotationScanner {
+	val scanResult = new ClassGraph().enableAllInfo()
+	  .whitelistPackages(Settings.getPackage:_*)
+	  .scan()
 
-	def scan(): Unit = {
-		val scanResult: ScanResult = new ClassGraph().enableAllInfo()
-			  .whitelistPackages(Settings.getPackage:_*)
-			  .scan()
+	def loadConfiguration(): Unit = {
+		loadConfiguration(scanResult)
+	}
+
+	def load(): Unit = {
 		try {
-			// Use scanResult here
 			loadControllers(scanResult)
 			loadCustomPages(scanResult)
 		} finally {
@@ -32,6 +35,11 @@ object AnnotationScanner {
 		val staticPages = scanResult.getClassesWithAnnotation(classOf[StaticPage].getCanonicalName).loadScalaClasses()
 		CustomPageInitializer.initCustomPages(customPages)
 		CustomPageInitializer.initStaticPages(staticPages)
+	}
+
+	private def  loadConfiguration(scanResult: ScanResult): Unit = {
+		val config = scanResult.getClassesWithAnnotation(classOf[Configuration].getCanonicalName).loadScalaClasses()
+		ConfigurationInitializer.initConfiguration(config)
 	}
 
 	implicit class ClassInfoListExtensions(val cil: ClassInfoList) {

@@ -21,6 +21,8 @@ import spark.{Request, Response}
 class JakonInit {
 	private val logger = LoggerFactory.getLogger(this.getClass)
 
+	AnnotationScanner.loadConfiguration()
+
 	var daoSetup: () => Unit = () => {
 		//DBHelper.addDao(classOf[Post])
 		//DBHelper.addDao(classOf[Page])
@@ -68,7 +70,7 @@ class JakonInit {
 			notFound((req: Request, res: Response) => new StaticFilesController().doGet(req, res))
 		}
 		routesSetup()
-		AnnotationScanner.scan()
+		AnnotationScanner.load()
 
 	}
 }
