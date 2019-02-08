@@ -66,7 +66,7 @@ object Settings {
 	@ConfigurationValue(name = "deployType", required = true, defaultValue = "cz.kamenitxan.jakon.core.deploy.DummyDeploy")
 	private var deployType: String = _
 
-	@ConfigurationValue(name = "MAIL.enabled", required = true, defaultValue = "false")
+	@ConfigurationValue(name = "MAIL.enabled", required = true, defaultValue = "true")
 	private var emailEnabled: Boolean = _
 
 	@ConfigurationValue(name = "MAIL.auth", required = false)
