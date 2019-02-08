@@ -40,6 +40,10 @@ class MenuTest extends fixture.FunSuite  {
 	test("user page") { f =>
 		f.driver.get(host + "object/JakonUser")
 		assert(checkPageLoad(f.driver))
+		f.driver.get(host + "object/JakonUser/2")
+		assert(checkPageLoad(f.driver))
+		val submit = f.driver.findElement(By.cssSelector("input.btn.btn-primary"))
+		submit.click()
 	}
 
 	test("page page") { f =>

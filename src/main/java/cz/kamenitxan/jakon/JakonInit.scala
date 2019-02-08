@@ -1,5 +1,6 @@
 package cz.kamenitxan.jakon
 
+import java.nio.file.{Files, Paths}
 import java.util.concurrent.TimeUnit
 
 import cz.kamenitxan.jakon.core.Director
@@ -32,7 +33,9 @@ class JakonInit {
 	var routesSetup: () => Unit = () => {}
 
 	def adminControllers() {
-		AdminSettings.registerCustomController(new DeployControler().getClass)
+		if (Files.exists(Paths.get("servers.json"))) {
+			AdminSettings.registerCustomController(new DeployControler().getClass)
+		}
 		AdminSettings.registerCustomController(classOf[TaskController])
 	}
 

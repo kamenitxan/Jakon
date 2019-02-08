@@ -18,7 +18,7 @@ object PageContext {
 		if (PageContext.context.get() != null) {
 			throw new IllegalStateException("PageContext already initialized")
 		}
-		if (excludedPaths.exists(path => path.startsWith(req.pathInfo()))) {
+		if (req == null || excludedPaths.exists(path => path.startsWith(req.pathInfo()))) {
 			return null
 		}
 		val ctx = new PageContext(req, res)

@@ -1,0 +1,5 @@
+{% if value %}
+    <i class="fa fa-check-circle" aria-hidden="true"></i>
+{% else %}
+    <i class="fa fa-times-circle" aria-hidden="true"></i>
+{% endif %}

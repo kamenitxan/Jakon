@@ -11,7 +11,8 @@ class FieldInfo(val required: Boolean,
                 val name: String,
                 val objectName: String,
                 val an: JakonField,
-                val template: String
+                val template: String,
+                val field: Field
                ) {
 
 	def this(an: JakonField, htmlType: HtmlType, f: Field, value: Any) = {
@@ -20,14 +21,21 @@ class FieldInfo(val required: Boolean,
 				f.getType.getSimpleName
 			} else {
 				an.inputTemplate()
-			})
+			}, f)
 	}
 	def this(an: JakonField, htmlType: HtmlType, f: Field, value: Any, template: String) = {
-		this(an.required(), an.disabled(), htmlType.typeName, an.htmlClass(), an.htmlMaxLength(), value, f.getName, f.getType.getSimpleName, an, template)
+		this(an.required(), an.disabled(), htmlType.typeName, an.htmlClass(), an.htmlMaxLength(), value, f.getName, f.getType.getSimpleName, an, template, f)
 	}
 
 	def this(an: JakonField, field: Field) = {
-		this(an.required(), an.disabled(), null, an.htmlClass(), an.htmlMaxLength(), null, field.getName, null, an, null)
+		this(an.required(), an.disabled(), null, an.htmlClass(), an.htmlMaxLength(), null, field.getName, null, an, null, field)
+	}
+
+	def formatter: String = {
+		field.getType.getSimpleName match {
+			case "boolean" => "boolean"
+			case _ => "none"
+		}
 	}
 
 	override def toString = s"FieldInfo($required, $disabled, $htmlType, $htmlClass, $value, $name)"

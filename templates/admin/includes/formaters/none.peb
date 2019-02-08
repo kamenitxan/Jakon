@@ -1,0 +1,2 @@
+{# @pebvariable name="value" type="java.lang.Object" #}
+{{ value }}

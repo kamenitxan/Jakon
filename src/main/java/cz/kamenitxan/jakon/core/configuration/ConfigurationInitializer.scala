@@ -53,7 +53,7 @@ object ConfigurationInitializer {
 				val obj = runtimeMirror.reflectModule(module).instance
 				val ann = f.getAnnotation(classOf[ConfigurationValue])
 				var confValue = conf.get(ann.name())
-				if (ann.required() || confValue.isEmpty) {
+				if (ann.required() && confValue.isEmpty) {
 					if (ann.defaultValue() != "") {
 						confValue = Option(ann.defaultValue())
 					} else if (ann.required()) {
@@ -68,7 +68,7 @@ object ConfigurationInitializer {
 					} else {
 						logger.warn("Ignoring setter: " + setter.get.getName)
 					}
-				} else {
+				} else if (confValue.nonEmpty) {
 					f.setAccessible(true)
 					f.getType match {
 						case B => f.setBoolean(obj, confValue.get toBoolean)

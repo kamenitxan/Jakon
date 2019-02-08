@@ -8,9 +8,12 @@ import scala.collection.JavaConverters._
 
 
 object AnnotationScanner {
-	val scanResult = new ClassGraph().enableAllInfo()
-	  .whitelistPackages(Settings.getPackage:_*)
-	  .scan()
+	val scanResult = {
+		val cg = new ClassGraph().enableAllInfo()
+		Settings.getPackage.foreach(p => cg.whitelistPackages(p))
+		cg.scan()
+	}
+
 
 	def loadConfiguration(): Unit = {
 		loadConfiguration(scanResult)

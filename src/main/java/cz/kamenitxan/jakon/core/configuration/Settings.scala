@@ -124,6 +124,9 @@ object Settings {
 	def getPackage: Array[String] = {
 		if (pckg != null) return pckg
 		pckg = ConfigurationInitializer.getConf("package").split(";")
+		if (!pckg.contains("cz.kamenitxan.jakon")) {
+			pckg :+ "cz.kamenitxan.jakon"
+		}
 		pckg
 	}
 

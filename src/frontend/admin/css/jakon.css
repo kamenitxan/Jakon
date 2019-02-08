@@ -76,3 +76,11 @@
 .changeOrder:hover {
 	text-decoration: none;
 }
+
+.fa.fa-check-circle {
+	color: green;
+}
+
+.fa.fa-times-circle {
+	color: firebrick;
+}
