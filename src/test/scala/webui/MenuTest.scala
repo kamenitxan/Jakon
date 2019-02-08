@@ -1,10 +1,7 @@
 package webui
 
-import com.google.common.base.Preconditions.checkState
 import cz.kamenitxan.jakon.core.configuration.Settings
 import org.openqa.selenium.{By, WebDriver}
-import org.openqa.selenium.chrome.ChromeDriver
-import org.openqa.selenium.firefox.{FirefoxDriver, FirefoxOptions}
 import org.openqa.selenium.htmlunit.HtmlUnitDriver
 import org.scalatest.{Outcome, fixture}
 
