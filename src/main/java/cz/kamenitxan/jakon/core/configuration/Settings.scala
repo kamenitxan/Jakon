@@ -21,10 +21,8 @@ object Settings {
 	private var adminEngine: spark.TemplateEngine = _
 	private var emailTypeHandler: EmailTypeHandler = _
 
-	init()
 
-
-	def init(): Unit = {
+	def doAfterLoad(): Unit = {
 		val loader = new JakonFileLoader
 		loader.setSuffix(".peb")
 		adminEngine = new FixedPebbleTemplateEngine(loader)

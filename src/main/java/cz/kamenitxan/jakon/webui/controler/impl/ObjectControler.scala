@@ -193,7 +193,8 @@ object ObjectControler {
 		var formOrder = 0
 		for (p <- params.filter(p => !p.equals("id"))) {
 			//TODO optimalizovat
-			val fieldRef: Field = Utils.getFieldsUpTo(objectClass, classOf[Object]).find(f => f.getName.equals(p)).get
+			val fieldRefOpt = Utils.getFieldsUpTo(objectClass, classOf[Object]).find(f => f.getName.startsWith(p))
+			val fieldRef = fieldRefOpt.get
 			fieldRef.setAccessible(true)
 			val value = req.queryParams(p).conform(fieldRef)
 			if (value != null) {

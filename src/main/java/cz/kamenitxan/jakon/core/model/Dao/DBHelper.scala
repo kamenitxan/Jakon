@@ -206,7 +206,7 @@ object DBHelper {
 
 	def selectSingleDeep(stmt: PreparedStatement, cls: Class[_ <: JakonObject]): JakonObject = {
 		val res = selectSingle(stmt, cls)
-		if (res.foreignIds.nonEmpty) {
+		if (res.foreignIds != null && res.foreignIds.nonEmpty) {
 			res.foreignIds.values.foreach(fki => {
 				val cls = fki.field.getType
 				val sql = "SELECT * FROM " + cls.getSimpleName + " WHERE id = ?"

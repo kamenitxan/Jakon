@@ -79,5 +79,6 @@ object ConfigurationInitializer {
 				}
 			})
 		})
+		Settings.doAfterLoad()
 	}
 }
