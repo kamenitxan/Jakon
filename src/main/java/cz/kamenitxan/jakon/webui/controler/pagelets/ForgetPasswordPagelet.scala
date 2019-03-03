@@ -24,6 +24,8 @@ import scala.util.Random
   */
 @Pagelet(path = "/admin")
 class ForgetPasswordPagelet extends AbstractAdminPagelet {
+	override val name: String = classOf[ForgetPasswordPagelet].getName
+
 	private val SQL_FIND_USER = "SELECT id, username, password, enabled, acl_id FROM JakonUser WHERE email = ?"
 
 	@Get(path = "/resetPassword", template = "pagelet/reset_password/resetPassword")

@@ -5,7 +5,10 @@ import java.lang.reflect.Method
 import com.google.gson.Gson
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.utils.i18nUtil
+import cz.kamenitxan.jakon.webui.{AdminSettings, Context}
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
+import cz.kamenitxan.jakon.webui.controler.pagelets.AbstractAdminPagelet
+import cz.kamenitxan.jakon.webui.entity.CustomControllerInfo
 import javax.validation.Validation
 import org.slf4j.LoggerFactory
 import spark.Spark
@@ -36,6 +39,15 @@ object PageletInitializer {
 				  }
 			  })
 		})
+		controllers.filter(c => classOf[AbstractAdminPagelet].isAssignableFrom(c) && c.getAnnotation(classOf[Pagelet]).showInAdmin()).foreach(c => {
+			val apa = c.getDeclaredMethods.find(m => m.getAnnotation(classOf[Get]) != null)
+			if (apa.nonEmpty) {
+				val inst = c.newInstance().asInstanceOf[AbstractAdminPagelet]
+				val controllerAnn = c.getAnnotation(classOf[Pagelet])
+				val get = apa.get.getAnnotation(classOf[Get])
+				AdminSettings.customControllersInfo += new CustomControllerInfo(inst.name, inst.icon, controllerAnn.path() + get.path())
+			}
+		})
 		logger.info("Pagelet initialization complete")
 	}
 
@@ -44,27 +56,35 @@ object PageletInitializer {
 		//TODO m.getReturnType.is
 		Spark.get(controllerAnn.path() + get.path(), (req, res) => {
 			val controller: AbstractPagelet = c.newInstance().asInstanceOf[AbstractPagelet]
-			if (m.getParameterCount == 3){
+			var context: mutable.Map[String, Any] = null
+			if (m.getParameterCount == 3) {
 				val dataType: Class[_] = m.getParameterTypes.drop(2).head
 				val data = dataType.newInstance().asInstanceOf[AnyRef]
 				dataType.getFields.foreach(f => {
-					f.set(data, req.queryParams(f.getName).conform(f))
+					try {
+						f.set(data, req.queryParams(f.getName).conform(f))
+					} catch {
+						case _: Exception =>
+					}
 				})
-				controller.beforeGet(req, res, data)
-				val context = m.invoke(controller, req, res, data).asInstanceOf[mutable.Map[String, AnyRef]]
-				controller.afterGet(req, res, data, context)
-				controller.render(context, get.template())
+				context = m.invoke(controller, req, res, data).asInstanceOf[mutable.Map[String, Any]]
 			} else {
-				val context = m.invoke(controller, req, res).asInstanceOf[mutable.Map[String, AnyRef]]
-				controller.render(context, get.template())
+				context = m.invoke(controller, req, res).asInstanceOf[mutable.Map[String, Any]]
 			}
+			if (controller.isInstanceOf[AbstractAdminPagelet]) {
+				if (context == null) {
+					context = mutable.Map[String, Any]()
+				}
+				context = context ++ Context.getAdminContext
+			}
+			controller.render(context, get.template())
 		})
 	}
 
 	private def initPostAnnotation(post: Post, controllerAnn: Pagelet, m: Method, c: Class[_]): Unit = {
 		Spark.post(controllerAnn.path() + post.path(), (req, res) => {
 			val controller = c.newInstance().asInstanceOf[AbstractPagelet]
-			if (m.getParameterCount == 3){
+			if (m.getParameterCount == 3) {
 				val dataType: Class[_] = m.getParameterTypes.drop(2).head
 				val data = dataType.newInstance().asInstanceOf[AnyRef]
 				dataType.getDeclaredFields.foreach(f => {
@@ -83,12 +103,11 @@ object PageletInitializer {
 					}).toList.asJava
 					gson.toJson(result)
 				} else {
-					controller.beforePost(req, res, data)
-					val context = m.invoke(controller, req, res, data).asInstanceOf[mutable.Map[String, AnyRef]]
+					val context = m.invoke(controller, req, res, data).asInstanceOf[mutable.Map[String, Any]]
 					controller.render(context, post.template())
 				}
 			} else {
-				val context = m.invoke(controller, req, res).asInstanceOf[mutable.Map[String, AnyRef]]
+				val context = m.invoke(controller, req, res).asInstanceOf[mutable.Map[String, Any]]
 				controller.render(context, post.template())
 			}
 		})

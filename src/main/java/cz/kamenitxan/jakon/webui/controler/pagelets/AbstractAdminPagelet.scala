@@ -9,4 +9,7 @@ import spark.TemplateEngine
   */
 abstract class AbstractAdminPagelet extends AbstractPagelet {
 	override val engine: TemplateEngine = Settings.getAdminEngine
+
+	val name: String
+	val icon: String = "fa-cog"
 }

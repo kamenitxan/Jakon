@@ -101,7 +101,7 @@ object DBHelper {
 	def getConnection: Connection = {
 		//TODO: single conn for request
 		val conn = ds.getConnection
-		logger.info("Got DB connection - " + conn)
+		//logger.info("Got DB connection - " + conn)
 		conn
 	}
 
@@ -155,7 +155,10 @@ object DBHelper {
 					case _ => {
 						val ann = field.getAnnotation(classOf[ManyToOne])
 						if (ann != null) {
-							foreignIds += (columnName -> new ForeignKeyInfo(rs.getInt(columnName), columnName, field))
+							val fv = rs.getInt(columnName)
+							if (fv > 0) {
+								foreignIds += (columnName -> new ForeignKeyInfo(rs.getInt(columnName), columnName, field))
+							}
 						} else {
 							logger.warn("Uknown data type on " + cls.getSimpleName + s".$fieldName")
 						}

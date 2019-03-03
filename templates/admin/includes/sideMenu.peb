@@ -38,7 +38,7 @@
                 </li>
                 {% for c in customControllers %}
                     <li>
-						<a href="/admin/{{ c.path }}"><i class="fa {{ c.icon }} fa-fw"></i> {{ i18n("common", c.name) }}</a>
+						<a href="{{ c.path }}"><i class="fa {{ c.icon }} fa-fw"></i> {{ i18n("common", c.name) }}</a>
                     </li>
                 {% endfor %}
                 {% if enableFiles %}

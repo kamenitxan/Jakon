@@ -9,4 +9,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Pagelet {
 	String path() default "/";
+
+	boolean showInAdmin() default false;
 }

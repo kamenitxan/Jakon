@@ -20,29 +20,13 @@ abstract class AbstractPagelet {
 	val engine: TemplateEngine = new PebbleTemplateEngine(loader)
 
 
-	def render(context: mutable.Map[String, AnyRef], templatePath: String): String = {
-		var ctx: mutable.Map[String, AnyRef] = mutable.Map[String, AnyRef]()
+	def render(context: mutable.Map[String, Any], templatePath: String): String = {
+		var ctx: mutable.Map[String, Any] = mutable.Map[String, Any]()
 		if (context != null) {
 			ctx = context
 		}
 		ctx += "jakon_messages" -> PageContext.getInstance().messages.asJava
 		engine.render(new ModelAndView(ctx.asJava, templatePath))
-	}
-
-	def beforeGet(req: Request, res: Response, data: AnyRef): Unit = {
-
-	}
-
-	def afterGet(req: Request, res: Response, data: AnyRef, context: mutable.Map[String, AnyRef]): Unit = {
-
-	}
-
-	def beforePost(req: Request, res: Response, data: AnyRef): Unit = {
-
-	}
-
-	def afterPost(req: Request, res: Response, data: AnyRef, context: mutable.Map[String, AnyRef]): Unit = {
-
 	}
 
 	def redirect(req: Request, res: Response, target: String): mutable.Map[String, Any] = {

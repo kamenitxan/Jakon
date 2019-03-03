@@ -9,7 +9,6 @@ import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.json.Json
 import javax.persistence._
 
-import scala.beans.BeanProperty
 import scala.language.postfixOps
 
 /**
