@@ -6,7 +6,7 @@ import com.mitchellbosecke.pebble.error.LoaderException
 import com.mitchellbosecke.pebble.loader.FileLoader
 import cz.kamenitxan.jakon.core.configuration.Settings
 
-class JakonFileLoader extends FileLoader {
+class JakonFileLoader(templateDir: String, loadFromJar: Boolean = false) extends FileLoader {
 	val ADMIN_TMPL_DIR = "templates/admin"
 
 	override def getReader(tmpl: String): Reader = {
@@ -14,14 +14,12 @@ class JakonFileLoader extends FileLoader {
 		var reader: Reader = null
 
 		var is: InputStream = null
-		is = loadFile(ADMIN_TMPL_DIR, tmpl)
-		if (is == null) {
-			is = loadFile(Settings.getTemplateDir, tmpl)
+		is = loadFile(templateDir, tmpl)
+		if (is == null && loadFromJar) {
+			is = this.getClass.getResourceAsStream(s"/$ADMIN_TMPL_DIR/$tmpl.peb")
 		}
-
 		if (is == null) {
-			throw new LoaderException(null, "Could not find template \"" + getPathBuilder(ADMIN_TMPL_DIR).toString() + tmpl + "\""
-				+ " or \"" + getPathBuilder(Settings.getTemplateDir).toString() + tmpl + "\"")
+			throw new LoaderException(null, "Could not find template \"" + getPathBuilder(templateDir).toString() + tmpl + "\"")
 		}
 
 		try {

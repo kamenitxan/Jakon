@@ -49,18 +49,18 @@ object FieldConformer {
 				case B => s toBoolean
 				case D | D_s => s toDouble
 				case I | I_s => s toInt
-				case DATE => {
+				case DATE =>
 					val sdf = new SimpleDateFormat(DATE_FORMAT)
 					sdf.parse(s)
-				}
-				case DATETIME => {
+				case DATETIME =>
 					val sdf = new SimpleDateFormat()
 					sdf.parse(s)
-				}
-				case LIST => {
+				case LIST =>
 					s.split("\r\n").map(line => line.conform(Class.forName(genericType.getTypeName), null)).toList.asJava
-				}
-				case _ => {
+				case x if x.isEnum =>
+					val m = x.getMethod("valueOf", classOf[String])
+					m.invoke(t, s)
+				case _ =>
 					if (classOf[JakonObject].isAssignableFrom(t)) {
 						val obj = t.newInstance().asInstanceOf[JakonObject]
 						obj.id = s.toInt
@@ -68,7 +68,6 @@ object FieldConformer {
 					} else {
 						s
 					}
-				}
 			}
 		}
 	}
@@ -89,15 +88,13 @@ object FieldConformer {
 					infos = new FieldInfo(an, HtmlType.CHECKBOX, f, fv, "OneToMany") :: infos
 				} else {
 					f.getType match {
-						case B =>  {
+						case B =>
 							val fv = f.get(obj)
 							infos = new FieldInfo(an, HtmlType.CHECKBOX, f, if (fv != null) fv.toString else null) :: infos
-						}
-						case I | I_s => {
+						case I | I_s =>
 							val fv = f.get(obj)
 							infos = new FieldInfo(an, HtmlType.NUMBER, f, fv) :: infos
-						}
-						case DATE => {
+						case DATE =>
 							val sdf =  new SimpleDateFormat(DATE_FORMAT)
 							if (f.get(obj) != null) {
 								val value = sdf.format(f.get(obj))
@@ -105,8 +102,7 @@ object FieldConformer {
 							} else {
 								infos = new FieldInfo(an, HtmlType.DATE, f, value = "") :: infos
 							}
-						}
-						case DATETIME => {
+						case DATETIME =>
 							val sdf = DateTimeFormatter.ofPattern(DATETIME_FORMAT)
 							if (f.get(obj) != null) {
 								val value = f.get(obj).asInstanceOf[LocalDateTime].format(sdf)
@@ -114,11 +110,14 @@ object FieldConformer {
 							} else {
 								infos = new FieldInfo(an, HtmlType.DATETIME, f, value = "") :: infos
 							}
-						}
-						case _ => {
+						case x if x.isEnum =>
+							val fv = f.get(obj)
+							val fi = new FieldInfo(an, HtmlType.SELECT, f, fv, "enum")
+							fi.extraData.put("enumValues", x.getEnumConstants)
+							infos = fi :: infos
+						case _ =>
 							val fv = f.get(obj)
 							infos = new FieldInfo(an, HtmlType.TEXT, f, fv) :: infos
-						}
 					}
 				}
 				}

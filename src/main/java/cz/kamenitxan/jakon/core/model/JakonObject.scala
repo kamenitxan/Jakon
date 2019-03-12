@@ -3,12 +3,14 @@ package cz.kamenitxan.jakon.core.model
 import java.io.StringWriter
 import java.sql._
 
+import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
 import cz.kamenitxan.jakon.core.model.Dao.{Crud, DBHelper}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.json.Json
 import javax.persistence._
 
+import scala.annotation.switch
 import scala.language.postfixOps
 
 /**
@@ -40,8 +42,24 @@ abstract class JakonObject(@JakonField var childClass: String
 		if (affectedRows == 0) {
 			throw new SQLException("Creating JakonObject failed, no rows affected.")
 		}
-		stmt.getGeneratedKeys.next()
-		stmt.getGeneratedKeys.getInt(1)
+
+		val generatedKeys = stmt.getGeneratedKeys
+		if (generatedKeys.next()) {
+			generatedKeys.getInt(1)
+		} else {
+			(Settings.getDatabaseType: @switch) match {
+				case DatabaseType.SQLITE => throw new SQLException("Creating JakonObject failed, no id obtained.")
+				case DatabaseType.MYSQL => {
+					if (this.getClass == classOf[JakonObject]) {
+						throw new SQLException("Creating JakonObject failed, no id obtained.")
+					} else {
+						this.id
+					}
+				}
+			}
+
+		}
+
 	}
 
 	def create(): Int = {
@@ -55,6 +73,7 @@ abstract class JakonObject(@JakonField var childClass: String
 			stmt.setBoolean(3, published)
 			stmt.setString(4, childClass)
 			val jid = executeInsert(stmt)
+			this.id = jid
 			val id = createObject(jid, conn)
 			if (id != jid) {
 				throw new SQLNonTransientException(s"Child object id($id) is not same as parent id($jid)")

@@ -1,0 +1,10 @@
+{# @pebvariable name="field" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
+
+<div class="select_wrapper">
+	<select class="form-control" name="{{ field.name }}" id="{{ fieldHash }}" {% if field.disabled %}disabled{% endif %}>
+    {% for e in field.extraData["enumValues"] %}
+		<option value="{{ e }}" {% if e == field.value %}selected{% endif %}>{{ e }}</option>
+    {% endfor %}
+	</select>
+</div>
+

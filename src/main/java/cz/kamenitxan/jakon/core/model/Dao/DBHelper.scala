@@ -5,7 +5,7 @@ import java.sql._
 import java.util.stream.Collectors
 
 import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
-import cz.kamenitxan.jakon.core.configuration.Settings
+import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
 import cz.kamenitxan.jakon.core.model._
 import cz.kamenitxan.jakon.core.model.converters.ScalaMapConverter
 import cz.kamenitxan.jakon.utils.Utils
@@ -20,7 +20,7 @@ import scala.collection.mutable
 object DBHelper {
 	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
-	val objects: mutable.Set[Class[_ <: JakonObject]] = scala.collection.mutable.Set[Class[_ <: JakonObject]]()
+	val objects: mutable.ArrayBuffer[Class[_ <: JakonObject]] = mutable.ArrayBuffer[Class[_ <: JakonObject]]()
 
 
 	addDao(classOf[AclRule])
@@ -33,8 +33,10 @@ object DBHelper {
 	config.addDataSourceProperty("cachePrepStmts", "true")
 	config.addDataSourceProperty("prepStmtCacheSize", "250")
 	config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
-	config.addDataSourceProperty("PRAGMA foreign_keys", "ON")
-
+	if (Settings.getDatabaseType == DatabaseType.SQLITE) {
+		config.addDataSourceProperty("PRAGMA foreign_keys", "ON")
+		config.addDataSourceProperty("PRAGMA journal_mode", "wal")
+	}
 	val ds = new HikariDataSource(config)
 	ds.setLeakDetectionThreshold(60 * 1000)
 
@@ -44,7 +46,9 @@ object DBHelper {
 	}
 
 	def createTables(): Unit = {
-		val dbobj = objects + classOf[JakonObject]
+		val dbobj = mutable.ArrayBuffer[Class[_ <: JakonObject]]()
+		objects.copyToBuffer(dbobj)
+		dbobj.+=:(classOf[JakonObject])
 		val conn = getConnection
 		for (o <- dbobj) {
 			val className = o.getSimpleName
@@ -80,8 +84,7 @@ object DBHelper {
 	}
 
 
-
-	def getDaoClasses: mutable.Set[Class[_ <: JakonObject]] = objects
+	def getDaoClasses: mutable.ArrayBuffer[Class[_ <: JakonObject]] = objects
 
 	/**
 	  * @param id      searched JakonObject id
@@ -152,7 +155,11 @@ object DBHelper {
 					case I => field.set(obj, rs.getInt(columnName))
 					case D => field.set(obj, rs.getDouble(columnName))
 					case MAP => field.set(obj, new ScalaMapConverter().convertToEntityAttribute(rs.getString(columnName)))
-					case _ => {
+					case x if x.isEnum =>
+						val m = x.getMethod("valueOf", classOf[String])
+						val enumValue = m.invoke(null, rs.getString(columnName))
+						field.set(obj, enumValue)
+					case _ =>
 						val ann = field.getAnnotation(classOf[ManyToOne])
 						if (ann != null) {
 							val fv = rs.getInt(columnName)
@@ -162,7 +169,6 @@ object DBHelper {
 						} else {
 							logger.warn("Uknown data type on " + cls.getSimpleName + s".$fieldName")
 						}
-					}
 				}
 
 			}
@@ -221,6 +227,34 @@ object DBHelper {
 			})
 		}
 		res.entity
+	}
+
+	def selectDeep(stmt: Statement, sql: String, cls: Class[_ <: JakonObject])(implicit conn: Connection): List[JakonObject] = {
+		val res = select(stmt, sql, cls)
+		fetchForeignObjects(res)
+		res.map(r => r.entity)
+	}
+
+	def selectDeep(stmt: PreparedStatement, cls: Class[_ <: JakonObject])(implicit conn: Connection): List[JakonObject] = {
+		val res: List[QueryResult] = select(stmt, cls)
+		fetchForeignObjects(res)
+		res.map(r => r.entity)
+	}
+
+	def fetchForeignObjects(res: List[QueryResult])(implicit conn: Connection): List[QueryResult] = {
+		res.foreach(r => {
+			if (r.foreignIds.nonEmpty) {
+				r.foreignIds.foreach(fki => {
+					val field = fki._2.field
+					val objectClass = field.getType.asInstanceOf[Class[JakonObject]]
+					val stmt = conn.prepareStatement(s"SELECT * FROM ${objectClass.getSimpleName} WHERE id = ?")
+					stmt.setInt(1, fki._2.id)
+					val res = selectSingle(stmt, objectClass)
+					field.set(r.entity, res.entity)
+				})
+			}
+		})
+		res
 	}
 
 

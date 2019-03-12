@@ -24,7 +24,6 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 		val conn = DBHelper.getConnection
 		try {
 			val stmt = conn.createStatement()
-			DBHelper.select(stmt, EmailSendTask.UNSENT_SQL, classOf[EmailEntity])
 
 			val emails = DBHelper.select(stmt, EmailSendTask.UNSENT_SQL, classOf[EmailEntity]).map(qr => qr.entity.asInstanceOf[EmailEntity])
 			if (emails.isEmpty) return

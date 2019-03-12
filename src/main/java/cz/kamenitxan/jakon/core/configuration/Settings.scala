@@ -20,13 +20,17 @@ object Settings {
 	private var engine: TemplateEngine = _
 	private var adminEngine: spark.TemplateEngine = _
 	private var emailTypeHandler: EmailTypeHandler = _
-
+	private var databaseType: DatabaseType = _
 
 	def doAfterLoad(): Unit = {
-		val loader = new JakonFileLoader
+		val loader = new JakonFileLoader("templates/admin", true)
 		loader.setSuffix(".peb")
 		adminEngine = new FixedPebbleTemplateEngine(loader)
 		setTemplateEngine(new Pebble)
+		getDatabaseConnPath match {
+			case p if p.startsWith("jdbc:mysql:") => databaseType = DatabaseType.MYSQL
+			case p if p.startsWith("jdbc:sqlite:") => databaseType = DatabaseType.SQLITE
+		}
 	}
 
 	@ConfigurationValue(name = "templateDir", required = true, defaultValue = "templates/bacon")
@@ -135,6 +139,8 @@ object Settings {
 	def getDatabaseUser: String = databaseUser
 
 	def getDatabasePass: String = databasePass
+
+	def getDatabaseType: DatabaseType = databaseType
 
 	def getPort: Int = port
 

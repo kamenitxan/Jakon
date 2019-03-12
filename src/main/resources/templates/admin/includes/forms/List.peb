@@ -1,4 +1,6 @@
+{# @pebvariable name="field" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
+
 <div>
     <textarea class="form-control" name="{{ field.name }}" cols="80" rows="5" id="editor-container{{ fieldHash }}">{% for v in field.value %}{{ v }}
-        &#13;&#10;{% endfor %}</textarea>
+		&#13;&#10;{% endfor %}</textarea>
 </div>

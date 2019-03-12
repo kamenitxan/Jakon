@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.webui.entity
 
 import java.lang.reflect.Field
+import java.util
 
 class FieldInfo(val required: Boolean,
                 val disabled: Boolean,
@@ -14,6 +15,8 @@ class FieldInfo(val required: Boolean,
                 val template: String,
                 val field: Field
                ) {
+
+	val extraData = new util.HashMap[String, Any]()
 
 	def this(an: JakonField, htmlType: HtmlType, f: Field, value: Any) = {
 		this(an.required(), an.disabled(), htmlType.typeName, an.htmlClass(), an.htmlMaxLength(), value, f.getName, f.getType.getSimpleName, an,

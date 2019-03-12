@@ -1,2 +1,0 @@
-<input class="form-control" type="{{ field.htmlType }}" name="{{ field.name }}" id="{{ field.name }}"
-       value="{{ field.value }}" {% if field.disabled %}disabled{% endif %}/>

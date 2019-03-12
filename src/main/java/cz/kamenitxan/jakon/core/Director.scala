@@ -36,7 +36,6 @@ object Director {
 			logger.warn(s"JVM character encoding $enc is not UTF-8")
 		}
 
-		DBHelper.addDao(new JakonUser().getClass)
 		if (Settings.getDeployMode.equals(DeployMode.DEVEL)) {
 			DBHelper.createTables()
 		}
@@ -50,6 +49,7 @@ object Director {
 			try {
 				val usr_stmt = conn.createStatement()
 				val rs = usr_stmt.executeQuery("SELECT count(*) FROM JakonUser")
+				rs.next()
 				val userCount = rs.getInt(1)
 				usr_stmt.close()
 				if (userCount == 0) {

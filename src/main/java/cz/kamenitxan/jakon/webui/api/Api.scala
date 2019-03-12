@@ -19,49 +19,34 @@ object Api {
 	def search(req: Request, res: Response): SearchResponse = {
 		val gson = new Gson()
 		val jsonReq = gson.fromJson(req.body(), classOf[SearchRequest])
-		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(jsonReq.objectName)).head
+		val objectClass = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(jsonReq.objectName)).head
 
-		/*
-		val session = DBHelper.getSession
-		session.beginTransaction()
+		val conn = DBHelper.getConnection
 		try {
-			// search all
 			if (jsonReq.query.isEmpty) {
-				val ocls: Class[JakonObject] = objectClass.asInstanceOf[Class[JakonObject]]
-
-				val criteriaBuilder = session.getCriteriaBuilder
-				val criteriaQuery: CriteriaQuery[JakonObject] = criteriaBuilder.createQuery(ocls)
-				val from: Root[JakonObject] = criteriaQuery.from(ocls)
-				val select: CriteriaQuery[JakonObject] = criteriaQuery.select(from)
-				val typedQuery = session.createQuery(select)
-				typedQuery.setMaxResults(10)
-				val pageItems = typedQuery.getResultList
-				return new SearchResponse(true, pageItems)
+				val sql = s"SELECT * FROM ${objectClass.getSimpleName} LIMIT 10"
+				val stmt = conn.createStatement()
+				val res = DBHelper.select(stmt, sql, objectClass)
+				val objects = res.map(r => r.entity)
+				return new SearchResponse(true, objects.asJava)
 			}
 
 			// search by id
 			try {
 				val objectId = jsonReq.query.toInt
-				val session = DBHelper.getSession
-				session.beginTransaction()
-				try {
-					val obj: JakonObject = session.get(objectClass, objectId)
-					if (obj != null) {
-						return new SearchResponse(true, List(obj) asJava)
-					}
-				} finally {
-					session.getTransaction.commit()
+				val sql = s"SELECT * FROM ${objectClass.getSimpleName} WHERE id = ?"
+				val stmt = conn.prepareStatement(sql)
+				stmt.setInt(1, objectId)
+				val res = DBHelper.selectSingle(stmt, objectClass)
+				if (res.entity != null) {
+					return new SearchResponse(true, List(res.entity) asJava)
 				}
 			} catch {
 				case _: NumberFormatException =>
 			}
 		} finally {
-			session.getTransaction.commit()
-			session.close()
+			conn.close()
 		}
-
-        */
-
-		new SearchResponse(true, List[JakonObject]() asJava)
+		new SearchResponse(false, List[JakonObject]() asJava)
 	}
 }

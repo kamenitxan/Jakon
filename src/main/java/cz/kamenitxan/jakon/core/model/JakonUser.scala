@@ -54,7 +54,7 @@ class JakonUser(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser
 	}
 
 	override def updateObject(jid: Int, conn: Connection): Unit = {
-		val sql = "UPDATE JakonUser SET username = ?, email = ?, emailConfirmed = ?, firstName = ?, lastName = ?, password = ? enabled = ?, acl_id = ? WHERE id = ?"
+		val sql = "UPDATE JakonUser SET username = ?, email = ?, emailConfirmed = ?, firstName = ?, lastName = ?, password = ?, enabled = ?, acl_id = ? WHERE id = ?"
 		val stmt = conn.prepareStatement(sql)
 		stmt.setString(1, username)
 		stmt.setString(2, email)

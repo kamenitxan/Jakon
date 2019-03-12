@@ -25,7 +25,8 @@ class i18nFun extends i18nFunction {
 		val locale = if (Settings.getDefaultLocale == null) context.getLocale else Settings.getDefaultLocale
 
 		val file = new File(templateDir)
-		val urls = Array(file.toURI.toURL)
+		val resourceDir = this.getClass.getClassLoader.getResource("templates/admin/")
+		val urls = Array(file.toURI.toURL, resourceDir.toURI.toURL)
 		val loader = new URLClassLoader(urls)
 
 		val bundle = ResourceBundle.getBundle(basename, locale, loader, new UTF8Control)

@@ -59,12 +59,12 @@ object ObjectControler {
 				val filterSql = parseFilterParams(filterParams, objectClass.get)
 				val listSql = s"SELECT * FROM JakonObject INNER JOIN $objectName ON JakonObject.id = $objectName.id $filterSql $order LIMIT $pageSize OFFSET $first"
 				val stmt2 = conn.createStatement()
-				val resultList = DBHelper.select(stmt2, listSql, ocls)
+				val resultList = DBHelper.selectDeep(stmt2, listSql, ocls)
 				// TODO: nacist foreign key objekty
 				val pageItems: List[JakonObject] = if (ocls.getInterfaces.contains(classOf[Ordered])) {
-					fetchVisibleOrder(resultList.map(qr => qr.entity), ocls)
+					fetchVisibleOrder(resultList, ocls)
 				} else {
-					resultList.map(qr => qr.entity)
+					resultList
 				}
 
 				val fields = Utils.getFieldsUpTo(objectClass.get, classOf[Object]).filter(n => !excludedFields.contains(n.getName))
@@ -81,8 +81,8 @@ object ObjectControler {
 				conn.close()
 			}
 		} else {
-			// TODO: osetri neexistujici objekt
-			new Context(Map[String, Any](), "objects/list")
+			res.status(404)
+			new Context(Map[String, Any](), "errors/404")
 		}
 	}
 
@@ -134,7 +134,7 @@ object ObjectControler {
 	def getItem(req: Request, res: Response): Context = {
 		val objectName = req.params(":name")
 		val objectId = req.params(":id").toOptInt
-		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(objectName)).head
+		val objectClass = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(objectName)).head
 
 		if (!isAuthorized(objectClass)) {
 			return new Context(Map[String, Any](
@@ -172,7 +172,7 @@ object ObjectControler {
 		val params: mutable.Set[String] = req.queryParams().asScala
 		val objectName = req.params(":name")
 		val objectId = req.params(":id").toOptInt
-		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(objectName)).head
+		val objectClass = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(objectName)).head
 
 		if (!isAuthorized(objectClass)) {
 			return new Context(Map[String, Any](
@@ -224,7 +224,7 @@ object ObjectControler {
 	def deleteItem(req: Request, res: Response): Context = {
 		val objectName = req.params(":name")
 		val objectId = req.params(":id").toOptInt.get
-		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(objectName)).head
+		val objectClass = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(objectName)).head
 		if (!isAuthorized(objectClass)) {
 			return new Context(Map[String, Any](
 				"objectName" -> objectName

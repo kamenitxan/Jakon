@@ -1,6 +1,6 @@
 CREATE TABLE JakonObject
 (
-  id          integer not null primary key,
+  id          INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
   childClass  varchar(255),
   published   boolean,
   sectionName varchar(255),

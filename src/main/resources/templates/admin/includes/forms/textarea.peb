@@ -1,0 +1,10 @@
+{# @pebvariable name="field" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
+
+<div>
+	<textarea class="form-control" name="{{ field.name }}" cols="80" rows="5" id="editor-container{{ fieldHash }}">{{ field.value | raw }}</textarea>
+</div>
+
+<script>
+	const JTextarea = require("forms/j_textarea.js");
+	new JTextarea().init({{ fieldHash }})
+</script>

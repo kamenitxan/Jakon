@@ -74,7 +74,7 @@
                                 {% endif %}
                             {% endfor %}
 								<td><a href="/admin/object/{{ objectName }}/{{ getAttr(object, "id") }}"
-									   class="btn btn-default">{{ i18n("common","EDIT_BTN") }}</a></td>
+									   class="btn btn-info">{{ i18n("common","EDIT_BTN") }}</a></td>
                         </tr>
                         {% endfor %}
                         {% if objects is empty %}

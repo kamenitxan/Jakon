@@ -1,0 +1,4 @@
+{# @pebvariable name="field" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
+
+<input type="{{ field.htmlType }}" name="{{ field.name }}" id="{{ field.name }}"
+	   value="true" {% if field.value == "true" %}checked{% endif %}/>

@@ -21,7 +21,7 @@ import scala.collection.JavaConverters._
   * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
   */
 class Pebble extends TemplateEngine {
-	private val loader = new JakonFileLoader
+	private val loader = new JakonFileLoader(Settings.getTemplateDir)
 	loader.setSuffix(".peb")
 	private val builder = new PebbleEngine.Builder()
 	builder.loader(loader)
