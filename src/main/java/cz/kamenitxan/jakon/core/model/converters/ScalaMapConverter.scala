@@ -9,7 +9,7 @@ import scala.collection.JavaConverters._
 import scala.language.postfixOps
 
 
-class ScalaMapConverter extends AttributeConverter[Map[String, String], String] {
+class ScalaMapConverter extends AbstractMapConverter[String, String] {
 	private val gson = new Gson()
 
 	override def convertToDatabaseColumn(attribute: Map[String, String]): String = {

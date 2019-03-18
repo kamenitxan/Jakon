@@ -1,5 +1,8 @@
 package cz.kamenitxan.jakon.webui.entity;
 
+import cz.kamenitxan.jakon.core.model.converters.AbstractMapConverter;
+
+import javax.persistence.AttributeConverter;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -21,6 +24,8 @@ public @interface JakonField {
 	String htmlClass() default "";
 	int htmlMaxLength() default 255;
 	String inputTemplate() default "";
+
+	Class<AbstractMapConverter> converter() default AbstractMapConverter.class;
 
 	/**
 	 * property is searchable in admin, including in select search box

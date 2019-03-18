@@ -1,5 +1,7 @@
 package cz.kamenitxan.jakon.core.configuration
 
+import java.io.File
+
 import cz.kamenitxan.jakon.core.customPages.{CustomPage, CustomPageInitializer, StaticPage}
 import cz.kamenitxan.jakon.core.dynamic.{Pagelet, PageletInitializer}
 import io.github.classgraph.{ClassGraph, ClassInfoList, ScanResult}
@@ -8,7 +10,7 @@ import scala.collection.JavaConverters._
 
 
 object AnnotationScanner {
-	val scanResult = {
+	private val scanResult = {
 		val cg = new ClassGraph().enableAllInfo()
 		Settings.getPackage.foreach(p => cg.whitelistPackages(p))
 		cg.scan()

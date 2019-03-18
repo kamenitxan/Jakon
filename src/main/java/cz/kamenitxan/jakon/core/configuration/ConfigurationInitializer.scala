@@ -3,19 +3,17 @@ package cz.kamenitxan.jakon.core.configuration
 import java.io.{File, FileInputStream, IOException}
 import java.util.Properties
 
-import cz.kamenitxan.jakon.core.configuration.Settings._
 import org.slf4j.LoggerFactory
-import scala.reflect.runtime.universe
-import scala.collection.mutable
 
+import scala.collection.mutable
 import scala.language.postfixOps
+import scala.reflect.runtime.universe
 
 
 object ConfigurationInitializer {
 	private val logger = LoggerFactory.getLogger(this.getClass.getName)
 	private val conf = mutable.HashMap[String, String]()
 
-	init(new File("jakon_config.properties"))
 
 	@throws[IOException]
 	def init(configFile: File): Unit = {

@@ -8,9 +8,11 @@ import cz.kamenitxan.jakon.core.model.{Category, Page, Post}
 
 class JakonApp extends JakonInit{
 
-	DBHelper.addDao(classOf[Category])
-	DBHelper.addDao(classOf[Post])
-	DBHelper.addDao(classOf[Page])
+	daoSetup = () => {
+		DBHelper.addDao(classOf[Category])
+		DBHelper.addDao(classOf[Post])
+		DBHelper.addDao(classOf[Page])
+	}
 
 	Director.registerControler(new PageControler)
 

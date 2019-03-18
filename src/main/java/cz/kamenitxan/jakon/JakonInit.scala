@@ -1,10 +1,11 @@
 package cz.kamenitxan.jakon
 
+import java.io.File
 import java.nio.file.{Files, Paths}
 import java.util.concurrent.TimeUnit
 
 import cz.kamenitxan.jakon.core.Director
-import cz.kamenitxan.jakon.core.configuration.{AnnotationScanner, DeployMode, Settings}
+import cz.kamenitxan.jakon.core.configuration.{AnnotationScanner, ConfigurationInitializer, DeployMode, Settings}
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.task.{FulltextTask, RenderTask, TaskRunner}
 import cz.kamenitxan.jakon.devtools.{DevRender, StaticFilesController}
@@ -22,7 +23,6 @@ import spark.{Request, Response}
 class JakonInit {
 	private val logger = LoggerFactory.getLogger(this.getClass)
 
-	AnnotationScanner.loadConfiguration()
 
 	var daoSetup: () => Unit = () => {
 		//DBHelper.addDao(classOf[Post])
@@ -51,7 +51,18 @@ class JakonInit {
 
 	}
 
-	def run(): Unit = {
+	def run(args: Array[String]): Unit = {
+		val arguments = args.toList.map(a => {
+			val split = a.split("=")
+			split.length match {
+				case 1 => split(0) -> ""
+				case 2 => split(0) -> split(1)
+			}
+		})
+		val configName = arguments.find(a => a._1 == "jakonConfig").map(a => a._2)
+		ConfigurationInitializer.init(new File(configName.orNull))
+		AnnotationScanner.loadConfiguration()
+
 		staticFiles.externalLocation(Settings.getStaticDir)
 		port(Settings.getPort)
 

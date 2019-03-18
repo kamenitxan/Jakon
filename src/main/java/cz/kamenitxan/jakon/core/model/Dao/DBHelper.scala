@@ -7,9 +7,10 @@ import java.util.stream.Collectors
 import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
 import cz.kamenitxan.jakon.core.model._
-import cz.kamenitxan.jakon.core.model.converters.ScalaMapConverter
+import cz.kamenitxan.jakon.core.model.converters.{AbstractMapConverter, ScalaMapConverter}
 import cz.kamenitxan.jakon.utils.Utils
-import javax.persistence.ManyToOne
+import cz.kamenitxan.jakon.webui.entity.JakonField
+import javax.persistence.{AttributeConverter, ManyToOne}
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.mutable
@@ -154,7 +155,9 @@ object DBHelper {
 					case B => field.set(obj, rs.getBoolean(columnName))
 					case I => field.set(obj, rs.getInt(columnName))
 					case D => field.set(obj, rs.getDouble(columnName))
-					case MAP => field.set(obj, new ScalaMapConverter().convertToEntityAttribute(rs.getString(columnName)))
+					case MAP =>
+						val converter = field.getAnnotation(classOf[JakonField]).converter().newInstance()
+						field.set(obj, converter.convertToEntityAttribute(rs.getString(columnName)))
 					case x if x.isEnum =>
 						val m = x.getMethod("valueOf", classOf[String])
 						val enumValue = m.invoke(null, rs.getString(columnName))
