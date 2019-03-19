@@ -25,17 +25,19 @@ object ConfigurationInitializer {
 					logger.error("Config loading failed. Shuting down!", e)
 					System.exit(-1)
 			}
+		} else {
+			val input = new FileInputStream(configFile)
+			val prop = new Properties
+			prop.load(input)
+			val e = prop.propertyNames
+			while ( {
+				e.hasMoreElements
+			}) {
+				val key = e.nextElement.asInstanceOf[String]
+				val value = prop.getProperty(key).trim
+				conf.put(key, value)
+			}
 		}
-		val input = new FileInputStream(configFile)
-		val prop = new Properties
-		prop.load(input)
-		val e = prop.propertyNames
-		while ({e.hasMoreElements}) {
-			val key = e.nextElement.asInstanceOf[String]
-			val value = prop.getProperty(key).trim
-			conf.put(key, value)
-		}
-
 	}
 
 	def getConf: mutable.Map[String, String] = conf

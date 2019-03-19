@@ -22,7 +22,7 @@ class MenuTest extends fixture.FunSuite  {
 		finally driver
 	}
 
-	def checkPageLoad(driver: WebDriver) = {
+	private def checkPageLoad(driver: WebDriver) = {
 		driver.findElements(By.cssSelector(".navbar-brand")).get(0) != null
 	}
 

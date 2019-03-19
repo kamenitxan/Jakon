@@ -60,7 +60,8 @@ class JakonInit {
 			}
 		})
 		val configName = arguments.find(a => a._1 == "jakonConfig").map(a => a._2)
-		ConfigurationInitializer.init(new File(configName.orNull))
+		val configFile = if (configName.nonEmpty) new File(configName.get) else null
+		ConfigurationInitializer.init(configFile)
 		AnnotationScanner.loadConfiguration()
 
 		staticFiles.externalLocation(Settings.getStaticDir)

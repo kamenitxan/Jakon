@@ -7,10 +7,10 @@ import java.util.stream.Collectors
 import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
 import cz.kamenitxan.jakon.core.model._
-import cz.kamenitxan.jakon.core.model.converters.{AbstractMapConverter, ScalaMapConverter}
+import cz.kamenitxan.jakon.core.model.converters.AbstractConverter
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.entity.JakonField
-import javax.persistence.{AttributeConverter, ManyToOne}
+import javax.persistence.ManyToOne
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.mutable
@@ -71,7 +71,10 @@ object DBHelper {
 				logger.info(className + " not found in DB")
 				val resource = this.getClass.getResourceAsStream(s"/sql/$className.sql")
 				if (resource != null) {
-					val sql = new BufferedReader(new InputStreamReader(resource)).lines().collect(Collectors.joining("\n"))
+					var sql = new BufferedReader(new InputStreamReader(resource)).lines().collect(Collectors.joining("\n"))
+					if (Settings.getDatabaseType == DatabaseType.SQLITE) {
+						sql = sql.replaceAll("AUTO_INCREMENT", "")
+					}
 					val stmt = conn.createStatement()
 					stmt.execute(sql)
 					stmt.close()
@@ -92,7 +95,9 @@ object DBHelper {
 	  * @param refresh if true, object is queried from DB. not cache
 	  * @return JakonObject or null
 	  */
-	@deprecated def getObjectById(id: Integer, refresh: Boolean): JakonObject = ???
+	@deprecated def getObjectById(id: Integer, refresh: Boolean): JakonObject = {
+		throw new UnsupportedOperationException("Not implemented")
+	}
 
 	/**
 	  * @param id searched JakonObject id
@@ -155,20 +160,24 @@ object DBHelper {
 					case B => field.set(obj, rs.getBoolean(columnName))
 					case I => field.set(obj, rs.getInt(columnName))
 					case D => field.set(obj, rs.getDouble(columnName))
-					case MAP =>
-						val converter = field.getAnnotation(classOf[JakonField]).converter().newInstance()
-						field.set(obj, converter.convertToEntityAttribute(rs.getString(columnName)))
 					case x if x.isEnum =>
 						val m = x.getMethod("valueOf", classOf[String])
 						val enumValue = m.invoke(null, rs.getString(columnName))
 						field.set(obj, enumValue)
 					case _ =>
-						val ann = field.getAnnotation(classOf[ManyToOne])
-						if (ann != null) {
+						val manyToOne = field.getAnnotation(classOf[ManyToOne])
+						lazy val jakonField = field.getAnnotation(classOf[JakonField])
+						if (manyToOne != null) {
 							val fv = rs.getInt(columnName)
 							if (fv > 0) {
 								foreignIds += (columnName -> new ForeignKeyInfo(rs.getInt(columnName), columnName, field))
 							}
+						} else if (jakonField != null) {
+							val converter = jakonField.converter()
+							if (converter.getName != classOf[AbstractConverter[_]].getName) {
+								field.set(obj, converter.newInstance().convertToEntityAttribute(rs.getString(columnName)))
+							}
+
 						} else {
 							logger.warn("Uknown data type on " + cls.getSimpleName + s".$fieldName")
 						}
