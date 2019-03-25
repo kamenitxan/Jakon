@@ -21,8 +21,8 @@ class TestRunner extends Suites(
 	//new EmailTest,
 	new MenuTest,
 	new AesEncryptorTest,
-	new ApiTest
-	//new ObjectControllerTest
+	new ApiTest,
+	new ObjectControllerTest
 ) with BeforeAndAfterAll {
 
 	override def beforeAll() {
@@ -33,6 +33,7 @@ class TestRunner extends Suites(
 		Settings.setTemplateEngine(new Pebble)
 
 		Main.main(Array[String]("jakonConfig=jakon_config_example.properties"))
+		//Main.main(Array[String]("jakonConfig=jakon_config_test.properties"))
 
 		val staticPage = new AbstractStaticPage("staticPage", "static") {}
 		Director.registerCustomPage(staticPage)
@@ -50,6 +51,6 @@ class TestRunner extends Suites(
 
 	override def afterAll() {
 		println("After!")  // shut down the web server
-		//new File("jakonUnitTest.sqlite").delete()
+		new File("jakonUnitTest.sqlite").delete()
 	}
 }

@@ -1,18 +1,20 @@
 package webui
 
 import cz.kamenitxan.jakon.core.configuration.Settings
-import org.openqa.selenium.{By, WebDriver}
 import org.openqa.selenium.htmlunit.HtmlUnitDriver
+import org.openqa.selenium.{By, WebDriver}
 import org.scalatest.{Outcome, fixture}
 
-class MenuTest extends fixture.FunSuite  {
+import scala.util.control.Breaks._
+
+class MenuTest extends fixture.FunSuite {
 	var host = ""
 
 
-	case class FixtureParam(driver: WebDriver  )
+	case class FixtureParam(driver: WebDriver)
 
 	def withFixture(test: OneArgTest): Outcome = {
-		host = "http://localhost:"  + (Settings.getPort)  + "/admin/"
+		host = "http://localhost:" + (Settings.getPort) + "/admin/"
 		val driver = new HtmlUnitDriver()
 
 		val fixture = FixtureParam(driver)
@@ -40,7 +42,8 @@ class MenuTest extends fixture.FunSuite  {
 	test("user page") { f =>
 		f.driver.get(host + "object/JakonUser")
 		assert(checkPageLoad(f.driver))
-		f.driver.get(host + "object/JakonUser/2")
+		f.driver.get(host + "object/JakonUser/6")
+
 		assert(checkPageLoad(f.driver))
 		val submit = f.driver.findElement(By.cssSelector("input.btn.btn-primary"))
 		submit.click()

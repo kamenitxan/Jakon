@@ -199,11 +199,6 @@ object ObjectControler {
 			val value = req.queryParams(p).conform(fieldRef)
 			if (value != null) {
 				p match {
-					case "password" => {
-						if (!value.asInstanceOf[String].startsWith("$2a$")) {
-							fieldRef.set(obj, value)
-						}
-					}
 					case "visibleOrder" => formOrder = value.asInstanceOf[Int]
 					case "objectOrder" =>
 					case _ => fieldRef.set(obj, value)

@@ -36,42 +36,31 @@ class ObjectControllerTest extends fixture.FunSuite {
 
 	test("resetPassword") { f =>
 		val url = "http://localhost:"  + (Settings.getPort) + "/admin/resetPassword"
-		val obj = new URL(url)
-		val con = obj.openConnection.asInstanceOf[HttpURLConnection]
+		f.driver.get(url)
+		//assert(checkPageLoad(f.driver))
 
+		val emailInput = f.driver.findElement(By.cssSelector("input[type=email]"))
+		emailInput.sendKeys("admin@admin.cz")
+		val submit = f.driver.findElement(By.cssSelector(".btn.btn-lg.btn-success"))
+		submit.click()
 
-		con.setRequestMethod("POST")
-		con.setDoOutput(true)
-		val wr = new DataOutputStream(con.getOutputStream)
-		wr.writeBytes("email=admin@admin.cz")
-		wr.flush()
-
-		val responseCode = con.getResponseCode
-		val response= Source.fromInputStream(con.getInputStream).mkString
-
-		//print result
-		assert(responseCode == 200)
-		assert(response.contains("Na váš email byl odeslán email pro změnu hesla"))
+		assert(f.driver.getPageSource.contains("Na váš email byl odeslán email pro změnu hesla"))
 	}
 
 	test("login") { f =>
 		val url = "http://localhost:"  + (Settings.getPort) + "/admin"
-		val obj = new URL(url)
-		val con = obj.openConnection.asInstanceOf[HttpURLConnection]
 
+		f.driver.get(url)
 
-		con.setRequestMethod("POST")
-		con.setDoOutput(true)
-		val wr = new DataOutputStream(con.getOutputStream)
-		wr.writeBytes("email=admin@admin.cz&password=admin")
-		wr.flush()
+		val emailInput = f.driver.findElement(By.cssSelector("input[type=email]"))
+		emailInput.sendKeys("admin@admin.cz")
+		val passwordInput = f.driver.findElement(By.cssSelector("input[type=password]"))
+		passwordInput.sendKeys("admin")
+		val submit = f.driver.findElement(By.cssSelector(".btn.btn-lg.btn-success"))
+		submit.click()
 
-		val responseCode = con.getResponseCode
-		val response= Source.fromInputStream(con.getInputStream).mkString
-
-		//print result
-		assert(responseCode == 200)
-		assert(response.contains("Na váš email byl odeslán email pro změnu hesla"))
+		assert(checkPageLoad(f.driver))
+		assert(f.driver.getPageSource.contains("Dashboard"))
 	}
 
 }

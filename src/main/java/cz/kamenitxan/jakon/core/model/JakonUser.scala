@@ -54,6 +54,10 @@ class JakonUser(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser
 	}
 
 	override def updateObject(jid: Int, conn: Connection): Unit = {
+		if (!this.password.startsWith("$2a$")) {
+			this.password = Authentication.hashPassword(this.password)
+		}
+
 		val sql = "UPDATE JakonUser SET username = ?, email = ?, emailConfirmed = ?, firstName = ?, lastName = ?, password = ?, enabled = ?, acl_id = ? WHERE id = ?"
 		val stmt = conn.prepareStatement(sql)
 		stmt.setString(1, username)
