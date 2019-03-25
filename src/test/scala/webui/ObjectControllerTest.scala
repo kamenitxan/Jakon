@@ -63,4 +63,12 @@ class ObjectControllerTest extends fixture.FunSuite {
 		assert(f.driver.getPageSource.contains("Dashboard"))
 	}
 
+	test("user settings") { f =>
+		val url = "http://localhost:"  + (Settings.getPort) + "/admin/profile"
+		f.driver.get(url)
+
+		assert(checkPageLoad(f.driver))
+		assert(f.driver.getPageSource.contains("admin"))
+	}
+
 }

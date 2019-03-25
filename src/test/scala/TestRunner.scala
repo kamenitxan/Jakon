@@ -9,7 +9,7 @@ import cz.kamenitxan.jakon.example.Main
 import functions.LinkTest
 import org.scalatest.{BeforeAndAfterAll, Suites}
 import utils.AesEncryptorTest
-import webui.{ApiTest, AuthTest, MenuTest, ObjectControllerTest}
+import webui._
 
 /**
   * Created by TPa on 27.08.16.
@@ -22,7 +22,8 @@ class TestRunner extends Suites(
 	new MenuTest,
 	new AesEncryptorTest,
 	new ApiTest,
-	new ObjectControllerTest
+	new ObjectControllerTest,
+	new FileManagerTest
 ) with BeforeAndAfterAll {
 
 	override def beforeAll() {

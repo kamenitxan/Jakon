@@ -21,7 +21,7 @@ class MenuTest extends fixture.FunSuite {
 		try {
 			withFixture(test.toNoArgTest(fixture)) // "loan" the fixture to the test
 		}
-		finally driver
+
 	}
 
 	private def checkPageLoad(driver: WebDriver) = {
