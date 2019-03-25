@@ -32,7 +32,7 @@ class TestRunner extends Suites(
 		Director.init()
 		Settings.setTemplateEngine(new Pebble)
 
-		Main.main(Array[String]("jakonConfig=jakon_config_test.properties"))
+		Main.main(Array[String]("jakonConfig=jakon_config_example.properties"))
 
 		val staticPage = new AbstractStaticPage("staticPage", "static") {}
 		Director.registerCustomPage(staticPage)
