@@ -10,7 +10,7 @@ import javax.persistence._
   * Created by TPa on 30.04.18.
   */
 @Entity
-class AclRule(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser].getName) {
+class AclRule(u: Unit = ()) extends JakonObject(childClass = classOf[AclRule].getName) {
 	@JakonField(searched = true, listOrder = 0)
 	var name: String = ""
 	@JakonField(listOrder = 1)

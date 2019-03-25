@@ -28,3 +28,4 @@ hs_err_pid*
 /jakonTest.sqlite
 .node_modules/
 jakon_config.properties
+jakon_config_test.properties

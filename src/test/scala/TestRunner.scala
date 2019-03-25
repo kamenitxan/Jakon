@@ -9,7 +9,7 @@ import cz.kamenitxan.jakon.example.Main
 import functions.LinkTest
 import org.scalatest.{BeforeAndAfterAll, Suites}
 import utils.AesEncryptorTest
-import webui.{AuthTest, MenuTest}
+import webui.{ApiTest, AuthTest, MenuTest, ObjectControllerTest}
 
 /**
   * Created by TPa on 27.08.16.
@@ -20,7 +20,9 @@ class TestRunner extends Suites(
 	new AuthTest,
 	//new EmailTest,
 	new MenuTest,
-	new AesEncryptorTest
+	new AesEncryptorTest,
+	new ApiTest
+	//new ObjectControllerTest
 ) with BeforeAndAfterAll {
 
 	override def beforeAll() {
@@ -30,7 +32,7 @@ class TestRunner extends Suites(
 		Director.init()
 		Settings.setTemplateEngine(new Pebble)
 
-		Main.main(Array[String]("jakonConfig=jakon_config_example.properties"))
+		Main.main(Array[String]("jakonConfig=jakon_config_test.properties"))
 
 		val staticPage = new AbstractStaticPage("staticPage", "static") {}
 		Director.registerCustomPage(staticPage)
@@ -48,6 +50,6 @@ class TestRunner extends Suites(
 
 	override def afterAll() {
 		println("After!")  // shut down the web server
-		new File("jakonUnitTest.sqlite").delete()
+		//new File("jakonUnitTest.sqlite").delete()
 	}
 }
