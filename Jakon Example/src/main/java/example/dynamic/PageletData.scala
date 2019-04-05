@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.example.dynamic
+package example.dynamic
 
 import javax.validation.constraints.{Min, NotNull}
 

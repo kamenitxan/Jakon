@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.example
+package example
 
 import org.slf4j.LoggerFactory
 

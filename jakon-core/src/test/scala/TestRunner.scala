@@ -5,8 +5,8 @@ import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.customPages.AbstractStaticPage
 import cz.kamenitxan.jakon.core.model.Page
 import cz.kamenitxan.jakon.core.template.Pebble
-import cz.kamenitxan.jakon.example.Main
 import functions.LinkTest
+import jakon.RenderTest
 import org.scalatest.{BeforeAndAfterAll, Suites}
 import utils.AesEncryptorTest
 import webui._
@@ -33,7 +33,7 @@ class TestRunner extends Suites(
 		Director.init()
 		Settings.setTemplateEngine(new Pebble)
 
-		Main.main(Array[String]("jakonConfig=jakon_config_example.properties"))
+		//Main.main(Array[String]("jakonConfig=jakon_config_example.properties"))
 		//Main.main(Array[String]("jakonConfig=jakon_config_test.properties"))
 
 		val staticPage = new AbstractStaticPage("staticPage", "static") {}

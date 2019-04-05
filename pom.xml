@@ -15,6 +15,7 @@
 
 	<modules>
 		<module>jakon-core</module>
+		<module>Jakon Example</module>
 	</modules>
 
 	<properties>

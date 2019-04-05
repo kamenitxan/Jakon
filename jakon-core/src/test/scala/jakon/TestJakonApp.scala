@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.example
+package jakon
 
 import cz.kamenitxan.jakon.JakonInit
 import cz.kamenitxan.jakon.core.Director
@@ -6,7 +6,7 @@ import cz.kamenitxan.jakon.core.controler.PageControler
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.{Category, Page, Post}
 
-class JakonApp extends JakonInit{
+class TestJakonApp extends JakonInit {
 
 	daoSetup = () => {
 		DBHelper.addDao(classOf[Category])

@@ -1,3 +1,5 @@
+package jakon
+
 import org.scalatest.FunSuite
 
 import scala.io.Source

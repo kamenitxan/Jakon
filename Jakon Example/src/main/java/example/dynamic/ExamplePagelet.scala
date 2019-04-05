@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.example.dynamic
+package example.dynamic
 
 import cz.kamenitxan.jakon.core.dynamic.{AbstractPagelet, Get, Pagelet, Post}
 import org.slf4j.LoggerFactory

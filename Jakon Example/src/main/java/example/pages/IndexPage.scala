@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.example.pages
+package example.pages
 
 import cz.kamenitxan.jakon.core.customPages.{AbstractStaticPage, StaticPage}
 
