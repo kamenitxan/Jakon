@@ -16,6 +16,7 @@
 	<modules>
 		<module>jakon-core</module>
 		<module>Jakon Example</module>
+		<module>jakon-macros</module>
 	</modules>
 
 	<properties>
@@ -46,6 +47,11 @@
 			<dependency>
 				<groupId>org.scala-lang</groupId>
 				<artifactId>scala-library</artifactId>
+				<version>${scala.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.scala-lang</groupId>
+				<artifactId>scala-reflect</artifactId>
 				<version>${scala.version}</version>
 			</dependency>
 			<dependency>

@@ -54,8 +54,8 @@ public abstract class TemplateUtils {
 	public static void clean(String pathS) {
 		Path path = Paths.get(pathS);
 		if (Files.exists(path)) {
-			validate(path);
 			try {
+				validate(path);
 				Files.walkFileTree(path, new CleanDirVisitor());
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -73,19 +73,22 @@ public abstract class TemplateUtils {
 		Path from = Paths.get(fromS);
 		Path to = Paths.get(toS);
 
-		validate(from);
 		try {
+			validate(from);
 			Files.walkFileTree(from, EnumSet.of(FileVisitOption.FOLLOW_LINKS),Integer.MAX_VALUE,new CopyDirVisitor(from, to));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private static void validate(Path... paths) {
+	private static void validate(Path... paths) throws IOException {
 		for (Path path : paths) {
 			Objects.requireNonNull(path);
 			if (!Files.isDirectory(path)) {
-				throw new IllegalArgumentException(String.format("%s is not a directory", path.toString()));
+				Files.createDirectories(path);
+				if (!Files.isDirectory(path)) {
+					throw new IllegalArgumentException(String.format("%s is not a directory", path.toString()));
+				}
 			}
 		}
 	}

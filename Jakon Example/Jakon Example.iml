@@ -11,6 +11,8 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="jakon-core" />
+    <orderEntry type="module" module-name="jakon-macros" />
+    <orderEntry type="library" name="Maven: org.scala-lang:scala-reflect:2.12.8" level="project" />
     <orderEntry type="library" name="Maven: org.scala-lang:scala-library:2.12.8" level="project" />
     <orderEntry type="library" name="Maven: com.sparkjava:spark-core:2.9.0" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-server:9.4.15.v20190215" level="project" />
@@ -92,7 +94,6 @@
     <orderEntry type="library" name="Maven: net.liftweb:lift-json_2.12:3.1.1" level="project" />
     <orderEntry type="library" name="Maven: org.scala-lang:scalap:2.12.2" level="project" />
     <orderEntry type="library" name="Maven: org.scala-lang:scala-compiler:2.12.2" level="project" />
-    <orderEntry type="library" name="Maven: org.scala-lang:scala-reflect:2.12.2" level="project" />
     <orderEntry type="library" name="Maven: org.scala-lang.modules:scala-xml_2.12:1.0.6" level="project" />
     <orderEntry type="library" name="Maven: com.thoughtworks.paranamer:paranamer:2.8" level="project" />
     <orderEntry type="library" name="Maven: es.nitaur.markdown:txtmark:0.16" level="project" />
