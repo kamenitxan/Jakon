@@ -12,8 +12,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="jakon-macros" />
-    <orderEntry type="library" name="Maven: org.scala-lang:scala-reflect:2.12.8" level="project" />
     <orderEntry type="library" name="Maven: org.scala-lang:scala-library:2.12.8" level="project" />
     <orderEntry type="library" name="Maven: com.sparkjava:spark-core:2.9.0" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-server:9.4.15.v20190215" level="project" />
@@ -62,6 +60,7 @@
     <orderEntry type="library" name="Maven: javax.json:javax.json-api:1.1.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.scalatest:scalatest_2.12:3.0.5" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.scalactic:scalactic_2.12:3.0.5" level="project" />
+    <orderEntry type="library" name="Maven: org.scala-lang:scala-reflect:2.12.8" level="project" />
     <orderEntry type="library" name="Maven: org.scala-lang.modules:scala-xml_2.12:1.0.6" level="project" />
     <orderEntry type="library" name="Maven: org.seleniumhq.selenium:htmlunit-driver:2.33.3" level="project" />
     <orderEntry type="library" name="Maven: org.seleniumhq.selenium:selenium-api:3.141.59" level="project" />

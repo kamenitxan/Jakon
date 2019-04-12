@@ -72,28 +72,30 @@ object Director {
 					user.create()
 				}
 
-				val stmt = conn.prepareStatement(SELECT_EMAIL_TMPL_SQL)
-				stmt.setString(1, "REGISTRATION")
-				val tmpl = DBHelper.selectSingle(stmt, classOf[EmailTemplateEntity]).entity.asInstanceOf[EmailTemplateEntity]
-				if (tmpl == null) {
-					val emailTemplateEntity = new EmailTemplateEntity()
-					emailTemplateEntity.subject = "Jakon Registration"
-					emailTemplateEntity.from = "admin@jakon.cz"
-					emailTemplateEntity.name = "REGISTRATION"
-					emailTemplateEntity.template = "registration"
-					emailTemplateEntity.create()
-				}
+				if (Settings.isEmailEnabled) {
+					val stmt = conn.prepareStatement(SELECT_EMAIL_TMPL_SQL)
+					stmt.setString(1, "REGISTRATION")
+					val tmpl = DBHelper.selectSingle(stmt, classOf[EmailTemplateEntity]).entity.asInstanceOf[EmailTemplateEntity]
+					if (tmpl == null) {
+						val emailTemplateEntity = new EmailTemplateEntity()
+						emailTemplateEntity.subject = "Jakon Registration"
+						emailTemplateEntity.from = "admin@jakon.cz"
+						emailTemplateEntity.name = "REGISTRATION"
+						emailTemplateEntity.template = "registration"
+						emailTemplateEntity.create()
+					}
 
-				val stmt2 = conn.prepareStatement(SELECT_EMAIL_TMPL_SQL)
-				stmt2.setString(1, "FORGET_PASSWORD")
-				val tmpl2 = DBHelper.selectSingle(stmt2, classOf[EmailTemplateEntity]).entity.asInstanceOf[EmailTemplateEntity]
-				if (tmpl2 == null) {
-					val emailTemplateEntity = new EmailTemplateEntity()
-					emailTemplateEntity.subject = "Forget password"
-					emailTemplateEntity.from = "admin@jakon.cz"
-					emailTemplateEntity.name = "FORGET_PASSWORD"
-					emailTemplateEntity.template = "forgetPassword"
-					emailTemplateEntity.create()
+					val stmt2 = conn.prepareStatement(SELECT_EMAIL_TMPL_SQL)
+					stmt2.setString(1, "FORGET_PASSWORD")
+					val tmpl2 = DBHelper.selectSingle(stmt2, classOf[EmailTemplateEntity]).entity.asInstanceOf[EmailTemplateEntity]
+					if (tmpl2 == null) {
+						val emailTemplateEntity = new EmailTemplateEntity()
+						emailTemplateEntity.subject = "Forget password"
+						emailTemplateEntity.from = "admin@jakon.cz"
+						emailTemplateEntity.name = "FORGET_PASSWORD"
+						emailTemplateEntity.template = "forgetPassword"
+						emailTemplateEntity.create()
+					}
 				}
 			} finally {
 				conn.close()

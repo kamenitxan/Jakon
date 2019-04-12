@@ -3,6 +3,8 @@ package cz.kamenitxan.jakon.utils
 import java.lang.reflect.Field
 import java.util.Locale
 
+import cz.kamenitxan.jakon.core.model.JakonObject
+
 import scala.annotation.tailrec
 import scala.collection.JavaConversions._
 import scala.language.postfixOps
@@ -28,6 +30,18 @@ object Utils {
 			currentClassFields = parentClassFields ::: currentClassFields
 		}
 		currentClassFields
+	}
+
+	@tailrec
+	def isJakonObject(cls: Class[_]): Boolean = {
+		println(cls)
+		if (cls == classOf[JakonObject]) {
+			true
+		} else if (cls == classOf[Object] || cls.getSuperclass == null) {
+			false
+		} else {
+			isJakonObject(cls.getSuperclass)
+		}
 	}
 
 	@tailrec

@@ -63,7 +63,7 @@
                         <tr>
                             {% for field in fields %}
                                 {% if field.an.shownInList %}
-									<td>{% include "includes/formaters/" + field.formatter with {"value":getAttr(object, field.name)} %}
+									<td>{{ field.formatter }}{% include "includes/formaters/" + field.formatter with {"value":getAttr(object, field.name)} %}
                                         {% if field.name == "visibleOrder" %}
 											<a href="/admin/object/moveUp/{{ objectName }}/{{ getAttr(object, "id") }}?currentOrder={{ getAttr(object, "visibleOrder") }}"
 											   class="fa fa-arrow-up changeOrder"></a>

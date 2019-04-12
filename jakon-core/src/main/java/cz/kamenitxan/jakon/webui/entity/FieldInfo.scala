@@ -3,6 +3,8 @@ package cz.kamenitxan.jakon.webui.entity
 import java.lang.reflect.Field
 import java.util
 
+import cz.kamenitxan.jakon.utils.Utils
+
 class FieldInfo(val required: Boolean,
                 val disabled: Boolean,
                 val htmlType: String,
@@ -13,7 +15,8 @@ class FieldInfo(val required: Boolean,
                 val objectName: String,
                 val an: JakonField,
                 val template: String,
-                val field: Field
+                val field: Field,
+                val formatter: String
                ) {
 
 	val extraData = new util.HashMap[String, Any]()
@@ -24,20 +27,24 @@ class FieldInfo(val required: Boolean,
 				f.getType.getSimpleName
 			} else {
 				an.inputTemplate()
-			}, f)
+			}, f, calculateFormatter(f))
 	}
 	def this(an: JakonField, htmlType: HtmlType, f: Field, value: Any, template: String) = {
-		this(an.required(), an.disabled(), htmlType.typeName, an.htmlClass(), an.htmlMaxLength(), value, f.getName, f.getType.getSimpleName, an, template, f)
+		this(an.required(), an.disabled(), htmlType.typeName, an.htmlClass(), an.htmlMaxLength(), value, f.getName, f.getType.getSimpleName, an, template, f, calculateFormatter(f))
 	}
 
 	def this(an: JakonField, field: Field) = {
-		this(an.required(), an.disabled(), null, an.htmlClass(), an.htmlMaxLength(), null, field.getName, null, an, null, field)
+		this(an.required(), an.disabled(), null, an.htmlClass(), an.htmlMaxLength(), null, field.getName, null, an, null, field, calculateFormatter(field))
 	}
 
-	def formatter: String = {
-		field.getType.getSimpleName match {
-			case "boolean" => "boolean"
-			case _ => "none"
+	def calculateFormatter(field: Field): String = {
+		if (Utils.isJakonObject(field.getType) {
+			"linked"
+		} else {
+			field.getType.getSimpleName match {
+				case "boolean" => "boolean"
+				case _ => "none"
+			}
 		}
 	}
 
