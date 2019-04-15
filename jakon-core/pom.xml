@@ -179,7 +179,7 @@
 				<artifactId>scalatest-maven-plugin</artifactId>
 				<version>1.0</version>
 				<configuration>
-					<suites>jakon.TestRunner</suites>
+					<suites>TestRunner</suites>
 					<reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
 					<junitxml>.</junitxml>
 					<filereports>WDF TestSuite.txt</filereports>

@@ -34,7 +34,6 @@ object Utils {
 
 	@tailrec
 	def isJakonObject(cls: Class[_]): Boolean = {
-		println(cls)
 		if (cls == classOf[JakonObject]) {
 			true
 		} else if (cls == classOf[Object] || cls.getSuperclass == null) {

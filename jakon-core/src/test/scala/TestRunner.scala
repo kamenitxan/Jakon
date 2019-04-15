@@ -1,9 +1,12 @@
 import java.io.File
 
+import cz.kamenitxan.jakon.JakonInit
 import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.configuration.Settings
+import cz.kamenitxan.jakon.core.controler.PageControler
 import cz.kamenitxan.jakon.core.customPages.AbstractStaticPage
-import cz.kamenitxan.jakon.core.model.Page
+import cz.kamenitxan.jakon.core.model.Dao.DBHelper
+import cz.kamenitxan.jakon.core.model.{Category, Page, Post}
 import cz.kamenitxan.jakon.core.template.Pebble
 import functions.LinkTest
 import jakon.RenderTest
@@ -33,8 +36,8 @@ class TestRunner extends Suites(
 		Director.init()
 		Settings.setTemplateEngine(new Pebble)
 
-		//Main.main(Array[String]("jakonConfig=jakon_config_example.properties"))
-		//Main.main(Array[String]("jakonConfig=jakon_config_test.properties"))
+		val app = new TestJakonApp()
+		app.run(Array[String]("jakonConfig=jakon_config_test.properties"))
 
 		val staticPage = new AbstractStaticPage("staticPage", "static") {}
 		Director.registerCustomPage(staticPage)
@@ -53,5 +56,20 @@ class TestRunner extends Suites(
 	override def afterAll() {
 		println("After!")  // shut down the web server
 		new File("jakonUnitTest.sqlite").delete()
+	}
+}
+
+class TestJakonApp extends JakonInit{
+
+	daoSetup = () => {
+		DBHelper.addDao(classOf[Category])
+		DBHelper.addDao(classOf[Post])
+		DBHelper.addDao(classOf[Page])
+	}
+
+	Director.registerControler(new PageControler)
+
+	override def adminControllers(): Unit = {
+		super.adminControllers()
 	}
 }

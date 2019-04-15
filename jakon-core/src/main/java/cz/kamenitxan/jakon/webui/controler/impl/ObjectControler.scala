@@ -68,13 +68,14 @@ object ObjectControler {
 				}
 
 				val fields = Utils.getFieldsUpTo(objectClass.get, classOf[Object]).filter(n => !excludedFields.contains(n.getName))
+				val fi = FieldConformer.getEmptyFieldInfos(fields)
 				new Context(Map[String, Any](
 					"objectName" -> objectName,
 					"objects" -> pageItems,
 					"pageNumber" -> pageNumber,
 					"pageCount" -> Math.max(Math.ceil(count / pageSize.toFloat), 1),
 					"objectCount" -> count,
-					"fields" -> FieldConformer.getEmptyFieldInfos(fields),
+					"fields" -> fi,
 					"filterParams" -> filterParams.asJava
 				), "objects/list")
 			} finally {
