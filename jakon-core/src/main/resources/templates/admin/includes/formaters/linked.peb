@@ -1,3 +1,3 @@
 {# @pebvariable name="object" type="cz.kamenitxan.jakon.core.model.JakonObject" #}
 {# @pebvariable name="fi" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
-<a href="/admin/object/{{ fi.objectName }}/{{ getAttr(fi.name, "id") }}">{{ getAttr(object, fi.name) }}</a>
+<a href="/admin/object/{{ fi.objectName }}/{{ getAttr(object, "id") }}">{{ getAttr(object, fi.name) }}</a>

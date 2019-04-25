@@ -199,7 +199,7 @@
 			<dependency>
 				<groupId>net.liftweb</groupId>
 				<artifactId>lift-json_2.12</artifactId>
-				<version>3.1.1</version>
+				<version>3.3.0</version>
 			</dependency>
 			<dependency>
 				<groupId>es.nitaur.markdown</groupId>
@@ -247,18 +247,6 @@
 	<build>
 		<testSourceDirectory>src/test/scala</testSourceDirectory>
 		<plugins>
-			<plugin>
-				<groupId>com.jolira</groupId>
-				<artifactId>onejar-maven-plugin</artifactId>
-				<version>1.4.4</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>one-jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>versions-maven-plugin</artifactId>

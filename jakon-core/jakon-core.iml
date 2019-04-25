@@ -94,9 +94,9 @@
     <orderEntry type="library" name="Maven: com.sun.mail:javax.mail:1.6.2" level="project" />
     <orderEntry type="library" name="Maven: javax.activation:activation:1.1" level="project" />
     <orderEntry type="library" name="Maven: com.atlassian.commonmark:commonmark:0.11.0" level="project" />
-    <orderEntry type="library" name="Maven: net.liftweb:lift-json_2.12:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.scala-lang:scalap:2.12.2" level="project" />
-    <orderEntry type="library" name="Maven: org.scala-lang:scala-compiler:2.12.2" level="project" />
+    <orderEntry type="library" name="Maven: net.liftweb:lift-json_2.12:3.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.scala-lang:scalap:2.12.6" level="project" />
+    <orderEntry type="library" name="Maven: org.scala-lang:scala-compiler:2.12.6" level="project" />
     <orderEntry type="library" name="Maven: com.thoughtworks.paranamer:paranamer:2.8" level="project" />
     <orderEntry type="library" name="Maven: es.nitaur.markdown:txtmark:0.16" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.5" level="project" />

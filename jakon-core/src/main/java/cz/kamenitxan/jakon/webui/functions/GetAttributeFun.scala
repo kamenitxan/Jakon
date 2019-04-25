@@ -29,7 +29,13 @@ class GetAttributeFun extends Function {
 	def getField(obj: Class[_ <: Any], attrName: String): Field = {
 		try {
 			val fields = Utils.getFieldsUpTo(obj, classOf[Object])
-			fields.find(f => attrName.equals(f.getName)).get
+			val f = fields.find(f => attrName.equals(f.getName))
+			if (f.isDefined) {
+				f.get
+			} else {
+				// TODO
+				f.get
+			}
 		} catch {
 			case e: NoSuchFieldException => getField(obj.getSuperclass, attrName)
 		}

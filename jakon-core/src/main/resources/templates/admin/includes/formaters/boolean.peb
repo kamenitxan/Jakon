@@ -1,6 +1,6 @@
 {# @pebvariable name="object" type="cz.kamenitxan.jakon.core.model.JakonObject" #}
 {# @pebvariable name="fi" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
-{% if getAttr(object, fi.name) %}
+{% if value %}
     <i class="fa fa-check-circle" aria-hidden="true"></i>
 {% else %}
     <i class="fa fa-times-circle" aria-hidden="true"></i>
