@@ -24,8 +24,8 @@ import scala.util.Random
 object Authentication {
 	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
-	private val SQL_FIND_USER = "SELECT * FROM JakonUser WHERE email = ?"
-	private val SQL_FIND_ACL = "SELECT id, name, adminAllowed, masterAdmin FROM AclRule WHERE id = ?"
+	val SQL_FIND_USER = "SELECT * FROM JakonUser WHERE email = ?"
+	val SQL_FIND_ACL = "SELECT id, name, adminAllowed, masterAdmin FROM AclRule WHERE id = ?"
 	private val SQL_SELECT_EMAIL_TMPL = "SELECT subject FROM EmailTemplateEntity WHERE name = \"REGISTRATION\""
 
 	def loginGet(req: Request): ModelAndView = {

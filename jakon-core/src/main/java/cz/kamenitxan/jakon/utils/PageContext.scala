@@ -1,7 +1,7 @@
 package cz.kamenitxan.jakon.utils
 
 import cz.kamenitxan.jakon.core.model.JakonUser
-import cz.kamenitxan.jakon.webui.entity.Message
+import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import spark.{Request, Response}
 
 import scala.collection.mutable
@@ -46,5 +46,9 @@ case class PageContext(req: Request, res: Response) {
 
 	def getLoggedUser: Option[JakonUser] = {
 		Option.apply(req.session.attribute("user"))
+	}
+
+	def addMessage(severity: MessageSeverity, value: String): Unit = {
+		messages += new Message(severity, value)
 	}
 }

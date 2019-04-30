@@ -38,7 +38,9 @@ public class Routes {
 		before("/admin/*", (request, response) -> {
 			if (Settings.getDeployMode() == DeployMode.DEVEL
 					|| request.pathInfo().equals("/admin/register")
-					|| request.pathInfo().equals("/admin/logout")) {
+					|| request.pathInfo().equals("/admin/logout")
+					|| request.pathInfo().equals("/admin/login")
+					|| request.pathInfo().startsWith("/admin/login/oauth")) {
 				return;
 			}
 			JakonUser user = request.session().attribute("user");
