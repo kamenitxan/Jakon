@@ -44,7 +44,7 @@ public class Routes {
 				return;
 			}
 			JakonUser user = request.session().attribute("user");
-			if (request.session().attribute("user") == null || !user.acl().adminAllowed() && !user.acl().masterAdmin()) {
+			if (user == null || !user.acl().adminAllowed() && !user.acl().masterAdmin()) {
 				response.redirect("/admin", 302);
 			}
 		});

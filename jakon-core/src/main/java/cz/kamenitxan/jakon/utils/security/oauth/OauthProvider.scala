@@ -2,7 +2,9 @@ package cz.kamenitxan.jakon.utils.security.oauth
 
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
+import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.webui.controler.impl.Authentication.{SQL_FIND_ACL, SQL_FIND_USER}
+import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import org.slf4j.{Logger, LoggerFactory}
 import spark.Request
 
@@ -23,6 +25,7 @@ trait OauthProvider {
 
 			val result = DBHelper.selectSingle(stmt, classOf[JakonUser])
 			if (result.entity == null) {
+				PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "WRONG_EMAIL_OR_PASSWORD")
 				false
 			} else {
 				val user = result.entity.asInstanceOf[JakonUser]

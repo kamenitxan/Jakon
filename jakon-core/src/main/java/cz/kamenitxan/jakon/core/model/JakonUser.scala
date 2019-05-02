@@ -50,7 +50,7 @@ class JakonUser(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser
 	}
 
 	override def toString: String = {
-		s"JakonUser(id: $id)"
+		s"JakonUser(id: $id, $email)"
 	}
 
 	override def updateObject(jid: Int, conn: Connection): Unit = {

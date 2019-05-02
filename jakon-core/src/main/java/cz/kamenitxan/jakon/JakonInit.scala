@@ -6,7 +6,9 @@ import java.util.concurrent.TimeUnit
 
 import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.configuration.{AnnotationScanner, ConfigurationInitializer, DeployMode, Settings}
+import cz.kamenitxan.jakon.core.dynamic.PageletInitializer
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
+import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.core.task.{FulltextTask, RenderTask, TaskRunner}
 import cz.kamenitxan.jakon.devtools.{DevRender, StaticFilesController}
 import cz.kamenitxan.jakon.utils.PageContext
@@ -77,15 +79,21 @@ class JakonInit {
 		afterAfter((_: Request, _: Response) => PageContext.destroy())
 		if (Settings.getDeployMode == DeployMode.DEVEL) {
 			before((request: Request, _: Response) => {
-					DevRender.rerender(request.pathInfo())
-				}
-			)
+				DevRender.rerender(request.pathInfo())
+			})
 			enableDebugScreen()
 
 			notFound((req: Request, res: Response) => new StaticFilesController().doGet(req, res))
 		}
 		routesSetup()
 		AnnotationScanner.load()
-
+		PageletInitializer.protectedPrefixes.foreach(pp => {
+			before(pp + "/*", (req: Request, res: Response) => {
+				val user: JakonUser = req.session.attribute("user")
+				if (user == null || (!user.acl.adminAllowed && !user.acl.allowedFrontendPrefixes.contains(pp))) {
+					res.redirect(Settings.getLoginPath, 302)
+				}
+			})
+		})
 	}
 }

@@ -31,7 +31,7 @@ object Google extends OauthProvider {
 	lazy val service = new ServiceBuilder(clientId)
 	  .apiSecret(clientSecret)
 	  .defaultScope("email")
-	  .callback(s"http://${Settings.hostname}${if (Settings.getPort != 80) {s":${Settings.getPort}"}}/admin/login/oauth?provider=${this.getClass.getSimpleName}")
+	  .callback(s"http://${Settings.getHostname}${if (Settings.getPort != 80) {s":${Settings.getPort}"}}/admin/login/oauth?provider=${this.getClass.getSimpleName}")
 	  .build(GoogleApi20.instance)
 
 	def createAuthUrl(req: Request): String = {

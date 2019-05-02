@@ -93,7 +93,10 @@ object Settings {
 	private var encryptionSecret: String = _
 
 	@ConfigurationValue(name = "hostname", required = true)
-	var hostname: String = _
+	private var hostname: String = _
+
+	@ConfigurationValue(name = "loginPath", required = true, defaultValue = "/login")
+	private var loginPath: String = _
 
 
 	def getTemplateDir: String = templateDir
@@ -178,4 +181,8 @@ object Settings {
 	def getEmailForceBcc: String = emailForceBcc
 
 	def getEncryptionSecret: String = encryptionSecret
+
+	def getHostname: String = hostname
+
+	def getLoginPath: String = loginPath
 }

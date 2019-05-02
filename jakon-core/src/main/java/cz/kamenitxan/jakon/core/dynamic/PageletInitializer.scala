@@ -21,11 +21,17 @@ object PageletInitializer {
 	private val logger = LoggerFactory.getLogger(this.getClass)
 	private val METHOD_VALDIATE = "validate"
 
+	val protectedPrefixes = mutable.Buffer[String]()
+
 	def initControllers(controllers: Seq[Class[_]]): Unit = {
 		logger.info("Initializing pagelets")
 		controllers.foreach(c => {
-			logger.info("Initializing pagelet: " + c.getSimpleName)
+			logger.debug("Initializing pagelet: " + c.getSimpleName)
 			val controllerAnn = c.getAnnotation(classOf[Pagelet])
+			if (controllerAnn.authRequired()) {
+				protectedPrefixes += controllerAnn.path()
+			}
+
 			c.getDeclaredMethods
 			  .filter(m => m.getAnnotation(classOf[Get]) != null || m.getAnnotation(classOf[Post]) != null)
 			  .foreach(m => {

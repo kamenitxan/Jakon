@@ -70,6 +70,7 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 				Transport.send(message)
 				e.sent = true
 				e.update()
+				Settings.getEmailTypeHandler.afterSend(e.emailType)
 			})
 		} finally {
 			conn.close()

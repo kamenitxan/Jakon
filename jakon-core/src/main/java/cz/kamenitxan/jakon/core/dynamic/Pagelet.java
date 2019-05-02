@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Pagelet {
 	String path() default "/";
-
+	boolean authRequired() default false;
 	boolean showInAdmin() default false;
 }

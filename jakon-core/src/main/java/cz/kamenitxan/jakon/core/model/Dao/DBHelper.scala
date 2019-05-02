@@ -151,7 +151,7 @@ object DBHelper {
 			} else {
 				columnName
 			}
-			val fieldRef = Utils.getFieldsUpTo(cls, classOf[Object]).find(f => f.getName.equals(fieldName))
+			val fieldRef = Utils.getFieldsUpTo(cls, classOf[Object]).find(f => f.getName.equalsIgnoreCase(fieldName))
 			if (fieldRef.nonEmpty) {
 				val field = fieldRef.get
 				field.setAccessible(true)

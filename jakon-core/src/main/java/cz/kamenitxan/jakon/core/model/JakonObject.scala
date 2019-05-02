@@ -133,7 +133,7 @@ abstract class JakonObject(@JakonField var childClass: String
 
 
 	override def toString: String = {
-		childClass + "(id: " + id + ")"
+		childClass + s"(id: $id)"
 	}
 
 	def toJson: String = {
