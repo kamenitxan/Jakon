@@ -91,7 +91,7 @@ class JakonInit {
 			before(pp + "/*", (req: Request, res: Response) => {
 				val user: JakonUser = req.session.attribute("user")
 				if (user == null || (!user.acl.adminAllowed && !user.acl.allowedFrontendPrefixes.contains(pp))) {
-					res.redirect(Settings.getLoginPath, 302)
+					res.redirect(Settings.getLoginPath + s"?redirectTo=${req.pathInfo()}", 302)
 				}
 			})
 		})
