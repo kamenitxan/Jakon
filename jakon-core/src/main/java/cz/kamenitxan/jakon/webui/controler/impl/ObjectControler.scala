@@ -344,7 +344,7 @@ object ObjectControler {
 		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(objectName)).head
 		val newOrder = if (up) order.get - 1 else order.get + 1
 
-		val conn = DBHelper.getConnection
+		implicit val conn = DBHelper.getConnection
 		try {
 			val ps = conn.prepareStatement("SELECT * FROM " + objectName + " WHERE id = ?")
 			ps.setInt(1, objectId.get)

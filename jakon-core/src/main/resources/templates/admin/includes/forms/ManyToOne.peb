@@ -5,7 +5,7 @@
 	<select class="form-control" name="{{ field.name }}" id="{{ fieldHash }}" {% if field.disabled %}disabled{% endif %}>
 	</select>
 	<script>
-		const ForeignObjectSelector = require("forms/j_foreign_object.js");
+		var ForeignObjectSelector = require("forms/j_foreign_object.js");
 		new ForeignObjectSelector("{{ field.objectName }}", "{{ fieldHash }}");
 	</script>
 </div>

@@ -8,6 +8,8 @@ import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import org.slf4j.{Logger, LoggerFactory}
 import spark.Request
 
+import scala.util.Random
+
 trait OauthProvider {
 	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
@@ -41,5 +43,11 @@ trait OauthProvider {
 		} finally {
 			conn.close()
 		}
+	}
+
+	protected def setSecretState(req: Request): String = {
+		val secretState = this.getClass.getSimpleName + new Random().nextInt(99999)
+		req.session().attribute(secretState)
+		secretState
 	}
 }

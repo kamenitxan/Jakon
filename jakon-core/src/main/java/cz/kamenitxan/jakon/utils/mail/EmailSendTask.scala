@@ -17,7 +17,7 @@ object EmailSendTask {
 	private val SELECT_EMAIL_TMPL_SQL = "SELECT addressFrom, template FROM EmailTemplateEntity WHERE name = ?"
 }
 
-class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[EmailSendTask].getSimpleName, period, unit){
+class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[EmailSendTask].getSimpleName, period, unit) {
 	private val logger = LoggerFactory.getLogger(this.getClass)
 
 	override def start(): Unit = {
@@ -46,7 +46,7 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 				}
 
 
-				if (e.template != null) {
+				if (e.template != null && e.template != null) {
 					val stmt = conn.prepareStatement(EmailSendTask.SELECT_EMAIL_TMPL_SQL)
 					stmt.setString(1, e.template)
 					val tmpl = DBHelper.selectSingle(stmt, classOf[EmailTemplateEntity]).entity.asInstanceOf[EmailTemplateEntity]
@@ -57,7 +57,11 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 						message.setFrom(new InternetAddress(tmpl.from))
 					}
 
-					val tmplLangSuffix = e.params.getOrElse("tmplLanguage", "")
+					val tmplLangSuffix = if (e.params != null) {
+						e.params.getOrElse("tmplLanguage", "")
+					} else {
+						""
+					}
 					val te = Settings.getTemplateEngine
 					val renderedMessage = te.renderTemplate(tmpl.template + tmplLangSuffix, e.params)
 					message.setContent(renderedMessage, "text/html")

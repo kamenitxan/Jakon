@@ -3,6 +3,11 @@
 
 {% extends "core" %}
 
+{% block head %}
+    <link href="/jakon/css/bootstrap-social.css" rel="stylesheet">
+{% endblock %}
+
+
 {% block content %}
     <div class="row">
         <div class="col-md-4 col-md-offset-4">
@@ -37,7 +42,9 @@
 					<hr>
                     <p>{{ i18n("common", "LOGIN_OR_USE_OAUTH") }}</p>
                     {% for op in oauthProviders %}
-						<a class="btn" href="{{ op.authUrl }}" role="button"><img src="/jakon/img/oauth/{{ op.icon }}/" class="oauthBtn"></a>
+						<a class="btn btn-block btn-social btn-{{ op.icon }}"  href="{{ op.authUrl }}">
+							<span class="fa fa-{{ op.icon }}"></span> Sign in with {{ op.icon }}
+						</a>
                     {% endfor %}
                 </div>
             </div>

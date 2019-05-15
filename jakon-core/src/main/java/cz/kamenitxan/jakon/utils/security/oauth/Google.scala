@@ -7,10 +7,8 @@ import com.github.scribejava.core.builder.ServiceBuilder
 import com.github.scribejava.core.model.{OAuth2AccessToken, OAuthRequest, Verb}
 import com.google.gson.Gson
 import cz.kamenitxan.jakon.core.configuration.{Configuration, ConfigurationValue, Settings}
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.utils.Utils
 import spark.Request
-import sun.security.pkcs11.Secmod.DbMode
 
 import scala.collection.JavaConverters._
 import scala.util.Random
@@ -26,7 +24,7 @@ object Google extends OauthProvider {
 
 	private lazy val gson = new Gson()
 	lazy val isEnabled = Utils.nonEmpty(clientId) && Utils.nonEmpty(clientSecret)
-	def authInfo(req: Request) = OauthInfo("google/btn_google_signin_dark_normal_web@2x.png", createAuthUrl(req))
+	def authInfo(req: Request) = OauthInfo("google", createAuthUrl(req))
 
 	lazy val service = new ServiceBuilder(clientId)
 	  .apiSecret(clientSecret)
@@ -37,7 +35,7 @@ object Google extends OauthProvider {
 	def createAuthUrl(req: Request): String = {
 		if (!isEnabled) return ""
 
-		val secretState = this.getClass.getSimpleName+new Random().nextInt(99999)
+		val secretState = this.getClass.getSimpleName + new Random().nextInt(99999)
 		req.session().attribute(secretState)
 
 

@@ -8,7 +8,7 @@ import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
 import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.utils.security.AesEncryptor
-import cz.kamenitxan.jakon.utils.security.oauth.Google
+import cz.kamenitxan.jakon.utils.security.oauth.{Facebook, Google}
 import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, Message, MessageSeverity}
 import org.mindrot.jbcrypt.BCrypt
@@ -29,7 +29,7 @@ object Authentication {
 	private val SQL_SELECT_EMAIL_TMPL = "SELECT subject FROM EmailTemplateEntity WHERE name = \"REGISTRATION\""
 
 	def loginGet(req: Request): ModelAndView = {
-		val oauthProviders = {Google :: Nil}.filter(p => p.isEnabled).map(p => p.authInfo(req))
+		val oauthProviders = {Google :: Facebook :: Nil}.filter(p => p.isEnabled).map(p => p.authInfo(req))
 
 		new Context(Map[String, Any](
 			"oauthProviders" -> oauthProviders
