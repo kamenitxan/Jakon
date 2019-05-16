@@ -3,12 +3,15 @@ package cz.kamenitxan.jakon.webui.controler.impl
 import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.deploy.DeployDirector
+import cz.kamenitxan.jakon.core.deploy.entity.Server
 import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.controler.{AbstractController, ExecuteFun}
+import net.liftweb.json.{DefaultFormats, JsonParser}
 import spark.route.HttpMethod
 import spark.{Request, Response}
 
 import scala.collection.JavaConverters._
+import scala.io.Source
 
 
 class DeployControler extends AbstractController {

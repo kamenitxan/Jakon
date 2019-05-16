@@ -25,6 +25,7 @@
                                 <th>Id</th>
                                 <th>Url</th>
                                 <th>Path</th>
+                                <th>Last Deployed</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -33,6 +34,7 @@
                                     <td>{{ server.id }}</td>
                                     <td>{{ server.url }}</td>
                                     <td>{{ server.path }}</td>
+                                    <td>{{ server.lastDeployedb }}</td>
                                 </tr>
                             {% endfor %}
                             </tbody>
