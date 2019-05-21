@@ -12,5 +12,5 @@ class Server(
             ) {
 
 
-    override def toString = s"Server(id=$id, url=$url, path=$path, lastDeployed=$lastDeployed)"
+	override def toString = s"Server(id=$id, url=$url, path=$path, lastDeployed=$lastDeployed)"
 }

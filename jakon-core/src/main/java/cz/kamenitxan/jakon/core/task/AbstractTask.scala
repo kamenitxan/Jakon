@@ -22,7 +22,7 @@ abstract class AbstractTask(val name: String, val period: Long, val unit: TimeUn
 			start()
 			lastRunSuccessful = true
 		} catch {
-			case ex : Exception => {
+			case ex: Exception => {
 				lastRunSuccessful = false
 				logger.error("Error while running task", ex)
 			}

@@ -5,7 +5,6 @@ import java.sql.{Connection, Statement, Types}
 import java.util.regex.Pattern
 
 import cz.kamenitxan.jakon.core.function.FunctionHelper
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.json.Json
@@ -18,20 +17,29 @@ import scala.beans.BeanProperty
   */
 @Entity
 class Page(u: Unit = ()) extends JakonObject(classOf[Page].getName) with Ordered {
-	@BeanProperty @Column @JakonField
-	var title:String = ""
-	@Column @JakonField
-	var content:String = ""
-	@BeanProperty @OneToOne @JakonField(inputTemplate = "String")
-	var parent:Page = _
-	@BeanProperty @Column @JakonField
-	var showComments:Boolean = false
-	@Column(nullable = false) @JakonField(listOrder = -96, shownInEdit = false, shownInList = false)
+	@BeanProperty
+	@Column
+	@JakonField
+	var title: String = ""
+	@Column
+	@JakonField
+	var content: String = ""
+	@BeanProperty
+	@OneToOne
+	@JakonField(inputTemplate = "String")
+	var parent: Page = _
+	@BeanProperty
+	@Column
+	@JakonField
+	var showComments: Boolean = false
+	@Column(nullable = false)
+	@JakonField(listOrder = -96, shownInEdit = false, shownInList = false)
 	override var objectOrder: Double = _
-	@Transient @JakonField(listOrder = -96)
+	@Transient
+	@JakonField(listOrder = -96)
 	override var visibleOrder: Int = _
 
-	def this() = this(u=())
+	def this() = this(u = ())
 
 	def setContent(content: String): Unit = this.content = content
 

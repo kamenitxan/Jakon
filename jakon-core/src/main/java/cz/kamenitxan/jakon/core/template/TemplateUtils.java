@@ -24,7 +24,7 @@ public abstract class TemplateUtils {
 
 	public static void saveRenderedPage(String content, String path) {
 		try {
-			File file = new File(Settings.getOutputDir() +  "/" + path + ".html");
+			File file = new File(Settings.getOutputDir() + "/" + path + ".html");
 
 			// if file doesnt exists, then create it
 			if (!file.exists()) {
@@ -75,7 +75,7 @@ public abstract class TemplateUtils {
 
 		try {
 			validate(from);
-			Files.walkFileTree(from, EnumSet.of(FileVisitOption.FOLLOW_LINKS),Integer.MAX_VALUE,new CopyDirVisitor(from, to));
+			Files.walkFileTree(from, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, new CopyDirVisitor(from, to));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -114,7 +114,7 @@ public abstract class TemplateUtils {
 		public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
 
 			Path targetPath = toPath.resolve(fromPath.relativize(dir));
-			if(!Files.exists(targetPath)){
+			if (!Files.exists(targetPath)) {
 				Files.createDirectory(targetPath);
 			}
 			return FileVisitResult.CONTINUE;
@@ -138,6 +138,7 @@ public abstract class TemplateUtils {
 
 	private static final Parser parser = Parser.builder().build();
 	private static final HtmlRenderer renderer = HtmlRenderer.builder().build();
+
 	public static String parseMarkdown(String text) {
 		Node document = parser.parse(text);
 		return renderer.render(document);

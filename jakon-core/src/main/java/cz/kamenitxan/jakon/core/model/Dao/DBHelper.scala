@@ -10,7 +10,7 @@ import cz.kamenitxan.jakon.core.model._
 import cz.kamenitxan.jakon.core.model.converters.AbstractConverter
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.entity.JakonField
-import javax.persistence.ManyToOne
+import javax.persistence.{Column, ManyToOne}
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.mutable
@@ -140,16 +140,21 @@ object DBHelper {
 		val columnCount = rsmd.getColumnCount
 
 		Iterator.from(1).takeWhile(i => i <= columnCount).foreach(i => {
-			val columnName = rsmd.getColumnName(i)
+			var columnName = rsmd.getColumnName(i)
 			val fieldName = if (columnName.endsWith("_id")) {
 				columnName.substring(0, columnName.length - 3)
 			} else {
 				columnName
 			}
 			val fieldRef = Utils.getFieldsUpTo(cls, classOf[Object]).find(f => f.getName.equalsIgnoreCase(fieldName))
+
 			if (fieldRef.nonEmpty) {
 				val field = fieldRef.get
 				field.setAccessible(true)
+				val columnAnn = field.getAnnotation(classOf[Column])
+				if (columnAnn != null && columnAnn.name() != null && !columnAnn.name().isEmpty ){
+					columnName = columnAnn.name()
+				}
 				field.getType match {
 					case S => field.set(obj, rs.getString(columnName))
 					case B => field.set(obj, rs.getBoolean(columnName))

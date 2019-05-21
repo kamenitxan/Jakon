@@ -24,15 +24,20 @@ object Google extends OauthProvider {
 
 	private lazy val gson = new Gson()
 	lazy val isEnabled = Utils.nonEmpty(clientId) && Utils.nonEmpty(clientSecret)
-	def authInfo(req: Request) = OauthInfo("google", createAuthUrl(req))
+
+	def authInfo(req: Request, redirectTo: String) = OauthInfo("google", createAuthUrl(req, redirectTo))
 
 	lazy val service = new ServiceBuilder(clientId)
 	  .apiSecret(clientSecret)
 	  .defaultScope("email")
-	  .callback(s"http://${Settings.getHostname}${if (Settings.getPort != 80) {s":${Settings.getPort}"}}/admin/login/oauth?provider=${this.getClass.getSimpleName}")
+	  .callback(s"http://${Settings.getHostname}${
+		  if (Settings.getPort != 80) {
+			  s":${Settings.getPort}"
+		  }
+	  }/admin/login/oauth?provider=${this.getClass.getSimpleName}")
 	  .build(GoogleApi20.instance)
 
-	def createAuthUrl(req: Request): String = {
+	def createAuthUrl(req: Request, redirectTo: String): String = {
 		if (!isEnabled) return ""
 
 		val secretState = this.getClass.getSimpleName + new Random().nextInt(99999)
@@ -47,6 +52,7 @@ object Google extends OauthProvider {
 		additionalParams.put("access_type", "offline")
 		//force to reget refresh token (if usera are asked not the first time)
 		additionalParams.put("prompt", "consent")
+		if (redirectTo != null) additionalParams.put(OauthProvider.REDIRECT_TO, redirectTo)
 		val authorizationUrl: String = service.createAuthorizationUrlBuilder.state(secretState).additionalParams(additionalParams).build
 		authorizationUrl
 	}

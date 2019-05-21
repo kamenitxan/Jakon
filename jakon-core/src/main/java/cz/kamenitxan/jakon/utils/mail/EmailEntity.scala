@@ -13,7 +13,8 @@ import javax.persistence.{Column, Entity}
 
 @Entity
 class EmailEntity(u: Unit = ()) extends JakonObject(classOf[EmailEntity].getName) {
-	@Column(name = "addressTo") @JakonField
+	@Column(name = "addressTo")
+	@JakonField
 	var to: String = ""
 	@JakonField
 	var subject: String = ""
@@ -27,13 +28,13 @@ class EmailEntity(u: Unit = ()) extends JakonObject(classOf[EmailEntity].getName
 	var lang: String = _
 	@JakonField
 	var emailType: String = _
-	@JakonField(shownInList = false)
+	@JakonField(shownInList = false, converter = classOf[ScalaMapConverter])
 	var params: Map[String, String] = _
 
-	def this() = this(u=())
+	def this() = this(u = ())
 
 	def this(template: String, to: String, subject: String, params: Map[String, String]) = {
-		this(u=())
+		this(u = ())
 		this.template = template
 		this.to = to
 		this.subject = subject
@@ -42,7 +43,7 @@ class EmailEntity(u: Unit = ()) extends JakonObject(classOf[EmailEntity].getName
 	}
 
 	def this(template: String, to: String, subject: String, params: Map[String, String], emailType: String) = {
-		this(u=())
+		this(u = ())
 		this.template = template
 		this.to = to
 		this.subject = subject

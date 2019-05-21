@@ -4,7 +4,6 @@ import java.io._
 
 import com.mitchellbosecke.pebble.error.LoaderException
 import com.mitchellbosecke.pebble.loader.FileLoader
-import cz.kamenitxan.jakon.core.configuration.Settings
 
 class JakonFileLoader(templateDir: String, loadFromJar: Boolean = false) extends FileLoader {
 	val ADMIN_TMPL_DIR = "templates/admin"

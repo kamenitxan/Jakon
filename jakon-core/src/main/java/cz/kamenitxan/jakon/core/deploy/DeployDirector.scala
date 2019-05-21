@@ -45,7 +45,7 @@ object DeployDirector {
 
 	def deploy() = {
 		Director.render()
-		servers.foreach( s => {
+		servers.foreach(s => {
 			deployer.deploy(s)
 			s.lastDeployed = LocalDateTime.now()
 		})

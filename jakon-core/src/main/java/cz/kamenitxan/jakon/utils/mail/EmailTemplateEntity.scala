@@ -11,16 +11,20 @@ import scala.beans.BeanProperty
 
 @Entity
 class EmailTemplateEntity(u: Unit = ()) extends JakonObject(classOf[EmailTemplateEntity].getName) {
-	@BeanProperty @Column @JakonField(searched = true)
+	@Column
+	@JakonField(searched = true)
 	var name: String = ""
-	@BeanProperty @Column(name = "addressFrom") @JakonField
+	@Column(name = "addressFrom")
+	@JakonField
 	var from: String = ""
-	@BeanProperty @Column @JakonField
+	@Column
+	@JakonField
 	var subject: String = ""
-	@BeanProperty @Column @JakonField(inputTemplate = "textarea", shownInList = false)
+	@Column
+	@JakonField(inputTemplate = "textarea", shownInList = false)
 	var template: String = ""
 
-	def this() = this(u=())
+	def this() = this(u = ())
 
 	override val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-envelope")
 

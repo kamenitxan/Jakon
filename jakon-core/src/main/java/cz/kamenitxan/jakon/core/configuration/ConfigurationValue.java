@@ -9,6 +9,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface ConfigurationValue {
 	String name();
+
 	boolean required();
+
 	String defaultValue() default "";
 }

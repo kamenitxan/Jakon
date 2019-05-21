@@ -9,5 +9,6 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 public @interface ExecuteFun {
 	String path();
+
 	HttpMethod method();
 }

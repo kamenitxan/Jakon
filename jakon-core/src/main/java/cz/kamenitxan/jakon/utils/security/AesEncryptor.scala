@@ -10,7 +10,6 @@ import javax.crypto.Cipher
 import javax.crypto.spec.{IvParameterSpec, SecretKeySpec}
 
 
-
 object AesEncryptor {
 	// TODO: longer keys
 	var skeySpec: SecretKeySpec = new SecretKeySpec(Settings.getEncryptionSecret.getBytes("UTF-8"), "AES")
@@ -40,7 +39,7 @@ object AesEncryptor {
 		new String(byteDecryptedText)
 	}
 
-	def decrypt(textToDecrypt: String):String = {
+	def decrypt(textToDecrypt: String): String = {
 		if (textToDecrypt == null || textToDecrypt.isEmpty || !org.apache.commons.codec.binary.Base64.isBase64(textToDecrypt.getBytes())) {
 			throw new GeneralSecurityException("Decryption failed - invalid input")
 		}

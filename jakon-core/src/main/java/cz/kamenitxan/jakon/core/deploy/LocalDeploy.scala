@@ -7,7 +7,7 @@ import cz.kamenitxan.jakon.core.template.TemplateUtils
 class LocalDeploy extends IDeploy {
 	override def deploy(server: Server): Unit = {
 		TemplateUtils.clean(server.path)
-		TemplateUtils.copy(Settings.getOutputDir , server.path)
+		TemplateUtils.copy(Settings.getOutputDir, server.path)
 	}
 
 	override def getDeploySettings = ???

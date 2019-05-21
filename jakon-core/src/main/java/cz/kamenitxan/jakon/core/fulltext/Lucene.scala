@@ -32,7 +32,7 @@ object Lucene {
 		val indexedText = obj.getClass.getFields.filter(f => {
 			val ann = f.getAnnotation(classOf[JakonField])
 			ann != null && ann.searched()
-		}).map(f => f.get(obj).toString).fold("") {(acc, f) => acc + " " + f}
+		}).map(f => f.get(obj).toString).fold("") { (acc, f) => acc + " " + f }
 
 		val doc = new Document()
 		doc.add(new TextField("index", indexedText, Field.Store.YES))
@@ -56,7 +56,7 @@ object Lucene {
 
 		val query = new QueryParser("index", analyzer).parse(queryString)
 		val result = searcher.search(query, 10).scoreDocs
-		result.map( d => searcher.doc(d.doc)) toList
+		result.map(d => searcher.doc(d.doc)) toList
 	}
 
 }

@@ -13,16 +13,22 @@ import scala.beans.BeanProperty
   */
 @Entity
 class Category(u: Unit = ()) extends JakonObject(classOf[Category].getName) with Ordered {
-	@BeanProperty @Column @JakonField(searched = true)
+	@BeanProperty
+	@Column
+	@JakonField(searched = true)
 	var name: String = ""
-	@BeanProperty @Column @JakonField
+	@BeanProperty
+	@Column
+	@JakonField
 	var showComments: Boolean = false
-	@Column(nullable = false) @JakonField(listOrder = -96, shownInEdit = false, shownInList = false)
+	@Column(nullable = false)
+	@JakonField(listOrder = -96, shownInEdit = false, shownInList = false)
 	override var objectOrder: Double = _
-	@Transient @JakonField(listOrder = -96)
+	@Transient
+	@JakonField(listOrder = -96)
 	override var visibleOrder: Int = _
 
-	def this() = this(u=())
+	def this() = this(u = ())
 
 	override def getObjectOrder: Double = objectOrder
 

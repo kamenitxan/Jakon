@@ -46,7 +46,6 @@ public class Post extends JakonObject {
 	}
 
 
-
 	public String getTitle() {
 		return title;
 	}

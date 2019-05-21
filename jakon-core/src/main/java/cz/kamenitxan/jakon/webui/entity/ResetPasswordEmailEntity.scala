@@ -3,7 +3,6 @@ package cz.kamenitxan.jakon.webui.entity
 import java.sql.{Connection, Statement}
 import java.util.Date
 
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.{JakonObject, JakonUser}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import javax.persistence.{Column, Entity}

@@ -13,7 +13,7 @@ object i18nUtil {
 		getTranslation(basename, key, locale, null)
 	}
 
-	def getTranslation(basename: String, key: String, locale: Locale, default: String ): String = {
+	def getTranslation(basename: String, key: String, locale: Locale, default: String): String = {
 		val file = new File(Settings.getTemplateDir + "/pagelet")
 		val urls = Array(file.toURI.toURL)
 		val loader = new URLClassLoader(urls)

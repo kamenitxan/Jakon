@@ -38,6 +38,7 @@ object FunctionHelper {
 
 	/**
 	  * Parses whole string and evaluates functions
+	  *
 	  * @param text input text
 	  * @return input with functions replaced with their result
 	  */

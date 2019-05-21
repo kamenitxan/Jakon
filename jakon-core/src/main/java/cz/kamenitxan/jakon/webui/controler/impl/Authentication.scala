@@ -29,7 +29,9 @@ object Authentication {
 	private val SQL_SELECT_EMAIL_TMPL = "SELECT subject FROM EmailTemplateEntity WHERE name = \"REGISTRATION\""
 
 	def loginGet(req: Request): ModelAndView = {
-		val oauthProviders = {Google :: Facebook :: Nil}.filter(p => p.isEnabled).map(p => p.authInfo(req))
+		val oauthProviders = {
+			Google :: Facebook :: Nil
+		}.filter(p => p.isEnabled).map(p => p.authInfo(req))
 
 		new Context(Map[String, Any](
 			"oauthProviders" -> oauthProviders

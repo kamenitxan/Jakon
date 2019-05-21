@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.webui.api.objects.{SearchRequest, SearchResponse}
-import javax.persistence.criteria.{CriteriaQuery, Root}
 import spark.{Request, Response}
 
 import scala.collection.JavaConverters._

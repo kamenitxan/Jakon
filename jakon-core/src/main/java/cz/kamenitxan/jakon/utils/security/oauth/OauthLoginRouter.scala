@@ -4,8 +4,9 @@ import cz.kamenitxan.jakon.core.dynamic.{Get, Pagelet}
 import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.webui.controler.pagelets.AbstractAdminPagelet
 import cz.kamenitxan.jakon.webui.entity.MessageSeverity
-import org.slf4j.{Logger, LoggerFactory}
+import org.slf4j.LoggerFactory
 import spark.{Request, Response}
+import cz.kamenitxan.jakon.utils.Utils._
 
 @Pagelet(path = "/admin/login/oauth")
 class OauthLoginRouter extends AbstractAdminPagelet {
@@ -23,7 +24,8 @@ class OauthLoginRouter extends AbstractAdminPagelet {
 				false
 		}
 		if (success) {
-			res.redirect("/admin/index")
+			val redirectTo = req.queryParams(OauthProvider.REDIRECT_TO)
+			res.redirect(redirectTo.getOrElse("/admin/index"))
 		} else {
 			PageContext.getInstance().addMessage(MessageSeverity.ERROR, "OAUTH_LOGIN_FAILED")
 			res.redirect("/admin")

@@ -9,7 +9,6 @@ abstract class AbstractStaticPage(val templateName: String, url: String) extends
 	super.setUrl(url)
 
 
-
 	override def generate() {
 		engine.render(templateName, url, Map[String, AnyRef]())
 	}

@@ -73,7 +73,6 @@ object FieldConformer {
 	}
 
 
-
 	def getFieldInfos(obj: JakonObject, fields: List[Field]): List[FieldInfo] = {
 		var infos = List[FieldInfo]()
 		fields.foreach(f => {
@@ -95,7 +94,7 @@ object FieldConformer {
 							val fv = f.get(obj)
 							infos = new FieldInfo(an, HtmlType.NUMBER, f, fv) :: infos
 						case DATE =>
-							val sdf =  new SimpleDateFormat(DATE_FORMAT)
+							val sdf = new SimpleDateFormat(DATE_FORMAT)
 							if (f.get(obj) != null) {
 								val value = sdf.format(f.get(obj))
 								infos = new FieldInfo(an, HtmlType.DATE, f, value) :: infos
@@ -120,7 +119,7 @@ object FieldConformer {
 							infos = new FieldInfo(an, HtmlType.TEXT, f, fv) :: infos
 					}
 				}
-				}
+			}
 
 		})
 		infos.sortBy(fi => fi.an.listOrder)

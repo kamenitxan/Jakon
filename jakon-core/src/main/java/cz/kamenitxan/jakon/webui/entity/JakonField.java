@@ -12,16 +12,28 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface JakonField {
 	boolean required() default true;
+
 	boolean disabled() default false;
 
-	/** shown in admin edit view */
+	/**
+	 * shown in admin edit view
+	 */
 	boolean shownInEdit() default true;
-	/** shown in admin list view */
+
+	/**
+	 * shown in admin list view
+	 */
 	boolean shownInList() default true;
-	/** order of column in list and edit view */
+
+	/**
+	 * order of column in list and edit view
+	 */
 	int listOrder() default 999;
+
 	String htmlClass() default "";
+
 	int htmlMaxLength() default 255;
+
 	String inputTemplate() default "";
 
 	Class<? extends AbstractConverter> converter() default AbstractConverter.class;

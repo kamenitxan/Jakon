@@ -15,7 +15,7 @@ trait OauthProvider {
 
 	val isEnabled: Boolean
 
-	def authInfo(req: Request): OauthInfo
+	def authInfo(req: Request, redirectTo : String = null): OauthInfo
 
 	def handleAuthResponse(req: Request): Boolean
 
@@ -50,4 +50,9 @@ trait OauthProvider {
 		req.session().attribute(secretState)
 		secretState
 	}
+}
+
+object OauthProvider {
+	final val REDIRECT_TO = "redirectTo"
+
 }

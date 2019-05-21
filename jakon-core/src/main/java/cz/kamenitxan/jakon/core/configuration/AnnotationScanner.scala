@@ -1,7 +1,5 @@
 package cz.kamenitxan.jakon.core.configuration
 
-import java.io.File
-
 import cz.kamenitxan.jakon.core.customPages.{CustomPage, CustomPageInitializer, StaticPage}
 import cz.kamenitxan.jakon.core.dynamic.{Pagelet, PageletInitializer}
 import io.github.classgraph.{ClassGraph, ClassInfoList, ScanResult}
@@ -42,7 +40,7 @@ object AnnotationScanner {
 		CustomPageInitializer.initStaticPages(staticPages)
 	}
 
-	private def  loadConfiguration(scanResult: ScanResult): Unit = {
+	private def loadConfiguration(scanResult: ScanResult): Unit = {
 		val config = scanResult.getClassesWithAnnotation(classOf[Configuration].getCanonicalName).loadScalaClasses()
 		ConfigurationInitializer.initConfiguration(config)
 	}

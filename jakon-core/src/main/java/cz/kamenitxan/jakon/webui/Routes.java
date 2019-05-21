@@ -23,12 +23,17 @@ import static spark.Spark.*;
  * Created by TPa on 03.09.16.
  */
 public class Routes {
-	private static Logger logger = LoggerFactory.getLogger(Routes.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Routes.class);
+
 	public static void init() {
 		TemplateEngine te = Settings.getAdminEngine();
 		Gson gson = new Gson();
 
 
+		before("*", ((request, response) -> {
+			// also prepares page context
+			LOG.trace("Processing req: " + request.pathInfo());
+		}));
 		before("/admin", (request, response) -> {
 			JakonUser user = request.session().attribute("user");
 			if (request.session().attribute("user") != null && (user.acl().adminAllowed() || user.acl().masterAdmin())) {
@@ -52,7 +57,7 @@ public class Routes {
 		get("/admin", (req, res) -> Authentication.loginGet(req), te);
 		post("/admin", Authentication::loginPost, te);
 		get("/admin/index", (request, response) -> AdminSettings.dashboardController().apply(request, response), te);
-		get("/admin/register",  (request, response) -> Authentication.registrationGet(response), te);
+		get("/admin/register", (request, response) -> Authentication.registrationGet(response), te);
 		post("/admin/register", Authentication::registrationPost, te);
 		get("/admin/logout", Authentication::logoutPost, te);
 		get("/admin/profile", UserControler::render, te);
@@ -114,14 +119,16 @@ public class Routes {
 					if (an != null) {
 						m.setAccessible(true);
 						switch (an.method()) {
-							case get: get("/admin/" + an.path(), ((req, res) -> (Context) m.invoke(instance, req, res)) , te);
-							case post: post("/admin/" + an.path(), ((req, res) -> (Context) m.invoke(instance, req, req)) , te);
+							case get:
+								get("/admin/" + an.path(), ((req, res) -> (Context) m.invoke(instance, req, res)), te);
+							case post:
+								post("/admin/" + an.path(), ((req, res) -> (Context) m.invoke(instance, req, req)), te);
 						}
 					}
 				}
-				logger.info("Custom admin controller registered: " + instance.getClass().getSimpleName());
+				LOG.info("Custom admin controller registered: " + instance.getClass().getSimpleName());
 			} catch (InstantiationException | IllegalAccessException e) {
-				logger.error("Failed to register custom controler", e);
+				LOG.error("Failed to register custom controler", e);
 			}
 
 		});

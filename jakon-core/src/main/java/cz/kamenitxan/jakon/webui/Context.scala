@@ -5,6 +5,7 @@ import cz.kamenitxan.jakon.utils.PageContext
 import spark.ModelAndView
 
 import scala.collection.JavaConverters._
+
 /**
   * Created by TPa on 06.09.16.
   */

@@ -18,16 +18,18 @@ trait TemplateEngine {
 
 	/**
 	  * Renders template with provided name
+	  *
 	  * @param templateName template name
-	  * @param context render parameters
+	  * @param context      render parameters
 	  * @return rendered template
 	  */
 	def renderString(templateName: String, context: Map[String, AnyRef]): String
 
 	/**
 	  * Renders provided template
+	  *
 	  * @param template template to render
-	  * @param context render parameters
+	  * @param context  render parameters
 	  * @return rendered template
 	  */
 	def renderTemplate(template: String, context: Map[String, AnyRef]): String

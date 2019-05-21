@@ -32,7 +32,7 @@ object CustomPageInitializer {
 		logger.info("Initializing static pages complete")
 	}
 
-	private def isChildOf(child: Class[_], parent: Class[_]):Boolean = {
+	private def isChildOf(child: Class[_], parent: Class[_]): Boolean = {
 		val supperClass = child.getSuperclass
 		if (supperClass == null) {
 			return false

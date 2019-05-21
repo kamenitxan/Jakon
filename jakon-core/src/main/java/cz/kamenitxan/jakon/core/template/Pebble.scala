@@ -16,7 +16,6 @@ import cz.kamenitxan.jakon.webui.util.JakonFileLoader
 import scala.collection.JavaConverters._
 
 
-
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
   */

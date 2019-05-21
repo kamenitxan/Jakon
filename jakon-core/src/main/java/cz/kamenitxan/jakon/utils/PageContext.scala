@@ -14,6 +14,7 @@ object PageContext {
 	val context: ThreadLocal[PageContext] = new ThreadLocal[PageContext]
 
 	val excludedPaths = List("/favicon.ico", "/css", "/js", "/jakon", "/vendor")
+
 	def init(req: Request, res: Response): PageContext = {
 		if (PageContext.context.get() != null) {
 			throw new IllegalStateException("PageContext already initialized")

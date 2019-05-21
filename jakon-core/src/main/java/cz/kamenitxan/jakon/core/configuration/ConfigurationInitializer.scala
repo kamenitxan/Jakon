@@ -45,6 +45,7 @@ object ConfigurationInitializer {
 	private val B = classOf[Boolean]
 	private val D = classOf[Double]
 	private val I = classOf[Int]
+
 	def initConfiguration(configClasses: Seq[Class[_]]): Unit = {
 		configClasses.foreach(c => {
 			c.getDeclaredFields.filter(f => f.isAnnotationPresent(classOf[ConfigurationValue])).foreach(f => {
