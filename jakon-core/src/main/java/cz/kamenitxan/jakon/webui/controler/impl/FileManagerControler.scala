@@ -14,7 +14,6 @@ object FileManagerControler {
 	}
 
 	def executeGet(req: Request, res: Response) = {
-		val method = req.params(":method")
 		val fm = new FileManagerServlet
 		fm.init()
 		fm.doGet(req.raw(), res.raw())
@@ -22,7 +21,6 @@ object FileManagerControler {
 	}
 
 	def executePost(req: Request, res: Response) = {
-		val method = req.params(":method")
 		val fm = new FileManagerServlet
 		fm.init()
 		fm.doPost(req.raw(), res.raw())
