@@ -146,7 +146,20 @@ object DBHelper {
 			} else {
 				columnName
 			}
-			val fieldRef = Utils.getFieldsUpTo(cls, classOf[Object]).find(f => f.getName.equalsIgnoreCase(fieldName))
+
+
+			val fieldRef = Utils.getFieldsUpTo(cls, classOf[Object]).find(f => {
+				val byName = f.getName.equalsIgnoreCase(fieldName)
+				lazy val byAnn = {
+					val ann = f.getDeclaredAnnotation(classOf[Column])
+					if (ann != null) {
+						fieldName == ann.name()
+					} else {
+						false
+					}
+				}
+				byName || byAnn
+			})
 
 			if (fieldRef.nonEmpty) {
 				val field = fieldRef.get

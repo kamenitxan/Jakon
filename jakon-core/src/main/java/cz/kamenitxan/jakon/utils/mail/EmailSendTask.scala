@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon.utils.mail
 
-import java.util.Properties
+import java.util.{Date, Properties}
 import java.util.concurrent.TimeUnit
 
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
@@ -14,7 +14,7 @@ object EmailSendTask {
 	val TMPL_LANG = "tmplLanguage"
 
 	private val UNSENT_SQL = "SELECT * FROM EmailEntity WHERE sent = 0"
-	private val SELECT_EMAIL_TMPL_SQL = "SELECT addressFrom, template FROM EmailTemplateEntity WHERE name = ?"
+	private val SELECT_EMAIL_TMPL_SQL = "SELECT addressFrom, template FROM EmailTemplateEntity WHERE name = ? OR name = ? LIMIT 1"
 }
 
 class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[EmailSendTask].getSimpleName, period, unit) {
@@ -47,8 +47,14 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 
 
 				if (e.template != null && e.template != null) {
+					val tmplLangSuffix = if (e.params != null) {
+						e.params.getOrElse("tmplLanguage", "")
+					} else {
+						""
+					}
 					val stmt = conn.prepareStatement(EmailSendTask.SELECT_EMAIL_TMPL_SQL)
-					stmt.setString(1, e.template)
+					stmt.setString(1, e.template + "_" + tmplLangSuffix)
+					stmt.setString(2, e.template)
 					val tmpl = DBHelper.selectSingle(stmt, classOf[EmailTemplateEntity]).entity.asInstanceOf[EmailTemplateEntity]
 
 					if (Settings.getDeployMode.equals(DeployMode.DEVEL)) {
@@ -57,13 +63,9 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 						message.setFrom(new InternetAddress(tmpl.from))
 					}
 
-					val tmplLangSuffix = if (e.params != null) {
-						e.params.getOrElse("tmplLanguage", "")
-					} else {
-						""
-					}
+
 					val te = Settings.getTemplateEngine
-					val renderedMessage = te.renderTemplate(tmpl.template + tmplLangSuffix, e.params)
+					val renderedMessage = te.renderTemplate(tmpl.template, e.params)
 					message.setContent(renderedMessage, "text/html")
 				}
 
@@ -73,6 +75,7 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 				}
 				Transport.send(message)
 				e.sent = true
+				e.sentDate = new Date()
 				e.update()
 				Settings.getEmailTypeHandler.afterSend(e.emailType)
 			})

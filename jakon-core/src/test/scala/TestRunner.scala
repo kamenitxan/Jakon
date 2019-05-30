@@ -11,7 +11,8 @@ import cz.kamenitxan.jakon.core.template.Pebble
 import functions.LinkTest
 import jakon.RenderTest
 import org.scalatest.{BeforeAndAfterAll, Suites}
-import utils.AesEncryptorTest
+import utils.mail.EmailTest
+import utils.{AesEncryptorTest, UtilsTest}
 import webui._
 
 /**
@@ -21,12 +22,13 @@ class TestRunner extends Suites(
 	new RenderTest,
 	new LinkTest,
 	new AuthTest,
-	//new EmailTest,
+	new EmailTest,
 	new MenuTest,
 	new AesEncryptorTest,
 	new ApiTest,
 	new ObjectControllerTest,
-	new FileManagerTest
+	new FileManagerTest,
+	new UtilsTest
 ) with BeforeAndAfterAll {
 
 	override def beforeAll() {

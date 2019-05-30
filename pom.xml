@@ -24,7 +24,7 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<scala.version>2.12.8</scala.version>
-		<spark.version>2.9.0</spark.version>
+		<spark.version>2.9.1</spark.version>
 		<lucene.version>7.5.0</lucene.version>
 	</properties>
 

@@ -68,7 +68,7 @@ class EmailEntity(u: Unit = ()) extends JakonObject(classOf[EmailEntity].getName
 	}
 
 	override def updateObject(jid: Int, conn: Connection): Unit = {
-		val sql = "UPDATE EmailEntity SET addressTo = ?, subject = ?, template = ?, lang = ?, emailType = ?, params = ? sent = ?, sentDate = ? WHERE id = ?"
+		val sql = "UPDATE EmailEntity SET addressTo = ?, subject = ?, template = ?, lang = ?, emailType = ?, params = ?, sent = ?, sentDate = ? WHERE id = ?"
 		val stmt = conn.prepareStatement(sql)
 		stmt.setString(1, to)
 		stmt.setString(2, subject)

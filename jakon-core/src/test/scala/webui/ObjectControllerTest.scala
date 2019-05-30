@@ -47,21 +47,7 @@ class ObjectControllerTest extends fixture.FunSuite {
 		assert(f.driver.getPageSource.contains("Na váš email byl odeslán email pro změnu hesla"))
 	}
 
-	test("login") { f =>
-		val url = "http://localhost:"  + (Settings.getPort) + "/admin"
 
-		f.driver.get(url)
-
-		val emailInput = f.driver.findElement(By.cssSelector("input[type=email]"))
-		emailInput.sendKeys("admin@admin.cz")
-		val passwordInput = f.driver.findElement(By.cssSelector("input[type=password]"))
-		passwordInput.sendKeys("admin")
-		val submit = f.driver.findElement(By.cssSelector(".btn.btn-lg.btn-success"))
-		submit.click()
-
-		assert(checkPageLoad(f.driver))
-		assert(f.driver.getPageSource.contains("Dashboard"))
-	}
 
 	test("user settings") { f =>
 		val url = "http://localhost:"  + (Settings.getPort) + "/admin/profile"

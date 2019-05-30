@@ -56,11 +56,26 @@ class MenuTest extends fixture.FunSuite {
 
 	test("deploy page") { f =>
 		f.driver.get(host + "deploy")
-		//assert(checkPageLoad(f.driver))
+		assert(checkPageLoad(f.driver))
+	}
+
+	test("deploy page - start") { f =>
+		f.driver.get(host + "deploy/start")
+		assert(checkPageLoad(f.driver))
+	}
+
+	test("deploy page - generate") { f =>
+		f.driver.get(host + "deploy/generate")
+		assert(checkPageLoad(f.driver))
 	}
 
 	test("task page") { f =>
 		f.driver.get(host + "task")
+		assert(checkPageLoad(f.driver))
+	}
+
+	test("task page - run") { f =>
+		f.driver.get(host + "task/run/RenderTask")
 		assert(checkPageLoad(f.driver))
 	}
 
