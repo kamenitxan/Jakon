@@ -37,11 +37,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>cz.kamenitxan</groupId>
-			<artifactId>jakon</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.scala-lang</groupId>
 			<artifactId>scala-library</artifactId>
 			<version>${scala.version}</version>
