@@ -1,4 +1,4 @@
-import java.io.File
+import java.io.{File, IOException}
 
 import cz.kamenitxan.jakon.JakonInit
 import cz.kamenitxan.jakon.core.Director
@@ -39,7 +39,12 @@ class TestRunner extends Suites(
 		Settings.setTemplateEngine(new Pebble)
 
 		val app = new TestJakonApp()
-		app.run(Array[String]("jakonConfig=jakon_config_test.properties"))
+		try {
+			app.run(Array[String]("jakonConfig=jakon_config_test.properties"))
+		} catch {
+			case _: IOException =>
+				app.run(Array[String]("jakonConfig=jakon_config_test.properties", s"port=${(Settings.getPort + 1).toString}"))
+		}
 
 		val staticPage = new AbstractStaticPage("staticPage", "static") {}
 		Director.registerCustomPage(staticPage)

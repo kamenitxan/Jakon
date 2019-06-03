@@ -26,7 +26,13 @@ class MenuTest extends fixture.FunSuite {
 	}
 
 	private def checkPageLoad(driver: WebDriver) = {
-		driver.findElements(By.cssSelector(".navbar-brand")).get(0) != null
+		val navbar = driver.findElements(By.cssSelector(".navbar-brand"))
+		if (navbar.isEmpty) {
+			println(driver.getPageSource)
+			false
+		} else {
+			navbar.get(0) != null
+		}
 	}
 
 	test("Forgotten password items") { f =>

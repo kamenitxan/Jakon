@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon
 
-import java.io.File
+import java.io.{File, IOException}
 import java.nio.file.{Files, Paths}
 import java.util.concurrent.TimeUnit
 
@@ -68,7 +68,8 @@ class JakonInit {
 		AnnotationScanner.loadConfiguration()
 
 		staticFiles.externalLocation(Settings.getStaticDir)
-		port(Settings.getPort)
+		val portNumber: Int = arguments.find(a => a._1 == "port").map(a => a._2.toInt).getOrElse(Settings.getPort)
+		port(portNumber)
 
 		logger.info("Starting in " + Settings.getDeployMode + " mode")
 

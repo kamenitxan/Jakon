@@ -21,9 +21,13 @@ class GetAttributeFun extends Function {
 		val attrName = args.get("attr").asInstanceOf[String]
 
 		val obj = args.get("object")
-		val field = getField(obj.getClass, attrName)
-		field.setAccessible(true)
-		field.get(obj)
+		if (obj != null) {
+			val field = getField(obj.getClass, attrName)
+			field.setAccessible(true)
+			field.get(obj)
+		} else {
+			null
+		}
 	}
 
 	def getField(obj: Class[_ <: Any], attrName: String): Field = {
