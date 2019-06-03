@@ -88,13 +88,15 @@ class JakonInit {
 		}
 		routesSetup()
 		AnnotationScanner.load()
-		PageletInitializer.protectedPrefixes.foreach(pp => {
-			before(pp + "/*", (req: Request, res: Response) => {
-				val user: JakonUser = req.session.attribute("user")
-				if (user == null || (!user.acl.adminAllowed && !user.acl.allowedFrontendPrefixes.contains(pp))) {
-					res.redirect(Settings.getLoginPath + s"?redirectTo=${req.pathInfo()}", 302)
-				}
+		if (Settings.getDeployMode !=  DeployMode.DEVEL) {
+			PageletInitializer.protectedPrefixes.foreach(pp => {
+				before(pp + "/*", (req: Request, res: Response) => {
+					val user: JakonUser = req.session.attribute("user")
+					if (user == null || (!user.acl.adminAllowed && !user.acl.allowedFrontendPrefixes.contains(pp))) {
+						res.redirect(Settings.getLoginPath + s"?redirectTo=${req.pathInfo()}", 302)
+					}
+				})
 			})
-		})
+		}
 	}
 }

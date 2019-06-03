@@ -4,25 +4,17 @@ import java.lang.reflect.{Field, ParameterizedType, Type}
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Date
 
 import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.webui.entity.{FieldInfo, HtmlType, JakonField}
+import cz.kamenitxan.jakon.utils.TypeReferences._
 import javax.persistence.{ManyToOne, OneToMany}
 
 import scala.collection.JavaConverters._
 import scala.language.postfixOps
 
 object FieldConformer {
-	private val S = classOf[String]
-	private val B = classOf[Boolean]
-	private val D = classOf[java.lang.Double]
-	private val D_s = classOf[Double]
-	private val I = classOf[java.lang.Integer]
-	private val I_s = classOf[Int]
-	private val LIST = classOf[java.util.List[Any]]
-	private val DATE = classOf[Date]
-	private val DATETIME = classOf[LocalDateTime]
+
 
 	//val DATE_FORMAT = "MM/dd/yyyy"
 	val DATE_FORMAT = "yyyy-MM-dd"
@@ -47,15 +39,15 @@ object FieldConformer {
 		private def conform(t: Class[_], genericType: Type): Any = {
 			t match {
 				case B => s toBoolean
-				case D | D_s => s toDouble
-				case I | I_s => s toInt
+				case D | D_j => s toDouble
+				case I | I_j => s toInt
 				case DATE =>
 					val sdf = new SimpleDateFormat(DATE_FORMAT)
 					sdf.parse(s)
 				case DATETIME =>
 					val sdf = new SimpleDateFormat()
 					sdf.parse(s)
-				case LIST =>
+				case LIST_j =>
 					s.split("\r\n").map(line => line.conform(Class.forName(genericType.getTypeName), null)).toList.asJava
 				case x if x.isEnum =>
 					val m = x.getMethod("valueOf", classOf[String])
@@ -90,7 +82,7 @@ object FieldConformer {
 						case B =>
 							val fv = f.get(obj)
 							infos = new FieldInfo(an, HtmlType.CHECKBOX, f, if (fv != null) fv.toString else null) :: infos
-						case I | I_s =>
+						case I | I_j =>
 							val fv = f.get(obj)
 							infos = new FieldInfo(an, HtmlType.NUMBER, f, fv) :: infos
 						case DATE =>

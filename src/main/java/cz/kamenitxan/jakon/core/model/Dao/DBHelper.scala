@@ -10,6 +10,7 @@ import cz.kamenitxan.jakon.core.model._
 import cz.kamenitxan.jakon.core.model.converters.AbstractConverter
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.entity.JakonField
+import cz.kamenitxan.jakon.utils.TypeReferences._
 import javax.persistence.{Column, ManyToOne}
 import org.slf4j.{Logger, LoggerFactory}
 
@@ -127,11 +128,6 @@ object DBHelper {
 		stmt.executeQuery(sql)
 	}
 
-	private val S = classOf[String]
-	private val B = classOf[Boolean]
-	private val I = classOf[Int]
-	private val D = classOf[Double]
-	private val MAP = classOf[Map[Any, Any]]
 
 	def createJakonObject(rs: ResultSet, cls: Class[_ <: JakonObject]): QueryResult = {
 		val rsmd = rs.getMetaData

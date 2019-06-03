@@ -5,10 +5,12 @@ import java.sql._
 
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
 import cz.kamenitxan.jakon.core.model.Dao.{Crud, DBHelper}
+import cz.kamenitxan.jakon.utils.SqlGen
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.json.Json
 import javax.persistence._
+import org.slf4j.{Logger, LoggerFactory}
 
 import scala.annotation.switch
 import scala.language.postfixOps
@@ -19,8 +21,9 @@ import scala.language.postfixOps
   * @param childClass java.lang.Class.getName()
   */
 @Inheritance(strategy = InheritanceType.JOINED)
-abstract class JakonObject(@JakonField var childClass: String
-                          ) extends Serializable with Crud {
+abstract class JakonObject(@JakonField var childClass: String) extends Serializable with Crud {
+	private lazy val logger: Logger = LoggerFactory.getLogger(this.getClass)
+
 	@Id
 	@JakonField(disabled = true, required = false, listOrder = -99, searched = true)
 	var id: Int = 0
@@ -63,7 +66,7 @@ abstract class JakonObject(@JakonField var childClass: String
 
 	}
 
-	def create(): Int = {
+	final def create(): Int = {
 		val conn = DBHelper.getConnection
 		conn.setAutoCommit(false)
 		try {
@@ -91,11 +94,15 @@ abstract class JakonObject(@JakonField var childClass: String
 		}
 	}
 
-	def createObject(jid: Int, conn: Connection): Int
+	def createObject(jid: Int, conn: Connection): Int = {
+		logger.warn(s"createObject method is not overridden for $childClass")
+		val stmt = SqlGen.insertStmt(Class.forName(childClass).asInstanceOf[JakonObject],conn, jid)
+		executeInsert(stmt)
+	}
 
 	def afterCreate(): Unit = {}
 
-	def update(): Unit = {
+	final def update(): Unit = {
 		val conn = DBHelper.getConnection
 		conn.setAutoCommit(false)
 		try {
@@ -117,7 +124,11 @@ abstract class JakonObject(@JakonField var childClass: String
 		}
 	}
 
-	def updateObject(jid: Int, conn: Connection): Unit
+	def updateObject(jid: Int, conn: Connection): Unit = {
+		logger.warn(s"updateObject method is not overridden $childClass")
+		val stmt = SqlGen.updateStmt(Class.forName(childClass).asInstanceOf[JakonObject], conn, jid)
+		stmt.executeUpdate()
+	}
 
 	def afterUpdate(): Unit = {}
 
