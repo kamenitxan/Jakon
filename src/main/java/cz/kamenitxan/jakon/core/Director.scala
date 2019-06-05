@@ -13,6 +13,9 @@ import cz.kamenitxan.jakon.utils.mail.EmailTemplateEntity
 import cz.kamenitxan.jakon.webui.Routes
 import org.slf4j.{Logger, LoggerFactory}
 
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+
 
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
@@ -39,10 +42,13 @@ object Director {
 		if (Settings.getDeployMode.equals(DeployMode.DEVEL)) {
 			DBHelper.createTables()
 		}
+		Future {
+			DBHelper.checkDbConsistency()
+		}
 
 		TaskRunner.startTaskRunner()
-		logger.info("Jakon started")
 		Routes.init()
+		logger.info("Jakon started")
 
 		if (Settings.getDeployMode.equals(DeployMode.DEVEL)) {
 			val conn = DBHelper.getConnection

@@ -96,7 +96,7 @@ abstract class JakonObject(@JakonField var childClass: String) extends Serializa
 
 	def createObject(jid: Int, conn: Connection): Int = {
 		logger.warn(s"createObject method is not overridden for $childClass")
-		val stmt = SqlGen.insertStmt(Class.forName(childClass).asInstanceOf[JakonObject],conn, jid)
+		val stmt = SqlGen.insertStmt(this, conn, jid)
 		executeInsert(stmt)
 	}
 

@@ -18,7 +18,6 @@ import java.util.regex.Pattern;
 /**
  * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
  */
-@Entity
 public class Post extends JakonObject {
 
 	@Column
@@ -119,13 +118,4 @@ public class Post extends JakonObject {
 		return null;
 	}
 
-	@Override
-	public int createObject(int jid, Connection conn) {
-		throw new NotImplementedError();
-	}
-
-	@Override
-	public void updateObject(int jid, Connection conn) {
-		throw new NotImplementedError();
-	}
 }

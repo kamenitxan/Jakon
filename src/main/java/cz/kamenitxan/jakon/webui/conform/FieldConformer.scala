@@ -38,9 +38,9 @@ object FieldConformer {
 
 		private def conform(t: Class[_], genericType: Type): Any = {
 			t match {
-				case B => s toBoolean
-				case D | D_j => s toDouble
-				case I | I_j => s toInt
+				case BOOLEAN => s toBoolean
+				case DOUBLE | DOUBLE_j => s toDouble
+				case INTEGER | INTEGER_j => s toInt
 				case DATE =>
 					val sdf = new SimpleDateFormat(DATE_FORMAT)
 					sdf.parse(s)
@@ -79,10 +79,10 @@ object FieldConformer {
 					infos = new FieldInfo(an, HtmlType.CHECKBOX, f, fv, "OneToMany") :: infos
 				} else {
 					f.getType match {
-						case B =>
+						case BOOLEAN =>
 							val fv = f.get(obj)
 							infos = new FieldInfo(an, HtmlType.CHECKBOX, f, if (fv != null) fv.toString else null) :: infos
-						case I | I_j =>
+						case INTEGER | INTEGER_j =>
 							val fv = f.get(obj)
 							infos = new FieldInfo(an, HtmlType.NUMBER, f, fv) :: infos
 						case DATE =>

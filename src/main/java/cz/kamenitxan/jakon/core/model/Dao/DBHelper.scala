@@ -8,6 +8,7 @@ import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
 import cz.kamenitxan.jakon.core.model._
 import cz.kamenitxan.jakon.core.model.converters.AbstractConverter
+import cz.kamenitxan.jakon.utils.SqlGen.logger
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import cz.kamenitxan.jakon.utils.TypeReferences._
@@ -88,6 +89,23 @@ object DBHelper {
 		conn.close()
 	}
 
+	def checkDbConsistency(): Unit = {
+		val conn = getConnection
+		try {
+			if (Settings.getDatabaseType == DatabaseType.MYSQL){
+				val characterSetSql = "SELECT @@character_set_database;"
+				val stmt = conn.createStatement()
+				val characterSet = stmt.executeQuery(characterSetSql)
+				println(characterSet)
+			}
+		} catch {
+			case ex: Exception => logger.error("Exception occurred when checking DB consistency", ex)
+		} finally {
+			conn.close()
+			logger.info("DB consistency check complete")
+		}
+	}
+
 
 	def getDaoClasses: mutable.ArrayBuffer[Class[_ <: JakonObject]] = objects
 
@@ -165,10 +183,11 @@ object DBHelper {
 					columnName = columnAnn.name()
 				}
 				field.getType match {
-					case S => field.set(obj, rs.getString(columnName))
-					case B => field.set(obj, rs.getBoolean(columnName))
-					case I => field.set(obj, rs.getInt(columnName))
-					case D => field.set(obj, rs.getDouble(columnName))
+					case STRING => field.set(obj, rs.getString(columnName))
+					case BOOLEAN => field.set(obj, rs.getBoolean(columnName))
+					case INTEGER => field.set(obj, rs.getInt(columnName))
+					case DOUBLE => field.set(obj, rs.getDouble(columnName))
+					case DATE => field.set(obj, rs.getDate(columnName))
 					case x if x.isEnum =>
 						val m = x.getMethod("valueOf", classOf[String])
 						val enumValue = m.invoke(null, rs.getString(columnName))
@@ -185,8 +204,9 @@ object DBHelper {
 							val converter = jakonField.converter()
 							if (converter.getName != classOf[AbstractConverter[_]].getName) {
 								field.set(obj, converter.newInstance().convertToEntityAttribute(rs.getString(columnName)))
+							} else {
+								logger.error(s"Convertor not specified for data type on ${obj.getClass.getSimpleName}.${field.getName}")
 							}
-
 						} else {
 							logger.warn("Uknown data type on " + cls.getSimpleName + s".$fieldName")
 						}
