@@ -62,15 +62,15 @@ object SqlGen {
 		  annotatedFields.head.getType.getGenericSuperclass.getTypeName == classOf[JakonObject].getName) {
 			annotatedFields.head.getName + "_id" + " = ?"
 		} else {
-			annotatedFields.head.getName + " ?"
+			annotatedFields.head.getName + " = ?"
 		})
 
 		annotatedFields.tail.foreach(f => {
 			val fst = f.getType.getGenericSuperclass
 			if (fst != null && fst.getTypeName == classOf[JakonObject].getName) {
-				sb.append(", " + f.getName + "_id + ?")
+				sb.append(", " + f.getName + "_id = ?")
 			} else {
-				sb.append(", " + f.getName + " ?")
+				sb.append(", " + f.getName + " = ?")
 			}
 		})
 		sb.append(" WHERE id = ?;")
