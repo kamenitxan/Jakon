@@ -28,7 +28,8 @@ class TestRunner extends Suites(
 	new ApiTest,
 	new ObjectControllerTest,
 	new FileManagerTest,
-	new UtilsTest
+	new UtilsTest,
+	new WebUi
 ) with BeforeAndAfterAll {
 
 	override def beforeAll() {
