@@ -11,6 +11,7 @@ class WebUi extends TestBase {
 		val ext = new AdminPebbleExtension().getFunctions
 		assert(!ext.isEmpty)
 	}
+
 	test("LinkFun") { f =>
 		val fun = new LinkFun()
 		val args = fun.getArgumentNames

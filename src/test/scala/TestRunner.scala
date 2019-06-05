@@ -12,7 +12,7 @@ import functions.LinkTest
 import jakon.RenderTest
 import org.scalatest.{BeforeAndAfterAll, Suites}
 import utils.mail.EmailTest
-import utils.{AesEncryptorTest, UtilsTest}
+import utils.{AesEncryptorTest, SqlGenTest, UtilsTest}
 import webui._
 
 /**
@@ -29,7 +29,8 @@ class TestRunner extends Suites(
 	new ObjectControllerTest,
 	new FileManagerTest,
 	new UtilsTest,
-	new WebUi
+	new WebUi,
+	new SqlGenTest
 ) with BeforeAndAfterAll {
 
 	override def beforeAll() {
