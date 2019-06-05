@@ -240,8 +240,15 @@
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>versions-maven-plugin</artifactId>
-				<version>2.3</version>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.7</version>
+				<configuration>
+					<formats>
+						<format>html</format>
+						<format>xml</format>
+					</formats>
+					<check />
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.scala-tools</groupId>
