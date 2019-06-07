@@ -11,7 +11,7 @@ import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.core.task.{FulltextTask, RenderTask, TaskRunner}
 import cz.kamenitxan.jakon.devtools.{DevRender, StaticFilesController}
-import cz.kamenitxan.jakon.utils.PageContext
+import cz.kamenitxan.jakon.utils.{LoggingExceptionHandler, PageContext}
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.webui.AdminSettings
 import cz.kamenitxan.jakon.webui.controler.impl.{DeployControler, TaskController}
@@ -84,6 +84,7 @@ class JakonInit {
 				DevRender.rerender(request.pathInfo())
 			})
 			enableDebugScreen()
+			exception(classOf[Exception], new LoggingExceptionHandler)
 
 			notFound((req: Request, res: Response) => new StaticFilesController().doGet(req, res))
 		}

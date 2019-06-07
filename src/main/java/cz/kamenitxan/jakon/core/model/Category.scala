@@ -1,7 +1,5 @@
 package cz.kamenitxan.jakon.core.model
 
-import java.sql.Connection
-
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence._
@@ -39,7 +37,4 @@ class Category(u: Unit = ()) extends JakonObject(classOf[Category].getName) with
 
 	override def toString: String = "Category{" + "id='" + id + '\'' + ", name='" + name + '\'' + "} "
 
-	override def createObject(jid: Int, conn: Connection): Int = ???
-
-	override def updateObject(jid: Int, conn: Connection): Unit = ???
 }

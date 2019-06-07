@@ -7,12 +7,12 @@ import org.scalatest.{Outcome, fixture}
 
 class TestBase extends fixture.FunSuite{
 	var host = ""
-
+	val admin = "/admin/"
 
 	case class FixtureParam(driver: WebDriver)
 
 	def withFixture(test: OneArgTest): Outcome = {
-		host = "http://localhost:" + (Settings.getPort)
+		host = "http://localhost:" + Settings.getPort
 		val driver = new HtmlUnitDriver()
 
 		val fixture = FixtureParam(driver)
@@ -24,7 +24,7 @@ class TestBase extends fixture.FunSuite{
 
 	}
 
-	private def checkPageLoad(driver: WebDriver) = {
-		driver.findElements(By.cssSelector(".navbar-brand")).get(0) != null
+	protected def checkPageLoad(selector: String = ".navbar-brand")(implicit driver: WebDriver) = {
+		driver.findElements(By.cssSelector(selector)).get(0) != null
 	}
 }

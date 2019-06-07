@@ -29,6 +29,14 @@ object Utils {
 				s
 			}
 		}
+
+		def isNullOrEmpty: Boolean = {
+			if (s == null) {
+				true
+			} else {
+				s.isEmpty
+			}
+		}
 	}
 
 	def getFieldsUpTo(startClass: Class[_], exclusiveParent: Class[_]): List[Field] = {

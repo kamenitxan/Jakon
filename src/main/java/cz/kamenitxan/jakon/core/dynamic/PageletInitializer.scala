@@ -67,13 +67,17 @@ object PageletInitializer {
 			withDbConnection(conn => {
 				val methodArgs = createMethodArgs(m, req, res, conn)
 				var context = m.invoke(controller, methodArgs.array:_*).asInstanceOf[mutable.Map[String, Any]]
-				if (controller.isInstanceOf[AbstractAdminPagelet]) {
-					if (context == null) {
-						context = mutable.Map[String, Any]()
+				if (notRedirected(res)) {
+					if (controller.isInstanceOf[AbstractAdminPagelet]) {
+						if (context == null) {
+							context = mutable.Map[String, Any]()
+						}
+						context = context ++ Context.getAdminContext
 					}
-					context = context ++ Context.getAdminContext
+					controller.render(context, get.template())
+				} else {
+					""
 				}
-				controller.render(context, get.template())
 			})
 		})
 	}
@@ -97,10 +101,22 @@ object PageletInitializer {
 					gson.toJson(result)
 				} else {
 					val context = m.invoke(controller, methodArgs.array:_*).asInstanceOf[mutable.Map[String, Any]]
-					controller.render(context, post.template())
+					if (notRedirected(res)) {
+						controller.render(context, post.template())
+					} else {
+						""
+					}
 				}
 			})
 		})
+	}
+
+	private def notRedirected(res: Response) = {
+		if (res.raw().getStatus == 302 || res.raw().getStatus == 301) {
+			false
+		} else {
+			true
+		}
 	}
 
 	private def withDbConnection[T](fun: Connection => T): T = {

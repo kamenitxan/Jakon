@@ -1,7 +1,8 @@
 package utils
 
+import cz.kamenitxan.jakon.Main
 import cz.kamenitxan.jakon.core.model.{JakonObject, JakonUser}
-import cz.kamenitxan.jakon.utils.Utils
+import cz.kamenitxan.jakon.utils.{TypeReferences, Utils}
 import cz.kamenitxan.jakon.utils.Utils._
 import org.scalatest.FunSuite
 
@@ -20,6 +21,15 @@ class UtilsTest extends FunSuite {
 
 		val s2 = "test".getOrElse("ok")
 		assert("test" == s2)
+	}
+
+	test("Main") {
+		val app = new Main.JakonApp
+		assert(app != null)
+	}
+
+	test("TypeReferences") {
+		assert(TypeReferences.STRING != null)
 	}
 
 }

@@ -9,6 +9,7 @@ import com.github.scribejava.core.model.{OAuth2AccessToken, OAuthRequest, Verb}
 import com.google.gson.Gson
 import cz.kamenitxan.jakon.core.configuration.{Configuration, ConfigurationValue, Settings}
 import cz.kamenitxan.jakon.utils.Utils
+import cz.kamenitxan.jakon.utils.Utils.StringImprovements
 import spark.Request
 
 import scala.collection.JavaConverters._
@@ -62,7 +63,9 @@ object Google extends OauthProvider {
 	override def handleAuthResponse(req: Request)(implicit conn: Connection): Boolean = {
 		val secret = req.queryParams("secretState")
 		val code = req.queryParams("code")
-		println(req)
+		if (secret.isNullOrEmpty || code.isNullOrEmpty) {
+			return false
+		}
 
 		var accessToken: OAuth2AccessToken = service.getAccessToken(code)
 

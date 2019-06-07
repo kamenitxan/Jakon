@@ -11,6 +11,6 @@ class EmailConfirmation(u: Unit = ()) extends JakonObject(childClass = classOf[E
 	def this() = this(u = ())
 
 	@Transient
-	override val objectSettings: ObjectSettings = ???
+	override val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-envelope")
 
 }
