@@ -19,6 +19,7 @@
 		<scala.version>2.12.8</scala.version>
 		<spark.version>2.9.1</spark.version>
 		<lucene.version>7.5.0</lucene.version>
+		<scoverage.plugin.version>1.4.0-RC1</scoverage.plugin.version>
 	</properties>
 
 	<repositories>
@@ -240,9 +241,9 @@
 		<plugins>
 
 			<plugin>
-				<groupId>org.scala-tools</groupId>
-				<artifactId>maven-scala-plugin</artifactId>
-				<version>2.15.2</version>
+				<groupId>net.alchim31.maven</groupId>
+				<artifactId>scala-maven-plugin</artifactId>
+				<version>4.0.2</version>
 				<executions>
 					<execution>
 						<id>compile</id>
@@ -330,25 +331,6 @@
 			</plugin>
 
 			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.2</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>report</id>
-						<phase>test</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>3.1.0</version>
 
@@ -385,7 +367,44 @@
 					</execution>
 				</executions>
 			</plugin>
+				<plugin>
+					<groupId>org.scoverage</groupId>
+					<artifactId>scoverage-maven-plugin</artifactId>
+					<version>${scoverage.plugin.version}</version>
+					<configuration>
+						<minimumCoverage>80</minimumCoverage>
+						<failOnMinimumCoverage>true</failOnMinimumCoverage>
+
+						<!-- enable surefire and failsafe tests in SCoverage -->
+						<additionalForkedProjectProperties>skipTests=false</additionalForkedProjectProperties>
+					</configuration>
+					<executions>
+						<execution>
+							<goals>
+								<goal>report</goal> <!-- or integration-check -->
+							</goals>
+							<phase>prepare-package</phase> <!-- or any other phase -->
+						</execution>
+					</executions>
+				</plugin>
 		</plugins>
 	</build>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.scoverage</groupId>
+				<artifactId>scoverage-maven-plugin</artifactId>
+				<version>${scoverage.plugin.version}</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>report-only</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+	</reporting>
 
 </project>
