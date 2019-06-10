@@ -4,6 +4,8 @@ import cz.kamenitxan.jakon.core.configuration.Settings
 import org.openqa.selenium.htmlunit.HtmlUnitDriver
 import org.openqa.selenium.{By, WebDriver}
 import org.scalatest.{Outcome, fixture}
+import scala.collection.JavaConverters._
+
 
 class TestBase extends fixture.FunSuite{
 	var host = ""
@@ -26,5 +28,9 @@ class TestBase extends fixture.FunSuite{
 
 	protected def checkPageLoad(selector: String = ".navbar-brand")(implicit driver: WebDriver) = {
 		driver.findElements(By.cssSelector(selector)).get(0) != null
+	}
+
+	protected def findElements(selector: String)(implicit driver: WebDriver) = {
+		driver.findElements(By.cssSelector(selector)).asScala
 	}
 }

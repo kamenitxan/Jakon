@@ -91,9 +91,13 @@ object ObjectControler {
 		if (kv.isEmpty) {
 			return ""
 		}
+		var notFirst = false
 		val sb = new mutable.StringBuilder()
 		sb.append("WHERE ")
 		for ((fieldName, v) <- kv) {
+			if (notFirst) {
+				sb.append(" AND ")
+			}
 			val clr = Utils.getClassByFieldName(objectClass, fieldName)
 			sb.append(clr._1.getSimpleName)
 			sb.append(".")
@@ -127,6 +131,7 @@ object ObjectControler {
 						sb.append("\"")
 					}
 			}
+			notFirst = true
 		}
 		sb.toString()
 	}

@@ -32,7 +32,8 @@ class TestRunner extends Suites(
 	new UtilsTest,
 	new WebUi,
 	new SqlGenTest,
-	new ModelTest
+	new ModelTest,
+	new FieldConformerTest
 ) with BeforeAndAfterAll {
 
 	override def beforeAll() {
