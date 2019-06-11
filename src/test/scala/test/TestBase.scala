@@ -42,4 +42,9 @@ class TestBase extends fixture.FunSuite{
 	protected def getAdminTableRows()(implicit driver: WebDriver) = {
 		findElements("#dataTables-example tbody tr")
 	}
+
+	protected def assertNotEmpty(v: String) = {
+		assert(v != null)
+		assert(v.nonEmpty)
+	}
 }

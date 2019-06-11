@@ -1,5 +1,4 @@
 import java.io.{File, IOException}
-import java.util.logging.Level
 
 import cz.kamenitxan.jakon.JakonInit
 import cz.kamenitxan.jakon.core.Director
@@ -10,7 +9,7 @@ import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.{Category, Page, Post}
 import cz.kamenitxan.jakon.core.template.Pebble
 import functions.LinkTest
-import jakon.{ModelTest, RenderTest}
+import jakon.{ModelTest, RenderTest, SettingsTest}
 import org.scalatest.{BeforeAndAfterAll, Suites}
 import utils.mail.EmailTest
 import utils.{SecurityTest, SqlGenTest, UtilsTest}
@@ -33,7 +32,8 @@ class TestRunner extends Suites(
 	new WebUi,
 	new SqlGenTest,
 	new ModelTest,
-	new FieldConformerTest
+	new FieldConformerTest,
+	new SettingsTest
 ) with BeforeAndAfterAll {
 
 	override def beforeAll() {
