@@ -61,7 +61,7 @@ class ObjectControllerTest extends TestBase {
 		f.driver.get(url)
 
 		assert(checkPageLoad(f.driver))
-		val objects = findElements("#dataTables-example tbody tr")
+		val objects = getAdminTableRows()
 		assert(objects.nonEmpty)
 
 		val first = objects.head
@@ -84,6 +84,39 @@ class ObjectControllerTest extends TestBase {
 
 		assert(firstId == secondId)
 		assert("2" == secondOrder)
+	}
+
+	test("test move not ordered") { f =>
+		implicit val driver = f.driver
+		f.driver.get(host + "/admin/object/moveDown/JakonUser/4?currentOrder=1")
+		checkSiteMessage("OBJECT_NOT_ORDERED")
+	}
+
+	test("delete item") { f =>
+		implicit val driver = f.driver
+		val url = host + "/admin/object/Page"
+		f.driver.get(url)
+		assert(checkPageLoad(f.driver))
+
+		val objects = getAdminTableRows()
+		assert(objects.nonEmpty)
+		val first = objects.head
+		val firstElements = first.findElements(By.cssSelector("td")).asScala
+		val firstId = firstElements.head.getText
+
+
+		f.driver.get(host + s"/admin/object/delete/Page/$firstId")
+		f.driver.get(url)
+		assert(checkPageLoad(f.driver))
+
+		val objects2 = findElements("#dataTables-example tbody tr")
+		assert(objects2.nonEmpty)
+
+		val second = objects2.head
+		val secondElements = second.findElements(By.cssSelector("td")).asScala
+		val secondId = secondElements.head.getText
+
+		assert(firstId != secondId)
 	}
 
 }

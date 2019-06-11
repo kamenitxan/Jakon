@@ -30,7 +30,16 @@ class TestBase extends fixture.FunSuite{
 		driver.findElements(By.cssSelector(selector)).get(0) != null
 	}
 
+	protected def checkSiteMessage(msgText: String)(implicit driver: WebDriver) = {
+		val msgs = driver.findElements(By.cssSelector("#jakon_messages .alert")).asScala.map(e => e.getText)
+		assert(msgs.contains(msgText))
+	}
+
 	protected def findElements(selector: String)(implicit driver: WebDriver) = {
 		driver.findElements(By.cssSelector(selector)).asScala
+	}
+
+	protected def getAdminTableRows()(implicit driver: WebDriver) = {
+		findElements("#dataTables-example tbody tr")
 	}
 }

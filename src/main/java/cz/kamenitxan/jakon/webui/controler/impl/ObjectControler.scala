@@ -220,8 +220,7 @@ object ObjectControler {
 		} else {
 			obj.create()
 		}
-		res.redirect("/admin/object/" + objectName)
-		new Context(Map[String, Any](), "objects/list")
+		redirect(req, res, "/admin/object/" + objectName)
 	}
 
 	def deleteItem(req: Request, res: Response): Context = {
@@ -260,16 +259,10 @@ object ObjectControler {
 		val objectId = req.params(":id").toOptInt
 		val order = req.queryParams("currentOrder").toOptInt
 
-		if (objectId.isEmpty || order.isEmpty) {
-			PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "EMPTY_ID")
-			res.redirect("/admin/object/" + objectName)
-			return null
-		}
 		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(objectName)).head
 		if (!objectClass.getInterfaces.contains(classOf[Ordered])) {
 			PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "OBJECT_NOT_ORDERED")
-			res.redirect("/admin/object/" + objectName)
-			return null
+			redirect(req, res, "/admin/object/" + objectName)
 		}
 
 
@@ -288,5 +281,11 @@ object ObjectControler {
 
 		res.redirect("/admin/object/" + objectName)
 		new Context(Map[String, Any](), "objects/list")
+	}
+
+	private def redirect(req: Request, res: Response, target: String): Context = {
+		req.session().attribute(PageContext.MESSAGES_KEY, PageContext.getInstance().messages)
+		res.redirect(target)
+		null
 	}
 }

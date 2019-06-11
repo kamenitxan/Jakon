@@ -3,7 +3,7 @@ package utils.mail
 import java.util.Date
 
 import cz.kamenitxan.jakon.core.model.JakonUser
-import cz.kamenitxan.jakon.utils.mail.EmailEntity
+import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailTemplateEntity}
 import cz.kamenitxan.jakon.webui.controler.impl.Authentication
 import org.scalatest.FunSuite
 
@@ -26,4 +26,16 @@ class EmailTest extends FunSuite {
 		e.sentDate = new Date()
 		e.update()
 	}
+
+	test("EmailTemplateEntity") {
+		val e = new EmailTemplateEntity()
+		e.name = "name"
+		e.from = "from"
+		e.subject = "subj"
+		e.template = "templ"
+		e.create()
+
+		e.update()
+	}
+
 }
