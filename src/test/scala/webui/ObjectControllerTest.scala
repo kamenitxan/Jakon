@@ -1,13 +1,10 @@
 package webui
 
-import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.model.Page
-import org.openqa.selenium.htmlunit.HtmlUnitDriver
 import org.openqa.selenium.{By, WebDriver}
-import org.scalatest.{Outcome, fixture}
-import scala.collection.JavaConverters._
-
 import test.TestBase
+
+import scala.collection.JavaConverters._
 
 /**
   * Created by TPa on 2019-03-19.
@@ -73,19 +70,20 @@ class ObjectControllerTest extends TestBase {
 
 
 		f.driver.get(host + s"/admin/object/moveDown/Page/$firstId?currentOrder=1")
+		f.driver.get(url)
 		assert(checkPageLoad(f.driver))
 
 
 		val objects2 = findElements("#dataTables-example tbody tr")
 		assert(objects2.nonEmpty)
 
-		val second = objects2.head
+		val second = objects2.tail.head
 		val secondElements = second.findElements(By.cssSelector("td")).asScala
 		val secondId = secondElements.head.getText
 		val secondOrder = secondElements.tail.head.getText
 
 		assert(firstId == secondId)
-		//assert("2" == secondOrder)
+		assert("2" == secondOrder)
 	}
 
 }

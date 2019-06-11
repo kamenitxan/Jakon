@@ -25,7 +25,7 @@ class Page(u: Unit = ()) extends JakonObject(classOf[Page].getName) with Ordered
 	@JakonField
 	var content: String = ""
 	@BeanProperty
-	@OneToOne
+	@ManyToOne
 	@JakonField(inputTemplate = "String")
 	var parent: Page = _
 	@BeanProperty

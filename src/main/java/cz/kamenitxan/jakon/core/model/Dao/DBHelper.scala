@@ -298,5 +298,12 @@ object DBHelper {
 		resultList
 	}
 
-
+	def withDbConnection[T](fun: Connection => T): T = {
+		val conn = DBHelper.getConnection
+		try {
+			fun.apply(conn)
+		} finally {
+			conn.close()
+		}
+	}
 }

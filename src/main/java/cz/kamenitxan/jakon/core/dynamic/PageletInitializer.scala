@@ -64,7 +64,7 @@ object PageletInitializer {
 		//TODO m.getReturnType.is
 		Spark.get(controllerAnn.path() + get.path(), (req, res) => {
 			val controller: AbstractPagelet = c.newInstance().asInstanceOf[AbstractPagelet]
-			withDbConnection(conn => {
+			DBHelper.withDbConnection(conn => {
 				val methodArgs = createMethodArgs(m, req, res, conn)
 				var context = m.invoke(controller, methodArgs.array:_*).asInstanceOf[mutable.Map[String, Any]]
 				if (notRedirected(res)) {
@@ -86,7 +86,7 @@ object PageletInitializer {
 		Spark.post(controllerAnn.path() + post.path(), (req, res) => {
 			val controller = c.newInstance().asInstanceOf[AbstractPagelet]
 
-			withDbConnection(conn => {
+			DBHelper.withDbConnection(conn => {
 				val methodArgs = createMethodArgs(m, req, res, conn)
 				if (methodArgs.data != null && "true".equals(req.queryParams(METHOD_VALDIATE))) {
 					// TODO share factory?
@@ -116,15 +116,6 @@ object PageletInitializer {
 			false
 		} else {
 			true
-		}
-	}
-
-	private def withDbConnection[T](fun: Connection => T): T = {
-		val conn = DBHelper.getConnection
-		try {
-			fun.apply(conn)
-		} finally {
-			conn.close()
 		}
 	}
 

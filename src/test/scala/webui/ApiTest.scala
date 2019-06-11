@@ -3,6 +3,7 @@ package webui
 import java.io.DataOutputStream
 import java.net.{HttpURLConnection, URL}
 
+import cz.kamenitxan.jakon.core.configuration.Settings
 import org.scalatest.FunSuite
 
 import scala.io.Source
@@ -14,7 +15,7 @@ class ApiTest extends FunSuite {
 
 
 	test("search") {
-		val url = "http://localhost:"  + 4567 + "/admin/api/search"
+		val url = "http://localhost:"  + Settings.getPort + "/admin/api/search"
 		val obj = new URL(url)
 		val con = obj.openConnection.asInstanceOf[HttpURLConnection]
 
@@ -34,7 +35,7 @@ class ApiTest extends FunSuite {
 	}
 
 	test("search by id") {
-		val url = "http://localhost:"  + 4567 + "/admin/api/search"
+		val url = "http://localhost:"  + Settings.getPort + "/admin/api/search"
 		val obj = new URL(url)
 		val con = obj.openConnection.asInstanceOf[HttpURLConnection]
 

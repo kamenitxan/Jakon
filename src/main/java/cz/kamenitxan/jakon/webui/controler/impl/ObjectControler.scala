@@ -62,7 +62,7 @@ object ObjectControler {
 				val resultList = DBHelper.selectDeep(stmt2, listSql, ocls)
 				// TODO: nacist foreign key objekty
 				val pageItems: List[JakonObject] = if (ocls.getInterfaces.contains(classOf[Ordered])) {
-					fetchVisibleOrder(resultList, ocls)
+					Ordered.fetchVisibleOrder(resultList, ocls)
 				} else {
 					resultList
 				}
@@ -155,7 +155,7 @@ object ObjectControler {
 				stmt.setInt(1, objectId.get)
 				obj = Option(DBHelper.selectSingle(stmt, objectClass).entity).getOrElse(objectClass.newInstance())
 				if (obj.getClass.getInterfaces.contains(classOf[Ordered])) {
-					fetchVisibleOrder(obj, objectClass)
+					obj.asInstanceOf[Ordered].fetchVisibleOrder
 				}
 			} finally {
 				conn.close()
@@ -211,12 +211,14 @@ object ObjectControler {
 				}
 			}
 		}
+
 		if (objectId.nonEmpty) {
-			obj = updateOrder(objectClass, obj, formOrder)
+			if (objectClass.getInterfaces.contains(classOf[Ordered])) {
+				obj = DBHelper.withDbConnection(implicit conn => obj.asInstanceOf[Ordered].updateOrder(formOrder))
+			}
 			obj.update()
 		} else {
-			val id = obj.create()
-			updateNewOrder(objectClass, obj, id)
+			obj.create()
 		}
 		res.redirect("/admin/object/" + objectName)
 		new Context(Map[String, Any](), "objects/list")
@@ -252,109 +254,33 @@ object ObjectControler {
 		}
 	}
 
-	private def fetchVisibleOrder(objects: List[JakonObject], objectClass: Class[_])(implicit conn: Connection): List[JakonObject] = {
-		val stmt = conn.createStatement()
-		val result = DBHelper.select(stmt, "SELECT id FROM " + objectClass.getSimpleName + " ORDER BY objectOrder ASC", classOf[BasicJakonObject])
-		var i = 0
-		val allObjects = result.map(qr => {
-			i += 1
-			(qr.entity.asInstanceOf[BasicJakonObject].id, i)
-		}).toMap
-		objects.foreach(o => o.asInstanceOf[JakonObject with Ordered].visibleOrder = allObjects(o.id))
-		objects
-	}
-
-	private def fetchVisibleOrder(obj: JakonObject, objectClass: Class[_])(implicit conn: Connection): JakonObject = {
-		fetchVisibleOrder(obj :: Nil, objectClass).head
-	}
-
-	private def updateNewOrder(objectClass: Class[_], obj: JakonObject, id: Int): Unit = {
-		if (!objectClass.getInterfaces.contains(classOf[Ordered])) {
-			return
-		}
-		val fieldRef: Field = Utils.getFieldsUpTo(objectClass, classOf[Object]).find(f => f.getName.equals("objectOrder")).get
-		fieldRef.setAccessible(true)
-
-		val conn = DBHelper.getConnection
-		val stmt = conn.createStatement()
-		val rs = stmt.executeQuery("SELECT objectOrder FROM " + objectClass.getSimpleName + " ORDER BY objectOrder DESC LIMIT 1")
-
-		if (rs.next()) {
-			val lastOrder = rs.getInt(1)
-			fieldRef.set(obj, lastOrder + 10)
-		} else {
-			fieldRef.set(obj, 10)
-		}
-		conn.close()
-		obj.update()
-	}
-
-	private def updateOrder(objectClass: Class[_], objs: JakonObject, formOrder: Int): JakonObject = {
-		if (!objectClass.getInterfaces.contains(classOf[Ordered])) {
-			return objs
-		}
-		val obj = objs.asInstanceOf[JakonObject with Ordered]
-		implicit val conn = DBHelper.getConnection
-		val stmt = conn.prepareStatement("SELECT id, objectOrder FROM " + objectClass.getSimpleName + " WHERE id = ?")
-		stmt.setInt(1, obj.id)
-		val persistedObj: JakonObject with Ordered = DBHelper.selectSingle(stmt, classOf[BasicJakonObject]).entity.asInstanceOf[JakonObject with Ordered]
-		fetchVisibleOrder(persistedObj, objectClass)
-		if (formOrder == persistedObj.visibleOrder) {
-
-			return obj
-		}
-		val stmt2 = conn.createStatement()
-		val queryResult: List[QueryResult] = DBHelper.select(stmt2, "SELECT id, objectOrder FROM " + objectClass.getSimpleName + " ORDER BY objectOrder ASC", classOf[BasicJakonObject])
-		val allObjects = queryResult.map(qr => {
-			qr.entity.asInstanceOf[JakonObject with Ordered]
-		}).filter(o => o.id != obj.id).toVector
-
-		conn.close()
-
-		val requiredOrder = if (formOrder < 0) 0 else if (formOrder > allObjects.size) allObjects.size else formOrder - 1
-		val earlier = if (allObjects.lift(requiredOrder - 1).isDefined && allObjects.lift(requiredOrder - 1).get.id != obj.id) {
-			allObjects.lift(requiredOrder - 1)
-		} else {
-			Option.empty
-		}
-		val latter = if (allObjects.lift(requiredOrder).isDefined && allObjects.lift(requiredOrder).get.id != obj.id) {
-			allObjects.lift(requiredOrder)
-		} else {
-			Option.empty
-		}
-
-		val resultPos = if (earlier.isDefined && latter.isDefined) {
-			(latter.get.objectOrder + earlier.get.objectOrder) / 2.0
-		} else if (earlier.isDefined && latter.isEmpty) {
-			earlier.get.objectOrder + 10
-		} else if (earlier.isEmpty && latter.isDefined) {
-			latter.get.objectOrder / 2
-		} else {
-			10
-		}
-		obj.objectOrder = resultPos
-		// TODO: po zmene pozice se ma do DB rovnou ulozit nova, aby se nemusel aktualizovat cely objekt
-		obj
-	}
 
 	def moveInList(req: Request, res: Response, up: Boolean): Context = {
 		val objectName = req.params(":name")
 		val objectId = req.params(":id").toOptInt
 		val order = req.queryParams("currentOrder").toOptInt
+
 		if (objectId.isEmpty || order.isEmpty) {
-			PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "EMPTY ID")
+			PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "EMPTY_ID")
 			res.redirect("/admin/object/" + objectName)
 			return null
 		}
 		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(objectName)).head
+		if (!objectClass.getInterfaces.contains(classOf[Ordered])) {
+			PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "OBJECT_NOT_ORDERED")
+			res.redirect("/admin/object/" + objectName)
+			return null
+		}
+
+
 		val newOrder = if (up) order.get - 1 else order.get + 1
 
 		implicit val conn = DBHelper.getConnection
 		try {
 			val ps = conn.prepareStatement("SELECT * FROM " + objectName + " WHERE id = ?")
 			ps.setInt(1, objectId.get)
-			val obj = DBHelper.selectSingleDeep(ps, objectClass)
-			updateOrder(objectClass, obj, newOrder)
+			val obj = DBHelper.selectSingleDeep(ps, objectClass).asInstanceOf[JakonObject with Ordered]
+			obj.updateOrder(newOrder)
 			obj.update()
 		} finally {
 			conn.close()

@@ -83,7 +83,6 @@ abstract class JakonObject(@JakonField var childClass: String) extends Serializa
 				throw new SQLNonTransientException(s"Child object id($id) is not same as parent id($jid)")
 			}
 			conn.commit()
-			jid
 		} catch {
 			case e: Exception => {
 				conn.rollback()
@@ -92,6 +91,11 @@ abstract class JakonObject(@JakonField var childClass: String) extends Serializa
 		} finally {
 			conn.close()
 		}
+		if (this.getClass.getInterfaces.contains(classOf[Ordered])) {
+			val  thisOrdered = DBHelper.withDbConnection(conn2 => this.asInstanceOf[JakonObject with Ordered].updateNewObjectOrder(conn2))
+			thisOrdered.update()
+		}
+		this.id
 	}
 
 	def createObject(jid: Int, conn: Connection): Int = {
