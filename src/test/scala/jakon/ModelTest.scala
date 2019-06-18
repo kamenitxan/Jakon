@@ -1,6 +1,6 @@
 package jakon
 
-import cz.kamenitxan.jakon.core.model.{Category, EmailConfirmation, Page}
+import cz.kamenitxan.jakon.core.model.{AclRule, BasicJakonObject, Category, EmailConfirmation, Page}
 import test.TestBase
 
 class ModelTest extends TestBase {
@@ -16,6 +16,8 @@ class ModelTest extends TestBase {
 		val id = page.create()
 		page.title = "Test"
 		page.update()
+
+		page.delete()
 	}
 
 	test("EmailConfirmation") { _=>
@@ -32,5 +34,24 @@ class ModelTest extends TestBase {
 		assert(order == entity.getObjectOrder)
 
 		assert(entity.toString != null)
+	}
+
+	test("JakonObject") { _ =>
+		val obj = new BasicJakonObject
+		obj.create()
+		obj.update()
+		assertNotEmpty(obj.toJson)
+		assertNotEmpty(obj.toString)
+		obj.setObjectOrder(2.0)
+		assert(2.0 == obj.getObjectOrder)
+	}
+
+	test("AclRule") { _ =>
+		val obj = new AclRule()
+		obj.name = "test"
+		obj.masterAdmin = false
+		obj.adminAllowed = false
+		obj.create()
+		obj.update()
 	}
 }

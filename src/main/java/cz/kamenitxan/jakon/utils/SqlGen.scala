@@ -15,7 +15,7 @@ import org.slf4j.{Logger, LoggerFactory}
 object SqlGen {
 	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
-	private def createSql(cls: Class[_ <: JakonObject], annotatedFields: Array[Field]): String = {
+	private def createSql(cls: Class[_ <: JakonObject], annotatedFields: List[Field]): String = {
 		val annotatedFields = getJakonFields(cls)
 		val sb = new StringBuilder
 		sb.append(s"INSERT INTO ${cls.getSimpleName} (id, ")
@@ -42,19 +42,19 @@ object SqlGen {
 	}
 
 	def insertStmt[T <: JakonObject](instance: T, conn: Connection, jid: Int): PreparedStatement = {
-		val annotatedFields: Array[Field] = getJakonFields(instance.getClass)
+		val annotatedFields = getJakonFields(instance.getClass)
 		val sql = createSql(instance.getClass, annotatedFields)
 		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
 
 		stmt.setInt(1, jid)
-		for ((field, i) <- annotatedFields.toSeq.view.zip(Stream.from(2))) {
+		for ((field, i) <- annotatedFields.view.zip(Stream.from(2))) {
 			setValue(stmt, field, i, instance)
 		}
 
 		stmt
 	}
 
-	private def updateSql(cls: Class[_ <: JakonObject], annotatedFields: Array[Field]): String = {
+	private def updateSql(cls: Class[_ <: JakonObject], annotatedFields: List[Field]): String = {
 		val sb = new StringBuilder
 		sb.append(s"UPDATE ${cls.getSimpleName} SET ")
 
@@ -78,11 +78,11 @@ object SqlGen {
 	}
 
 	def updateStmt[T <: JakonObject](instance: T, conn: Connection, jid: Int): PreparedStatement = {
-		val annotatedFields: Array[Field] = getJakonFields(instance.getClass)
+		val annotatedFields = getJakonFields(instance.getClass)
 		val sql = updateSql(instance.getClass, annotatedFields)
 		val stmt = conn.prepareStatement(sql)
 
-		for ((field, i) <- annotatedFields.toSeq.view.zip(Stream.from(1))) {
+		for ((field, i) <- annotatedFields.view.zip(Stream.from(1))) {
 			setValue(stmt, field, i, instance)
 		}
 		stmt.setInt(annotatedFields.length + 1, jid)
@@ -91,11 +91,12 @@ object SqlGen {
 	}
 
 
-	private def getJakonFields(cls: Class[_ <: JakonObject]): Array[Field] = {
-		cls.getDeclaredFields.filter(f => f.getAnnotations.exists(fa => fa.annotationType().getName == classOf[JakonField].getName))
+	private def getJakonFields(cls: Class[_ <: JakonObject]): List[Field] = {
+		val allFields = Utils.getFieldsUpTo(cls, classOf[JakonObject])
+		allFields.filter(f => f.getAnnotations.exists(fa => fa.annotationType().getName == classOf[JakonField].getName) && f.getName != "id")
 	}
 
-	private def setValue[T <: JakonObject](stmt: PreparedStatement, f: Field, i: Int, inst: T) = {
+	private def setValue[T <: JakonObject](stmt: PreparedStatement, f: Field, i: Int, inst: T): Unit = {
 		if (!f.isAccessible) f.setAccessible(true)
 
 		val value = f.get(inst)

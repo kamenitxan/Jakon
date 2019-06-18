@@ -109,23 +109,6 @@ object DBHelper {
 
 	def getDaoClasses: mutable.ArrayBuffer[Class[_ <: JakonObject]] = objects
 
-	/**
-	  * @param id      searched JakonObject id
-	  * @param refresh if true, object is queried from DB. not cache
-	  * @return JakonObject or null
-	  */
-	@deprecated def getObjectById(id: Integer, refresh: Boolean): JakonObject = {
-		throw new UnsupportedOperationException("Not implemented")
-	}
-
-	/**
-	  * @param id searched JakonObject id
-	  * @return JakonObject or null
-	  */
-	@deprecated def getObjectById(id: Integer): JakonObject = {
-		getObjectById(id, refresh = false)
-	}
-
 	def getConnection: Connection = {
 		//TODO: single conn for request
 		val conn = ds.getConnection

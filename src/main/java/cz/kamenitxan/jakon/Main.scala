@@ -18,7 +18,7 @@ object Main {
 
 	class JakonApp() extends JakonInit {
 
-		daoSetup = () => {
+		override def daoSetup() = {
 			DBHelper.addDao(classOf[Category])
 			DBHelper.addDao(classOf[Post])
 			DBHelper.addDao(classOf[Page])

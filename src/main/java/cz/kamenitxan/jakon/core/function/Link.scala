@@ -2,6 +2,7 @@ package cz.kamenitxan.jakon.core.function
 
 import java.util
 
+import cz.kamenitxan.jakon.core.model.BasicJakonObject
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 
 /**
@@ -16,7 +17,7 @@ class Link extends IFuncion {
 		if (objectId == null || text == null) {
 			throw new IllegalArgumentException("Invalid link parameters")
 		}
-		val jakonObject = DBHelper.getObjectById(objectId)
+		val jakonObject = new BasicJakonObject //TODO FIX
 		if (jakonObject == null) return ""
 		val sb = new StringBuilder
 		sb.append("<a href=\"")

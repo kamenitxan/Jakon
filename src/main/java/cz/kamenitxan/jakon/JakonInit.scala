@@ -26,10 +26,7 @@ class JakonInit {
 	private val logger = LoggerFactory.getLogger(this.getClass)
 
 
-	var daoSetup: () => Unit = () => {
-		//DBHelper.addDao(classOf[Post])
-		//DBHelper.addDao(classOf[Page])
-		//DBHelper.addDao(classOf[Category])
+	def daoSetup(): Unit = {
 	}
 
 	var routesSetup: () => Unit = () => {}

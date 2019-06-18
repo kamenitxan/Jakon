@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon.core.model
 
-import java.sql.Connection
+import java.sql.{Connection, Statement, Types}
 
 import cz.kamenitxan.jakon.webui.ObjectSettings
 
@@ -11,9 +11,14 @@ class BasicJakonObject extends JakonObject(classOf[BasicJakonObject].getName) wi
 
 	override val objectSettings: ObjectSettings = new ObjectSettings()
 
-	override def createObject(jid: Int, conn: Connection): Int = ???
+	override def createObject(jid: Int, conn: Connection): Int = {
+		val sql = "INSERT INTO BasicJakonObject (id) VALUES (?)"
+		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+		stmt.setInt(1, jid)
+		executeInsert(stmt)
+	}
 
-	override def updateObject(jid: Int, conn: Connection): Unit = ???
+	override def updateObject(jid: Int, conn: Connection): Unit = {}
 
 	override var visibleOrder: Int = _
 	override var objectOrder: Double = _
