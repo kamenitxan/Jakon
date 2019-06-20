@@ -160,6 +160,8 @@ object Settings {
 
 	def setDeployMode(deployMode: String): Unit = this.deployMode = DeployMode.valueOf(deployMode)
 
+	def setDeployMode(deployMode: DeployMode): Unit = this.deployMode = deployMode
+
 	def getDeployType: String = deployType
 
 	def getEmailTypeHandler: EmailTypeHandler = emailTypeHandler

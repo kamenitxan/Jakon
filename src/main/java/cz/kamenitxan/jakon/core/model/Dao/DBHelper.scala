@@ -237,6 +237,22 @@ object DBHelper {
 		res
 	}
 
+	def selectSingleDeep[T <: JakonObject](stmt: Statement, sql: String, cls: Class[T])(implicit conn: Connection): T = {
+		val res = selectSingle(stmt, sql, cls)
+		if (res.foreignIds != null && res.foreignIds.nonEmpty) {
+			res.foreignIds.values.foreach(fki => {
+				val cls = fki.field.getType
+				val sql = "SELECT * FROM " + cls.getSimpleName + " WHERE id = ?"
+				val stmt = conn.prepareStatement(sql)
+				stmt.setInt(1, fki.id)
+				val r = selectSingleDeep(stmt, cls.asInstanceOf[Class[JakonObject]])
+				stmt.close()
+				fki.field.set(res.entity, r)
+			})
+		}
+		res.entity.asInstanceOf[T]
+	}
+
 	def selectSingleDeep[T <: JakonObject](stmt: PreparedStatement, cls: Class[T])(implicit conn: Connection): T = {
 		val res = selectSingle(stmt, cls)
 		if (res.foreignIds != null && res.foreignIds.nonEmpty) {

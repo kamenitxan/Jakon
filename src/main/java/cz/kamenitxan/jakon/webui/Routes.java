@@ -3,7 +3,9 @@ package cz.kamenitxan.jakon.webui;
 import com.google.gson.Gson;
 import cz.kamenitxan.jakon.core.configuration.DeployMode;
 import cz.kamenitxan.jakon.core.configuration.Settings;
+import cz.kamenitxan.jakon.core.model.Dao.DBHelper;
 import cz.kamenitxan.jakon.core.model.JakonUser;
+import cz.kamenitxan.jakon.core.model.service.UserService;
 import cz.kamenitxan.jakon.webui.api.Api;
 import cz.kamenitxan.jakon.webui.controler.AbstractController;
 import cz.kamenitxan.jakon.webui.controler.ExecuteFun;
@@ -16,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import spark.TemplateEngine;
 
 import java.lang.reflect.Method;
+import java.sql.Connection;
 
 import static spark.Spark.*;
 
@@ -38,21 +41,29 @@ public class Routes {
 		}));
 		before("/admin", (request, response) -> {
 			JakonUser user = request.session().attribute("user");
-			if (request.session().attribute("user") != null && (user.acl().adminAllowed() || user.acl().masterAdmin())) {
+			if (Settings.getDeployMode() == DeployMode.PRODUCTION
+					&& request.session().attribute("user") != null
+					&& (user.acl().adminAllowed() || user.acl().masterAdmin())) {
 				response.redirect("/admin/index", 302);
 			}
 		});
-		before("/admin/*", (request, response) -> {
-			if (Settings.getDeployMode() == DeployMode.DEVEL
-					|| request.pathInfo().equals("/admin/register")
-					|| request.pathInfo().equals("/admin/logout")
-					|| request.pathInfo().equals("/admin/login")
-					|| request.pathInfo().startsWith("/admin/login/oauth")) {
+		before("/admin/*", (req, res) -> {
+			if (req.pathInfo().equals("/admin/register")
+					|| req.pathInfo().equals("/admin/logout")
+					|| req.pathInfo().equals("/admin/login")
+					|| req.pathInfo().startsWith("/admin/login/oauth")) {
 				return;
 			}
-			JakonUser user = request.session().attribute("user");
+			JakonUser user = req.session().attribute("user");
+			if (Settings.getDeployMode() == DeployMode.DEVEL || user == null) {
+				try (Connection conn = DBHelper.getConnection()) {
+					user = UserService.getMasterAdmin(conn);
+					req.session(true).attribute("user", user);
+				}
+			}
+
 			if (user == null || !user.acl().adminAllowed() && !user.acl().masterAdmin()) {
-				response.redirect("/admin", 302);
+				res.redirect("/admin", 302);
 			}
 		});
 
@@ -81,30 +92,9 @@ public class Routes {
 
 				get("/:method", FileManagerControler::executeGet);
 				post("/:method", FileManagerControler::executePost);
-
-			/*post("/listUrl", FileManagerControler::getManager, te);
-			post("/uploadUrl", FileManagerControler::getManager, te);
-			post("/renameUrl", FileManagerControler::getManager, te);
-			post("/copyUrl", FileManagerControler::getManager, te);
-			post("/moveUrl", FileManagerControler::getManager, te);
-			post("/removeUrl", FileManagerControler::getManager, te);
-			post("/editUrl", FileManagerControler::getManager, te);
-			post("/getContentUrl", FileManagerControler::getManager, te);
-			post("/createFolderUrl", FileManagerControler::getManager, te);
-			post("/downloadFileUrl", FileManagerControler::getManager, te);
-			post("/downloadMultipleUrl", FileManagerControler::getManager, te);
-			post("/compressUrl", FileManagerControler::getManager, te);
-			post("/extractUrl", FileManagerControler::getManager, te);
-			post("/permissionsUrl", FileManagerControler::getManager, te);
-			post("/basePath", FileManagerControler::getManager, te);*/
 			});
 		}
-		/*if (AdminSettings.enableDeploy()) {
-			path("/admin/deploy", () -> {
-				//get("/", DeployControler::getOverview, te);
-				//get("/start", DeployControler::deploy, te);
-			});
-		}*/
+
 
 		path("/admin/api", () -> {
 			post("/search", Api::search, gson::toJson);

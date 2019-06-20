@@ -38,9 +38,7 @@ class ModelTest extends TestBase {
 
 	test("JakonObject") { _ =>
 		val obj = new BasicJakonObject
-		obj.create()
-		obj.update()
-		assertNotEmpty(obj.toJson)
+		//assertNotEmpty(obj.toJson)
 		assertNotEmpty(obj.toString)
 		obj.setObjectOrder(2.0)
 		assert(2.0 == obj.getObjectOrder)

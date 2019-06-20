@@ -11,12 +11,7 @@ class BasicJakonObject extends JakonObject(classOf[BasicJakonObject].getName) wi
 
 	override val objectSettings: ObjectSettings = new ObjectSettings()
 
-	override def createObject(jid: Int, conn: Connection): Int = {
-		val sql = "INSERT INTO BasicJakonObject (id) VALUES (?)"
-		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
-		stmt.setInt(1, jid)
-		executeInsert(stmt)
-	}
+	override def createObject(jid: Int, conn: Connection): Int = { jid }
 
 	override def updateObject(jid: Int, conn: Connection): Unit = {}
 

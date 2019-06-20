@@ -1,5 +1,6 @@
 package webui
 
+import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.model.Page
 import org.openqa.selenium.{By, WebDriver}
 import test.TestBase
@@ -26,6 +27,8 @@ class ObjectControllerTest extends TestBase {
 		submit.click()
 
 		assert(f.driver.getPageSource.contains("Na váš email byl odeslán email pro změnu hesla"))
+
+
 	}
 
 
@@ -33,6 +36,12 @@ class ObjectControllerTest extends TestBase {
 	test("user settings") { f =>
 		val url = host + "/admin/profile"
 		f.driver.get(url)
+
+		assert(checkPageLoad(f.driver))
+		assert(f.driver.getPageSource.contains("admin"))
+
+		val submit = f.driver.findElement(By.cssSelector(".btn.btn-primary"))
+		submit.click()
 
 		assert(checkPageLoad(f.driver))
 		assert(f.driver.getPageSource.contains("admin"))

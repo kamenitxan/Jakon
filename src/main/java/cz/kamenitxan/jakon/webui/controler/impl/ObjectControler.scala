@@ -246,7 +246,7 @@ object ObjectControler {
 
 	private def isAuthorized(objectClass: Class[_]): Boolean = {
 		val user = PageContext.getInstance().getLoggedUser
-		if (user.isEmpty || user.get.acl.masterAdmin) {
+		if (user.get.acl.masterAdmin) {
 			true
 		} else {
 			user.get.acl.allowedControllers.contains(objectClass.getCanonicalName)
