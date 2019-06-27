@@ -20,7 +20,7 @@ class LinkFun extends Function {
 			if (jo == null) {
 				return ""
 			}
-			"<a href=\"" + jo.getUrl + ".html\">" + jo.getUrl + "</a>"
+			"<a href=\"" + jo.createUrl + ".html\">" + jo.createUrl + "</a>"
 		} finally {
 			conn.close()
 		}

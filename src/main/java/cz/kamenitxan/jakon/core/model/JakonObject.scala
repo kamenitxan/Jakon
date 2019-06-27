@@ -36,9 +36,7 @@ abstract class JakonObject(@JakonField var childClass: String) extends Serializa
 
 	def getObjectSettings: ObjectSettings = objectSettings
 
-	def setUrl(url: String): Unit = this.url = url
-
-	def getUrl: String = url
+	def createUrl: String = url
 
 
 	def executeInsert(stmt: PreparedStatement): Int = {
@@ -72,6 +70,7 @@ abstract class JakonObject(@JakonField var childClass: String) extends Serializa
 		try {
 			val joSQL = "INSERT INTO JakonObject (url, sectionName, published, childClass) VALUES (?, ?, ?, ?)"
 			val stmt = conn.prepareStatement(joSQL, Statement.RETURN_GENERATED_KEYS)
+			url = createUrl
 			stmt.setString(1, url)
 			stmt.setString(2, sectionName)
 			stmt.setBoolean(3, published)

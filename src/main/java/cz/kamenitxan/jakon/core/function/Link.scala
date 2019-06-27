@@ -17,16 +17,27 @@ class Link extends IFuncion {
 		if (objectId == null || text == null) {
 			throw new IllegalArgumentException("Invalid link parameters")
 		}
-		val jakonObject = new BasicJakonObject //TODO FIX
-		if (jakonObject == null) return ""
-		val sb = new StringBuilder
-		sb.append("<a href=\"")
-		sb.append(jakonObject.getUrl)
-		sb.append("\" ")
-		if (target != null) {
-			sb.append("target=\"").append(target).append("\" ")
+
+		val conn = DBHelper.getConnection
+		try {
+			val stmt = conn.prepareStatement("SELECT id, url FROM JakonObject WHERE id = ?")
+			stmt.setInt(1, objectId)
+			val qr = DBHelper.selectSingle(stmt, classOf[BasicJakonObject])
+			if (qr.entity == null) {
+				return ""
+			}
+			val jakonObject = qr.entity
+			val sb = new StringBuilder
+			sb.append("<a href=\"")
+			sb.append(jakonObject.url)
+			sb.append("\" ")
+			if (target != null) {
+				sb.append("target=\"").append(target).append("\" ")
+			}
+			sb.append(">").append(text).append("</a>")
+			sb.toString
+		} finally {
+			conn.close()
 		}
-		sb.append(">").append(text).append("</a>")
-		sb.toString
 	}
 }

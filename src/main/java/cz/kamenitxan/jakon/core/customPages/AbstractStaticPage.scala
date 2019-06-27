@@ -5,8 +5,8 @@ import cz.kamenitxan.jakon.webui.ObjectSettings
 /**
   * Created by TPa on 13.08.16.
   */
-abstract class AbstractStaticPage(val templateName: String, url: String) extends AbstractCustomPage {
-	super.setUrl(url)
+abstract class AbstractStaticPage(val templateName: String, pageUrl: String) extends AbstractCustomPage {
+	this.url = pageUrl
 
 
 	override def generate() {

@@ -12,7 +12,7 @@ import functions.LinkTest
 import jakon.{ModelTest, RenderTest, SettingsTest}
 import org.scalatest.{BeforeAndAfterAll, Suites}
 import utils.mail.EmailTest
-import utils.{SecurityTest, SqlGenTest, UtilsTest}
+import utils.{SecurityTest, SqlGenTest, UtilsTest, i18nUtilTest}
 import webui._
 
 /**
@@ -33,7 +33,8 @@ class TestRunner extends Suites(
 	new SqlGenTest,
 	new ModelTest,
 	new FieldConformerTest,
-	new SettingsTest
+	new SettingsTest,
+	new i18nUtilTest
 ) with BeforeAndAfterAll {
 
 	override def beforeAll() {
@@ -58,7 +59,6 @@ class TestRunner extends Suites(
 		val page = new Page
 		page.title = "test page 1"
 		page.content = "test content"
-		page.setUrl("/page/testpage1")
 		page.create()
 
 		Thread.sleep(1000)

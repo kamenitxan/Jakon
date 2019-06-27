@@ -13,7 +13,7 @@ import cz.kamenitxan.jakon.core.template.{TemplateEngine, TemplateUtils}
 class PageControler extends IControler {
 	val template = "page"
 
-	val ALL_PAGES_SQL = "SELECT * FROM Page"
+	val ALL_PAGES_SQL = "SELECT * FROM Page JOIN JakonObject ON Page.id = JakonObject.id"
 
 	def generate() {
 		val e: TemplateEngine = TemplateUtils.getEngine
@@ -24,7 +24,7 @@ class PageControler extends IControler {
 			pages.foreach(p => {
 				val context = new util.HashMap[String, AnyRef]
 				context.put("page", p)
-				e.render(template, p.getUrl, context)
+				e.render(template, p.url, context)
 			})
 		} catch {
 			case ex: SQLException => ex.printStackTrace()

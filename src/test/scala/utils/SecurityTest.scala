@@ -1,6 +1,7 @@
 package utils
 
 import cz.kamenitxan.jakon.utils.security.AesEncryptor
+import cz.kamenitxan.jakon.utils.security.oauth.OauthProvider
 import test.TestBase
 
 class SecurityTest extends TestBase {
@@ -12,9 +13,14 @@ class SecurityTest extends TestBase {
 		assert(toenc == dec)
 	}
 
+	test("OauthProvider") { f =>
+	    assert("redirectTo" == OauthProvider.REDIRECT_TO)
+	}
+
 	test("Google") { f =>
 		implicit val driver = f.driver
 		f.driver.get(host + admin + "login/oauth?provider=Google$")
 		checkPageLoad(".panel-title")
 	}
+
 }

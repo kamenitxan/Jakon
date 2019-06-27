@@ -47,7 +47,7 @@ class Pebble extends TemplateEngine {
 		renderString(templateName, mapAsJavaMap(context))
 	}
 
-	def renderString(templateName: String, context: util.Map[String, AnyRef]): String = {
+	private def renderString(templateName: String, context: util.Map[String, AnyRef]): String = {
 		var compiledTemplate: PebbleTemplate = null
 		try {
 			compiledTemplate = engine.getTemplate(templateName)

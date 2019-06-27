@@ -61,7 +61,7 @@ class Page(u: Unit = ()) extends JakonObject(classOf[Page].getName) with Ordered
 		result.toString
 	}
 
-	override def getUrl: String = "/page/" + title.replaceAll(" ", "_").toLowerCase
+	override def createUrl: String = "/page/" + title.replaceAll(" ", "_").toLowerCase
 
 
 	override def createObject(jid: Int, conn: Connection): Int = {
