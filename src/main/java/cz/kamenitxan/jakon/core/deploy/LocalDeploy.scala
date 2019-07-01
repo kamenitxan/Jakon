@@ -2,7 +2,7 @@ package cz.kamenitxan.jakon.core.deploy
 
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.deploy.entity.Server
-import cz.kamenitxan.jakon.core.template.TemplateUtils
+import cz.kamenitxan.jakon.core.template.utils.TemplateUtils
 
 class LocalDeploy extends IDeploy {
 	override def deploy(server: Server): Unit = {

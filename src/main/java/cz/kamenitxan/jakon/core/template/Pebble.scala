@@ -10,6 +10,7 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.controler.IControler
 import cz.kamenitxan.jakon.core.template.pebble.PebbleExtension
+import cz.kamenitxan.jakon.core.template.utils.TemplateUtils
 import cz.kamenitxan.jakon.devtools.DevRender
 import cz.kamenitxan.jakon.webui.util.JakonFileLoader
 

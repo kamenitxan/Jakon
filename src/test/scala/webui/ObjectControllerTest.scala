@@ -1,6 +1,5 @@
 package webui
 
-import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.model.Page
 import org.openqa.selenium.{By, WebDriver}
 import test.TestBase

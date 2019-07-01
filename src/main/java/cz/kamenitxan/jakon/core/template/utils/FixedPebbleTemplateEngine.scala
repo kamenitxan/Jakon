@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.core.template
+package cz.kamenitxan.jakon.core.template.utils
 
 import java.io.{IOException, StringWriter}
 import java.util

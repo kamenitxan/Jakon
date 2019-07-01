@@ -8,10 +8,9 @@ import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
 import cz.kamenitxan.jakon.core.model._
 import cz.kamenitxan.jakon.core.model.converters.AbstractConverter
-import cz.kamenitxan.jakon.utils.SqlGen.logger
+import cz.kamenitxan.jakon.utils.TypeReferences._
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.entity.JakonField
-import cz.kamenitxan.jakon.utils.TypeReferences._
 import javax.persistence.{Column, ManyToOne}
 import org.slf4j.{Logger, LoggerFactory}
 
@@ -92,7 +91,7 @@ object DBHelper {
 	def checkDbConsistency(): Unit = {
 		val conn = getConnection
 		try {
-			if (Settings.getDatabaseType == DatabaseType.MYSQL){
+			if (Settings.getDatabaseType == DatabaseType.MYSQL) {
 				val characterSetSql = "SELECT @@character_set_database;"
 				val stmt = conn.createStatement()
 				val characterSet = stmt.executeQuery(characterSetSql)
@@ -162,7 +161,7 @@ object DBHelper {
 				val field = fieldRef.get
 				field.setAccessible(true)
 				val columnAnn = field.getAnnotation(classOf[Column])
-				if (columnAnn != null && columnAnn.name() != null && !columnAnn.name().isEmpty ){
+				if (columnAnn != null && columnAnn.name() != null && !columnAnn.name().isEmpty) {
 					columnName = columnAnn.name()
 				}
 				field.getType match {
@@ -232,7 +231,11 @@ object DBHelper {
 
 	def selectSingle(stmt: Statement, sql: String, cls: Class[_ <: JakonObject]): QueryResult = {
 		val rs = execute(stmt, sql)
-		val res = createJakonObject(rs, cls)
+		val res = if (rs.next()) {
+			createJakonObject(rs, cls)
+		} else {
+			new QueryResult(null, null)
+		}
 		stmt.close()
 		res
 	}

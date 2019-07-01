@@ -2,7 +2,8 @@ package cz.kamenitxan.jakon.core.configuration
 
 import java.util._
 
-import cz.kamenitxan.jakon.core.template.{FixedPebbleTemplateEngine, Pebble, TemplateEngine}
+import cz.kamenitxan.jakon.core.template.utils.FixedPebbleTemplateEngine
+import cz.kamenitxan.jakon.core.template.{Pebble, TemplateEngine}
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.utils.mail.EmailTypeHandler
 import cz.kamenitxan.jakon.webui.util.JakonFileLoader

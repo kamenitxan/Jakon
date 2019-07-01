@@ -37,20 +37,19 @@ class Context(var model: Map[String, Any], viewName: String) extends ModelAndVie
 }
 
 object Context {
+	lazy val objectSettings = DBHelper.getDaoClasses.map(o => (o.getSimpleName, o.newInstance().getObjectSettings)).toMap.asJava
+
 	def getAdminContext: Map[String, Any] = {
 		val user = PageContext.getInstance().getLoggedUser
-		var modelClasses: List[String] = null
-		if (user.nonEmpty && !user.get.acl.masterAdmin) {
-			modelClasses = DBHelper.getDaoClasses
-			  .filter(c => user.get.acl.masterAdmin || user.get.acl.allowedControllers.contains(c.getCanonicalName))
-			  .map(_.getSimpleName).toList
-		} else {
-			modelClasses = DBHelper.getDaoClasses
-			  .map(_.getSimpleName).toList
-		}
+		val allModelClasses = DBHelper.getDaoClasses
+		  .filter(c => user.nonEmpty && (user.get.acl.masterAdmin || user.get.acl.allowedControllers.contains(c.getCanonicalName)))
+		  .groupBy(c => c.getPackage.getName.startsWith("cz.kamenitxan.jakon"))
+  		.mapValues(cl => cl.map(c => c.getSimpleName).asJavaCollection)
+
 		val context = Map[String, Any](
 			"user" -> user.orNull,
-			"modelClasses" -> modelClasses.asJavaCollection,
+			"modelClasses" -> allModelClasses.getOrElse(false, new java.util.ArrayList[String]()),
+			"jakonModelClasses" -> allModelClasses.getOrElse(true, new java.util.ArrayList[String]()),
 			"objectSettings" -> DBHelper.getDaoClasses.map(o => (o.getSimpleName, o.newInstance().getObjectSettings)).toMap.asJava,
 			"enableFiles" -> AdminSettings.enableFiles,
 			"customControllers" -> AdminSettings.customControllersInfo.asJava,

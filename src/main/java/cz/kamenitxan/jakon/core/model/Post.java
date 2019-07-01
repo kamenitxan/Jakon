@@ -1,15 +1,12 @@
 package cz.kamenitxan.jakon.core.model;
 
 import cz.kamenitxan.jakon.core.function.FunctionHelper;
-import cz.kamenitxan.jakon.core.template.TemplateUtils;
+import cz.kamenitxan.jakon.core.template.utils.TemplateUtils;
 import cz.kamenitxan.jakon.webui.ObjectSettings;
 import cz.kamenitxan.jakon.webui.entity.JakonField;
-import scala.NotImplementedError;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-import java.sql.Connection;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

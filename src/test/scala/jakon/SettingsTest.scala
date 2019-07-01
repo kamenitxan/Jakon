@@ -1,7 +1,7 @@
 package jakon
 
 import cz.kamenitxan.jakon.core.configuration.Settings
-import cz.kamenitxan.jakon.core.template.FixedPebbleTemplateEngine
+import cz.kamenitxan.jakon.core.template.utils.FixedPebbleTemplateEngine
 import cz.kamenitxan.jakon.webui.util.JakonFileLoader
 import test.{TestBase, TestEmailTypeHandler}
 

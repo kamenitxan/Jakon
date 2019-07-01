@@ -8,7 +8,8 @@ import cz.kamenitxan.jakon.core.customPages.AbstractCustomPage
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
 import cz.kamenitxan.jakon.core.task.TaskRunner
-import cz.kamenitxan.jakon.core.template.{Pebble, TemplateUtils}
+import cz.kamenitxan.jakon.core.template.Pebble
+import cz.kamenitxan.jakon.core.template.utils.TemplateUtils
 import cz.kamenitxan.jakon.utils.mail.EmailTemplateEntity
 import cz.kamenitxan.jakon.webui.Routes
 import org.slf4j.{Logger, LoggerFactory}
