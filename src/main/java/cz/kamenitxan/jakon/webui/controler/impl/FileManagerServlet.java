@@ -226,7 +226,7 @@ public class FileManagerServlet extends HttpServlet {
 
 	}
 
-	private void uploadFile(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	void uploadFile(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		// URL: $config.uploadUrl, Method: POST, Content-Type: multipart/form-data
 		// Unlimited file upload, each item will be enumerated as file-1, file-2, etc.
 		// [$config.uploadUrl]?destination=/public_html/image.jpg&file-1={..}&file-2={...}
@@ -306,9 +306,6 @@ public class FileManagerServlet extends HttpServlet {
 			JSONObject params = JSONValue.parse(sb.toString(), JSONObject.class);
 			Mode mode = Mode.valueOf(params.getAsString("action"));
 			switch (mode) {
-				case createFolder:
-					responseJsonObject = isSupportFeature(mode) ? createFolder(params) : notSupportFeature(mode);
-					break;
 				case changePermissions:
 					responseJsonObject = isSupportFeature(mode) ? changePermissions(params) : notSupportFeature(mode);
 					break;
@@ -329,9 +326,6 @@ public class FileManagerServlet extends HttpServlet {
 					break;
 				case extract:
 					responseJsonObject = isSupportFeature(mode) ? extract(params) : notSupportFeature(mode);
-					break;
-				case list:
-					responseJsonObject = list(params);
 					break;
 				case rename:
 					responseJsonObject = isSupportFeature(mode) ? rename(params) : notSupportFeature(mode);
@@ -354,43 +348,7 @@ public class FileManagerServlet extends HttpServlet {
 		out.flush();
 	}
 
-	private JSONObject list(JSONObject params) {
-		try {
-			boolean onlyFolders = "true".equalsIgnoreCase(params.getAsString("onlyFolders"));
-			String path = params.getAsString("path");
-			LOG.debug("list path: Paths.get('{}', '{}'), onlyFolders: {}", REPOSITORY_BASE_PATH, path, onlyFolders);
-
-			List<JSONObject> resultList = new ArrayList<>();
-			try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(REPOSITORY_BASE_PATH, path))) {
-				SimpleDateFormat dt = new SimpleDateFormat(DATE_FORMAT);
-				// Calendar cal = Calendar.getInstance();
-				for (Path pathObj : directoryStream) {
-					BasicFileAttributes attrs = Files.readAttributes(pathObj, BasicFileAttributes.class);
-
-					if (onlyFolders && !attrs.isDirectory()) {
-						continue;
-					}
-					JSONObject el = new JSONObject();
-					el.put("name", pathObj.getFileName().toString());
-					el.put("rights", getPermissions(pathObj));
-					el.put("date", dt.format(new Date(attrs.lastModifiedTime().toMillis())));
-					el.put("size", attrs.size());
-					el.put("type", attrs.isDirectory() ? "dir" : "file");
-					resultList.add(el);
-				}
-			} catch (IOException ex) {
-				LOG.error("Error while listing files", ex);
-			}
-			JSONObject json = new JSONObject();
-			json.put("result", resultList);
-			return json;
-		} catch (Exception e) {
-			LOG.error("list:" + e.getMessage(), e);
-			return error(e.getMessage());
-		}
-	}
-
-	private JSONObject move(JSONObject params) {
+	JSONObject move(JSONObject params) {
 		try {
 			//TODO: minidev json should be rewrited to gson
 			JSONArray paths = ((JSONArray) params.get("items"));
@@ -415,7 +373,7 @@ public class FileManagerServlet extends HttpServlet {
 		}
 	}
 
-	private JSONObject rename(JSONObject params) {
+	JSONObject rename(JSONObject params) {
 		try {
 			String path = params.getAsString("item");
 			String newpath = params.getAsString("newItemPath");
@@ -435,7 +393,7 @@ public class FileManagerServlet extends HttpServlet {
 		}
 	}
 
-	private JSONObject copy(JSONObject params) {
+	JSONObject copy(JSONObject params) {
 		try {
 			JSONArray paths = ((JSONArray) params.get("items"));
 			Path newpath = Paths.get(REPOSITORY_BASE_PATH, params.getAsString("newPath"));
@@ -462,7 +420,7 @@ public class FileManagerServlet extends HttpServlet {
 		}
 	}
 
-	private JSONObject remove(JSONObject params) throws ServletException {
+	JSONObject remove(JSONObject params) throws ServletException {
 		JSONArray paths = ((JSONArray) params.get("items"));
 		StringBuilder error = new StringBuilder();
 		StringBuilder success = new StringBuilder();
@@ -487,7 +445,7 @@ public class FileManagerServlet extends HttpServlet {
 		}
 	}
 
-	private JSONObject getContent(JSONObject params) {
+	JSONObject getContent(JSONObject params) {
 		try {
 			JSONObject json = new JSONObject();
 			json.put("result", FileUtils.readFileToString(Paths.get(REPOSITORY_BASE_PATH,
@@ -499,7 +457,7 @@ public class FileManagerServlet extends HttpServlet {
 		}
 	}
 
-	private JSONObject editFile(JSONObject params) {
+	JSONObject editFile(JSONObject params) {
 		// get content
 		try {
 			String path = params.getAsString("item");
@@ -515,21 +473,7 @@ public class FileManagerServlet extends HttpServlet {
 		}
 	}
 
-	private JSONObject createFolder(JSONObject params) {
-		try {
-			Path path = Paths.get(REPOSITORY_BASE_PATH, params.getAsString("newPath"));
-			LOG.debug("createFolder path: {} name: {}", path);
-			Files.createDirectories(path);
-			return success(params);
-		} catch (FileAlreadyExistsException ex) {
-			return success(params);
-		} catch (IOException e) {
-			LOG.error("createFolder:" + e.getMessage(), e);
-			return error(e.getMessage());
-		}
-	}
-
-	private JSONObject changePermissions(JSONObject params) {
+	JSONObject changePermissions(JSONObject params) {
 		try {
 			JSONArray paths = ((JSONArray) params.get("items"));
 			String perms = params.getAsString("perms"); // "rw-r-x-wx"
@@ -547,7 +491,7 @@ public class FileManagerServlet extends HttpServlet {
 		}
 	}
 
-	private JSONObject compress(JSONObject params) {
+	JSONObject compress(JSONObject params) {
 		try {
 			JSONArray paths = ((JSONArray) params.get("items"));
 			String paramDest = params.getAsString("destination");
@@ -603,7 +547,7 @@ public class FileManagerServlet extends HttpServlet {
 		}
 	}
 
-	private JSONObject extract(JSONObject params) {
+	JSONObject extract(JSONObject params) {
 		boolean genFolder = false;
 		Path dest = Paths.get(REPOSITORY_BASE_PATH, params.getAsString("destination"));
 		final Path folder = dest.resolve(params.getAsString("folderName"));
@@ -653,7 +597,7 @@ public class FileManagerServlet extends HttpServlet {
 		}
 	}
 
-	private String getPermissions(Path path) throws IOException {
+	String getPermissions(Path path) throws IOException {
 		// http://www.programcreek.com/java-api-examples/index.php?api=java.nio.file.attribute.PosixFileAttributes
 		PosixFileAttributeView fileAttributeView = Files.getFileAttributeView(path, PosixFileAttributeView.class);
 		PosixFileAttributes readAttributes = fileAttributeView.readAttributes();
@@ -661,7 +605,7 @@ public class FileManagerServlet extends HttpServlet {
 		return PosixFilePermissions.toString(permissions);
 	}
 
-	private String setPermissions(File file, String permsCode, boolean recursive) throws IOException {
+	String setPermissions(File file, String permsCode, boolean recursive) throws IOException {
 		// http://www.programcreek.com/java-api-examples/index.php?api=java.nio.file.attribute.PosixFileAttributes
 		PosixFileAttributeView fileAttributeView = Files.getFileAttributeView(file.toPath(), PosixFileAttributeView.class);
 		fileAttributeView.setPermissions(PosixFilePermissions.fromString(permsCode));

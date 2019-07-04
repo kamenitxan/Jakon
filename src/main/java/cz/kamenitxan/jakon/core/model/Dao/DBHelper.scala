@@ -27,6 +27,7 @@ object DBHelper {
 
 	addDao(classOf[AclRule])
 	addDao(classOf[JakonUser])
+	addDao(classOf[KeyValueEntity])
 
 	val config = new HikariConfig
 	config.setJdbcUrl(Settings.getDatabaseConnPath)
@@ -253,7 +254,7 @@ object DBHelper {
 				fki.field.set(res.entity, r)
 			})
 		}
-		res.entity.asInstanceOf[T]
+		res.entity
 	}
 
 	def selectSingleDeep[T <: JakonObject](stmt: PreparedStatement, cls: Class[T])(implicit conn: Connection): T = {
@@ -269,7 +270,7 @@ object DBHelper {
 				fki.field.set(res.entity, r)
 			})
 		}
-		res.entity.asInstanceOf[T]
+		res.entity
 	}
 
 	def selectDeep[T <: JakonObject](stmt: Statement, sql: String, cls: Class[T])(implicit conn: Connection): List[T] = {

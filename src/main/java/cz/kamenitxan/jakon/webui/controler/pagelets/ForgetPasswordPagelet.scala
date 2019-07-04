@@ -56,7 +56,7 @@ class ForgetPasswordPagelet extends AbstractAdminPagelet {
 		stmt.setString(1, data.email)
 		val result = DBHelper.selectSingle(stmt, classOf[JakonUser])
 		if (result.entity != null) {
-			val user = result.entity.asInstanceOf[JakonUser]
+			val user = result.entity
 			sendForgetPasswordEmail(user, req, conn)
 		}
 

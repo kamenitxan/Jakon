@@ -11,7 +11,7 @@ import cz.kamenitxan.jakon.core.model.KeyValueEntity
 object KeyValueService {
 
 	def getByKey(name: String)(implicit conn: Connection): Option[KeyValueEntity] = {
-		val sql = ""
+		val sql = "SELECT * FROM KeyValueEntity WHERE name = ? LIMIT 1"
 		val stmt = conn.prepareStatement(sql)
 		stmt.setString(1, name)
 		val res = DBHelper.selectSingle(stmt, classOf[KeyValueEntity])
@@ -21,4 +21,10 @@ object KeyValueService {
 			Option.empty
 		}
 	}
+
+	def deleteByKey(name: String)(implicit conn: Connection): Unit = {
+		val okve = getByKey(name)
+		okve.foreach(kve => kve.delete())
+	}
+
 }

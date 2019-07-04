@@ -7,7 +7,6 @@
     <p>
         id="{{ page.id }}"
         url="{{ page.url }}"
-        sectionName="{{ page.sectionName }}"
         published="{{ page.published }}"
         title="{{ page.title }}"
         content="{{ page.content }}"

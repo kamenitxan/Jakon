@@ -20,15 +20,14 @@ import scala.language.postfixOps
   *
   * @param childClass java.lang.Class.getName()
   */
-@Inheritance(strategy = InheritanceType.JOINED)
 abstract class JakonObject(@JakonField var childClass: String) extends Serializable with Crud {
 	private lazy val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
 	@Id
 	@JakonField(disabled = true, required = false, listOrder = -99, searched = true)
 	var id: Int = 0
-	@JakonField var url: String = ""
-	@JakonField var sectionName: String = ""
+	@JakonField
+	var url: String = ""
 	@JakonField(listOrder = -95, searched = true)
 	var published: Boolean = true
 
@@ -59,22 +58,19 @@ abstract class JakonObject(@JakonField var childClass: String) extends Serializa
 					}
 				}
 			}
-
 		}
-
 	}
 
 	final def create(): Int = {
 		val conn = DBHelper.getConnection
 		conn.setAutoCommit(false)
 		try {
-			val joSQL = "INSERT INTO JakonObject (url, sectionName, published, childClass) VALUES (?, ?, ?, ?)"
+			val joSQL = "INSERT INTO JakonObject (url, published, childClass) VALUES (?, ?, ?)"
 			val stmt = conn.prepareStatement(joSQL, Statement.RETURN_GENERATED_KEYS)
 			url = createUrl
 			stmt.setString(1, url)
-			stmt.setString(2, sectionName)
-			stmt.setBoolean(3, published)
-			stmt.setString(4, childClass)
+			stmt.setBoolean(2, published)
+			stmt.setString(3, childClass)
 			val jid = executeInsert(stmt)
 			this.id = jid
 			val id = createObject(jid, conn)
@@ -109,12 +105,11 @@ abstract class JakonObject(@JakonField var childClass: String) extends Serializa
 		val conn = DBHelper.getConnection
 		conn.setAutoCommit(false)
 		try {
-			val joSQL = "UPDATE JakonObject SET url = ?, published = ?, sectionName = ? WHERE id = ?"
+			val joSQL = "UPDATE JakonObject SET url = ?, published = ? WHERE id = ?"
 			val stmt = conn.prepareStatement(joSQL)
 			stmt.setString(1, url)
 			stmt.setBoolean(2, published)
-			stmt.setString(3, sectionName)
-			stmt.setInt(4, id)
+			stmt.setInt(3, id)
 			stmt.executeUpdate()
 			updateObject(id, conn)
 			conn.commit()
@@ -137,9 +132,11 @@ abstract class JakonObject(@JakonField var childClass: String) extends Serializa
 
 	def delete(): Unit = {
 		val sql = "DELETE FROM JakonObject WHERE id = ?"
-		val stmt = DBHelper.getPreparedStatement(sql)
-		stmt.setInt(1, id)
-		stmt.executeUpdate()
+		DBHelper.withDbConnection(conn => {
+			val stmt = conn.prepareStatement(sql)
+			stmt.setInt(1, id)
+			stmt.executeUpdate()
+		})
 	}
 
 	def afterDelete(): Unit = {}

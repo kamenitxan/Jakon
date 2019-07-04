@@ -11,13 +11,15 @@ import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.deploy.entity.Server
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
+import cz.kamenitxan.jakon.core.model.KeyValueEntity
 import cz.kamenitxan.jakon.core.service.KeyValueService
+import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.JavaConverters._
 import scala.io.Source
 
 object DeployDirector {
-
+	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 	private val KV_PREFIX = "SERVER_LAST_DEPLOY_"
 
 	val servers: List[Server] = {
@@ -42,8 +44,8 @@ object DeployDirector {
 			b.toList
 		} catch {
 			case e: Throwable =>
-				e.printStackTrace()
-				null
+				logger.error("Failed to load deploy servers", e)
+				List[Server]()
 		} finally {
 			conn.close()
 		}
@@ -69,6 +71,17 @@ object DeployDirector {
 	}
 
 	private def updateLastDeployTime(s: Server) = {
-
+		val key = KV_PREFIX + s.id
+		implicit val conn = DBHelper.getConnection
+		try {
+			KeyValueService.deleteByKey(key)
+			val dateTime = s.lastDeployed.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+			val kve = new KeyValueEntity()
+			kve.name = key
+			kve.value = dateTime
+			kve.create()
+		} finally {
+			conn.close()
+		}
 	}
 }

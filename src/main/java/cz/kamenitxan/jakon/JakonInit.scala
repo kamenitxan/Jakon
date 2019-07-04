@@ -73,7 +73,7 @@ class JakonInit {
 		daoSetup()
 		adminControllers()
 		taskSetup()
-		Director.start()
+
 
 		afterAfter((_: Request, _: Response) => PageContext.destroy())
 		if (Settings.getDeployMode == DeployMode.DEVEL) {
@@ -97,5 +97,6 @@ class JakonInit {
 				})
 			})
 		}
+		Director.start()
 	}
 }

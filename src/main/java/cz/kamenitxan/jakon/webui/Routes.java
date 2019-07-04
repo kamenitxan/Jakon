@@ -124,5 +124,11 @@ public class Routes {
 			}
 
 		});
+
+		get("/admin/*", (req, res) -> {
+			LOG.warn("Unknown page requested - " + req.url());
+			res.status(404);
+			return new Context(null, "errors/404");
+		}, te);
 	}
 }
