@@ -27,7 +27,7 @@ object Api {
 				val stmt = conn.createStatement()
 				val res = DBHelper.select(stmt, sql, objectClass)
 				val objects = res.map(r => r.entity)
-				return new SearchResponse(true, objects.asJava)
+				return new SearchResponse(true, objects)
 			}
 
 			// search by id
@@ -38,7 +38,7 @@ object Api {
 				stmt.setInt(1, objectId)
 				val res = DBHelper.selectSingle(stmt, objectClass)
 				if (res.entity != null) {
-					return new SearchResponse(true, List(res.entity) asJava)
+					return new SearchResponse(true, List(res.entity))
 				}
 			} catch {
 				case _: NumberFormatException =>
@@ -46,6 +46,6 @@ object Api {
 		} finally {
 			conn.close()
 		}
-		new SearchResponse(false, List[JakonObject]() asJava)
+		new SearchResponse(false, List[JakonObject]())
 	}
 }

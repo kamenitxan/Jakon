@@ -10,8 +10,8 @@ import scala.collection.JavaConverters._
   */
 class SearchResponse private(val result: java.util.List[Result], success: Boolean) extends AbstractResponse(success) {
 
-	def this(success: Boolean, result: java.util.List[JakonObject]) = {
-		this(result.asScala.map(o => Result(o.id, o.toString)).asJava, success)
+	def this(success: Boolean, result: List[JakonObject]) = {
+		this(result.map(o => Result(o.id, o.toString)).asJava, success)
 	}
 
 }

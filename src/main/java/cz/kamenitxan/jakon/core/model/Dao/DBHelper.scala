@@ -129,7 +129,7 @@ object DBHelper {
 	}
 
 
-	def createJakonObject(rs: ResultSet, cls: Class[_ <: JakonObject]): QueryResult = {
+	def createJakonObject[T <: JakonObject](rs: ResultSet, cls: Class[T]): QueryResult[T] = {
 		val rsmd = rs.getMetaData
 		val obj = cls.newInstance()
 		var foreignIds = Map[String, ForeignKeyInfo]()
@@ -199,7 +199,7 @@ object DBHelper {
 		new QueryResult(obj, foreignIds)
 	}
 
-	def select(stmt: PreparedStatement, cls: Class[_ <: JakonObject]): List[QueryResult] = {
+	def select[T <: JakonObject](stmt: PreparedStatement, cls: Class[T]): List[QueryResult[T]] = {
 		val rs = execute(stmt)
 		val res = Iterator.from(0).takeWhile(_ => rs.next()).map(_ => {
 			createJakonObject(rs, cls)
@@ -208,7 +208,7 @@ object DBHelper {
 		res
 	}
 
-	def select(stmt: Statement, sql: String, cls: Class[_ <: JakonObject]): List[QueryResult] = {
+	def select[T <: JakonObject](stmt: Statement, sql: String, cls: Class[T]): List[QueryResult[T]] = {
 		val rs = execute(stmt, sql)
 		val res = Iterator.from(0).takeWhile(_ => rs.next()).map(_ => {
 			createJakonObject(rs, cls)
@@ -217,24 +217,24 @@ object DBHelper {
 		res
 	}
 
-	def selectSingle(stmt: PreparedStatement, cls: Class[_ <: JakonObject]): QueryResult = {
+	def selectSingle[T <: JakonObject](stmt: PreparedStatement, cls: Class[T]): QueryResult[T] = {
 		val rs = execute(stmt)
-		var res: QueryResult = null
+		var res: QueryResult[T] = null
 		if (rs.next()) {
 			res = createJakonObject(rs, cls)
 		} else {
-			res = new QueryResult(null, null)
+			res = new QueryResult[T](null)
 		}
 		stmt.close()
 		res
 	}
 
-	def selectSingle(stmt: Statement, sql: String, cls: Class[_ <: JakonObject]): QueryResult = {
+	def selectSingle[T <: JakonObject](stmt: Statement, sql: String, cls: Class[T]): QueryResult[T] = {
 		val rs = execute(stmt, sql)
-		val res = if (rs.next()) {
+		val res: QueryResult[T] = if (rs.next()) {
 			createJakonObject(rs, cls)
 		} else {
-			new QueryResult(null, null)
+			new QueryResult[T](null)
 		}
 		stmt.close()
 		res
@@ -275,16 +275,16 @@ object DBHelper {
 	def selectDeep[T <: JakonObject](stmt: Statement, sql: String, cls: Class[T])(implicit conn: Connection): List[T] = {
 		val res = select(stmt, sql, cls)
 		fetchForeignObjects(res)
-		res.map(r => r.entity).asInstanceOf[List[T]]
+		res.map(r => r.entity)
 	}
 
 	def selectDeep[T <: JakonObject](stmt: PreparedStatement, cls: Class[T])(implicit conn: Connection): List[T] = {
-		val res: List[QueryResult] = select(stmt, cls)
+		val res: List[QueryResult[T]] = select(stmt, cls)
 		fetchForeignObjects(res)
-		res.map(r => r.entity).asInstanceOf[List[T]]
+		res.map(r => r.entity)
 	}
 
-	def fetchForeignObjects(resultList: List[QueryResult])(implicit conn: Connection): List[QueryResult] = {
+	def fetchForeignObjects[T <: JakonObject](resultList: List[QueryResult[T]])(implicit conn: Connection): List[QueryResult[T]] = {
 		resultList.foreach(r => {
 			if (r.foreignIds.nonEmpty) {
 				r.foreignIds.foreach(fki => {

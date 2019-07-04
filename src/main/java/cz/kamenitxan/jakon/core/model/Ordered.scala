@@ -49,7 +49,7 @@ trait Ordered {
 			return obj
 		}
 		val stmt2 = conn.createStatement()
-		val queryResult: List[QueryResult] = DBHelper.select(stmt2, "SELECT id, objectOrder FROM " + objectClass.getSimpleName + " ORDER BY objectOrder ASC", classOf[BasicJakonObject])
+		val queryResult = DBHelper.select(stmt2, "SELECT id, objectOrder FROM " + objectClass.getSimpleName + " ORDER BY objectOrder ASC", classOf[BasicJakonObject])
 		val allObjects = queryResult.map(qr => {
 			qr.entity.asInstanceOf[JakonObject with Ordered]
 		}).filter(o => o.id != obj.id).toVector
