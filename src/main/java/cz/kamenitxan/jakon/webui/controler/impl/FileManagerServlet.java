@@ -1,5 +1,6 @@
 package cz.kamenitxan.jakon.webui.controler.impl;
 
+import cz.kamenitxan.jakon.webui.entity.FileManagerMode;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
@@ -83,7 +84,7 @@ public class FileManagerServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -8453502699403909016L;
 
-	private Map<Mode, Boolean> enabledAction = null;
+	private Map<FileManagerMode, Boolean> enabledAction = null;
 	private String REPOSITORY_BASE_PATH = "upload";
 	// private String DATE_FORMAT = "yyyy-MM-dd hh:mm:ss"; // (2001-07-04 12:08:56)
 	private String DATE_FORMAT = "EEE, d MMM yyyy HH:mm:ss z"; // (Wed, 4 Jul 2001 12:08:56)
@@ -91,33 +92,20 @@ public class FileManagerServlet extends HttpServlet {
 	@Override
 	public void init() throws ServletException {
 		super.init();
-		//String configValue = getInitParameter("repository.base.path");
-		String configValue = null;
-		//REPOSITORY_BASE_PATH = configValue == null ? System.getProperty("java.io.tmpdir") : configValue.trim();
-		//configValue = getInitParameter("date.format");
-		if (configValue != null) {
-			if (new SimpleDateFormat(DATE_FORMAT).format(new Date()) == null) {
-				// Invalid date format
-				LOG.error("throw invalid date.format");
-				throw new ServletException("invalid date.format");
-			}
-			DATE_FORMAT = configValue;
-		}
-
 		//final String enabledActions = getInitParameter("enabled.action").toLowerCase();
 		String enabledActions = "createfolder, rename, remove, upload";
 		Pattern movePattern = Pattern.compile("\\bmove\\b");
 		enabledAction = new HashMap<>();
-		enabledAction.put(Mode.rename, enabledActions.contains("rename"));
-		enabledAction.put(Mode.move, movePattern.matcher(enabledActions).find());
-		enabledAction.put(Mode.remove, enabledActions.contains("remove"));
-		enabledAction.put(Mode.edit, enabledActions.contains("edit"));
-		enabledAction.put(Mode.createFolder, enabledActions.contains("createfolder"));
-		enabledAction.put(Mode.changePermissions, enabledActions.contains("changepermissions"));
-		enabledAction.put(Mode.compress, enabledActions.contains("compress"));
-		enabledAction.put(Mode.extract, enabledActions.contains("extract"));
-		enabledAction.put(Mode.copy, enabledActions.contains("copy"));
-		enabledAction.put(Mode.upload, enabledActions.contains("upload"));
+		enabledAction.put(FileManagerMode.rename, enabledActions.contains("rename"));
+		enabledAction.put(FileManagerMode.move, movePattern.matcher(enabledActions).find());
+		enabledAction.put(FileManagerMode.remove, enabledActions.contains("remove"));
+		enabledAction.put(FileManagerMode.edit, enabledActions.contains("edit"));
+		enabledAction.put(FileManagerMode.createFolder, enabledActions.contains("createfolder"));
+		enabledAction.put(FileManagerMode.changePermissions, enabledActions.contains("changepermissions"));
+		enabledAction.put(FileManagerMode.compress, enabledActions.contains("compress"));
+		enabledAction.put(FileManagerMode.extract, enabledActions.contains("extract"));
+		enabledAction.put(FileManagerMode.copy, enabledActions.contains("copy"));
+		enabledAction.put(FileManagerMode.upload, enabledActions.contains("upload"));
 
 	}
 
@@ -187,10 +175,10 @@ public class FileManagerServlet extends HttpServlet {
 		try {
 			// if request contains multipart-form-data
 			if (ServletFileUpload.isMultipartContent(request)) {
-				if (isSupportFeature(Mode.upload)) {
+				if (isSupportFeature(FileManagerMode.upload)) {
 					uploadFile(request, response);
 				} else {
-					setError(new IllegalAccessError(notSupportFeature(Mode.upload).getAsString("error")), response);
+					setError(new IllegalAccessError(notSupportFeature(FileManagerMode.upload).getAsString("error")), response);
 				}
 			} // all other post request has jspn params in body
 			else {
@@ -203,12 +191,12 @@ public class FileManagerServlet extends HttpServlet {
 
 	}
 
-	private boolean isSupportFeature(Mode mode) {
+	private boolean isSupportFeature(FileManagerMode mode) {
 		LOG.debug("check spport {}", mode);
 		return Boolean.TRUE.equals(enabledAction.get(mode));
 	}
 
-	private JSONObject notSupportFeature(Mode mode) {
+	private JSONObject notSupportFeature(FileManagerMode mode) {
 		return error("This implementation not support " + mode + " feature");
 	}
 
@@ -230,7 +218,7 @@ public class FileManagerServlet extends HttpServlet {
 		// URL: $config.uploadUrl, Method: POST, Content-Type: multipart/form-data
 		// Unlimited file upload, each item will be enumerated as file-1, file-2, etc.
 		// [$config.uploadUrl]?destination=/public_html/image.jpg&file-1={..}&file-2={...}
-		if (isSupportFeature(Mode.upload)) {
+		if (isSupportFeature(FileManagerMode.upload)) {
 			LOG.debug("upload now");
 			try {
 				String destination = null;
@@ -279,7 +267,7 @@ public class FileManagerServlet extends HttpServlet {
 				throw new ServletException("Cannot write file", e);
 			}
 		} else {
-			throw new ServletException(notSupportFeature(Mode.upload).getAsString("error"));
+			throw new ServletException(notSupportFeature(FileManagerMode.upload).getAsString("error"));
 		}
 	}
 
@@ -304,34 +292,13 @@ public class FileManagerServlet extends HttpServlet {
 				}
 			}
 			JSONObject params = JSONValue.parse(sb.toString(), JSONObject.class);
-			Mode mode = Mode.valueOf(params.getAsString("action"));
+			FileManagerMode mode = FileManagerMode.valueOf(params.getAsString("action"));
 			switch (mode) {
-				case changePermissions:
-					responseJsonObject = isSupportFeature(mode) ? changePermissions(params) : notSupportFeature(mode);
-					break;
 				case compress:
 					responseJsonObject = isSupportFeature(mode) ? compress(params) : notSupportFeature(mode);
 					break;
-				case copy:
-					responseJsonObject = isSupportFeature(mode) ? copy(params) : notSupportFeature(mode);
-					break;
-				case remove:
-					responseJsonObject = isSupportFeature(mode) ? remove(params) : notSupportFeature(mode);
-					break;
-				case getContent:
-					responseJsonObject = getContent(params);
-					break;
-				case edit: // get content
-					responseJsonObject = isSupportFeature(mode) ? editFile(params) : notSupportFeature(mode);
-					break;
 				case extract:
 					responseJsonObject = isSupportFeature(mode) ? extract(params) : notSupportFeature(mode);
-					break;
-				case rename:
-					responseJsonObject = isSupportFeature(mode) ? rename(params) : notSupportFeature(mode);
-					break;
-				case move:
-					responseJsonObject = isSupportFeature(mode) ? move(params) : notSupportFeature(mode);
 					break;
 				default:
 					throw new ServletException("not implemented");
@@ -346,149 +313,6 @@ public class FileManagerServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		out.print(responseJsonObject);
 		out.flush();
-	}
-
-	JSONObject move(JSONObject params) {
-		try {
-			//TODO: minidev json should be rewrited to gson
-			JSONArray paths = ((JSONArray) params.get("items"));
-			Path newpath = Paths.get(REPOSITORY_BASE_PATH, params.getAsString("newPath"));
-			for (Object obj : paths) {
-				Path path = Paths.get(REPOSITORY_BASE_PATH, obj.toString());
-				Path mpath = newpath.resolve(path.getFileName());
-				LOG.debug("mv {} to {} exists? {}", path, mpath, Files.exists(mpath));
-				if (Files.exists(mpath)) {
-					return error(mpath.toString() + " already exits!");
-				}
-			}
-			for (Object obj : paths) {
-				Path path = Paths.get(REPOSITORY_BASE_PATH, obj.toString());
-				Path mpath = newpath.resolve(path.getFileName());
-				Files.move(path, mpath, StandardCopyOption.REPLACE_EXISTING);
-			}
-			return success(params);
-		} catch (IOException e) {
-			LOG.error("move:" + e.getMessage(), e);
-			return error(e.getMessage());
-		}
-	}
-
-	JSONObject rename(JSONObject params) {
-		try {
-			String path = params.getAsString("item");
-			String newpath = params.getAsString("newItemPath");
-			LOG.debug("rename from: {} to: {}", path, newpath);
-
-			File srcFile = new File(REPOSITORY_BASE_PATH, path);
-			File destFile = new File(REPOSITORY_BASE_PATH, newpath);
-			if (srcFile.isFile()) {
-				FileUtils.moveFile(srcFile, destFile);
-			} else {
-				FileUtils.moveDirectory(srcFile, destFile);
-			}
-			return success(params);
-		} catch (IOException e) {
-			LOG.error("rename:" + e.getMessage(), e);
-			return error(e.getMessage());
-		}
-	}
-
-	JSONObject copy(JSONObject params) {
-		try {
-			JSONArray paths = ((JSONArray) params.get("items"));
-			Path newpath = Paths.get(REPOSITORY_BASE_PATH, params.getAsString("newPath"));
-			String newFileName = params.getAsString("singleFilename");
-			for (Object obj : paths) {
-				Path path = newFileName == null ? Paths.get(REPOSITORY_BASE_PATH,
-						obj.toString()) : Paths.get(".", newFileName);
-				Path mpath = newpath.resolve(path.getFileName());
-				LOG.debug("mv {} to {} exists? {}", path, mpath, Files.exists(mpath));
-				if (Files.exists(mpath)) {
-					return error(mpath.toString() + " already exits!");
-				}
-			}
-			for (Object obj : paths) {
-				Path path = Paths.get(REPOSITORY_BASE_PATH, obj.toString());
-				Path mpath = newpath.resolve(newFileName == null
-						? path.getFileName() : Paths.get(".", newFileName).getFileName());
-				Files.copy(path, mpath, StandardCopyOption.REPLACE_EXISTING);
-			}
-			return success(params);
-		} catch (IOException e) {
-			LOG.error("copy:" + e.getMessage(), e);
-			return error(e.getMessage());
-		}
-	}
-
-	JSONObject remove(JSONObject params) throws ServletException {
-		JSONArray paths = ((JSONArray) params.get("items"));
-		StringBuilder error = new StringBuilder();
-		StringBuilder success = new StringBuilder();
-		for (Object obj : paths) {
-			Path path = Paths.get(REPOSITORY_BASE_PATH, obj.toString());
-			if (!FileUtils.deleteQuietly(path.toFile())) {
-				error.append(error.length() > 0 ? "\n" : "Can't remove: \n/")
-						.append(path.subpath(1, path.getNameCount()).toString());
-			} else {
-				success.append(error.length() > 0 ? "\n" : "\nBut remove remove: \n/")
-						.append(path.subpath(1, path.getNameCount()).toString());
-				LOG.debug("remove {}", path);
-			}
-		}
-		if (error.length() > 0) {
-			if (success.length() > 0) {
-				success.append("\nPlease refresh this folder to list last result.");
-			}
-			throw new ServletException(error.toString() + success.toString());
-		} else {
-			return success(params);
-		}
-	}
-
-	JSONObject getContent(JSONObject params) {
-		try {
-			JSONObject json = new JSONObject();
-			json.put("result", FileUtils.readFileToString(Paths.get(REPOSITORY_BASE_PATH,
-					params.getAsString("item")).toFile()));
-			return json;
-		} catch (IOException ex) {
-			LOG.error("getContent:" + ex.getMessage(), ex);
-			return error(ex.getMessage());
-		}
-	}
-
-	JSONObject editFile(JSONObject params) {
-		// get content
-		try {
-			String path = params.getAsString("item");
-			LOG.debug("editFile path: {}", path);
-
-			File srcFile = new File(REPOSITORY_BASE_PATH, path);
-			String content = params.getAsString("content");
-			FileUtils.writeStringToFile(srcFile, content);
-			return success(params);
-		} catch (IOException e) {
-			LOG.error("editFile:" + e.getMessage(), e);
-			return error(e.getMessage());
-		}
-	}
-
-	JSONObject changePermissions(JSONObject params) {
-		try {
-			JSONArray paths = ((JSONArray) params.get("items"));
-			String perms = params.getAsString("perms"); // "rw-r-x-wx"
-			String permsCode = params.getAsString("permsCode"); // "653"
-			boolean recursive = "true".equalsIgnoreCase(params.getAsString("recursive"));
-			for (Object path : paths) {
-				LOG.debug("changepermissions path: {} perms: {} permsCode: {} recursive: {}", path, perms, permsCode, recursive);
-				File f = Paths.get(REPOSITORY_BASE_PATH, path.toString()).toFile();
-				setPermissions(f, perms, recursive);
-			}
-			return success(params);
-		} catch (IOException e) {
-			LOG.error("changepermissions:" + e.getMessage(), e);
-			return error(e.getMessage());
-		}
 	}
 
 	JSONObject compress(JSONObject params) {
@@ -597,26 +421,6 @@ public class FileManagerServlet extends HttpServlet {
 		}
 	}
 
-	String getPermissions(Path path) throws IOException {
-		// http://www.programcreek.com/java-api-examples/index.php?api=java.nio.file.attribute.PosixFileAttributes
-		PosixFileAttributeView fileAttributeView = Files.getFileAttributeView(path, PosixFileAttributeView.class);
-		PosixFileAttributes readAttributes = fileAttributeView.readAttributes();
-		Set<PosixFilePermission> permissions = readAttributes.permissions();
-		return PosixFilePermissions.toString(permissions);
-	}
-
-	String setPermissions(File file, String permsCode, boolean recursive) throws IOException {
-		// http://www.programcreek.com/java-api-examples/index.php?api=java.nio.file.attribute.PosixFileAttributes
-		PosixFileAttributeView fileAttributeView = Files.getFileAttributeView(file.toPath(), PosixFileAttributeView.class);
-		fileAttributeView.setPermissions(PosixFilePermissions.fromString(permsCode));
-		if (file.isDirectory() && recursive && file.listFiles() != null) {
-			for (File f : file.listFiles()) {
-				setPermissions(f, permsCode, recursive);
-			}
-		}
-		return permsCode;
-	}
-
 	private JSONObject error(String msg) {
 		// { "result": { "success": false, "error": "msg" } }
 		JSONObject result = new JSONObject();
@@ -635,10 +439,6 @@ public class FileManagerServlet extends HttpServlet {
 		JSONObject json = new JSONObject();
 		json.put("result", result);
 		return json;
-	}
-
-	enum Mode {
-		list, rename, move, copy, remove, edit, getContent, createFolder, changePermissions, compress, extract, upload
 	}
 
 }
