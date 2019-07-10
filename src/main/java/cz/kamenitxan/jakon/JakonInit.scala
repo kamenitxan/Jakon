@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon
 
-import java.io.{File, IOException}
+import java.io.File
 import java.nio.file.{Files, Paths}
 import java.util.concurrent.TimeUnit
 
@@ -9,10 +9,10 @@ import cz.kamenitxan.jakon.core.configuration.{AnnotationScanner, ConfigurationI
 import cz.kamenitxan.jakon.core.dynamic.PageletInitializer
 import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonUser
-import cz.kamenitxan.jakon.core.task.{FulltextTask, RenderTask, TaskRunner}
+import cz.kamenitxan.jakon.core.task.{FileManagerConsistencyTestTask, FulltextTask, RenderTask, TaskRunner}
 import cz.kamenitxan.jakon.devtools.{DevRender, StaticFilesController}
-import cz.kamenitxan.jakon.utils.{LoggingExceptionHandler, PageContext}
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
+import cz.kamenitxan.jakon.utils.{LoggingExceptionHandler, PageContext}
 import cz.kamenitxan.jakon.webui.AdminSettings
 import cz.kamenitxan.jakon.webui.controler.impl.{DeployControler, TaskController}
 import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, ResetPasswordEmailEntity}
@@ -48,7 +48,7 @@ class JakonInit {
 			DBHelper.addDao(classOf[ResetPasswordEmailEntity])
 			TaskRunner.registerTask(new EmailSendTask(1, TimeUnit.MINUTES))
 		}
-
+		TaskRunner.registerTask(new FileManagerConsistencyTestTask)
 	}
 
 	def run(args: Array[String]): Unit = {

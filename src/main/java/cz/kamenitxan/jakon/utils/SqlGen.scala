@@ -102,6 +102,7 @@ object SqlGen {
 		val value = f.get(inst)
 		if (value == null) {
 			stmt.setNull(i, getSqlType(f))
+			return
 		}
 
 		f.getType match {
@@ -110,13 +111,14 @@ object SqlGen {
 			case INTEGER => stmt.setInt(i, value.asInstanceOf[Int])
 			case DOUBLE => stmt.setDouble(i, value.asInstanceOf[Double])
 			case DATE => stmt.setDate(i, new java.sql.Date(value.asInstanceOf[Date].getTime))
+			case DATETIME => stmt.setObject(i, value)
 			case x if x.isEnum =>
-				val nameMethod = value.getClass.getDeclaredMethod("name")
+				val nameMethod = value.getClass.getMethod("name")
 				stmt.setString(i, nameMethod.invoke(value).toString)
 			case _ =>
 				lazy val jakonField = f.getAnnotation(classOf[JakonField])
 				if (f.getAnnotation(classOf[ManyToOne]) != null || f.getAnnotation(classOf[OneToOne]) != null) {
-					stmt.setInt(i, value.asInstanceOf[Int])
+					stmt.setInt(i, value.asInstanceOf[JakonObject].id)
 				} else if (jakonField != null) {
 					val converter = jakonField.converter()
 					if (converter.getName != classOf[AbstractConverter[_]].getName) {

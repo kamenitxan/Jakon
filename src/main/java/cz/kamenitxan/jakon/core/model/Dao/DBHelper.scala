@@ -2,6 +2,8 @@ package cz.kamenitxan.jakon.core.model.Dao
 
 import java.io.{BufferedReader, InputStreamReader}
 import java.sql._
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.stream.Collectors
 
 import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
@@ -13,6 +15,7 @@ import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence.{Column, ManyToOne}
 import org.slf4j.{Logger, LoggerFactory}
+import org.sqlite.SQLiteConfig
 
 import scala.collection.mutable
 
@@ -28,6 +31,7 @@ object DBHelper {
 	addDao(classOf[AclRule])
 	addDao(classOf[JakonUser])
 	addDao(classOf[KeyValueEntity])
+	addDao(classOf[JakonFile])
 
 	val config = new HikariConfig
 	config.setJdbcUrl(Settings.getDatabaseConnPath)
@@ -111,8 +115,23 @@ object DBHelper {
 
 	def getConnection: Connection = {
 		//TODO: single conn for request
-		val conn = ds.getConnection
-		//logger.info("Got DB connection - " + conn)
+
+		val conn = if (Settings.getDatabaseType == DatabaseType.SQLITE) {
+			Class.forName(Settings.getDatabaseDriver)
+			var connection: Connection = null
+			try {
+				val config = new SQLiteConfig()
+				config.enforceForeignKeys(true)
+				connection = DriverManager.getConnection(Settings.getDatabaseConnPath,config.toProperties);
+			} catch {
+				case ex: SQLException =>
+					logger.error("Failed to get SQLITE connection with foreign key support")
+					connection = ds.getConnection
+			}
+			return connection
+		} else {
+			ds.getConnection
+		}
 		conn
 	}
 
@@ -171,6 +190,7 @@ object DBHelper {
 					case INTEGER => field.set(obj, rs.getInt(columnName))
 					case DOUBLE => field.set(obj, rs.getDouble(columnName))
 					case DATE => field.set(obj, rs.getDate(columnName))
+					case DATETIME => field.set(obj, LocalDateTime.parse(rs.getString(columnName), DateTimeFormatter.ISO_LOCAL_DATE_TIME))
 					case x if x.isEnum =>
 						val m = x.getMethod("valueOf", classOf[String])
 						val enumValue = m.invoke(null, rs.getString(columnName))

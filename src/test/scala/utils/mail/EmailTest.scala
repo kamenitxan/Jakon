@@ -12,6 +12,7 @@ class EmailTest extends FunSuite {
 	test("registrationEmailTest") {
 		val user = new JakonUser()
 		user.email = "test@test.com"
+		user.create()
 		Authentication.sendRegistrationEmail(user)
 	}
 

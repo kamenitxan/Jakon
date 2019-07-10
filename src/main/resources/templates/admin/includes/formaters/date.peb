@@ -1,0 +1,3 @@
+{# @pebvariable name="object" type="cz.kamenitxan.jakon.core.model.JakonObject" #}
+{# @pebvariable name="fi" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
+{{ getAttr(object, fi.name) | date("dd.MM.yyyy HH:mm:ss") }}

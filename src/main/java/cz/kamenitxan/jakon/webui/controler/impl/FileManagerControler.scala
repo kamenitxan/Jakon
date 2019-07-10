@@ -1,18 +1,27 @@
 package cz.kamenitxan.jakon.webui.controler.impl
 
-import java.io.{File, IOException}
+import java.io._
+import java.net.URI
+import java.nio.ByteBuffer
+import java.nio.file._
 import java.nio.file.attribute.{BasicFileAttributes, PosixFileAttributeView, PosixFilePermissions}
-import java.nio.file.{FileAlreadyExistsException, Files, Path, Paths, StandardCopyOption}
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.util
 import java.util.Date
 import java.util.regex.Pattern
+import java.util.zip.{ZipEntry, ZipOutputStream}
 
+import cz.kamenitxan.jakon.core.model.{FileType, JakonFile}
+import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.entity.FileManagerMode
+import javax.mail.internet.MimeUtility
 import javax.servlet.ServletException
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import net.minidev.json.{JSONArray, JSONObject, JSONValue}
+import org.apache.commons.fileupload.FileUploadException
+import org.apache.commons.fileupload.disk.DiskFileItemFactory
 import org.apache.commons.fileupload.servlet.ServletFileUpload
 import org.apache.commons.io.FileUtils
 import org.slf4j.{Logger, LoggerFactory}
@@ -52,7 +61,7 @@ import scala.collection.JavaConversions._
   */
 object FileManagerControler {
 	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
-	private val REPOSITORY_BASE_PATH = "upload"
+	val REPOSITORY_BASE_PATH = "upload"
 	private var DATE_FORMAT = "EEE, d MMM yyyy HH:mm:ss z" // (Wed, 4 Jul 2001 12:08:56)
 	private val enabledAction: util.Map[FileManagerMode, Boolean] = new util.HashMap[FileManagerMode, Boolean]
 
@@ -67,27 +76,100 @@ object FileManagerControler {
 	}
 
 	def executeGet(req: Request, res: Response): Response = {
-		val fm = new FileManagerServlet
-		fm.init()
-		fm.doGet(req.raw(), res.raw())
+		val request = req.raw()
+		val response = res.raw()
+
+		val action = request.getParameter("action")
+		if ("download" == action) {
+			val path = request.getParameter("path")
+			val file = new File(REPOSITORY_BASE_PATH, path)
+			if (!file.isFile) { // if not a file, it is a folder, show this error.
+				response.sendError(HttpServletResponse.SC_NOT_FOUND, "Resource Not Found")
+				return res
+			}
+			response.setHeader("Content-Type", "application/force-download")
+			response.setHeader("Content-Disposition", "attachment; filename=\"" + MimeUtility.encodeWord(file.getName) + "\"")
+
+			val channel = Files.newByteChannel(file.toPath)
+			try {
+				val buffer = new Array[Byte](256 * 1024)
+				val byteBuffer = ByteBuffer.wrap(buffer)
+				var length = 0
+				while ( {
+					length = channel.read(byteBuffer)
+					length
+				} != -1) {
+					response.getOutputStream.write(buffer, 0, length)
+					byteBuffer.clear
+				}
+			} catch {
+				case ex: IOException =>
+					logger.error(ex.getMessage, ex)
+					throw ex
+			} finally {
+				response.getOutputStream.flush()
+				if (channel != null) {
+					channel.close()
+				}
+			}
+
+		} else if ("downloadMultiple" == action) {
+			val toFilename = request.getParameter("toFilename")
+			val items = request.getParameterValues("items[]")
+			val baos = new ByteArrayOutputStream
+			var zos: ZipOutputStream = null
+			try {
+				zos = new ZipOutputStream(new BufferedOutputStream(baos))
+				for (item <- items) {
+					val path = Paths.get(REPOSITORY_BASE_PATH, item)
+					if (Files.exists(path)) {
+						val zipEntry = new ZipEntry(path.getFileName.toString)
+						zos.putNextEntry(zipEntry)
+						val buffer = new Array[Byte](2048)
+
+						val bis = new BufferedInputStream(Files.newInputStream(path))
+						try {
+							var bytesRead = 0
+							while ( {
+								bytesRead = bis.read(buffer)
+								bytesRead
+							} != -1) {
+								zos.write(buffer, 0, bytesRead)
+							}
+						} finally {
+							zos.closeEntry()
+							if (bis != null) {
+								bis.close()
+							}
+						}
+
+					}
+				}
+			} finally {
+				if (zos != null) {
+					zos.close()
+				}
+			}
+			response.setContentType("application/zip")
+			response.setHeader("Content-Disposition", "inline; filename=\"" + MimeUtility.encodeWord(toFilename) + "\"")
+			val output = new BufferedOutputStream(response.getOutputStream)
+			output.write(baos.toByteArray)
+			output.flush()
+		}
+
 		res
 	}
 
 	def executePost(req: Request, res: Response): Response = {
-		val fm = new FileManagerServlet
-		fm.init()
-		/*fm.doPost(req.raw(), res.raw())*/
-
-
 		try { // if request contains multipart-form-data
 			if (ServletFileUpload.isMultipartContent(req.raw())) {
 				if (isSupportFeature(FileManagerMode.upload)) {
-					fm.uploadFile(req.raw(), res.raw())
+					uploadFile(req.raw(), res.raw())
 				} else {
 					setError(new IllegalAccessError(notSupportFeature(FileManagerMode.upload).getAsString("error")), res.raw())
 				}
 			} else { // all other post request has jspn params in body}
-				fileOperation(req.raw(), res.raw(), fm)
+				fileOperation(req.raw(), res.raw())
 			}
 		} catch {
 			case ex@(_: ServletException | _: IOException) =>
@@ -98,7 +180,7 @@ object FileManagerControler {
 	}
 
 	def init(): Unit = {
-		val enabledActions = "createfolder, rename, remove, upload"
+		val enabledActions = "createfolder, rename, remove, upload, compress"
 		val movePattern = Pattern.compile("\\bmove\\b")
 		enabledAction.put(FileManagerMode.rename, enabledActions.contains("rename"))
 		enabledAction.put(FileManagerMode.move, movePattern.matcher(enabledActions).find)
@@ -114,7 +196,7 @@ object FileManagerControler {
 
 
 	@throws[IOException]
-	private def fileOperation(request: HttpServletRequest, response: HttpServletResponse, fm: FileManagerServlet): Unit = {
+	private def fileOperation(request: HttpServletRequest, response: HttpServletResponse): Unit = {
 		var responseJsonObject: JSONObject = null
 		try {
 			val br = request.getReader
@@ -129,7 +211,7 @@ object FileManagerControler {
 				case FileManagerMode.changePermissions =>
 					executeIfSupported(mode, params, p => changePermissions(p))
 				case FileManagerMode.compress =>
-					executeIfSupported(mode, params, p => fm.compress(p))
+					executeIfSupported(mode, params, p => compress(p))
 				case FileManagerMode.copy =>
 					executeIfSupported(mode, params, p => copy(p))
 				case FileManagerMode.remove =>
@@ -139,7 +221,7 @@ object FileManagerControler {
 				case FileManagerMode.edit => // get content
 					executeIfSupported(mode, params, p => editFile(p))
 				case FileManagerMode.extract =>
-					executeIfSupported(mode, params, p => fm.extract(p))
+					executeIfSupported(mode, params, p => extract(p))
 				case FileManagerMode.list =>
 					list(params)
 				case FileManagerMode.rename =>
@@ -174,6 +256,66 @@ object FileManagerControler {
 	}
 
 	private def notSupportFeature(mode: FileManagerMode): JSONObject = error("This implementation not support " + mode + " feature")
+
+
+	/**
+	  * URL: $config.uploadUrl, Method: POST, Content-Type: multipart/form-data
+	  * Unlimited file upload, each item will be enumerated as file-1, file-2, etc.
+	  * [$config.uploadUrl]?destination=/public_html/image.jpg&file-1={..}&file-2={...}
+	  */
+	@throws[ServletException]
+	private def uploadFile(request: HttpServletRequest, response: HttpServletResponse): Unit = {
+		if (isSupportFeature(FileManagerMode.upload)) {
+			logger.debug("upload now")
+			try {
+				var destination: String = null
+				val files = new util.HashMap[String, InputStream]
+				val sfu = new ServletFileUpload(new DiskFileItemFactory)
+				sfu.setHeaderEncoding("UTF-8")
+				val items = sfu.parseRequest(request)
+				for (item <- items) {
+					if (item.isFormField) { // Process regular form field (input type="text|radio|checkbox|etc", select, etc).
+						if ("destination" == item.getFieldName) {
+							destination = item.getString("UTF-8")
+						}
+					}
+					else { // Process form file field (input type="file").
+						files.put(item.getName, item.getInputStream)
+					}
+				}
+				if (files.isEmpty) {
+					logger.debug("file size  = 0")
+					throw new Exception("file size  = 0")
+				} else {
+					for (fileEntry <- files.entrySet) {
+						val path = Paths.get(REPOSITORY_BASE_PATH + destination, fileEntry.getKey)
+						if (!write(fileEntry.getValue, path)) {
+							logger.debug("write error")
+							throw new Exception("write error")
+						}
+					}
+					var responseJsonObject: JSONObject = null
+					responseJsonObject = this.success()
+					response.setContentType("application/json;charset=UTF-8")
+					val out: PrintWriter = response.getWriter
+					out.print(responseJsonObject)
+					out.flush()
+				}
+			} catch {
+				case e: FileUploadException =>
+					logger.error("Cannot parse multipart request: DiskFileItemFactory.parseRequest", e)
+					throw new ServletException("Cannot parse multipart request: DiskFileItemFactory.parseRequest", e)
+				case e: IOException =>
+					logger.error("Cannot parse multipart request: item.getInputStream")
+					throw new ServletException("Cannot parse multipart request: item.getInputStream", e)
+				case e: Exception =>
+					logger.error("Cannot write file", e)
+					throw new ServletException("Cannot write file", e)
+			}
+		} else {
+			throw new ServletException(notSupportFeature(FileManagerMode.upload).getAsString("error"))
+		}
+	}
 
 	private def list(params: JSONObject) = {
 		try {
@@ -217,7 +359,14 @@ object FileManagerControler {
 	private def createFolder(params: JSONObject) = try {
 		val path = Paths.get(REPOSITORY_BASE_PATH, params.getAsString("newPath"))
 		logger.debug(s"createFolder path: $path")
-		Files.createDirectories(path)
+		val createdDirectory = Files.createDirectories(path)
+		val fo = new JakonFile()
+		fo.fileType = FileType.FOLDER
+		fo.name = createdDirectory.getFileName.toString
+		fo.path = createdDirectory.getParent.toString
+		fo.created = LocalDateTime.now()
+		fo.author = PageContext.getInstance().getLoggedUser.orNull
+		fo.create()
 		success()
 	} catch {
 		case _: FileAlreadyExistsException =>
@@ -376,6 +525,112 @@ object FileManagerControler {
 		}
 	}
 
+	private def compress(params: JSONObject): JSONObject = try {
+		val paths = params.get("items").asInstanceOf[JSONArray]
+		val paramDest = params.getAsString("destination")
+		val dest = Paths.get(REPOSITORY_BASE_PATH, paramDest)
+		val zip = dest.resolve(params.getAsString("compressedFilename"))
+		if (Files.exists(zip)) {
+			return error(zip.toString + " already exits!")
+		}
+		val env = new util.HashMap[String, String]
+		env.put("create", "true")
+		var zipped = false
+
+		val zipfs = FileSystems.newFileSystem(URI.create("jar:file:" + zip.toString), env)
+		try {
+			for (path <- paths) {
+				val realPath = Paths.get(REPOSITORY_BASE_PATH, path.toString)
+				if (Files.isDirectory(realPath)) Files.walkFileTree(Paths.get(REPOSITORY_BASE_PATH, path.toString), new SimpleFileVisitor[Path]() {
+					@throws[IOException]
+					override def preVisitDirectory(dir: Path, attrs: BasicFileAttributes): FileVisitResult = {
+						Files.createDirectories(zipfs.getPath(dir.toString.substring(dest.toString.length)))
+						FileVisitResult.CONTINUE
+					}
+
+					@throws[IOException]
+					override def visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult = {
+						val pathInZipFile = zipfs.getPath(file.toString.substring(dest.toString.length))
+						logger.debug("compress: '{}'", pathInZipFile)
+						Files.copy(file, pathInZipFile, StandardCopyOption.REPLACE_EXISTING)
+						FileVisitResult.CONTINUE
+					}
+				})
+				else {
+					val pathInZipFile = zipfs.getPath("/", realPath.toString.substring(REPOSITORY_BASE_PATH.length + paramDest.length))
+					val pathInZipFolder = pathInZipFile.getParent
+					if (!Files.isDirectory(pathInZipFolder)) {
+						Files.createDirectories(pathInZipFolder)
+					}
+					logger.debug("compress: '{}]", pathInZipFile)
+					Files.copy(realPath, pathInZipFile, StandardCopyOption.REPLACE_EXISTING)
+				}
+			}
+			zipped = true
+		} finally {
+			if (!zipped) Files.deleteIfExists(zip)
+			if (zipfs != null) zipfs.close()
+		}
+
+		success()
+	} catch {
+		case e: IOException =>
+			logger.error("compress:" + e.getMessage, e)
+			error(e.getClass.getSimpleName + ":" + e.getMessage)
+	}
+
+	private def extract(params: JSONObject) = {
+		var genFolder = false
+		val dest = Paths.get(REPOSITORY_BASE_PATH, params.getAsString("destination"))
+		val folder = dest.resolve(params.getAsString("folderName"))
+		try {
+			if (!Files.isDirectory(folder)) {
+				genFolder = true
+				Files.createDirectories(folder)
+			}
+			val zip = params.getAsString("item")
+			val env = new util.HashMap[String, String]
+			env.put("create", "false")
+
+			val zipfs = FileSystems.newFileSystem(URI.create("jar:file:" + Paths.get(REPOSITORY_BASE_PATH, zip).toString), env)
+			try {
+				Files.walkFileTree(zipfs.getPath("/"), new SimpleFileVisitor[Path]() {
+					override def visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult = {
+						if (file.getNameCount > 0) {
+							val dest = folder.resolve(if (file.getNameCount < 1) ""
+							else file.subpath(0, file.getNameCount).toString)
+							logger.debug(s"extract $file to $dest")
+							try {
+								Files.copy(file, dest, StandardCopyOption.REPLACE_EXISTING)
+							} catch {
+								case ex: Exception =>
+									logger.error(ex.getMessage, ex)
+							}
+						}
+						FileVisitResult.CONTINUE
+					}
+
+					@throws[IOException]
+					override def preVisitDirectory(dir: Path, attrs: BasicFileAttributes): FileVisitResult = {
+						val subFolder = folder.resolve(if (dir.getNameCount < 1) ""
+						else dir.subpath(0, dir.getNameCount).toString)
+						if (!Files.exists(subFolder)) Files.createDirectories(subFolder)
+						FileVisitResult.CONTINUE
+					}
+				})
+			} finally {
+				if (zipfs != null) zipfs.close()
+			}
+
+			success()
+		} catch {
+			case e: IOException =>
+				if (genFolder) FileUtils.deleteQuietly(folder.toFile)
+				logger.error("extract:" + e.getMessage, e)
+				error(e.getMessage)
+		}
+	}
+
 	@throws[IOException]
 	private def getPermissions(path: Path) = {
 		val fileAttributeView = Files.getFileAttributeView(path, classOf[PosixFileAttributeView])
@@ -395,6 +650,17 @@ object FileManagerControler {
 			setPermissions(f, permsCode, recursive)
 		}
 		permsCode
+	}
+
+	private def write(inputStream: InputStream, path: Path) = {
+		try {
+			Files.copy(inputStream, path, StandardCopyOption.REPLACE_EXISTING)
+			true
+		} catch {
+			case ex: IOException =>
+				logger.error(ex.getMessage, ex)
+				false
+		}
 	}
 
 	/**
