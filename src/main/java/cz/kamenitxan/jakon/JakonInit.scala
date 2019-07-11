@@ -6,8 +6,8 @@ import java.util.concurrent.TimeUnit
 
 import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.configuration.{AnnotationScanner, ConfigurationInitializer, DeployMode, Settings}
+import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.dynamic.PageletInitializer
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.core.task.{FileManagerConsistencyTestTask, FulltextTask, RenderTask, TaskRunner}
 import cz.kamenitxan.jakon.devtools.{DevRender, StaticFilesController}

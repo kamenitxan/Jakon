@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.core.model.converters
+package cz.kamenitxan.jakon.core.database.converters
 
 import java.util
 

@@ -9,7 +9,7 @@ import java.sql.Connection
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper
+import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.service.UserService
 import cz.kamenitxan.jakon.core.model.{FileType, JakonFile}
 import cz.kamenitxan.jakon.core.service.JakonFileService

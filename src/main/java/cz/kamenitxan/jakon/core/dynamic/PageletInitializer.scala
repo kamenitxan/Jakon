@@ -5,7 +5,7 @@ import java.sql.Connection
 
 import com.google.gson.Gson
 import cz.kamenitxan.jakon.core.configuration.Settings
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper
+import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.utils.i18nUtil
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
 import cz.kamenitxan.jakon.webui.controler.pagelets.AbstractAdminPagelet

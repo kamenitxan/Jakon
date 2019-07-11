@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.core.model.Dao
+package cz.kamenitxan.jakon.core.database
 
 import java.io.{BufferedReader, InputStreamReader}
 import java.sql._
@@ -8,8 +8,8 @@ import java.util.stream.Collectors
 
 import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
+import cz.kamenitxan.jakon.core.database.converters.AbstractConverter
 import cz.kamenitxan.jakon.core.model._
-import cz.kamenitxan.jakon.core.model.converters.AbstractConverter
 import cz.kamenitxan.jakon.utils.TypeReferences._
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.entity.JakonField
@@ -102,6 +102,25 @@ object DBHelper {
 				val characterSet = stmt.executeQuery(characterSetSql)
 				println(characterSet)
 			}
+			val joSql = "SELECT id, childClass FROM JakonObject"
+			val stmt = conn.createStatement()
+			val rs = stmt.executeQuery(joSql)
+			val jakonObjects = Iterator.from(0).takeWhile(_ => rs.next()).map(_ => (rs.getInt(1), rs.getString(2))).toList
+			jakonObjects.foreach(jo => {
+				val id = jo._1
+				val tableName = jo._2.substring(jo._2.lastIndexOf(".") + 1)
+				val sql = s"SELECT id FROM $tableName WHERE id = ?"
+				val stmt = conn.prepareStatement(sql)
+				stmt.setInt(1, id)
+				val rs = stmt.executeQuery()
+				if (!rs.next()) {
+					logger.error(s"Child record not found for id: $id")
+					val deleteSql = "DELETE FROM JakonObject WHERE id = ?"
+					val delStmt = conn.prepareStatement(deleteSql)
+					delStmt.setInt(1, id)
+					delStmt.executeUpdate()
+				}
+			})
 		} catch {
 			case ex: Exception => logger.error("Exception occurred when checking DB consistency", ex)
 		} finally {

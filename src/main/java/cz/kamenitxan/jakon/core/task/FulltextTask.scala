@@ -2,8 +2,8 @@ package cz.kamenitxan.jakon.core.task
 
 import java.util.concurrent.TimeUnit
 
+import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.fulltext.Lucene
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
 
 import scala.language.postfixOps

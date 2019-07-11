@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon.webui
 
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper
+import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.utils.PageContext
 import spark.ModelAndView
 

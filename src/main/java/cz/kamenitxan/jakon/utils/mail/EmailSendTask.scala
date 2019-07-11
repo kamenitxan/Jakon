@@ -4,7 +4,7 @@ import java.util.{Date, Properties}
 import java.util.concurrent.TimeUnit
 
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper
+import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.task.AbstractTask
 import javax.mail._
 import javax.mail.internet.{InternetAddress, MimeMessage}

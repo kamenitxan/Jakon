@@ -1,6 +1,6 @@
 package utils
 
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper
+import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.utils.SqlGen
 import test.TestBase

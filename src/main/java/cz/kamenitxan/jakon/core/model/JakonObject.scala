@@ -4,7 +4,7 @@ import java.io.StringWriter
 import java.sql._
 
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
-import cz.kamenitxan.jakon.core.model.Dao.{Crud, DBHelper}
+import cz.kamenitxan.jakon.core.database.{Crud, DBHelper}
 import cz.kamenitxan.jakon.utils.SqlGen
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.JakonField

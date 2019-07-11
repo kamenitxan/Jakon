@@ -1,10 +1,9 @@
 package cz.kamenitxan.jakon.webui.controler.impl
 
-import java.lang.reflect.Field
 import java.sql.Connection
 
-import cz.kamenitxan.jakon.core.model.Dao.{DBHelper, QueryResult}
-import cz.kamenitxan.jakon.core.model.{BasicJakonObject, JakonObject, Ordered}
+import cz.kamenitxan.jakon.core.database.DBHelper
+import cz.kamenitxan.jakon.core.model.{JakonObject, Ordered}
 import cz.kamenitxan.jakon.utils.Utils._
 import cz.kamenitxan.jakon.utils.{PageContext, Utils}
 import cz.kamenitxan.jakon.webui.Context

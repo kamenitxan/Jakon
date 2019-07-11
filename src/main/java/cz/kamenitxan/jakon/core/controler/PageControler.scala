@@ -2,7 +2,7 @@ package cz.kamenitxan.jakon.core.controler
 
 import java.util
 
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper
+import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.Page
 import cz.kamenitxan.jakon.core.template.TemplateEngine
 import cz.kamenitxan.jakon.core.template.utils.TemplateUtils

@@ -2,8 +2,8 @@ package cz.kamenitxan.jakon.core.function
 
 import java.util
 
+import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.BasicJakonObject
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 
 /**
   * Created by TPa on 25.05.16.

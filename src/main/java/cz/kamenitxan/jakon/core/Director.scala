@@ -5,7 +5,7 @@ import java.nio.charset.Charset
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.controler.IControler
 import cz.kamenitxan.jakon.core.customPages.AbstractCustomPage
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper
+import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
 import cz.kamenitxan.jakon.core.task.TaskRunner
 import cz.kamenitxan.jakon.core.template.Pebble

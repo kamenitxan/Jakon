@@ -3,7 +3,7 @@ package cz.kamenitxan.jakon.core.model
 import java.lang.reflect.Field
 import java.sql.Connection
 
-import cz.kamenitxan.jakon.core.model.Dao.{DBHelper, QueryResult}
+import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.utils.Utils
 
 trait Ordered {

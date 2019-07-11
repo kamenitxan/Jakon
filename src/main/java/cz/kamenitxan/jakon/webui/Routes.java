@@ -3,7 +3,7 @@ package cz.kamenitxan.jakon.webui;
 import com.google.gson.Gson;
 import cz.kamenitxan.jakon.core.configuration.DeployMode;
 import cz.kamenitxan.jakon.core.configuration.Settings;
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper;
+import cz.kamenitxan.jakon.core.database.DBHelper;
 import cz.kamenitxan.jakon.core.model.JakonUser;
 import cz.kamenitxan.jakon.core.model.service.UserService;
 import cz.kamenitxan.jakon.webui.api.Api;

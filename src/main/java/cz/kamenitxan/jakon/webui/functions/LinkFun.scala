@@ -3,7 +3,7 @@ package cz.kamenitxan.jakon.webui.functions
 import java.util
 
 import com.mitchellbosecke.pebble.extension.Function
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper
+import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{BasicJakonObject, JakonObject}
 
 

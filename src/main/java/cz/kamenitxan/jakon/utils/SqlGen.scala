@@ -5,7 +5,7 @@ import java.sql.{Connection, JDBCType, PreparedStatement, Statement}
 import java.util.Date
 
 import cz.kamenitxan.jakon.core.model.JakonObject
-import cz.kamenitxan.jakon.core.model.converters.AbstractConverter
+import cz.kamenitxan.jakon.core.database.converters.AbstractConverter
 import cz.kamenitxan.jakon.utils.TypeReferences._
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence.{ManyToOne, OneToOne}

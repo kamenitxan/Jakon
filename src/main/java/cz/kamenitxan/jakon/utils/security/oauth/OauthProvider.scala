@@ -2,7 +2,7 @@ package cz.kamenitxan.jakon.utils.security.oauth
 
 import java.sql.Connection
 
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper
+import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
 import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.webui.controler.impl.Authentication.{SQL_FIND_ACL, SQL_FIND_USER}

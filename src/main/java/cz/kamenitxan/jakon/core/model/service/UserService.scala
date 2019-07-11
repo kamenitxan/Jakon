@@ -2,7 +2,7 @@ package cz.kamenitxan.jakon.core.model.service
 
 import java.sql.Connection
 
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper
+import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonUser
 
 object UserService {

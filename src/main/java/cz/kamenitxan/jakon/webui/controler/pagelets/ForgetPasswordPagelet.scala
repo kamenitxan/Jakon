@@ -5,8 +5,8 @@ import java.util.{Calendar, Date}
 
 import cz.kamenitxan.jakon.core.Director.SELECT_EMAIL_TMPL_SQL
 import cz.kamenitxan.jakon.core.configuration.Settings
+import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.dynamic.{Get, Pagelet, Post}
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}

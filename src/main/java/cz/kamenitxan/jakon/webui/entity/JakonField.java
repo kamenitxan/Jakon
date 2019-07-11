@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon.webui.entity;
 
-import cz.kamenitxan.jakon.core.model.converters.AbstractConverter;
+import cz.kamenitxan.jakon.core.database.converters.AbstractConverter;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

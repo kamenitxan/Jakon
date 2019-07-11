@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.core.model.Dao
+package cz.kamenitxan.jakon.core.database
 
 import java.lang.reflect.{InvocationHandler, Method}
 

@@ -9,8 +9,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.configuration.Settings
+import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.deploy.entity.Server
-import cz.kamenitxan.jakon.core.model.Dao.DBHelper
 import cz.kamenitxan.jakon.core.model.KeyValueEntity
 import cz.kamenitxan.jakon.core.service.KeyValueService
 import org.slf4j.{Logger, LoggerFactory}
