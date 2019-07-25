@@ -6,10 +6,10 @@ import java.sql.Connection
 import com.google.gson.Gson
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.DBHelper
-import cz.kamenitxan.jakon.utils.i18nUtil
+import cz.kamenitxan.jakon.utils.{PageContext, i18nUtil}
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
 import cz.kamenitxan.jakon.webui.controler.pagelets.AbstractAdminPagelet
-import cz.kamenitxan.jakon.webui.entity.CustomControllerInfo
+import cz.kamenitxan.jakon.webui.entity.{CustomControllerInfo, Message, MessageSeverity}
 import cz.kamenitxan.jakon.webui.{AdminSettings, Context}
 import javax.validation.Validation
 import org.slf4j.LoggerFactory
@@ -22,6 +22,7 @@ import scala.collection.mutable
 object PageletInitializer {
 	private val logger = LoggerFactory.getLogger(this.getClass)
 	private val METHOD_VALDIATE = "validate"
+	private val gson = new Gson
 
 	val protectedPrefixes = mutable.Buffer[String]()
 
@@ -66,7 +67,7 @@ object PageletInitializer {
 			val controller: AbstractPagelet = c.newInstance().asInstanceOf[AbstractPagelet]
 			DBHelper.withDbConnection(conn => {
 				val methodArgs = createMethodArgs(m, req, res, conn)
-				var context = m.invoke(controller, methodArgs.array:_*).asInstanceOf[mutable.Map[String, Any]]
+				var context = m.invoke(controller, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
 				if (notRedirected(res)) {
 					if (controller.isInstanceOf[AbstractAdminPagelet]) {
 						if (context == null) {
@@ -88,27 +89,39 @@ object PageletInitializer {
 
 			DBHelper.withDbConnection(conn => {
 				val methodArgs = createMethodArgs(m, req, res, conn)
-				if (methodArgs.data != null && "true".equals(req.queryParams(METHOD_VALDIATE))) {
+				if (post.validate() && methodArgs.data != null) {
 					// TODO share factory?
 					val factory = Validation.buildDefaultValidatorFactory
 					val validator = factory.getValidator
 					val violations = validator.validate(methodArgs.data).asScala
-					val gson = new Gson
+
 					val result = violations.map(v => {
 						val message = i18nUtil.getTranslation(c.getSimpleName, v.getMessage, Settings.getDefaultLocale)
 						new ValidationResult(v.getPropertyPath.toString, message)
-					}).toList.asJava
-					gson.toJson(result)
-				} else {
-					val context = m.invoke(controller, methodArgs.array:_*).asInstanceOf[mutable.Map[String, Any]]
-					if (notRedirected(res)) {
-						controller.render(context, post.template())
+					}).toList
+					if ("true".equals(req.queryParams(METHOD_VALDIATE))) {
+						gson.toJson(result.asJava)
+					} else if (result.nonEmpty) {
+						// TODO: severity via payload
+						result.foreach(r => PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, r.result))
+						null
 					} else {
-						""
+						invokePost(res, controller, m, post, methodArgs)
 					}
+				} else {
+					invokePost(res, controller, m, post, methodArgs)
 				}
 			})
 		})
+	}
+
+	private def invokePost(res: Response, controller: AbstractPagelet, m: Method, post: Post, methodArgs: MethodArgs): String = {
+		val context = m.invoke(controller, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
+		if (notRedirected(res)) {
+			controller.render(context, post.template())
+		} else {
+			""
+		}
 	}
 
 	private def notRedirected(res: Response) = {
@@ -122,6 +135,7 @@ object PageletInitializer {
 	private val REQUEST_CLS = classOf[Request]
 	private val RESPONSE_CLS = classOf[Response]
 	private val CONNECTION_CLS = classOf[Connection]
+
 	private def createMethodArgs(m: Method, req: Request, res: Response, conn: Connection): MethodArgs = {
 		var dataRef: AnyRef = null
 		val arr = m.getParameterTypes.map {
@@ -147,4 +161,5 @@ object PageletInitializer {
 	}
 
 	class MethodArgs(val array: Array[AnyRef], val data: AnyRef)
+
 }

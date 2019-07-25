@@ -70,8 +70,6 @@ public class Routes {
 		get("/admin", (req, res) -> Authentication.loginGet(req), te);
 		post("/admin", Authentication::loginPost, te);
 		get("/admin/index", (request, response) -> AdminSettings.dashboardController().apply(request, response), te);
-		get("/admin/register", (request, response) -> Authentication.registrationGet(response), te);
-		post("/admin/register", Authentication::registrationPost, te);
 		get("/admin/logout", Authentication::logoutPost, te);
 		get("/admin/profile", UserControler::render, te);
 		post("/admin/profile", UserControler::update, te);

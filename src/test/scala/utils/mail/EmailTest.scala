@@ -4,7 +4,7 @@ import java.util.Date
 
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailTemplateEntity}
-import cz.kamenitxan.jakon.webui.controler.impl.Authentication
+import cz.kamenitxan.jakon.webui.controler.pagelets.JakonRegistrationPagelet
 import org.scalatest.FunSuite
 
 class EmailTest extends FunSuite {
@@ -13,7 +13,7 @@ class EmailTest extends FunSuite {
 		val user = new JakonUser()
 		user.email = "test@test.com"
 		user.create()
-		Authentication.sendRegistrationEmail(user)
+		new JakonRegistrationPagelet().sendRegistrationEmail(user)
 	}
 
 	test("EmailEntity") {

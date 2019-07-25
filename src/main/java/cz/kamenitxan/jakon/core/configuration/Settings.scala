@@ -99,6 +99,8 @@ object Settings {
 	@ConfigurationValue(name = "loginPath", required = true, defaultValue = "/login")
 	private var loginPath: String = _
 
+	@ConfigurationValue(name = "emailValidator.checkDns", required = false, defaultValue = "true")
+	private var emailValidatorCheckDns: Boolean = _
 
 	def getTemplateDir: String = templateDir
 
@@ -188,4 +190,6 @@ object Settings {
 	def getHostname: String = hostname
 
 	def getLoginPath: String = loginPath
+
+	def getEmailValidatorCheckDns: Boolean = emailValidatorCheckDns
 }
