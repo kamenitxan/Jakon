@@ -2,6 +2,7 @@ package cz.kamenitxan.jakon.utils
 
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
+import org.slf4j.LoggerFactory
 import spark.{Request, Response}
 
 import scala.collection.mutable
@@ -10,6 +11,7 @@ import scala.collection.mutable
   * Created by TPa on 30.04.18.
   */
 object PageContext {
+	//private val logger = LoggerFactory.getLogger(this.getClass)
 	val MESSAGES_KEY = "messages_session_key"
 	val context: ThreadLocal[PageContext] = new ThreadLocal[PageContext]
 
@@ -19,7 +21,7 @@ object PageContext {
 		if (PageContext.context.get() != null) {
 			throw new IllegalStateException("PageContext already initialized")
 		}
-		if (req == null || excludedPaths.exists(path => path.startsWith(req.pathInfo()))) {
+		if (req == null || excludedPaths.exists(path => req.pathInfo().startsWith(path))) {
 			return null
 		}
 		val ctx = new PageContext(req, res)

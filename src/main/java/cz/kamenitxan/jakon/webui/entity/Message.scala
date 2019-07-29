@@ -6,4 +6,7 @@ class Message(val _severity: MessageSeverity, val text: String, val _params: Lis
 	def severity(): String = _severity.value
 
 	def params(): java.util.List[String] = _params.asJava
+
+
+	override def toString = s"Message($text, ${_severity})"
 }

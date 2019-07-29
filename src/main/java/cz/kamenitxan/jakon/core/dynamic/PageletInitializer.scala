@@ -11,7 +11,7 @@ import cz.kamenitxan.jakon.webui.conform.FieldConformer._
 import cz.kamenitxan.jakon.webui.controler.pagelets.AbstractAdminPagelet
 import cz.kamenitxan.jakon.webui.entity.{CustomControllerInfo, Message, MessageSeverity}
 import cz.kamenitxan.jakon.webui.{AdminSettings, Context}
-import javax.validation.Validation
+import javax.validation.{ConstraintViolation, Validation}
 import org.slf4j.LoggerFactory
 import spark.{Request, Response, Spark}
 
@@ -93,7 +93,15 @@ object PageletInitializer {
 					// TODO share factory?
 					val factory = Validation.buildDefaultValidatorFactory
 					val validator = factory.getValidator
-					val violations = validator.validate(methodArgs.data).asScala
+					var violations: mutable.Set[ConstraintViolation[AnyRef]] = null
+					try {
+						violations = validator.validate(methodArgs.data).asScala
+					} catch {
+						case e: Throwable =>
+							e.printStackTrace()
+							throw e
+					}
+
 
 					val result = violations.map(v => {
 						val message = i18nUtil.getTranslation(c.getSimpleName, v.getMessage, Settings.getDefaultLocale)
@@ -104,7 +112,7 @@ object PageletInitializer {
 					} else if (result.nonEmpty) {
 						// TODO: severity via payload
 						result.foreach(r => PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, r.result))
-						null
+						controller.redirect(req, res, controllerAnn.path() + post.path())
 					} else {
 						invokePost(res, controller, m, post, methodArgs)
 					}
