@@ -1,18 +1,19 @@
 package cz.kamenitxan.jakon.webui.controler.pagelets
 
-import cz.kamenitxan.jakon.core.dynamic.validation.Email
-import javax.validation.constraints.NotEmpty
+import cz.kamenitxan.jakon.validation.validators.{Email, NotEmpty, Size}
 
 class JakonRegistrationData {
-	@NotEmpty(message = "NOT_EMPTY")
-	@Email(message = "INVALID")
+	@NotEmpty()
+	@Email()
 	var email: String = _
-	@NotEmpty(message = "NOT_EMPTY")
+	@NotEmpty()
+	@Size(min = 5)
 	var password: String = _
-	@NotEmpty(message = "NOT_EMPTY")
+	@NotEmpty()
+	@Size(min = 5)
 	var password2: String = _
-	@NotEmpty(message = "NOT_EMPTY")
+	@NotEmpty()
 	var firstname: String = _
-	@NotEmpty(message = "NOT_EMPTY")
+	@NotEmpty()
 	var lastname: String = _
 }

@@ -18,7 +18,7 @@ class i18nFun extends i18nFunction {
 	override def execute(args: util.Map[String, AnyRef]): AnyRef = {
 		val basename = args.get("bundle").asInstanceOf[String]
 		val key = args.get("key").asInstanceOf[String]
-		val params = args.get("params")
+		val params = args.get("params").asInstanceOf[Seq[String]]
 		val default = args.get("def").asInstanceOf[String]
 
 		val context = args.get("_context").asInstanceOf[EvaluationContext]
@@ -27,7 +27,7 @@ class i18nFun extends i18nFunction {
 		val file = new File(templateDir)
 		val resourceDir = this.getClass.getClassLoader.getResource("templates/admin/")
 		val urls = Array(file.toURI.toURL, resourceDir.toURI.toURL)
-		val loader = new URLClassLoader(urls)
+		val loader = new URLClassLoader(urls, null)
 
 		val bundle = ResourceBundle.getBundle(basename, locale, loader, new UTF8Control)
 		var phraseObject = ""
@@ -56,11 +56,8 @@ class i18nFun extends i18nFunction {
 			}
 		}
 
-		if (phraseObject != null && params != null) {
-			params match {
-				case list: java.util.List[_] => return MessageFormat.format(phraseObject, list.toArray)
-				case _ => return MessageFormat.format(phraseObject, params)
-			}
+		if (phraseObject != null && params != null && params.nonEmpty) {
+			return MessageFormat.format(phraseObject, params.toArray:_*)
 		}
 		phraseObject
 	}

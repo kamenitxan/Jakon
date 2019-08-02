@@ -13,6 +13,7 @@ import jakon.{ModelTest, RenderTest, SettingsTest}
 import org.scalatest.{BeforeAndAfterAll, Suites}
 import utils.mail.EmailTest
 import utils.{SecurityTest, SqlGenTest, UtilsTest, i18nUtilTest}
+import validation.ValidationTest
 import webui._
 
 /**
@@ -34,7 +35,8 @@ class TestRunner extends Suites(
 	new ModelTest,
 	new FieldConformerTest,
 	new SettingsTest,
-	new i18nUtilTest
+	new i18nUtilTest,
+	new ValidationTest
 ) with BeforeAndAfterAll {
 
 	override def beforeAll() {

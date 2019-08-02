@@ -12,10 +12,8 @@ import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.utils.security.AesEncryptor
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity, ResetPasswordEmailEntity}
-import javax.validation.Validation
 import spark.{Request, Response}
 
-import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.util.Random
 
@@ -41,16 +39,7 @@ class ForgetPasswordPagelet extends AbstractAdminPagelet {
 
 	@Post(path = "/resetPassword", template = "pagelet/reset_password/resetPassword")
 	def post(req: Request, res: Response, conn: Connection, data: ForgetPasswordData): mutable.Map[String, Any] = {
-		val factory = Validation.buildDefaultValidatorFactory
-		val validator = factory.getValidator
-		val violations = validator.validate(data).asScala
-		val validationResult = violations.map(v => {
-			this.getClass.getSimpleName + "_" + v.getPropertyPath.toString + "_" + v.getConstraintDescriptor.getAnnotation.annotationType().getSimpleName
-		})
-		if (validationResult.nonEmpty) {
-			validationResult.foreach(r => PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, r))
-			return null
-		}
+		// todo validation
 
 		val stmt = conn.prepareStatement(SQL_FIND_USER)
 		stmt.setString(1, data.email)

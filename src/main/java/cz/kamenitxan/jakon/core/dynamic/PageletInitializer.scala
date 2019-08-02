@@ -4,18 +4,16 @@ import java.lang.reflect.Method
 import java.sql.Connection
 
 import com.google.gson.Gson
-import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.DBHelper
-import cz.kamenitxan.jakon.utils.{PageContext, i18nUtil}
+import cz.kamenitxan.jakon.utils.PageContext
+import cz.kamenitxan.jakon.validation.EntityValidator
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
 import cz.kamenitxan.jakon.webui.controler.pagelets.AbstractAdminPagelet
-import cz.kamenitxan.jakon.webui.entity.{CustomControllerInfo, Message, MessageSeverity}
+import cz.kamenitxan.jakon.webui.entity.CustomControllerInfo
 import cz.kamenitxan.jakon.webui.{AdminSettings, Context}
-import javax.validation.{ConstraintViolation, Validation}
 import org.slf4j.LoggerFactory
 import spark.{Request, Response, Spark}
 
-import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 
@@ -90,31 +88,21 @@ object PageletInitializer {
 			DBHelper.withDbConnection(conn => {
 				val methodArgs = createMethodArgs(m, req, res, conn)
 				if (post.validate() && methodArgs.data != null) {
-					// TODO share factory?
-					val factory = Validation.buildDefaultValidatorFactory
-					val validator = factory.getValidator
-					var violations: mutable.Set[ConstraintViolation[AnyRef]] = null
-					try {
-						violations = validator.validate(methodArgs.data).asScala
-					} catch {
-						case e: Throwable =>
-							e.printStackTrace()
-							throw e
-					}
 
-
-					val result = violations.map(v => {
-						val message = i18nUtil.getTranslation(c.getSimpleName, v.getMessage, Settings.getDefaultLocale)
-						new ValidationResult(v.getPropertyPath.toString, message)
-					}).toList
-					if ("true".equals(req.queryParams(METHOD_VALDIATE))) {
-						gson.toJson(result.asJava)
-					} else if (result.nonEmpty) {
-						// TODO: severity via payload
-						result.foreach(r => PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, r.result))
-						controller.redirect(req, res, controllerAnn.path() + post.path())
-					} else {
-						invokePost(res, controller, m, post, methodArgs)
+					EntityValidator.validate(methodArgs.data) match {
+						case Left(result) =>
+							if ("true".equals(req.queryParams(METHOD_VALDIATE))) {
+								gson.toJson(result)
+							} else {
+								result.foreach(r => PageContext.getInstance().messages += r)
+								controller.redirect(req, res, controllerAnn.path() + post.path())
+							}
+						case Right(result) =>
+							if ("true".equals(req.queryParams(METHOD_VALDIATE))) {
+								gson.toJson(true)
+							}  else {
+								invokePost(res, controller, m, post, methodArgs)
+							}
 					}
 				} else {
 					invokePost(res, controller, m, post, methodArgs)

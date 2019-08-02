@@ -3,6 +3,6 @@
 
 <div id="jakon_messages">
 {% for message in jakon_messages %}
-    <div class="alert {{ message.severity }}" role="alert">{{ i18n("messages",message.text, message.params) }}</div>
+    <div class="alert {{ message.severity }}" role="alert">{{ i18n(message.bundle, message.text, message.params) }}</div>
 {% endfor %}
 </div>
