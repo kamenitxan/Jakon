@@ -43,7 +43,7 @@ object EntityValidator {
 					MessageSeverity.ERROR
 				}
 				val key = o.getClass.getSimpleName + "_" + f.getName + "_" + result.get.error
-				return Seq(new Message(severity, key, bundle = "validations", _params = result.get.params))
+				return Seq(new Message(severity, key, bundle = "validations", params = result.get.params))
 			}
 		}
 		Seq()
