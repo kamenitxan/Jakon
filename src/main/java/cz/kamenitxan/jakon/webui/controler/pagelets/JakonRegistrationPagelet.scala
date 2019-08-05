@@ -20,7 +20,7 @@ class JakonRegistrationPagelet extends AbstractAdminPagelet {
 	override val name: String = this.getClass.getSimpleName
 	private val SQL_SELECT_EMAIL_TMPL = "SELECT subject FROM EmailTemplateEntity WHERE name = \"REGISTRATION\""
 
-	@Get(path = "",template = "register")
+	@Get(path = "",template = "pagelet/registration/register")
 	def registrationGet(response: Response) = {
 	}
 

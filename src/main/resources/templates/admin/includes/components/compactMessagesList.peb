@@ -1,0 +1,12 @@
+{# @pebvariable name="jakon_messages" type="cz.kamenitxan.jakon.webui.entity.Message" #}
+{# @pebvariable name="message" type="cz.kamenitxan.jakon.webui.entity.Message" #}
+
+<div id="jakon_messages">
+{% for messageGroup in splitMessages(jakon_messages) %}
+    <div class="alert {{ messageGroup.key  }}" role="alert" >
+        {% for message in messageGroup.value %}
+           {{ i18n(message.bundle, message.text, message.params) }}<br>
+        {% endfor %}
+    </div>
+{% endfor %}
+</div>

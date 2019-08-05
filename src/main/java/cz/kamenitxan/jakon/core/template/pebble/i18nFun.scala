@@ -9,8 +9,10 @@ import java.util.{Locale, MissingResourceException, ResourceBundle}
 import com.mitchellbosecke.pebble.extension.i18n.{UTF8Control, i18nFunction}
 import com.mitchellbosecke.pebble.template.EvaluationContext
 import cz.kamenitxan.jakon.core.configuration.Settings
+import org.slf4j.{Logger, LoggerFactory}
 
 class i18nFun extends i18nFunction {
+	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 	getArgumentNames.add("def")
 
 	val templateDir: String = Settings.getTemplateDir
@@ -51,7 +53,9 @@ class i18nFun extends i18nFunction {
 						throw new MissingResourceException("", "", "")
 					}
 				} catch {
-					case _: MissingResourceException => phraseObject = if (default != null && !default.isEmpty) default else key
+					case _: MissingResourceException =>
+						logger.warn(s"Translation not found for key: $key")
+						phraseObject = if (default != null && !default.isEmpty) default else key
 				}
 			}
 		}

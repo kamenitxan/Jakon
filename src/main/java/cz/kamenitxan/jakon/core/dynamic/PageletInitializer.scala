@@ -73,7 +73,7 @@ object PageletInitializer {
 						}
 						context = context ++ Context.getAdminContext
 					}
-					controller.render(context, get.template())
+					controller.render(context, get.template(), req)
 				} else {
 					""
 				}
@@ -95,26 +95,26 @@ object PageletInitializer {
 								gson.toJson(result)
 							} else {
 								result.foreach(r => PageContext.getInstance().messages += r)
-								controller.redirect(req, res, controllerAnn.path() + post.path())
+								controller.redirect(req, res, controllerAnn.path() + post.path(), methodArgs.data)
 							}
 						case Right(result) =>
 							if ("true".equals(req.queryParams(METHOD_VALDIATE))) {
 								gson.toJson(true)
 							}  else {
-								invokePost(res, controller, m, post, methodArgs)
+								invokePost(req, res, controller, m, post, methodArgs)
 							}
 					}
 				} else {
-					invokePost(res, controller, m, post, methodArgs)
+					invokePost(req, res, controller, m, post, methodArgs)
 				}
 			})
 		})
 	}
 
-	private def invokePost(res: Response, controller: AbstractPagelet, m: Method, post: Post, methodArgs: MethodArgs): String = {
+	private def invokePost(req: Request, res: Response, controller: AbstractPagelet, m: Method, post: Post, methodArgs: MethodArgs) = {
 		val context = m.invoke(controller, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
 		if (notRedirected(res)) {
-			controller.render(context, post.template())
+			controller.render(context, post.template(), req)
 		} else {
 			""
 		}

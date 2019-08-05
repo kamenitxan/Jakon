@@ -27,5 +27,9 @@ hs_err_pid*
 .idea/
 /jakonTest.sqlite
 .node_modules/
+node_modules/*
 jakon_config.properties
 /out/
+/target/
+/fulltext/
+/upload/
