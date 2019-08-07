@@ -9,9 +9,9 @@ import cz.kamenitxan.jakon.webui.entity.MessageSeverity
 
 class EmailValidator extends Validator {
 
-	override def isValid(value: Any, a: Annotation, data: AnyRef): Option[ValidationResult] = {
+	override def isValid(value: String, a: Annotation, data: AnyRef): Option[ValidationResult] = {
 		val ann = a.asInstanceOf[Email]
-		if (value == null || !value.isInstanceOf[String]) {
+		if (value == null) {
 			return Option.empty
 		}
 		val validatedEmail = EmailValidator.validator.validate(value.asInstanceOf[String])
