@@ -1,19 +1,16 @@
 package cz.kamenitxan.jakon.validation.validators
 
-
 import java.lang.annotation.Annotation
 
 import cz.kamenitxan.jakon.validation.{ValidationResult, Validator}
 
-class NotEmptyValidator extends Validator {
-	private val error = "EMPTY"
+class AssertTrueValidator extends Validator {
+	private val error = "NOT_TRUE"
 
 	override def isValid(value: String, a: Annotation, data: AnyRef): Option[ValidationResult] = {
-		val ann = a.asInstanceOf[NotEmpty]
-		if (value == null) {
-			return ValidationResult(error)
-		}
-		if (value.nonEmpty) {
+		if (value == null) return Option.empty
+
+		if ("1".equalsIgnoreCase(value) || "true".equalsIgnoreCase(value)) {
 			Option.empty
 		} else {
 			ValidationResult(error)

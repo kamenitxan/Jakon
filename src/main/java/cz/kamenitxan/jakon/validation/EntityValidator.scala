@@ -27,7 +27,7 @@ object EntityValidator {
 		if (!f.isAccessible) {
 			f.setAccessible(true)
 		}
-		val fieldValue = f.get(o)
+		val fieldValue = f.get(o).asInstanceOf[String]
 		val anns = f.getDeclaredAnnotations.filter(a => a.annotationType().getAnnotation(classOf[ValidatedBy]) != null)
 		for (an <- anns) {
 			val by: ValidatedBy = an.annotationType().getAnnotation(classOf[ValidatedBy])

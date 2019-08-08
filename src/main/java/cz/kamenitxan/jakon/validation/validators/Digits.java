@@ -11,14 +11,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * The annotated element must be a number within accepted range
- * Supported types are:
- * <ul>
- *     <li>{@code BigDecimal}</li>
- *     <li>{@code BigInteger}</li>
- *     <li>{@code CharSequence}</li>
- *     <li>{@code byte}, {@code short}, {@code int}, {@code long}, and their respective
- *     wrapper types</li>
- * </ul>
  * <p>
  * {@code null} elements are considered valid.
  */

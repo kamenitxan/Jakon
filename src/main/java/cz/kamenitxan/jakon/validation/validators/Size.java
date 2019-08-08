@@ -15,7 +15,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Supported types are:
  * <ul>
  *     <li>{@code CharSequence} (length of character sequence is evaluated)</li>
- *     <li>{@code Traversable} (collection size is evaluated)</li>
  * </ul>
  * <p>
  * {@code null} elements are considered valid.

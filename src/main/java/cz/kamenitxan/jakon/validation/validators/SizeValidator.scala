@@ -15,9 +15,9 @@ class SizeValidator extends Validator {
 		}
 		val lenght = value.length()
 		if (lenght < ann.min()) {
-			ValidationResult(small).toOpt
+			ValidationResult(small)
 		} else if (lenght > ann.max()) {
-			ValidationResult(large).toOpt
+			ValidationResult(large)
 		} else {
 			Option.empty
 		}

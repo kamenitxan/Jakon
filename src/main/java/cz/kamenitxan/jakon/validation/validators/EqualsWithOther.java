@@ -14,7 +14,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target({FIELD})
 @Retention(RUNTIME)
-@ValidatedBy(DummyValidator.class)
+@ValidatedBy(EqualsWithOtherValidator.class)
 public @interface EqualsWithOther {
 
 	MessageSeverity severity() default MessageSeverity.ERROR;

@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon.webui.controler.pagelets
 
-import cz.kamenitxan.jakon.validation.validators.{Email, NotEmpty, Size}
+import cz.kamenitxan.jakon.validation.validators.{Email, EqualsWithOther, NotEmpty, Size}
 
 class JakonRegistrationData {
 	@NotEmpty()
@@ -11,6 +11,7 @@ class JakonRegistrationData {
 	var password: String = _
 	@NotEmpty()
 	@Size(min = 5)
+	@EqualsWithOther(value = "password")
 	var password2: String = _
 	@NotEmpty()
 	var firstname: String = _

@@ -3,23 +3,24 @@ package validation
 import java.lang.annotation.Annotation
 
 import cz.kamenitxan.jakon.validation.Validator
-import cz.kamenitxan.jakon.validation.validators.{DummyValidator, NotEmpty, NotEmptyValidator, Size, SizeValidator}
+import cz.kamenitxan.jakon.validation.validators._
 import org.scalatest.FunSuite
 import org.scalatest.prop.TableDrivenPropertyChecks.{forAll, _}
 import org.scalatest.prop.TableFor2
 import sun.reflect.annotation.AnnotationParser
 
-class ValidationTest extends FunSuite{
+class ValidationTest extends FunSuite {
 
-	private def testTable(v: Validator, ann: Annotation, data: TableFor2[Any, Boolean]) = {
+	private def testTable(v: Validator, ann: Annotation, data: TableFor2[String, Boolean], obj: AnyRef = null) = {
 		forAll(data) { (value, expectedResult) => {
-			val res = v.isValid(value, ann, null)
+			val res = v.isValid(value, ann, obj)
 			assert(res.isEmpty == expectedResult)
-		}}
+		}
+		}
 	}
 
 	test("notEmpty") {
-		val data: TableFor2[Any, Boolean] = Table(
+		val data: TableFor2[String, Boolean] = Table(
 			("value", "expectedResult"),
 			("test", true),
 			(null, false),
@@ -32,7 +33,7 @@ class ValidationTest extends FunSuite{
 	}
 
 	test("dummy") {
-		val data: TableFor2[Any, Boolean] = Table(
+		val data: TableFor2[String, Boolean] = Table(
 			("value", "expectedResult"),
 			("test", true),
 			(null, true),
@@ -45,7 +46,7 @@ class ValidationTest extends FunSuite{
 	}
 
 	test("size") {
-		val data: TableFor2[Any, Boolean] = Table(
+		val data: TableFor2[String, Boolean] = Table(
 			("value", "expectedResult"),
 			("test", false),
 			("testok", true),
@@ -55,11 +56,124 @@ class ValidationTest extends FunSuite{
 
 		class SizeTest {
 			@Size(min = 5, max = 10)
-			var size: Int = _
+			var size: String = _
 		}
 		val f = classOf[SizeTest].getDeclaredField("size")
 		val ann = f.getDeclaredAnnotationsByType(classOf[Size]).head
 		val v = new SizeValidator
 		testTable(v, ann, data)
+	}
+
+	test("equalsWithOther") {
+		val data: TableFor2[String, Boolean] = Table(
+			("value", "expectedResult"),
+			("test", false),
+			("testok", true),
+			(null, true)
+		)
+
+		class TestData {
+			var password: String = "testok"
+			@EqualsWithOther(value = "password")
+			var password2: String = _
+		}
+		val obj = new TestData()
+		val f = classOf[TestData].getDeclaredField("password2")
+		val ann = f.getDeclaredAnnotationsByType(classOf[EqualsWithOther]).head
+		val v = new EqualsWithOtherValidator
+		testTable(v, ann, data, obj)
+	}
+
+	test("true") {
+		val data: TableFor2[String, Boolean] = Table(
+			("value", "expectedResult"),
+			("test", false),
+			(null, true),
+			("1", true),
+			("true", true),
+			("0", false),
+			("false", false)
+		)
+
+		val v = new AssertTrueValidator
+		val ann = AnnotationParser.annotationForMap(classOf[AssertTrue], null)
+		testTable(v, ann, data)
+	}
+
+	test("false") {
+		val data: TableFor2[String, Boolean] = Table(
+			("value", "expectedResult"),
+			("test", false),
+			(null, true),
+			("1", false),
+			("true", false),
+			("0", true),
+			("false", true)
+		)
+
+		val v = new AssertFalseValidator
+		val ann = AnnotationParser.annotationForMap(classOf[AssertFalse], null)
+		testTable(v, ann, data)
+	}
+
+	test("null") {
+		val data: TableFor2[String, Boolean] = Table(
+			("value", "expectedResult"),
+			("test", false),
+			(null, true),
+			("1", false)
+		)
+
+		val v = new NullValidator
+		val ann = AnnotationParser.annotationForMap(classOf[cz.kamenitxan.jakon.validation.validators.Null], null)
+		testTable(v, ann, data)
+	}
+
+	test("min") {
+		val data: TableFor2[String, Boolean] = Table(
+			("value", "expectedResult"),
+			("text", false),
+			("0", false),
+			("5", true),
+			("10", true),
+			("0.0", false),
+			("5.0", true),
+			("10.0", true),
+			(null, true)
+		)
+
+		class TestData {
+			@Min(value = 5)
+			var number: String = _
+		}
+		val obj = new TestData()
+		val f = classOf[TestData].getDeclaredField("number")
+		val ann = f.getDeclaredAnnotationsByType(classOf[Min]).head
+		val v = new MinValidator
+		testTable(v, ann, data, obj)
+	}
+
+	test("max") {
+		val data: TableFor2[String, Boolean] = Table(
+			("value", "expectedResult"),
+			("text", false),
+			("0", true),
+			("5", true),
+			("10", false),
+			("0.0", true),
+			("5.0", true),
+			("10.0", false),
+			(null, true)
+		)
+
+		class TestData {
+			@Max(value = 5)
+			var number: String = _
+		}
+		val obj = new TestData()
+		val f = classOf[TestData].getDeclaredField("number")
+		val ann = f.getDeclaredAnnotationsByType(classOf[Max]).head
+		val v = new MaxValidator
+		testTable(v, ann, data, obj)
 	}
 }
