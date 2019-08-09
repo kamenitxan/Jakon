@@ -4,8 +4,8 @@ import java.lang.reflect.Field
 import java.sql.{Connection, JDBCType, PreparedStatement, Statement}
 import java.util.Date
 
-import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.core.database.converters.AbstractConverter
+import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.utils.TypeReferences._
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence.{ManyToOne, OneToOne}
@@ -138,7 +138,7 @@ object SqlGen {
 			case x if x.isEnum => 	JDBCType.VARCHAR.getVendorTypeNumber
 			case STRING => JDBCType.VARCHAR.getVendorTypeNumber
 			case BOOLEAN => JDBCType.BOOLEAN.getVendorTypeNumber
-			case _ if f.getAnnotation(classOf[ManyToOne]) != null => JDBCType.INTEGER.getVendorTypeNumber
+			case _ if f.getDeclaredAnnotation(classOf[ManyToOne]) != null => JDBCType.INTEGER.getVendorTypeNumber
 			case INTEGER  => JDBCType.INTEGER.getVendorTypeNumber
 			case DOUBLE => JDBCType.DOUBLE.getVendorTypeNumber
 			case DATE => JDBCType.DATE.getVendorTypeNumber

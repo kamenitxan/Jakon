@@ -1,22 +1,16 @@
 package cz.kamenitxan.jakon.webui.controler.impl
 
-import java.util.{Calendar, Date}
-
-import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
 import cz.kamenitxan.jakon.utils.PageContext
-import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
-import cz.kamenitxan.jakon.utils.security.AesEncryptor
 import cz.kamenitxan.jakon.utils.security.oauth.{Facebook, Google}
 import cz.kamenitxan.jakon.webui.Context
-import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, Message, MessageSeverity}
+import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import org.mindrot.jbcrypt.BCrypt
 import org.slf4j.{Logger, LoggerFactory}
 import spark.{ModelAndView, Request, Response}
 
 import scala.language.postfixOps
-import scala.util.Random
 
 /**
   * Created by TPa on 03.09.16.
@@ -53,7 +47,7 @@ object Authentication {
 					return new Context(null, "login")
 				}
 
-				val user = result.entity.asInstanceOf[JakonUser]
+				val user = result.entity
 				if (checkPassword(password, user.password) && user.enabled) {
 					val stmt = conn.prepareStatement(SQL_FIND_ACL)
 					stmt.setInt(1, result.foreignIds.getOrElse("acl_id", null).id)

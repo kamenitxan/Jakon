@@ -12,8 +12,7 @@ import functions.LinkTest
 import jakon.{ModelTest, RenderTest, SettingsTest}
 import org.scalatest.{BeforeAndAfterAll, Suites}
 import utils.mail.EmailTest
-import utils.{SecurityTest, SqlGenTest, UtilsTest, i18nUtilTest}
-import validation.ValidationTest
+import utils.{SecurityTest, SqlGenTest, TestObject, i18nUtilTest}
 import webui._
 
 /**
@@ -76,6 +75,7 @@ class TestJakonApp extends JakonInit{
 		DBHelper.addDao(classOf[Category])
 		DBHelper.addDao(classOf[Post])
 		DBHelper.addDao(classOf[Page])
+		DBHelper.addDao(classOf[TestObject])
 	}
 
 	Director.registerControler(new PageControler)

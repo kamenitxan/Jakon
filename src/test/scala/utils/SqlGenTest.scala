@@ -18,4 +18,16 @@ class SqlGenTest extends TestBase {
 		val tc = SqlGen.updateStmt(obj, DBHelper.getConnection, 0)
 		assert(tc != null)
 	}
+
+	test("insertStmt with TestObject") { _ =>
+		val obj = new TestObject()
+		val tc = SqlGen.insertStmt(obj, DBHelper.getConnection, 0)
+		assert(tc != null)
+	}
+
+	test("updateStmt with TestObject") { _ =>
+		val obj = new TestObject()
+		val tc = SqlGen.updateStmt(obj, DBHelper.getConnection, 0)
+		assert(tc != null)
+	}
 }

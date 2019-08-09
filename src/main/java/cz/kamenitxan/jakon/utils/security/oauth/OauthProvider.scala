@@ -30,11 +30,11 @@ trait OauthProvider {
 			PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "WRONG_EMAIL_OR_PASSWORD")
 			false
 		} else {
-			val user = result.entity.asInstanceOf[JakonUser]
+			val user = result.entity
 			val stmt = conn.prepareStatement(SQL_FIND_ACL)
 			stmt.setInt(1, result.foreignIds.getOrElse("acl_id", null).id)
 			val aclResult = DBHelper.selectSingle(stmt, classOf[AclRule])
-			user.acl = aclResult.entity.asInstanceOf[AclRule]
+			user.acl = aclResult.entity
 
 			logger.info("User " + user.username + " logged in")
 			req.session(true).attribute("user", user)
