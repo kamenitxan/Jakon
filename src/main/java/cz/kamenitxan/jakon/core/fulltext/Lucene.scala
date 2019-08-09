@@ -2,14 +2,9 @@ package cz.kamenitxan.jakon.core.fulltext
 
 import java.io.File
 
-import cz.kamenitxan.jakon.core.model.JakonObject
-import cz.kamenitxan.jakon.webui.entity.JakonField
 import org.apache.lucene.analysis.standard.StandardAnalyzer
-import org.apache.lucene.document.{Document, Field, StringField, TextField}
 import org.apache.lucene.index.IndexWriterConfig.OpenMode
-import org.apache.lucene.index.{DirectoryReader, IndexWriter, IndexWriterConfig}
-import org.apache.lucene.queryparser.classic.QueryParser
-import org.apache.lucene.search.IndexSearcher
+import org.apache.lucene.index.{IndexWriter, IndexWriterConfig}
 import org.apache.lucene.store.FSDirectory
 
 import scala.language.postfixOps
@@ -28,7 +23,7 @@ object Lucene {
 		writer.commit()
 	}
 
-	def indexObject(obj: JakonObject): Unit = {
+	/*def indexObject(obj: JakonObject): Unit = {
 		val indexedText = obj.getClass.getFields.filter(f => {
 			val ann = f.getAnnotation(classOf[JakonField])
 			ann != null && ann.searched()
@@ -58,5 +53,5 @@ object Lucene {
 		val result = searcher.search(query, 10).scoreDocs
 		result.map(d => searcher.doc(d.doc)) toList
 	}
-
+*/
 }
