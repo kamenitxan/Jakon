@@ -6,8 +6,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 import cz.kamenitxan.jakon.core.model.JakonObject
-import cz.kamenitxan.jakon.webui.entity.{FieldInfo, HtmlType, JakonField}
 import cz.kamenitxan.jakon.utils.TypeReferences._
+import cz.kamenitxan.jakon.webui.entity.{FieldInfo, HtmlType, JakonField}
 import javax.persistence.{ManyToOne, OneToMany}
 
 import scala.collection.JavaConverters._
@@ -71,10 +71,10 @@ object FieldConformer {
 			val an = f.getAnnotation(classOf[JakonField])
 			if (an != null) {
 				f.setAccessible(true)
-				if (f.getAnnotation(classOf[ManyToOne]) != null) {
+				if (f.getDeclaredAnnotation(classOf[ManyToOne]) != null) {
 					val fv = f.get(obj)
 					infos = new FieldInfo(an, HtmlType.CHECKBOX, f, fv, "ManyToOne") :: infos
-				} else if (f.getAnnotation(classOf[OneToMany]) != null) {
+				} else if (f.getDeclaredAnnotation(classOf[OneToMany]) != null) {
 					val fv = f.get(obj)
 					infos = new FieldInfo(an, HtmlType.CHECKBOX, f, fv, "OneToMany") :: infos
 				} else {

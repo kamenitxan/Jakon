@@ -236,4 +236,20 @@ class ValidationTest extends FunSuite {
 		val ann = AnnotationParser.annotationForMap(classOf[cz.kamenitxan.jakon.validation.validators.NegativeOrZero], null)
 		testTable(v, ann, data)
 	}
+
+	test("email") {
+		val data: TableFor2[String, Boolean] = Table(
+			("value", "expectedResult"),
+			("test", false),
+			(null, true),
+			("bob@gmail.com", true),
+			("bob@gnail.com", false),
+			("bob@nan.nan", false),
+			("bob@10mail.com", false)
+		)
+
+		val v = new EmailValidator
+		val ann = AnnotationParser.annotationForMap(classOf[cz.kamenitxan.jakon.validation.validators.Email], null)
+		testTable(v, ann, data)
+	}
 }

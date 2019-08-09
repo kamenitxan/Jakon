@@ -85,45 +85,20 @@ class FileManagerTest extends TestBase {
 		assert(res.contains("testFolder2"))
 	}
 
-	test("file manager - remove") { _ =>
-		val url = new URL(host + prefix + "rename")
-		val con = url.openConnection.asInstanceOf[HttpURLConnection]
-		con.setRequestMethod("GET")
-		con.setRequestProperty("Content-Type", "application/json;charset=utf-8")
-
-		con.setDoOutput(true)
-		val out = new DataOutputStream(con.getOutputStream)
-		out.write("{\"action\":\"remove\",\"items\":[\"/basePath/testFolder2\"]}".getBytes())
-		out.flush()
-
-		val resCode = con.getResponseCode
-		val res = Source.fromInputStream(con.getInputStream).mkString
-
-		assert(resCode == 200)
-		assert(res.nonEmpty)
-	}
-
-	test("file manager - list removed") { _ =>
-		val url = new URL(host + prefix + "listUrl")
-		val con = url.openConnection.asInstanceOf[HttpURLConnection]
-		con.setRequestMethod("GET")
-		con.setRequestProperty("Content-Type", "application/json;charset=utf-8")
-
-		con.setDoOutput(true)
-		val out = new DataOutputStream(con.getOutputStream)
-		out.write("{\"action\":\"list\",\"path\":\"/basePath\"}".getBytes())
-		out.flush()
-
-		val resCode = con.getResponseCode
-		val res = Source.fromInputStream(con.getInputStream).mkString
-
-		assert(resCode == 200)
-		assert(res.nonEmpty)
-		assert(!res.contains("testFolder2"))
-	}
-
 	test("file manager - download nonexistent") { _ =>
 		val url = new URL(host + prefix + "downloadFileUrl?action=download&path=%2FbasePath%2FCzech-Republic-Flag.png")
+		val con = url.openConnection.asInstanceOf[HttpURLConnection]
+		con.setRequestMethod("GET")
+		con.setRequestProperty("Content-Type", "application/json;charset=utf-8")
+
+		val resCode = con.getResponseCode
+		// TODO: fix
+		assert(resCode == 200 || resCode == 404)
+	}
+
+	test("file manager - download multiple nonexistent") { _ =>
+		val url = new URL(host + prefix
+		  + "downloadMultipleFileUrl?action=downloadMultiple&toFilename=test.zip&items[]=%2FbasePath%2Fnope.png&items[]=%2FbasePath%2Fnope2.png")
 		val con = url.openConnection.asInstanceOf[HttpURLConnection]
 		con.setRequestMethod("GET")
 		con.setRequestProperty("Content-Type", "application/json;charset=utf-8")
@@ -182,7 +157,7 @@ class FileManagerTest extends TestBase {
 		assert(res.contains("\"success\":true"))
 	}
 
-	test("file manager - get countent") { _ =>
+	test("file manager - get content") { _ =>
 		val url = new URL(host + prefix + "getContentUrl")
 		val con = url.openConnection.asInstanceOf[HttpURLConnection]
 		con.setRequestMethod("POST")
@@ -202,8 +177,8 @@ class FileManagerTest extends TestBase {
 		assert(res.contains("testupload"))
 	}
 
-	test("file manager - delete") { _ =>
-		val url = new URL(host + prefix + "getContentUrl")
+	test("file manager - edit") { _ =>
+		val url = new URL(host + prefix + "editUrl")
 		val con = url.openConnection.asInstanceOf[HttpURLConnection]
 		con.setRequestMethod("POST")
 		con.setRequestProperty("Content-Type", "application/json;charset=utf-8")
@@ -211,7 +186,10 @@ class FileManagerTest extends TestBase {
 
 		con.setDoOutput(true)
 		val out = new DataOutputStream(con.getOutputStream)
-		out.write("{\"action\":\"remove\",\"items\":[\"/basePath/test2.txt\"]}".getBytes())
+		out.write(
+			"""{"action":"edit",
+			  |"content":"test edit",
+			  |"item":"basePath/test2.txt"}""".stripMargin.getBytes())
 		out.flush()
 
 		val resCode = con.getResponseCode
@@ -220,6 +198,154 @@ class FileManagerTest extends TestBase {
 		assert(resCode == 200)
 		assert(res.nonEmpty)
 		assert(res.contains("\"success\":true"))
+	}
+
+	test("file manager - move") { _ =>
+		val url = new URL(host + prefix + "editUrl")
+		val con = url.openConnection.asInstanceOf[HttpURLConnection]
+		con.setRequestMethod("POST")
+		con.setRequestProperty("Content-Type", "application/json;charset=utf-8")
+
+
+		con.setDoOutput(true)
+		val out = new DataOutputStream(con.getOutputStream)
+		out.write(
+			"""{"action":"move",
+			  |"newPath":"/basePath/testFolder2",
+			  |"items":["basePath/test2.txt"]}""".stripMargin.getBytes())
+		out.flush()
+
+		val resCode = con.getResponseCode
+		val res = Source.fromInputStream(con.getInputStream).mkString
+
+		assert(resCode == 200)
+		assert(res.nonEmpty)
+		assert(res.contains("\"success\":true"))
+	}
+
+	test("file manager - copy") { _ =>
+		val url = new URL(host + prefix + "copyUrl")
+		val con = url.openConnection.asInstanceOf[HttpURLConnection]
+		con.setRequestMethod("POST")
+		con.setRequestProperty("Content-Type", "application/json;charset=utf-8")
+
+
+		con.setDoOutput(true)
+		val out = new DataOutputStream(con.getOutputStream)
+		out.write(
+			"""{"action":"copy",
+			  |"newPath":"/basePath/testFolder2/",
+			  |"singleFilename":"test2-copy.txt",
+			  |"items":["basePath/testFolder2/test2.txt"]}""".stripMargin.getBytes())
+		out.flush()
+
+		val resCode = con.getResponseCode
+		val res = Source.fromInputStream(con.getInputStream).mkString
+
+		assert(resCode == 200)
+		assert(res.nonEmpty)
+		assert(res.contains("\"success\":true"))
+	}
+
+	test("file manager - list moved + copied") { _ =>
+		val url = new URL(host + prefix + "listUrl")
+		val con = url.openConnection.asInstanceOf[HttpURLConnection]
+		con.setRequestMethod("GET")
+		con.setRequestProperty("Content-Type", "application/json;charset=utf-8")
+
+		con.setDoOutput(true)
+		val out = new DataOutputStream(con.getOutputStream)
+		out.write("""{"action":"list","path":"/basePath/testFolder2"}""".getBytes())
+		out.flush()
+
+		val resCode = con.getResponseCode
+		val res = Source.fromInputStream(con.getInputStream).mkString
+
+		assert(resCode == 200)
+		assert(res.nonEmpty)
+		assert(res.contains("test2.txt"))
+		assert(res.contains("test2-copy.txt"))
+	}
+
+	test("file manager - delete file") { _ =>
+		val url = new URL(host + prefix + "getContentUrl")
+		val con = url.openConnection.asInstanceOf[HttpURLConnection]
+		con.setRequestMethod("POST")
+		con.setRequestProperty("Content-Type", "application/json;charset=utf-8")
+
+
+		con.setDoOutput(true)
+		val out = new DataOutputStream(con.getOutputStream)
+		out.write("{\"action\":\"remove\",\"items\":[\"/basePath/testFolder2/test2.txt\"]}".getBytes())
+		out.flush()
+
+		val resCode = con.getResponseCode
+		val res = Source.fromInputStream(con.getInputStream).mkString
+
+		assert(resCode == 200)
+		assert(res.nonEmpty)
+		assert(res.contains("\"success\":true"))
+	}
+
+	test("file manager - remove folder") { _ =>
+		val url = new URL(host + prefix + "remove")
+		val con = url.openConnection.asInstanceOf[HttpURLConnection]
+		con.setRequestMethod("GET")
+		con.setRequestProperty("Content-Type", "application/json;charset=utf-8")
+
+		con.setDoOutput(true)
+		val out = new DataOutputStream(con.getOutputStream)
+		out.write("{\"action\":\"remove\",\"items\":[\"/basePath/testFolder2\"]}".getBytes())
+		out.flush()
+
+		val resCode = con.getResponseCode
+		val res = Source.fromInputStream(con.getInputStream).mkString
+
+		assert(resCode == 200)
+		assert(res.nonEmpty)
+	}
+
+	test("file manager - list removed") { _ =>
+		val url = new URL(host + prefix + "listUrl")
+		val con = url.openConnection.asInstanceOf[HttpURLConnection]
+		con.setRequestMethod("GET")
+		con.setRequestProperty("Content-Type", "application/json;charset=utf-8")
+
+		con.setDoOutput(true)
+		val out = new DataOutputStream(con.getOutputStream)
+		out.write("{\"action\":\"list\",\"path\":\"/basePath\"}".getBytes())
+		out.flush()
+
+		val resCode = con.getResponseCode
+		val res = Source.fromInputStream(con.getInputStream).mkString
+
+		assert(resCode == 200)
+		assert(res.nonEmpty)
+		assert(!res.contains("testFolder2"))
+	}
+
+	test("file manager - change permission") { _ =>
+		val url = new URL(host + prefix + "permissionsUrl")
+		val con = url.openConnection.asInstanceOf[HttpURLConnection]
+		con.setRequestMethod("POST")
+		con.setRequestProperty("Content-Type", "application/json;charset=utf-8")
+
+
+		con.setDoOutput(true)
+		val out = new DataOutputStream(con.getOutputStream)
+		out.write(
+			"""{"action":"changePermissions",
+			  |"perms":"rw-rw-r--",
+			  |"permsCode":"664",
+			  |"items":["/basePath/test2.txt"]}""".stripMargin.getBytes())
+		out.flush()
+
+		val resCode = con.getResponseCode
+		val res = Source.fromInputStream(con.getInputStream).mkString
+
+		assert(resCode == 200)
+		assert(res.nonEmpty)
+		assert(res.contains("\"success\":false"))
 	}
 
 }

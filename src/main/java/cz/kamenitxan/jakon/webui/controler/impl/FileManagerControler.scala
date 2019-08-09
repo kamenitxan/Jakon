@@ -9,7 +9,6 @@ import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.util
 import java.util.Date
-import java.util.regex.Pattern
 import java.util.zip.{ZipEntry, ZipOutputStream}
 
 import cz.kamenitxan.jakon.core.model.{FileType, JakonFile}
@@ -180,18 +179,16 @@ object FileManagerControler {
 	}
 
 	def init(): Unit = {
-		val enabledActions = "createfolder, rename, remove, upload, compress"
-		val movePattern = Pattern.compile("\\bmove\\b")
-		enabledAction.put(FileManagerMode.rename, enabledActions.contains("rename"))
-		enabledAction.put(FileManagerMode.move, movePattern.matcher(enabledActions).find)
-		enabledAction.put(FileManagerMode.remove, enabledActions.contains("remove"))
-		enabledAction.put(FileManagerMode.edit, enabledActions.contains("edit"))
-		enabledAction.put(FileManagerMode.createFolder, enabledActions.contains("createfolder"))
-		enabledAction.put(FileManagerMode.changePermissions, enabledActions.contains("changepermissions"))
-		enabledAction.put(FileManagerMode.compress, enabledActions.contains("compress"))
-		enabledAction.put(FileManagerMode.extract, enabledActions.contains("extract"))
-		enabledAction.put(FileManagerMode.copy, enabledActions.contains("copy"))
-		enabledAction.put(FileManagerMode.upload, enabledActions.contains("upload"))
+		enabledAction.put(FileManagerMode.rename, true)
+		enabledAction.put(FileManagerMode.move, true)
+		enabledAction.put(FileManagerMode.remove, true)
+		enabledAction.put(FileManagerMode.edit, true)
+		enabledAction.put(FileManagerMode.createFolder, true)
+		enabledAction.put(FileManagerMode.changePermissions, false)
+		enabledAction.put(FileManagerMode.compress, true)
+		enabledAction.put(FileManagerMode.extract, false)
+		enabledAction.put(FileManagerMode.copy, true)
+		enabledAction.put(FileManagerMode.upload, true)
 	}
 
 
@@ -209,7 +206,7 @@ object FileManagerControler {
 				case FileManagerMode.createFolder =>
 					executeIfSupported(mode, params, p => createFolder(p))
 				case FileManagerMode.changePermissions =>
-					executeIfSupported(mode, params, p => changePermissions(p))
+					executeIfSupported(mode, params, p => null) //changePermissions(p))
 				case FileManagerMode.compress =>
 					executeIfSupported(mode, params, p => compress(p))
 				case FileManagerMode.copy =>
@@ -221,7 +218,7 @@ object FileManagerControler {
 				case FileManagerMode.edit => // get content
 					executeIfSupported(mode, params, p => editFile(p))
 				case FileManagerMode.extract =>
-					executeIfSupported(mode, params, p => extract(p))
+					executeIfSupported(mode, params, p => null) //extract(p))
 				case FileManagerMode.list =>
 					list(params)
 				case FileManagerMode.rename =>
@@ -376,7 +373,7 @@ object FileManagerControler {
 			error(e.getMessage)
 	}
 
-	private def changePermissions(params: JSONObject) = {
+	/*private def changePermissions(params: JSONObject) = {
 		try {
 			val paths = params.get("items").asInstanceOf[JSONArray]
 			val perms = params.getAsString("perms") // "rw-r-x-wx"
@@ -393,7 +390,7 @@ object FileManagerControler {
 				logger.error("changepermissions:" + e.getMessage, e)
 				error(e.getMessage)
 		}
-	}
+	}*/
 
 	private def move(params: JSONObject): JSONObject = try { //TODO: minidev json should be rewrited to gson
 		val paths = params.get("items").asInstanceOf[JSONArray]
@@ -579,7 +576,7 @@ object FileManagerControler {
 			error(e.getClass.getSimpleName + ":" + e.getMessage)
 	}
 
-	private def extract(params: JSONObject) = {
+	/*private def extract(params: JSONObject) = {
 		var genFolder = false
 		val dest = Paths.get(REPOSITORY_BASE_PATH, params.getAsString("destination"))
 		val folder = dest.resolve(params.getAsString("folderName"))
@@ -629,7 +626,7 @@ object FileManagerControler {
 				logger.error("extract:" + e.getMessage, e)
 				error(e.getMessage)
 		}
-	}
+	}*/
 
 	@throws[IOException]
 	private def getPermissions(path: Path) = {
@@ -642,7 +639,7 @@ object FileManagerControler {
 	/**
 	  * http://www.programcreek.com/java-api-examples/index.php?api=java.nio.file.attribute.PosixFileAttributes
 	  */
-	@throws[IOException]
+	/*@throws[IOException]
 	private def setPermissions(file: File, permsCode: String, recursive: Boolean): String = {
 		val fileAttributeView = Files.getFileAttributeView(file.toPath, classOf[PosixFileAttributeView])
 		fileAttributeView.setPermissions(PosixFilePermissions.fromString(permsCode))
@@ -650,7 +647,7 @@ object FileManagerControler {
 			setPermissions(f, permsCode, recursive)
 		}
 		permsCode
-	}
+	}*/
 
 	private def write(inputStream: InputStream, path: Path) = {
 		try {
