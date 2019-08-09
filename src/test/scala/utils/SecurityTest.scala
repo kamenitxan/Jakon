@@ -14,13 +14,13 @@ import test.{TestBase, TestHttpServletRequest}
 
 class SecurityTest extends TestBase {
 
-	class TestOauthProvider extends OauthProvider {
+	class TestOauthProvider(email: String) extends OauthProvider {
 		override val isEnabled: Boolean = true
 
 		override def authInfo(req: Request, redirectTo: String): OauthInfo = OauthInfo("test", createAuthUrl(req, redirectTo))
 
 		override def handleAuthResponse(req: Request)(implicit conn: Connection): Boolean = {
-			logIn(req, "bob@test.com")
+			logIn(req, email)
 		}
 	}
 
@@ -50,12 +50,22 @@ class SecurityTest extends TestBase {
 		checkPageLoad(".panel-title")
 	}
 
-	test("test provider") { f =>
+	test("test provider bob") { f =>
 		PageContext.init(fakeReq, null)
 		PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "")
-		val provider = new TestOauthProvider
+		val provider = new TestOauthProvider("bob@test.test")
 		provider.authInfo(fakeReq, "")
 		provider.handleAuthResponse(fakeReq)(DBHelper.getConnection)
+		PageContext.destroy()
+	}
+
+	test("test provider admin") { f =>
+		PageContext.init(fakeReq, null)
+		PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "")
+		val provider = new TestOauthProvider("admin@admin.cz")
+		provider.authInfo(fakeReq, "")
+		provider.handleAuthResponse(fakeReq)(DBHelper.getConnection)
+		PageContext.destroy()
 	}
 
 }

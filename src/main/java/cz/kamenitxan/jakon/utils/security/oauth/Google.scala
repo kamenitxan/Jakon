@@ -13,7 +13,6 @@ import cz.kamenitxan.jakon.utils.Utils.StringImprovements
 import spark.Request
 
 import scala.collection.JavaConverters._
-import scala.util.Random
 
 
 @Configuration
@@ -42,8 +41,7 @@ object Google extends OauthProvider {
 	def createAuthUrl(req: Request, redirectTo: String): String = {
 		if (!isEnabled) return ""
 
-		val secretState = this.getClass.getSimpleName + new Random().nextInt(99999)
-		req.session().attribute(secretState)
+		val secretState = setSecretState(req)
 
 
 		// Obtain the Authorization URL// Obtain the Authorization URL
