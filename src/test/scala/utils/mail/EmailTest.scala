@@ -1,11 +1,14 @@
 package utils.mail
 
 import java.util.Date
+import java.util.concurrent.TimeUnit
 
+import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.model.JakonUser
-import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailTemplateEntity}
+import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.webui.controler.pagelets.JakonRegistrationPagelet
 import org.scalatest.FunSuite
+import test.TestEmailTypeHandler
 
 class EmailTest extends FunSuite {
 
@@ -37,6 +40,25 @@ class EmailTest extends FunSuite {
 		e.create()
 
 		e.update()
+	}
+
+	test("send email") {
+		val params = Map[String, String](
+			"param" -> "test"
+		)
+		val e = new EmailEntity("tmpl", "to", "subject", params, "TYPE")
+		e.create()
+
+		// smtp does not work in travis
+		assertThrows[Throwable](new EmailSendTask(1, TimeUnit.DAYS).start())
+
+		Settings.setEmailTypeHandler(new TestEmailTypeHandler)
+		Settings.setDeployMode(DeployMode.PRODUCTION)
+		val e2 = new EmailEntity("tmpl", "to", "subject", null, "TYPE2")
+		e2.create()
+		assertThrows[Throwable](new EmailSendTask(1, TimeUnit.DAYS).start())
+
+		Settings.setDeployMode(DeployMode.DEVEL)
 	}
 
 }

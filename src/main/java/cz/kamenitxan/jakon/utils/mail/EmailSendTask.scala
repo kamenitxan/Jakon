@@ -1,7 +1,7 @@
 package cz.kamenitxan.jakon.utils.mail
 
-import java.util.{Date, Properties}
 import java.util.concurrent.TimeUnit
+import java.util.{Date, Properties}
 
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper
@@ -25,7 +25,7 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 		try {
 			val stmt = conn.createStatement()
 
-			val emails = DBHelper.select(stmt, EmailSendTask.UNSENT_SQL, classOf[EmailEntity]).map(qr => qr.entity.asInstanceOf[EmailEntity])
+			val emails = DBHelper.select(stmt, EmailSendTask.UNSENT_SQL, classOf[EmailEntity]).map(qr => qr.entity)
 			if (emails.isEmpty) return
 
 			val prop = new Properties()
@@ -55,7 +55,7 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 					val stmt = conn.prepareStatement(EmailSendTask.SELECT_EMAIL_TMPL_SQL)
 					stmt.setString(1, e.template + "_" + tmplLangSuffix)
 					stmt.setString(2, e.template)
-					val tmpl = DBHelper.selectSingle(stmt, classOf[EmailTemplateEntity]).entity.asInstanceOf[EmailTemplateEntity]
+					val tmpl = DBHelper.selectSingle(stmt, classOf[EmailTemplateEntity]).entity
 
 					if (Settings.getDeployMode.equals(DeployMode.DEVEL)) {
 						message.setFrom(new InternetAddress(Settings.getEmailUserName))
