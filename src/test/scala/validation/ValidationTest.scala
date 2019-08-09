@@ -176,4 +176,64 @@ class ValidationTest extends FunSuite {
 		val v = new MaxValidator
 		testTable(v, ann, data, obj)
 	}
+
+	test("positive") {
+		val data: TableFor2[String, Boolean] = Table(
+			("value", "expectedResult"),
+			("test", false),
+			(null, true),
+			("-1", false),
+			("0", false),
+			("1", true)
+		)
+
+		val v = new PositiveValidator
+		val ann = AnnotationParser.annotationForMap(classOf[cz.kamenitxan.jakon.validation.validators.Positive], null)
+		testTable(v, ann, data)
+	}
+
+	test("positiveOrZero") {
+		val data: TableFor2[String, Boolean] = Table(
+			("value", "expectedResult"),
+			("test", false),
+			(null, true),
+			("-1", false),
+			("0", true),
+			("1", true)
+		)
+
+		val v = new PositiveOrZeroValidator
+		val ann = AnnotationParser.annotationForMap(classOf[cz.kamenitxan.jakon.validation.validators.PositiveOrZero], null)
+		testTable(v, ann, data)
+	}
+
+	test("negative") {
+		val data: TableFor2[String, Boolean] = Table(
+			("value", "expectedResult"),
+			("test", false),
+			(null, true),
+			("-1", true),
+			("0", false),
+			("1", false)
+		)
+
+		val v = new NegativeValidator
+		val ann = AnnotationParser.annotationForMap(classOf[cz.kamenitxan.jakon.validation.validators.Negative], null)
+		testTable(v, ann, data)
+	}
+
+	test("negativeOrZero") {
+		val data: TableFor2[String, Boolean] = Table(
+			("value", "expectedResult"),
+			("test", false),
+			(null, true),
+			("-1", true),
+			("0", true),
+			("1", false)
+		)
+
+		val v = new NegativeOrZeroValidator
+		val ann = AnnotationParser.annotationForMap(classOf[cz.kamenitxan.jakon.validation.validators.NegativeOrZero], null)
+		testTable(v, ann, data)
+	}
 }

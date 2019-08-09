@@ -3,6 +3,11 @@ textarea {
 }
 
 /* woofmark */
+.wk-textfield {
+	min-height: 126px;
+	height: auto;
+}
+
 .wk-hide {
 	display: none !important;
 }
@@ -43,6 +48,11 @@ textarea {
 .wk-commands,
 .wk-switchboard {
 	display: inline-block;
+	margin-top: 5px;
+}
+
+.wk-switchboard .wk-mode-active {
+	background-color: #e0eeff;
 }
 
 /** selectbox */

@@ -7,7 +7,10 @@ class JTextarea {
             {
                 parseMarkdown: megamark,
                 defaultMode: 'wysiwyg',
-                parseHTML: domador
+                parseHTML: domador,
+                classes: {
+                    wysiwyg: ["form-control", "wk-textfield"]
+                }
             });
     }
 };

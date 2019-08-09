@@ -107,7 +107,7 @@ abstract class JakonObject(@JakonField var childClass: String) extends Serializa
 		try {
 			val joSQL = "UPDATE JakonObject SET url = ?, published = ? WHERE id = ?"
 			val stmt = conn.prepareStatement(joSQL)
-			stmt.setString(1, url)
+			stmt.setString(1, createUrl)
 			stmt.setBoolean(2, published)
 			stmt.setInt(3, id)
 			stmt.executeUpdate()

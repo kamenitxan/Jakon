@@ -15,24 +15,16 @@ import scala.beans.BeanProperty
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
   */
-@Entity
 class Page(u: Unit = ()) extends JakonObject(classOf[Page].getName) with Ordered {
-	@BeanProperty
-	@Column
 	@JakonField
 	var title: String = ""
-	@Column
-	@JakonField
+	@JakonField(inputTemplate = "textarea")
 	var content: String = ""
-	@BeanProperty
 	@ManyToOne
 	@JakonField(inputTemplate = "String")
 	var parent: Page = _
-	@BeanProperty
-	@Column
 	@JakonField
 	var showComments: Boolean = false
-	@Column(nullable = false)
 	@JakonField(listOrder = -96, shownInEdit = false, shownInList = false)
 	override var objectOrder: Double = _
 	@Transient

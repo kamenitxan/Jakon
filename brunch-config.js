@@ -1,6 +1,6 @@
 // See http://brunch.io for documentation.
 exports.paths = {
-    watched: ['jakon-core/src/frontend'],
+    watched: ['src/frontend'],
     public: 'static/jakon'
 };
 
@@ -8,13 +8,13 @@ exports.files = {
     javascripts: {
         joinTo: {
             'js/vendor.js': /^node_modules/, // Files that are not in `app` dir.
-            'js/jakon.js': /^jakon-core\/src\/frontend\/admin\/js/
+            'js/jakon.js': /^src\/frontend\/admin\/js/
         }
     },
     stylesheets: {
         joinTo: {
             'css/vendor.css': /^node_modules/,
-            'css/jakon.css': /^jakon-core\/src\/frontend\/admin\/css/
+            'css/jakon.css': /^src\/frontend\/admin\/css/
         }
     },
 
@@ -43,7 +43,7 @@ exports.modules = {
         // Strip app/ and app/externals/ prefixes
             .replace(/^app\/(?:externals\/)?/, '')
             // Allow -x.y[.z…] version suffixes in mantisses
-            .replace("jakon-core/src/frontend/admin/js/", '')
+            .replace("src/frontend/admin/js/", '')
     }
 };
 

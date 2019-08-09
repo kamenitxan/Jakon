@@ -10,6 +10,7 @@ import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
+import org.slf4j.LoggerFactory
 import spark.{ModelAndView, Request, Response}
 
 import scala.collection.JavaConverters._
@@ -20,6 +21,7 @@ import scala.util.Try
   * Created by TPa on 08.09.16.
   */
 object ObjectControler {
+	private val logger = LoggerFactory.getLogger(this.getClass)
 	val excludedFields = List("url", "sectionName", "objectSettings", "childClass")
 	private val numberTypes = classOf[Int] :: classOf[Integer] :: classOf[Double] :: classOf[Float] :: Nil
 	private val boolTypes = classOf[Boolean] :: classOf[java.lang.Boolean] :: Nil
@@ -77,6 +79,10 @@ object ObjectControler {
 					"fields" -> fi,
 					"filterParams" -> filterParams.asJava
 				), "objects/list")
+			} catch {
+				case ex: Throwable =>
+					logger.error("Excetion when getting object list", ex)
+					throw ex
 			} finally {
 				conn.close()
 			}
@@ -152,7 +158,7 @@ object ObjectControler {
 			try {
 				val stmt = conn.prepareStatement(s"SELECT * FROM $objectName INNER JOIN JakonObject ON JakonObject.id = $objectName.id WHERE $objectName.id = ?")
 				stmt.setInt(1, objectId.get)
-				obj = Option(DBHelper.selectSingle(stmt, objectClass).entity).getOrElse(objectClass.newInstance())
+				obj = Option(DBHelper.selectSingleDeep(stmt, objectClass)).getOrElse(objectClass.newInstance())
 				if (obj.getClass.getInterfaces.contains(classOf[Ordered])) {
 					obj.asInstanceOf[Ordered].fetchVisibleOrder
 				}

@@ -29,11 +29,9 @@ class TestRunner extends Suites(
 	new ApiTest,
 	new ObjectControllerTest,
 	new FileManagerTest,
-	new UtilsTest,
 	new WebUi,
 	new SqlGenTest,
 	new ModelTest,
-	new FieldConformerTest,
 	new SettingsTest,
 	new i18nUtilTest
 ) with BeforeAndAfterAll {

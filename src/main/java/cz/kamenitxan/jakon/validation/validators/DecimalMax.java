@@ -13,8 +13,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * The annotated element must be a number whose value must be lower or
  * equal to the specified maximum.
  *
- * Note that {@code double} and {@code float} are not supported due to rounding errors
- * (some providers might provide some approximative support).
  * <p>
  * {@code null} elements are considered valid.
  */

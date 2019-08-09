@@ -23,7 +23,7 @@ class PageControler extends IControler {
 		val conn = DBHelper.getConnection
 		try {
 			val stmt = conn.createStatement()
-			val pages = DBHelper.select(stmt, ALL_PAGES_SQL, classOf[Page]).map(qr => qr.entity.asInstanceOf[Page])
+			val pages = DBHelper.select(stmt, ALL_PAGES_SQL, classOf[Page]).map(qr => qr.entity)
 			pages.foreach(p => {
 				val context = new util.HashMap[String, AnyRef]
 				context.put("page", p)

@@ -49,13 +49,21 @@ class ForeignObjectSelector {
 
     fillSelect(data) {
         const itemCount = this.selectbox.options.length;
+        const selectedId = parseInt(this.selectbox.dataset["selected_id"], 10);
         for (let i = 0; i <= itemCount; i++) {
             this.selectbox.remove(i);
         }
+        let opt = document.createElement("option");
+        opt.text = "---";
+        opt.value = "";
+        this.selectbox.add(opt);
         data.result.forEach(e => {
             let opt = document.createElement("option");
             opt.value = e.id;
             opt.text = `Id: ${e.id} - ${e.name}`;
+            if (e.id === selectedId) {
+                opt.selected = true
+            }
             this.selectbox.add(opt);
         })
     }
