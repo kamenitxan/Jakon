@@ -2,6 +2,7 @@ package cz.kamenitxan.jakon.devtools
 
 import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.controler.IControler
+import cz.kamenitxan.jakon.core.template.utils.TemplateUtils
 
 import scala.collection.mutable
 
@@ -12,7 +13,7 @@ object DevRender {
 	def registerPath(path: String, caller: IControler): Unit = {
 		val controler = controllers.find(c => c.getClass.getCanonicalName != null && c.getClass.getCanonicalName.equals(caller.getClass.getCanonicalName))
 		if (controler.isEmpty) return
-		registeredPaths += ("/" + path + ".html" -> controler.get)
+		registeredPaths += ("/" + path + TemplateUtils.getFileSuffix(path) -> controler.get)
 	}
 
 	def rerender(path: String): Unit = {

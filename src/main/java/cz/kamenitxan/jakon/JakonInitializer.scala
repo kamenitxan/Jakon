@@ -63,7 +63,7 @@ object JakonInitializer {
 					emailTemplateEntity.create()
 				}
 			}
-			createDefaultEmailTemplates()
+			createDefaultEmailTemplates()(conn)
 		} finally {
 			conn.close()
 		}

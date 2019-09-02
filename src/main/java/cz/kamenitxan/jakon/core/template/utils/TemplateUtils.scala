@@ -24,9 +24,7 @@ object TemplateUtils {
 	private val renderer = HtmlRenderer.builder.build
 
 	def saveRenderedPage(content: String, path: String): Unit = try {
-		val suffixSpecified = suffixes.exists(s => path.endsWith(s))
-		val suffix = if (suffixSpecified) "" else ".html"
-		val file = new File(Settings.getOutputDir + "/" + path + suffix)
+		val file = new File(Settings.getOutputDir + "/" + path + getFileSuffix(path))
 		// if file doesnt exists, then create it
 		if (!file.exists) {
 			file.getParentFile.mkdirs
@@ -39,6 +37,11 @@ object TemplateUtils {
 		bw.close()
 	} catch {
 		case e: IOException => logger.error("Error occurred while saving page", e)
+	}
+
+	def getFileSuffix(path: String): String = {
+		val suffixSpecified = suffixes.exists(s => path.endsWith(s))
+		if (suffixSpecified) "" else ".html"
 	}
 
 	/**
