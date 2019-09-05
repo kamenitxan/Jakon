@@ -43,11 +43,9 @@ object ObjectControler {
 			implicit val conn: Connection = DBHelper.getConnection
 			try {
 				// pocet objektu
+				// language=SQL
 				val countSql = s"SELECT count(*) FROM $objectName"
-				val stmt = conn.createStatement()
-				val rs = stmt.executeQuery(countSql)
-				rs.next()
-				val count = rs.getInt(1)
+				val count = DBHelper.count(countSql)
 
 				// seznam objektu
 				val ocls: Class[JakonObject] = objectClass.get.asInstanceOf[Class[JakonObject]]
@@ -58,6 +56,7 @@ object ObjectControler {
 					""
 				}
 				val filterSql = parseFilterParams(filterParams, objectClass.get)
+				// language=SQL
 				val listSql = s"SELECT * FROM JakonObject INNER JOIN $objectName ON JakonObject.id = $objectName.id $filterSql $order LIMIT $pageSize OFFSET $first"
 				val stmt2 = conn.createStatement()
 				val resultList = DBHelper.selectDeep(stmt2, listSql, ocls)
@@ -68,7 +67,15 @@ object ObjectControler {
 					resultList
 				}
 
-				val fields = Utils.getFieldsUpTo(objectClass.get, classOf[Object]).filter(n => !excludedFields.contains(n.getName))
+				val upperClass = {
+					val objectSettings = objectClass.get.newInstance().objectSettings
+					if (objectSettings != null && objectSettings.noParentFieldInList) {
+						objectClass.get.getSuperclass
+					} else {
+						classOf[Object]
+					}
+				}
+				val fields = Utils.getFieldsUpTo(objectClass.get, upperClass).filter(n => !excludedFields.contains(n.getName))
 				val fi = FieldConformer.getEmptyFieldInfos(fields)
 				new Context(Map[String, Any](
 					"objectName" -> objectName,
@@ -156,6 +163,7 @@ object ObjectControler {
 		if (objectId.nonEmpty) {
 			implicit val conn = DBHelper.getConnection
 			try {
+				// language=SQL
 				val stmt = conn.prepareStatement(s"SELECT * FROM $objectName INNER JOIN JakonObject ON JakonObject.id = $objectName.id WHERE $objectName.id = ?")
 				stmt.setInt(1, objectId.get)
 				obj = Option(DBHelper.selectSingleDeep(stmt, objectClass)).getOrElse(objectClass.newInstance())
@@ -238,6 +246,7 @@ object ObjectControler {
 			), "pages/unauthorized")
 		}
 
+		// language=SQL
 		val sql = "DELETE FROM JakonObject WHERE id = ?"
 		val conn = DBHelper.getConnection
 		val stmt = conn.prepareStatement(sql)
@@ -275,6 +284,7 @@ object ObjectControler {
 
 		implicit val conn = DBHelper.getConnection
 		try {
+
 			val ps = conn.prepareStatement("SELECT * FROM " + objectName + " WHERE id = ?")
 			ps.setInt(1, objectId.get)
 			val obj = DBHelper.selectSingleDeep(ps, objectClass).asInstanceOf[JakonObject with Ordered]

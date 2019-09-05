@@ -14,6 +14,7 @@ import cz.kamenitxan.jakon.utils.TypeReferences._
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence.{Column, ManyToOne}
+import org.intellij.lang.annotations.Language
 import org.slf4j.{Logger, LoggerFactory}
 import org.sqlite.SQLiteConfig
 
@@ -248,7 +249,7 @@ object DBHelper {
 		res
 	}
 
-	def select[T <: JakonObject](stmt: Statement, sql: String, cls: Class[T]): List[QueryResult[T]] = {
+	def select[T <: JakonObject](stmt: Statement, @Language("SQL") sql: String, cls: Class[T]): List[QueryResult[T]] = {
 		val rs = execute(stmt, sql)
 		val res = Iterator.from(0).takeWhile(_ => rs.next()).map(_ => {
 			createJakonObject(rs, cls)
@@ -269,7 +270,7 @@ object DBHelper {
 		res
 	}
 
-	def selectSingle[T <: JakonObject](stmt: Statement, sql: String, cls: Class[T]): QueryResult[T] = {
+	def selectSingle[T <: JakonObject](stmt: Statement, @Language("SQL") sql: String, cls: Class[T]): QueryResult[T] = {
 		val rs = execute(stmt, sql)
 		val res: QueryResult[T] = if (rs.next()) {
 			createJakonObject(rs, cls)
@@ -280,7 +281,7 @@ object DBHelper {
 		res
 	}
 
-	def selectSingleDeep[T <: JakonObject](stmt: Statement, sql: String, cls: Class[T])(implicit conn: Connection): T = {
+	def selectSingleDeep[T <: JakonObject](stmt: Statement, @Language("SQL") sql: String, cls: Class[T])(implicit conn: Connection): T = {
 		val res = selectSingle(stmt, sql, cls)
 		if (res.foreignIds != null && res.foreignIds.nonEmpty) {
 			res.foreignIds.values.foreach(fki => {
@@ -316,7 +317,7 @@ object DBHelper {
 		res.entity
 	}
 
-	def selectDeep[T <: JakonObject](stmt: Statement, sql: String, cls: Class[T])(implicit conn: Connection): List[T] = {
+	def selectDeep[T <: JakonObject](stmt: Statement, @Language("SQL") sql: String, cls: Class[T])(implicit conn: Connection): List[T] = {
 		val res = select(stmt, sql, cls)
 		fetchForeignObjects(res)
 		res.map(r => r.entity)
@@ -346,6 +347,15 @@ object DBHelper {
 			}
 		})
 		resultList
+	}
+
+	def count(@Language("SQL") countSql: String)(implicit conn: Connection): Long = {
+		val usr_stmt = conn.createStatement()
+		val rs = usr_stmt.executeQuery(countSql)
+		rs.next()
+		val userCount = rs.getInt(1)
+		usr_stmt.close()
+		userCount
 	}
 
 	def withDbConnection[T](fun: Connection => T): T = {

@@ -51,6 +51,10 @@ class JakonInit {
 		TaskRunner.registerTask(new FileManagerConsistencyTestTask)
 	}
 
+	def afterInit(): Unit = {
+
+	}
+
 	def run(args: Array[String]): Unit = {
 		val arguments = args.toList.map(a => {
 			val split = a.split("=")
@@ -65,6 +69,7 @@ class JakonInit {
 		AnnotationScanner.loadConfiguration()
 
 		staticFiles.externalLocation(Settings.getStaticDir)
+		staticFiles.location("/static")
 		val portNumber: Int = arguments.find(a => a._1 == "port").map(a => a._2.toInt).getOrElse(Settings.getPort)
 		port(portNumber)
 
@@ -98,5 +103,6 @@ class JakonInit {
 			})
 		}
 		Director.start()
+		afterInit()
 	}
 }

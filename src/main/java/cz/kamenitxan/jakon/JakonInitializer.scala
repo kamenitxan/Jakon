@@ -11,13 +11,9 @@ import cz.kamenitxan.jakon.utils.mail.EmailTemplateEntity
 object JakonInitializer {
 
 	def init() = {
-		val conn = DBHelper.getConnection
+		implicit val conn = DBHelper.getConnection
 		try {
-			val usr_stmt = conn.createStatement()
-			val rs = usr_stmt.executeQuery("SELECT count(*) FROM JakonUser")
-			rs.next()
-			val userCount = rs.getInt(1)
-			usr_stmt.close()
+			val userCount = DBHelper.count("SELECT count(*) FROM JakonUser")
 			if (userCount == 0) {
 				val acl = new AclRule()
 				acl.name = "Admin"
