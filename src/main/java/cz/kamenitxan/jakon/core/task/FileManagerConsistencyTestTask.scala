@@ -3,16 +3,15 @@ package cz.kamenitxan.jakon.core.task
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.charset.Charset
-import java.nio.file.attribute.{BasicFileAttributes, UserDefinedFileAttributeView}
 import java.nio.file._
+import java.nio.file.attribute.{BasicFileAttributes, UserDefinedFileAttributeView}
 import java.sql.Connection
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
 import cz.kamenitxan.jakon.core.database.DBHelper
-import cz.kamenitxan.jakon.core.model.service.UserService
 import cz.kamenitxan.jakon.core.model.{FileType, JakonFile}
-import cz.kamenitxan.jakon.core.service.JakonFileService
+import cz.kamenitxan.jakon.core.service.{JakonFileService, UserService}
 import cz.kamenitxan.jakon.utils.Utils._
 import cz.kamenitxan.jakon.webui.controler.impl.FileManagerControler.REPOSITORY_BASE_PATH
 import org.slf4j.{Logger, LoggerFactory}

@@ -2,8 +2,8 @@ package cz.kamenitxan.jakon.webui.controler.impl
 
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
-import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.utils.security.oauth.{Facebook, Google}
+import cz.kamenitxan.jakon.utils.{PageContext, Utils}
 import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import org.mindrot.jbcrypt.BCrypt
@@ -34,6 +34,7 @@ object Authentication {
 	def loginPost(req: Request, res: Response): ModelAndView = {
 		val email = req.queryParams("email")
 		val password = req.queryParams("password")
+		val redirectTo = req.queryParams("redirect_to")
 		if (email != null && password != null) {
 			val conn = DBHelper.getConnection
 			try {
@@ -52,11 +53,16 @@ object Authentication {
 					val stmt = conn.prepareStatement(SQL_FIND_ACL)
 					stmt.setInt(1, result.foreignIds.getOrElse("acl_id", null).id)
 					val aclResult = DBHelper.selectSingle(stmt, classOf[AclRule])
-					user.acl = aclResult.entity.asInstanceOf[AclRule]
+					user.acl = aclResult.entity
 
 					logger.info("User " + user.username + " logged in")
 					req.session(true).attribute("user", user)
-					res.redirect("/admin/index")
+					if (Utils.isEmpty(redirectTo)) {
+						res.redirect("/admin/index")
+					} else {
+						res.redirect(redirectTo)
+					}
+
 				} else {
 					logger.info("User " + user.username + " failed to provide correct password")
 				}

@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.core.model.service
+package cz.kamenitxan.jakon.core.service
 
 import java.sql.Connection
 
