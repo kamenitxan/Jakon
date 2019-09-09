@@ -5,7 +5,7 @@ import cz.kamenitxan.jakon.core.configuration.DeployMode;
 import cz.kamenitxan.jakon.core.configuration.Settings;
 import cz.kamenitxan.jakon.core.database.DBHelper;
 import cz.kamenitxan.jakon.core.model.JakonUser;
-import cz.kamenitxan.jakon.core.model.service.UserService;
+import cz.kamenitxan.jakon.core.service.UserService;
 import cz.kamenitxan.jakon.webui.api.Api;
 import cz.kamenitxan.jakon.webui.controler.AbstractController;
 import cz.kamenitxan.jakon.webui.controler.ExecuteFun;
