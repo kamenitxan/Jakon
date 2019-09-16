@@ -34,9 +34,13 @@
 	</repositories>
 
 	<distributionManagement>
-		<snapshotRepository>
+		<!--snapshotRepository>
 			<id>nexus</id>
 			<url>http://tomas-pavel-pc.etnetera.mh.etn:8081/repository/maven-snapshots/</url>
+		</snapshotRepository-->
+		<snapshotRepository>
+			<id>app-engine</id>
+			<url>https://kamenitxans-maven-repository.appspot.com/</url>
 		</snapshotRepository>
 	</distributionManagement>
 

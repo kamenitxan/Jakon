@@ -22,7 +22,9 @@ class ValidationTest extends FunSuite {
 
 	private def objectToMap(o: AnyRef): Map[Field, String] = {
 		o.getClass.getDeclaredFields.map(f => {
-			(f, f.get(o).toString)
+			f.setAccessible(true)
+			val v = f.get(o).asInstanceOf[String]
+			(f, v)
 		}).toMap
 	}
 

@@ -43,7 +43,7 @@ object Authentication {
 
 				val result = DBHelper.selectSingle(stmt, classOf[JakonUser])
 				if (result.entity == null) {
-					logger.info("User " + email + " not fould when loggin")
+					logger.info("User " + email + " not found when logging in")
 					PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "WRONG_EMAIL_OR_PASSWORD")
 					return new Context(null, "login")
 				}
