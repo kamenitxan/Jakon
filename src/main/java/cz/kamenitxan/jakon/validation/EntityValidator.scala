@@ -2,37 +2,33 @@ package cz.kamenitxan.jakon.validation
 
 import java.lang.reflect.Field
 
-import cz.kamenitxan.jakon.core.configuration.Settings
-import cz.kamenitxan.jakon.utils.{PageContext, i18nUtil}
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 
 
 object EntityValidator {
 
-	def validate(o: Object): Either[Seq[Message], Object] = {
-		val allFields = o.getClass.getDeclaredFields
-		val errors = allFields.filter(f => {
-			val anns = f.getDeclaredAnnotations
+	def validate(prefix: String, validatedData: Map[Field, String]): Either[Seq[Message], Map[Field, String]] = {
+		val errors = validatedData.filter(f => {
+			val anns = f._1.getDeclaredAnnotations
 			anns.exists(a => a.annotationType().getAnnotation(classOf[ValidatedBy]) != null)
-		}).flatMap(f => validateField(o, f))
+		}).flatMap(f => validateField(prefix, f._1, f._2, validatedData)).toSeq
 
 		if (errors.isEmpty) {
-			Right(o)
+			Right(validatedData)
 		} else {
 			Left(errors)
 		}
 	}
 
-	private def validateField(o: Object, f: Field): Seq[Message] = {
+	private def validateField(prefix: String, f: Field, fieldValue: String, validatedData: Map[Field, String]): Seq[Message] = {
 		if (!f.isAccessible) {
 			f.setAccessible(true)
 		}
-		val fieldValue = f.get(o).asInstanceOf[String]
 		val anns = f.getDeclaredAnnotations.filter(a => a.annotationType().getAnnotation(classOf[ValidatedBy]) != null)
 		for (an <- anns) {
 			val by: ValidatedBy = an.annotationType().getAnnotation(classOf[ValidatedBy])
 			val validator: Validator = by.value().newInstance()
-			val result = validator.isValid(fieldValue, an, o)
+			val result = validator.isValid(fieldValue, an, validatedData)
 			if (result.isDefined) {
 				lazy val severityM = an.annotationType().getDeclaredMethod("severity")
 				val severity: MessageSeverity = if (result.get.severity.isDefined) {
@@ -42,7 +38,7 @@ object EntityValidator {
 				} else {
 					MessageSeverity.ERROR
 				}
-				val key = o.getClass.getSimpleName + "_" + f.getName + "_" + result.get.error
+				val key = prefix + "_" + f.getName + "_" + result.get.error
 				return Seq(new Message(severity, key, bundle = "validations", params = result.get.params))
 			}
 		}

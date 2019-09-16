@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.validation.validators
 
 import java.lang.annotation.Annotation
+import java.lang.reflect.Field
 
 import cz.etn.emailvalidator.EmailValidatorBuilder
 import cz.kamenitxan.jakon.core.configuration.Settings
@@ -9,7 +10,7 @@ import cz.kamenitxan.jakon.webui.entity.MessageSeverity
 
 class EmailValidator extends Validator {
 
-	override def isValid(value: String, a: Annotation, data: AnyRef): Option[ValidationResult] = {
+	override def isValid(value: String, a: Annotation, data: Map[Field, String]): Option[ValidationResult] = {
 		val ann = a.asInstanceOf[Email]
 		if (value == null) {
 			return Option.empty

@@ -1,21 +1,17 @@
 package cz.kamenitxan.jakon.validation.validators
 
 import java.lang.annotation.Annotation
+import java.lang.reflect.Field
 
 import cz.kamenitxan.jakon.validation.{ValidationResult, Validator}
 
 class EqualsWithOtherValidator extends Validator {
 	private val error = "NOT_EQUALS"
 
-	override def isValid(value: String, a: Annotation, data: AnyRef): Option[ValidationResult] = {
+	override def isValid(value: String, a: Annotation, data: Map[Field, String]): Option[ValidationResult] = {
 		if (value == null) return Option.empty
 		val otherFieldName = a.asInstanceOf[EqualsWithOther].value()
-		val otherField = data.getClass.getDeclaredField(otherFieldName)
-		if (!otherField.isAccessible) {
-			otherField.setAccessible(true)
-		}
-		val otherValue = otherField.get(data).asInstanceOf[String]
-
+		val otherValue = data.find(kv => kv._1.getName == otherFieldName).map(kv => kv._2).orNull
 		if (value.equals(otherValue)) {
 			Option.empty
 		} else {

@@ -69,9 +69,9 @@ trait Ordered {
 
 		val resultPos = if (earlier.isDefined && latter.isDefined) {
 			(latter.get.objectOrder + earlier.get.objectOrder) / 2.0
-		} else if (earlier.isDefined && latter.isEmpty) {
+		} else if (earlier.isDefined) {
 			earlier.get.objectOrder + 10
-		} else if (earlier.isEmpty && latter.isDefined) {
+		} else if (latter.isDefined) {
 			latter.get.objectOrder / 2
 		} else {
 			10

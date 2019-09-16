@@ -1,6 +1,7 @@
 package validation
 
 import java.lang.annotation.Annotation
+import java.lang.reflect.Field
 
 import cz.kamenitxan.jakon.validation.Validator
 import cz.kamenitxan.jakon.validation.validators._
@@ -11,12 +12,18 @@ import sun.reflect.annotation.AnnotationParser
 
 class ValidationTest extends FunSuite {
 
-	private def testTable(v: Validator, ann: Annotation, data: TableFor2[String, Boolean], obj: AnyRef = null) = {
+	private def testTable(v: Validator, ann: Annotation, data: TableFor2[String, Boolean], obj: Map[Field, String] = null) = {
 		forAll(data) { (value, expectedResult) => {
 			val res = v.isValid(value, ann, obj)
 			assert(res.isEmpty == expectedResult)
 		}
 		}
+	}
+
+	private def objectToMap(o: AnyRef): Map[Field, String] = {
+		o.getClass.getDeclaredFields.map(f => {
+			(f, f.get(o).toString)
+		}).toMap
 	}
 
 	test("notEmpty") {
@@ -81,7 +88,7 @@ class ValidationTest extends FunSuite {
 		val f = classOf[TestData].getDeclaredField("password2")
 		val ann = f.getDeclaredAnnotationsByType(classOf[EqualsWithOther]).head
 		val v = new EqualsWithOtherValidator
-		testTable(v, ann, data, obj)
+		testTable(v, ann, data, objectToMap(obj))
 	}
 
 	test("true") {
@@ -150,7 +157,7 @@ class ValidationTest extends FunSuite {
 		val f = classOf[TestData].getDeclaredField("number")
 		val ann = f.getDeclaredAnnotationsByType(classOf[Min]).head
 		val v = new MinValidator
-		testTable(v, ann, data, obj)
+		testTable(v, ann, data, objectToMap(obj))
 	}
 
 	test("max") {
@@ -174,7 +181,7 @@ class ValidationTest extends FunSuite {
 		val f = classOf[TestData].getDeclaredField("number")
 		val ann = f.getDeclaredAnnotationsByType(classOf[Max]).head
 		val v = new MaxValidator
-		testTable(v, ann, data, obj)
+		testTable(v, ann, data, objectToMap(obj))
 	}
 
 	test("positive") {

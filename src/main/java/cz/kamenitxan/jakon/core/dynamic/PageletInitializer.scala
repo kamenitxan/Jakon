@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon.core.dynamic
 
-import java.lang.reflect.Method
+import java.lang.reflect.{Field, Method}
 import java.sql.Connection
 
 import com.google.gson.Gson
@@ -86,25 +86,27 @@ object PageletInitializer {
 			val controller = c.newInstance().asInstanceOf[AbstractPagelet]
 
 			DBHelper.withDbConnection(conn => {
-				val methodArgs = createMethodArgs(m, req, res, conn)
-				if (post.validate() && methodArgs.data != null) {
-
-					EntityValidator.validate(methodArgs.data) match {
+				val dataClass = getDataClass(m)
+				if (post.validate() && dataClass.isDefined) {
+					val formData = createFormData(req, dataClass.get)
+					EntityValidator.validate(dataClass.get.getSimpleName, formData) match {
 						case Left(result) =>
 							if ("true".equals(req.queryParams(METHOD_VALDIATE))) {
 								gson.toJson(result)
 							} else {
 								result.foreach(r => PageContext.getInstance().messages += r)
-								controller.redirect(req, res, controllerAnn.path() + post.path(), methodArgs.data)
+								controller.redirect(req, res, controllerAnn.path() + post.path(), formData)
 							}
 						case Right(result) =>
 							if ("true".equals(req.queryParams(METHOD_VALDIATE))) {
 								gson.toJson(true)
 							}  else {
+								val methodArgs = createMethodArgs(m, req, res, conn)
 								invokePost(req, res, controller, m, post, methodArgs)
 							}
 					}
 				} else {
+					val methodArgs = createMethodArgs(m, req, res, conn)
 					invokePost(req, res, controller, m, post, methodArgs)
 				}
 			})
@@ -128,9 +130,29 @@ object PageletInitializer {
 		}
 	}
 
+
+	private def createFormData(req: Request, dataClass: Class[_]): Map[Field, String] = {
+		dataClass.getDeclaredFields.map(f => {
+			var res: (Field, String) = null;
+			try {
+				f.setAccessible(true)
+				res = (f, req.queryParams(f.getName))
+			} catch {
+				case ex: Exception => logger.error("Exception when setting pagelet form data value", ex)
+			}
+			res
+		}).filter(t => t != null).toMap
+	}
+
+
+
 	private val REQUEST_CLS = classOf[Request]
 	private val RESPONSE_CLS = classOf[Response]
 	private val CONNECTION_CLS = classOf[Connection]
+
+	private def getDataClass(m: Method): Option[Class[_]] = {
+		m.getParameterTypes.find(c => c != REQUEST_CLS && c != RESPONSE_CLS && c != CONNECTION_CLS)
+	}
 
 	private def createMethodArgs(m: Method, req: Request, res: Response, conn: Connection): MethodArgs = {
 		var dataRef: AnyRef = null
@@ -146,7 +168,7 @@ object PageletInitializer {
 						f.setAccessible(true)
 						f.set(data, req.queryParams(f.getName).conform(f))
 					} catch {
-						case ex: Exception => logger.error("Exception whem setting pagelet data value", ex)
+						case ex: Exception => logger.error("Exception when setting pagelet data value", ex)
 					}
 				})
 				dataRef = data

@@ -22,6 +22,15 @@ class FileManagerConsistencyTestTask extends AbstractTask(classOf[FileManagerCon
 	private val FILE_ATTR_NAME = "jakonFileId"
 
 	override def start(): Unit = {
+		val osName = System.getProperty("os.name").toLowerCase
+		val isMacOs = osName.startsWith("mac os x")
+		if (isMacOs) {
+			// https://bugs.openjdk.java.net/browse/JDK-8030048
+			// (fs) Support UserDefinedFileAttributeView/extended attributes on OS X / HFS+
+			logger.warn(s"FileManagerConsistencyTest is not supported on Mac OS X")
+			return
+		}
+
 		val realPath = Paths.get(REPOSITORY_BASE_PATH, "/basePath")
 		DBHelper.withDbConnection(implicit conn => {
 			val files = JakonFileService.getAll
