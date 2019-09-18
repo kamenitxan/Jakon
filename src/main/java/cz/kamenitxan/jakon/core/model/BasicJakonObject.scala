@@ -18,7 +18,4 @@ class BasicJakonObject extends JakonObject(classOf[BasicJakonObject].getName) wi
 	override var visibleOrder: Int = _
 	override var objectOrder: Double = _
 
-	override def getObjectOrder: Double = objectOrder
-
-	override def setObjectOrder(order: Double): Unit = this.objectOrder = order
 }

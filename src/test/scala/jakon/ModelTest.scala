@@ -10,8 +10,8 @@ class ModelTest extends TestBase {
 		page.setContent("test")
 
 		val order = 1
-		page.setObjectOrder(order)
-		assert(order == page.getObjectOrder)
+		page.objectOrder = order
+		assert(order == page.objectOrder)
 
 		val id = page.create()
 		page.title = "Test"
@@ -30,8 +30,8 @@ class ModelTest extends TestBase {
 		assert(entity != null)
 
 		val order = 1
-		entity.setObjectOrder(order)
-		assert(order == entity.getObjectOrder)
+		entity.objectOrder = order
+		assert(order == entity.objectOrder)
 
 		assert(entity.toString != null)
 	}
@@ -40,8 +40,8 @@ class ModelTest extends TestBase {
 		val obj = new BasicJakonObject
 		//assertNotEmpty(obj.toJson)
 		assertNotEmpty(obj.toString)
-		obj.setObjectOrder(2.0)
-		assert(2.0 == obj.getObjectOrder)
+		obj.objectOrder = 2.0
+		assert(2.0 == obj.objectOrder)
 	}
 
 	test("AclRule") { _ =>

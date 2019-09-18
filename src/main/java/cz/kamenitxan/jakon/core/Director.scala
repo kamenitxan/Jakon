@@ -6,7 +6,7 @@ import cz.kamenitxan.jakon.JakonInitializer
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.controler.IControler
 import cz.kamenitxan.jakon.core.customPages.AbstractCustomPage
-import cz.kamenitxan.jakon.core.database.DBHelper
+import cz.kamenitxan.jakon.core.database.{DBHelper, DBInitializer}
 import cz.kamenitxan.jakon.core.task.TaskRunner
 import cz.kamenitxan.jakon.core.template.Pebble
 import cz.kamenitxan.jakon.core.template.utils.TemplateUtils
@@ -40,10 +40,10 @@ object Director {
 		}
 
 		if (Settings.getDeployMode.equals(DeployMode.DEVEL)) {
-			DBHelper.createTables()
+			DBInitializer.createTables()
 		}
 		Future {
-			DBHelper.checkDbConsistency()
+			DBInitializer.checkDbConsistency()
 		}
 
 		TaskRunner.startTaskRunner()

@@ -5,27 +5,17 @@ import java.util.Date
 
 import cz.kamenitxan.jakon.core.model.{JakonObject, JakonUser}
 import cz.kamenitxan.jakon.webui.ObjectSettings
-import javax.persistence.{Column, Entity}
+import javax.persistence.ManyToOne
 
-import scala.beans.BeanProperty
-
-@Entity
 class ConfirmEmailEntity(u: Unit = ()) extends JakonObject(classOf[ConfirmEmailEntity].getName) {
 
-	@BeanProperty
-	@Column
+	@ManyToOne
 	@JakonField(disabled = true)
 	var user: JakonUser = _
-	@BeanProperty
-	@Column
 	@JakonField(disabled = true, shownInList = false)
 	var token: String = ""
-	@BeanProperty
-	@Column
 	@JakonField(disabled = true)
 	var secret: String = ""
-	@BeanProperty
-	@Column
 	@JakonField(disabled = true)
 	var expirationDate: Date = _
 

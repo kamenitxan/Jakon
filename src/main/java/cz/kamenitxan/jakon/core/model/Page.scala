@@ -88,10 +88,6 @@ class Page(u: Unit = ()) extends JakonObject(classOf[Page].getName) with Ordered
 		stmt.executeUpdate()
 	}
 
-	override def getObjectOrder: Double = objectOrder
-
-	override def setObjectOrder(objectOrder: Double): Unit = this.objectOrder = objectOrder
-
 	override def toJson: String = {
 		val writer = new StringWriter
 		val generator = Json.createGenerator(writer)

@@ -12,9 +12,6 @@ trait Ordered {
 	var visibleOrder: Int
 	var objectOrder: Double
 
-	def getObjectOrder: Double
-
-	def setObjectOrder(order: Double)
 
 	def fetchVisibleOrder(implicit conn: Connection): JakonObject = {
 		Ordered.fetchVisibleOrder(this :: Nil, this.getClass).head
@@ -90,7 +87,7 @@ object Ordered {
 		var i = 0
 		val allObjects = result.map(qr => {
 			i += 1
-			(qr.entity.asInstanceOf[BasicJakonObject].id, i)
+			(qr.entity.id, i)
 		}).toMap
 		objects.foreach(o => o.asInstanceOf[JakonObject with Ordered].visibleOrder = allObjects(o.id))
 		objects

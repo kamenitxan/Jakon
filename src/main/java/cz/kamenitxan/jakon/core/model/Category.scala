@@ -28,10 +28,6 @@ class Category(u: Unit = ()) extends JakonObject(classOf[Category].getName) with
 
 	def this() = this(u = ())
 
-	override def getObjectOrder: Double = objectOrder
-
-	override def setObjectOrder(objectOrder: Double): Unit = this.objectOrder = objectOrder
-
 	@Transient
 	override val objectSettings: ObjectSettings = null
 
