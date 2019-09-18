@@ -1,7 +1,9 @@
 package cz.kamenitxan.jakon.core.dynamic
 
+import com.mitchellbosecke.pebble.PebbleEngine
 import com.mitchellbosecke.pebble.loader.FileLoader
-import cz.kamenitxan.jakon.core.configuration.Settings
+import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
+import cz.kamenitxan.jakon.core.template.pebble.PebbleExtension
 import cz.kamenitxan.jakon.utils.PageContext
 import spark._
 import spark.template.pebble.PebbleTemplateEngine
@@ -12,11 +14,21 @@ import scala.collection.mutable
 /**
   * Created by tomaspavel on 29.5.17.
   */
-abstract class AbstractPagelet {
+abstract class AbstractPagelet extends IPagelet {
 	val loader = new FileLoader
 	loader.setPrefix(Settings.getTemplateDir)
 	loader.setSuffix(".peb")
-	val engine: TemplateEngine = new PebbleTemplateEngine(loader)
+	private val builder = new PebbleEngine.Builder()
+	builder.loader(loader)
+	builder.extension(new PebbleExtension)
+	builder.strictVariables(true)
+	if (DeployMode.DEVEL == Settings.getDeployMode) {
+		builder.templateCache(null)
+		builder.tagCache(null)
+		builder.cacheActive(false)
+	}
+	private val builded = builder.build()
+	val engine: TemplateEngine = new PebbleTemplateEngine(builded)
 
 
 

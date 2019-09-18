@@ -62,7 +62,7 @@ object PageletInitializer {
 	private def initGetAnnotation(get: Get, controllerAnn: Pagelet, m: Method, c: Class[_]): Unit = {
 		//TODO m.getReturnType.is
 		Spark.get(controllerAnn.path() + get.path(), (req, res) => {
-			val controller: AbstractPagelet = c.newInstance().asInstanceOf[AbstractPagelet]
+			val controller: IPagelet = c.newInstance().asInstanceOf[IPagelet]
 			DBHelper.withDbConnection(conn => {
 				val methodArgs = createMethodArgs(m, req, res, conn)
 				var context = m.invoke(controller, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
@@ -83,7 +83,7 @@ object PageletInitializer {
 
 	private def initPostAnnotation(post: Post, controllerAnn: Pagelet, m: Method, c: Class[_]): Unit = {
 		Spark.post(controllerAnn.path() + post.path(), (req, res) => {
-			val controller = c.newInstance().asInstanceOf[AbstractPagelet]
+			val controller = c.newInstance().asInstanceOf[IPagelet]
 
 			DBHelper.withDbConnection(conn => {
 				val dataClass = getDataClass(m)
@@ -113,7 +113,7 @@ object PageletInitializer {
 		})
 	}
 
-	private def invokePost(req: Request, res: Response, controller: AbstractPagelet, m: Method, post: Post, methodArgs: MethodArgs) = {
+	private def invokePost(req: Request, res: Response, controller: IPagelet, m: Method, post: Post, methodArgs: MethodArgs) = {
 		val context = m.invoke(controller, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
 		if (notRedirected(res)) {
 			controller.render(context, post.template(), req)
