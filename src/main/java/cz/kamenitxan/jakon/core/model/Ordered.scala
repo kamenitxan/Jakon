@@ -53,23 +53,23 @@ trait Ordered {
 
 
 		val requiredOrder = if (formOrder < 0) 0 else if (formOrder > allObjects.size) allObjects.size else formOrder - 1
-		val earlier = if (allObjects.lift(requiredOrder - 1).isDefined && allObjects.lift(requiredOrder - 1).get.id != obj.id) {
+		val before = if (allObjects.lift(requiredOrder - 1).isDefined && allObjects.lift(requiredOrder - 1).get.id != obj.id) {
 			allObjects.lift(requiredOrder - 1)
 		} else {
 			Option.empty
 		}
-		val latter = if (allObjects.lift(requiredOrder).isDefined && allObjects.lift(requiredOrder).get.id != obj.id) {
+		val after = if (allObjects.lift(requiredOrder).isDefined && allObjects.lift(requiredOrder).get.id != obj.id) {
 			allObjects.lift(requiredOrder)
 		} else {
 			Option.empty
 		}
 
-		val resultPos = if (earlier.isDefined && latter.isDefined) {
-			(latter.get.objectOrder + earlier.get.objectOrder) / 2.0
-		} else if (earlier.isDefined) {
-			earlier.get.objectOrder + 10
-		} else if (latter.isDefined) {
-			latter.get.objectOrder / 2
+		val resultPos = if (before.isDefined && after.isDefined) {
+			(after.get.objectOrder + before.get.objectOrder) / 2.0
+		} else if (before.isDefined) {
+			before.get.objectOrder + 10
+		} else if (after.isDefined) {
+			after.get.objectOrder / 2
 		} else {
 			10
 		}
