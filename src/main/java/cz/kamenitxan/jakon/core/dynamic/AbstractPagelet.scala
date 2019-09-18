@@ -17,7 +17,7 @@ abstract class AbstractPagelet {
 	loader.setPrefix(Settings.getTemplateDir)
 	loader.setSuffix(".peb")
 	val engine: TemplateEngine = new PebbleTemplateEngine(loader)
-	val REQUEST_PARAMS = "_RP"
+
 
 
 	def render(context: mutable.Map[String, Any], templatePath: String, req: Request): String = {
@@ -26,7 +26,7 @@ abstract class AbstractPagelet {
 			ctx = context
 		}
 		ctx += "jakon_messages" -> PageContext.getInstance().messages.asJava
-		ctx += REQUEST_PARAMS -> req.session().attribute(REQUEST_PARAMS)
+		ctx += AbstractPagelet.REQUEST_PARAMS -> req.session().attribute(AbstractPagelet.REQUEST_PARAMS)
 		engine.render(new ModelAndView(ctx.asJava, templatePath))
 	}
 
@@ -36,8 +36,12 @@ abstract class AbstractPagelet {
 
 	def redirect(req: Request, res: Response, target: String, requestParams: AnyRef): mutable.Map[String, Any] = {
 		req.session().attribute(PageContext.MESSAGES_KEY, PageContext.getInstance().messages)
-		req.session().attribute(REQUEST_PARAMS, requestParams)
+		req.session().attribute(AbstractPagelet.REQUEST_PARAMS, requestParams)
 		res.redirect(target)
 		null
 	}
+}
+
+object AbstractPagelet {
+	val REQUEST_PARAMS = "_RP"
 }
