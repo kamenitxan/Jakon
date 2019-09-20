@@ -1,22 +1,25 @@
+{# @pebvariable name="object" type="cz.kamenitxan.jakon.core.model.JakonObject" #}
+
 {% extends "core" %}
 
 {% block content %}
-    {% include "includes/sideMenu" %}
+{% include "includes/sideMenu" %}
 
-    <div id="page-wrapper">
-    <div class="row">
-        <div class="col-lg-12">
-            <h1 class="page-header"><i class="fa {{ objectSettings[objectName].icon }}"></i> {{ objectName }}</h1>
-        </div>
-        <!-- /.col-lg-12 -->
-    </div>
-    <div class="row">
-        <div class="col-lg-12">
+<div id="page-wrapper">
+	<div class="row">
+		<div class="col-lg-12">
+			<h1 class="page-header"><i class="fa {{ objectSettings[objectName].icon }}"></i> {{ objectName }}</h1>
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+	<div class="row">
+		<div class="col-lg-12">
         {% include "includes/components/objectEditForm" with {"withDelete": true} %}
-        </div>
-        <!-- /.col-lg-12 -->
-    </div>
+        {{ objectExtensions(object) }}
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
 
 
-    </div>
+</div>
 {% endblock %}

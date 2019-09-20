@@ -15,4 +15,5 @@ object TypeReferences {
 	val MAP = classOf[Map[Any, Any]]
 	val DATE = classOf[Date]
 	val DATETIME = classOf[LocalDateTime]
+	val SEQ = classOf[Seq[Any]]
 }

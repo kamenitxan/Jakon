@@ -10,18 +10,24 @@ import cz.kamenitxan.jakon.utils.mail.EmailTemplateEntity
 
 object JakonInitializer {
 
-	def init() = {
+	def init(): Unit = {
 		implicit val conn = DBHelper.getConnection
 		try {
-			val userCount = DBHelper.count("SELECT count(*) FROM JakonUser")
-			if (userCount == 0) {
-				val acl = new AclRule()
+			val masterAdminStmt = conn.prepareStatement("SELECT * FROM AclRule WHERE masterAdmin = ?")
+			masterAdminStmt.setBoolean(1, true)
+			val masterAdmin = DBHelper.selectSingleDeep(masterAdminStmt, classOf[AclRule])
+			var acl: AclRule = null
+			if (masterAdmin == null) {
+				acl = new AclRule()
 				acl.name = "Admin"
 				acl.masterAdmin = true
 				acl.adminAllowed = true
 				val aclId = acl.create()
 				acl.id = aclId
+			}
 
+			val userCount = DBHelper.count("SELECT count(*) FROM JakonUser")
+			if (userCount == 0) {
 				val user = new JakonUser()
 				user.firstName = "Admin"
 				user.lastName = "Admin"
@@ -33,6 +39,7 @@ object JakonInitializer {
 				user.acl = acl
 				user.create()
 			}
+
 
 			if (Settings.isEmailEnabled) {
 				val stmt = conn.prepareStatement(SELECT_EMAIL_TMPL_SQL)
@@ -67,5 +74,6 @@ object JakonInitializer {
 
 	def createDefaultEmailTemplates()(conn: Connection) = {
 		val resourceDir = this.getClass.getResourceAsStream(s"/templates/defaultEmailTemplates")
+		//TODO
 	}
 }

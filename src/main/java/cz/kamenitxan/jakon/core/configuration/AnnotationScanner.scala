@@ -2,6 +2,7 @@ package cz.kamenitxan.jakon.core.configuration
 
 import cz.kamenitxan.jakon.core.customPages.{CustomPage, CustomPageInitializer, StaticPage}
 import cz.kamenitxan.jakon.core.dynamic.{Pagelet, PageletInitializer}
+import cz.kamenitxan.jakon.webui.controler.objectextension.{ObjectExtension, ObjectExtensionInitializer}
 import io.github.classgraph.{ClassGraph, ClassInfoList, ScanResult}
 
 import scala.collection.JavaConverters._
@@ -23,6 +24,7 @@ object AnnotationScanner {
 		try {
 			loadControllers(scanResult)
 			loadCustomPages(scanResult)
+			loadObjectExtensions(scanResult)
 		} finally {
 			scanResult.close()
 		}
@@ -43,6 +45,11 @@ object AnnotationScanner {
 	private def loadConfiguration(scanResult: ScanResult): Unit = {
 		val config = scanResult.getClassesWithAnnotation(classOf[Configuration].getCanonicalName).loadScalaClasses()
 		ConfigurationInitializer.initConfiguration(config)
+	}
+
+	private def loadObjectExtensions(scanResult: ScanResult): Unit = {
+		val config = scanResult.getClassesWithAnnotation(classOf[ObjectExtension].getCanonicalName).loadScalaClasses()
+		ObjectExtensionInitializer.initObjectExtensions(config)
 	}
 
 	implicit class ClassInfoListExtensions(val cil: ClassInfoList) {

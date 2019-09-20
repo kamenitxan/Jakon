@@ -16,6 +16,7 @@ object AdminSettings {
 		customControllers.asJava
 	}
 	val customControllersInfo = new mutable.ListBuffer[CustomControllerInfo]
+	val objectExtensions = new mutable.Map[]()
 
 	def registerCustomController[T <: AbstractController](controller: Class[T]): Unit = {
 		val inst = controller.newInstance()

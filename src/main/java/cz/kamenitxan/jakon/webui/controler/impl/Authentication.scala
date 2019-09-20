@@ -19,7 +19,7 @@ object Authentication {
 	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
 	val SQL_FIND_USER = "SELECT * FROM JakonUser WHERE email = ?"
-	val SQL_FIND_ACL = "SELECT id, name, adminAllowed, masterAdmin FROM AclRule WHERE id = ?"
+	val SQL_FIND_ACL = "SELECT * FROM AclRule WHERE id = ?"
 
 	def loginGet(req: Request): ModelAndView = {
 		val oauthProviders = {

@@ -1,0 +1,1 @@
+<a class="btn btn-default" href="/admin/object/JakonUser/JakonUserExtension" role="button">{{ i18n("common","SEND_RESET_PASSWORD") }}</a>
