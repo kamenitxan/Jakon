@@ -1,7 +1,9 @@
 package cz.kamenitxan.jakon.webui
 
+import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.webui.controler.AbstractController
 import cz.kamenitxan.jakon.webui.controler.impl.Dashboard
+import cz.kamenitxan.jakon.webui.controler.objectextension.AbstractObjectExtension
 import cz.kamenitxan.jakon.webui.entity.CustomControllerInfo
 import spark.{Request, Response}
 
@@ -16,7 +18,7 @@ object AdminSettings {
 		customControllers.asJava
 	}
 	val customControllersInfo = new mutable.ListBuffer[CustomControllerInfo]
-	val objectExtensions = new mutable.Map[]()
+	val objectExtensions = new mutable.HashMap[Class[_ <: JakonObject], mutable.Set[Class[_ <: AbstractObjectExtension]]]() with mutable.MultiMap[Class[_ <: JakonObject], Class[_ <: AbstractObjectExtension]]
 
 	def registerCustomController[T <: AbstractController](controller: Class[T]): Unit = {
 		val inst = controller.newInstance()

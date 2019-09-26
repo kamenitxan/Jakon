@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.webui.controler.objectextension
 
 
+import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.webui.AdminSettings
 import org.slf4j.LoggerFactory
 
@@ -12,7 +13,8 @@ object ObjectExtensionInitializer {
 		logger.info("Initializing ObjectExtensions")
 		objectExtensions.foreach(oe => {
 			logger.debug("Initializing ObjectExtension: " + oe.getSimpleName)
-			AdminSettings.objectExtensions += oe.newInstance().asInstanceOf[AbstractObjectExtension]
+			val ann = oe.getDeclaredAnnotation(classOf[ObjectExtension])
+			AdminSettings.objectExtensions.addBinding(ann.value().asInstanceOf[Class[JakonObject]], oe.asInstanceOf[Class[AbstractObjectExtension]])
 		})
 
 		logger.info("ObjectExtensions initialization complete")

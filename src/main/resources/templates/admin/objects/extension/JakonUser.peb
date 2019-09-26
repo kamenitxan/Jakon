@@ -1,0 +1,2 @@
+{# @pebvariable name="object" type="cz.kamenitxan.jakon.core.model.JakonObject" #}
+<a href="{{ object.id }}/resetPassword" class="btn btn-primary">{{ i18n("objects/extension/extension","RESET_PASSWORD") }}</a>

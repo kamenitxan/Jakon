@@ -1,21 +1,16 @@
 package cz.kamenitxan.jakon.webui.controler.pagelets
 
 import java.sql.Connection
-import java.util.{Calendar, Date}
 
-import cz.kamenitxan.jakon.core.Director.SELECT_EMAIL_TMPL_SQL
-import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.dynamic.{Get, Pagelet, Post}
 import cz.kamenitxan.jakon.core.model.JakonUser
+import cz.kamenitxan.jakon.core.service.UserService
 import cz.kamenitxan.jakon.utils.PageContext
-import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
-import cz.kamenitxan.jakon.utils.security.AesEncryptor
-import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity, ResetPasswordEmailEntity}
+import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import spark.{Request, Response}
 
 import scala.collection.mutable
-import scala.util.Random
 
 
 /**
@@ -46,42 +41,12 @@ class ForgetPasswordPagelet extends AbstractAdminPagelet {
 		val result = DBHelper.selectSingle(stmt, classOf[JakonUser])
 		if (result.entity != null) {
 			val user = result.entity
-			sendForgetPasswordEmail(user, req, conn)
+			UserService.sendForgetPasswordEmail(user, req)(conn)
 		}
 
 		PageContext.getInstance().messages += new Message(MessageSeverity.SUCCESS, "PASSWORD_RESET_OK")
 		redirect(req, res, "/admin")
 	}
 
-	private def sendForgetPasswordEmail(user: JakonUser, req: Request, conn: Connection): Unit = {
-		if (!Settings.isEmailEnabled) return
-
-		val stmt = conn.prepareStatement(SELECT_EMAIL_TMPL_SQL)
-		stmt.setString(1, "FORGET_PASSWORD")
-		val tmpl = DBHelper.selectSingle(stmt, classOf[EmailTemplateEntity]).entity.asInstanceOf[EmailTemplateEntity]
-
-		val resetEmailEntity = new ResetPasswordEmailEntity()
-		resetEmailEntity.user = user
-		resetEmailEntity.secret = Random.alphanumeric.take(10).mkString
-		resetEmailEntity.token = AesEncryptor.encrypt(resetEmailEntity.secret)
-		resetEmailEntity.expirationDate = {
-			val cal: Calendar = Calendar.getInstance
-			cal.setTime(new Date)
-			cal.add(Calendar.HOUR, 1)
-			cal.getTime
-		}
-		resetEmailEntity.create()
-
-		val email = new EmailEntity("FORGET_PASSWORD", user.email, tmpl.subject, Map[String, String](
-			"username" -> user.username,
-			"token" -> resetEmailEntity.token,
-			"protocol" -> (if (req.raw().isSecure) "https" else "http"),
-			"host" -> req.host(),
-			EmailSendTask.TMPL_LANG -> Settings.getDefaultLocale.getCountry
-
-		))
-		email.create()
-
-	}
 }
 
