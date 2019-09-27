@@ -9,6 +9,7 @@ import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{Category, Page, Post}
 import cz.kamenitxan.jakon.core.template.Pebble
 import functions.LinkTest
+import jakon.pagelet.PageletTest
 import jakon.{ModelTest, RenderTest, SettingsTest}
 import org.scalatest.{BeforeAndAfterAll, Suites}
 import utils.mail.EmailTest
@@ -32,7 +33,8 @@ class TestRunner extends Suites(
 	new SqlGenTest,
 	new ModelTest,
 	new SettingsTest,
-	new i18nUtilTest
+	new i18nUtilTest,
+	new PageletTest
 ) with BeforeAndAfterAll {
 
 	override def beforeAll() {

@@ -13,7 +13,12 @@ object DevRender {
 	def registerPath(path: String, caller: IControler): Unit = {
 		val controler = controllers.find(c => c.getClass.getCanonicalName != null && c.getClass.getCanonicalName.equals(caller.getClass.getCanonicalName))
 		if (controler.isEmpty) return
-		registeredPaths += ("/" + path + TemplateUtils.getFileSuffix(path) -> controler.get)
+		val prefix = if (path.startsWith("/")) {
+			""
+		} else {
+			"/"
+		}
+		registeredPaths += (prefix + path + TemplateUtils.getFileSuffix(path) -> controler.get)
 	}
 
 	def rerender(path: String): Unit = {
