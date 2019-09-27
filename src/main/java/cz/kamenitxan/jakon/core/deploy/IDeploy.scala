@@ -5,5 +5,5 @@ import cz.kamenitxan.jakon.core.deploy.entity.Server
 trait IDeploy {
 	def deploy(server: Server): Unit
 
-	def getDeploySettings: Map[String, String]
+	//def getDeploySettings: Map[String, String]
 }

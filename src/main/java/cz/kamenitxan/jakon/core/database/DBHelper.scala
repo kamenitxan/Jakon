@@ -1,12 +1,10 @@
 package cz.kamenitxan.jakon.core.database
 
-import java.io.{BufferedReader, InputStreamReader}
 import java.sql._
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.stream.Collectors
 
-import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
+import com.zaxxer.hikari.HikariDataSource
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
 import cz.kamenitxan.jakon.core.database.converters.AbstractConverter
 import cz.kamenitxan.jakon.core.model._
@@ -27,25 +25,7 @@ object DBHelper {
 	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
 	val objects: mutable.ArrayBuffer[Class[_ <: JakonObject]] = mutable.ArrayBuffer[Class[_ <: JakonObject]]()
-
-
-	addDao(classOf[AclRule])
-	addDao(classOf[JakonUser])
-	addDao(classOf[KeyValueEntity])
-	addDao(classOf[JakonFile])
-
-	val config = new HikariConfig
-	config.setJdbcUrl(Settings.getDatabaseConnPath)
-	config.setUsername(Settings.getDatabaseUser)
-	config.setPassword(Settings.getDatabasePass)
-	config.addDataSourceProperty("cachePrepStmts", "true")
-	config.addDataSourceProperty("prepStmtCacheSize", "250")
-	config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
-	if (Settings.getDatabaseType == DatabaseType.SQLITE) {
-		config.addDataSourceProperty("PRAGMA foreign_keys", "ON")
-		config.addDataSourceProperty("PRAGMA journal_mode", "wal")
-	}
-	val ds = new HikariDataSource(config)
+	val ds = new HikariDataSource(DBInitializer.config)
 	ds.setLeakDetectionThreshold(60 * 1000)
 
 

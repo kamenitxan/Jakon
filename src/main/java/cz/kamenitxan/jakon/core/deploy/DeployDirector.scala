@@ -57,10 +57,6 @@ object DeployDirector {
 		cls.newInstance().asInstanceOf[IDeploy]
 	}
 
-	def init(): Unit = {
-
-	}
-
 	def deploy(): Unit = {
 		Director.render()
 		servers.foreach(s => {

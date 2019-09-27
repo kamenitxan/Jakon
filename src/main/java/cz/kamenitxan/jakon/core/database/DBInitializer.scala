@@ -5,9 +5,10 @@ import java.io.{BufferedReader, InputStreamReader}
 import java.sql.{Connection, SQLException}
 import java.util.stream.Collectors
 
+import com.zaxxer.hikari.HikariConfig
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
-import cz.kamenitxan.jakon.core.database.DBHelper.{getConnection, logger}
-import cz.kamenitxan.jakon.core.model.JakonObject
+import cz.kamenitxan.jakon.core.database.DBHelper.getConnection
+import cz.kamenitxan.jakon.core.model._
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence.ManyToOne
 import org.slf4j.{Logger, LoggerFactory}
@@ -19,6 +20,23 @@ import scala.collection.mutable
   */
 object DBInitializer {
 	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
+
+	DBHelper.addDao(classOf[AclRule])
+	DBHelper.addDao(classOf[JakonUser])
+	DBHelper.addDao(classOf[KeyValueEntity])
+	DBHelper.addDao(classOf[JakonFile])
+
+	val config = new HikariConfig
+	config.setJdbcUrl(Settings.getDatabaseConnPath)
+	config.setUsername(Settings.getDatabaseUser)
+	config.setPassword(Settings.getDatabasePass)
+	config.addDataSourceProperty("cachePrepStmts", "true")
+	config.addDataSourceProperty("prepStmtCacheSize", "250")
+	config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
+	if (Settings.getDatabaseType == DatabaseType.SQLITE) {
+		config.addDataSourceProperty("PRAGMA foreign_keys", "ON")
+		config.addDataSourceProperty("PRAGMA journal_mode", "wal")
+	}
 
 	def createTables(): Unit = {
 		val dbobj = mutable.ArrayBuffer[Class[_ <: JakonObject]]()

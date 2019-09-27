@@ -9,6 +9,4 @@ class LocalDeploy extends IDeploy {
 		TemplateUtils.clean(server.path)
 		TemplateUtils.copy(Settings.getOutputDir, server.path)
 	}
-
-	override def getDeploySettings = ???
 }

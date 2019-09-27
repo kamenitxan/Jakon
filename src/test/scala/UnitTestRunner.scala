@@ -1,3 +1,4 @@
+import functions.FunctionHelperTest
 import org.scalatest.{BeforeAndAfterAll, Suites}
 import utils.UtilsTest
 import validation.ValidationTest
@@ -9,7 +10,8 @@ import webui.FieldConformerTest
 class UnitTestRunner extends Suites(
 	new UtilsTest,
 	new FieldConformerTest,
-	new ValidationTest
+	new ValidationTest,
+	new FunctionHelperTest
 ) with BeforeAndAfterAll {
 
 }

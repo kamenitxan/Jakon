@@ -33,3 +33,4 @@ jakon_config.properties
 /target/
 /fulltext/
 /upload/
+/localDeploy/

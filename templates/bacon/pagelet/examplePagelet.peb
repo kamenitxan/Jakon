@@ -6,7 +6,7 @@
 <h1>Example Pagelet</h1>
 <p>PushedValue: {{ pushed }}</p>
 <form action="/pagelet/post" method="post">
-	<input type="submit" value="send">
+	<input type="submit" value="send" id="testSubmit">
 </form>
 <form action="/pagelet/post" method="post">
 	<input type="hidden" value="true" name="validate">
