@@ -2,8 +2,8 @@ package utils
 
 import cz.kamenitxan.jakon.Main
 import cz.kamenitxan.jakon.core.model.{JakonObject, JakonUser}
-import cz.kamenitxan.jakon.utils.{TypeReferences, Utils}
 import cz.kamenitxan.jakon.utils.Utils._
+import cz.kamenitxan.jakon.utils.{TypeReferences, Utils}
 import org.scalatest.FunSuite
 
 
@@ -15,12 +15,19 @@ class UtilsTest extends FunSuite {
 		assert("id" == cls._2.getName)
 	}
 
-	test("StringImprovements") {
+	test("StringImprovements getOrElse") {
 		val s = "".getOrElse("ok")
 		assert("ok" == s)
 
 		val s2 = "test".getOrElse("ok")
 		assert("test" == s2)
+	}
+
+	test("StringImprovements isNullOrEmpty") {
+		assert("".isNullOrEmpty)
+		val nil: String = null
+		assert(nil.isNullOrEmpty)
+		assert(!"test".isNullOrEmpty)
 	}
 
 	test("Main") {

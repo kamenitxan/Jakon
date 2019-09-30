@@ -187,13 +187,7 @@ object DBHelper {
 		val res = selectSingle(stmt, sql, cls)
 		if (res.foreignIds != null && res.foreignIds.nonEmpty) {
 			res.foreignIds.values.foreach(fki => {
-				val cls = fki.field.getType
-				val sql = "SELECT * FROM " + cls.getSimpleName + " WHERE id = ?"
-				val stmt = conn.prepareStatement(sql)
-				stmt.setInt(1, fki.id)
-				val r = selectSingleDeep(stmt, cls.asInstanceOf[Class[JakonObject]])
-				stmt.close()
-				fki.field.set(res.entity, r)
+				selectForeignEntity(cls, fki, res)
 			})
 		}
 		res.entity
@@ -206,17 +200,21 @@ object DBHelper {
 				if (res.entity.id == fki.id) {
 					fki.field.set(res.entity, res.entity)
 				} else {
-					val cls = fki.field.getType
-					val sql = "SELECT * FROM " + cls.getSimpleName + " WHERE id = ?"
-					val stmt = conn.prepareStatement(sql)
-					stmt.setInt(1, fki.id)
-					val r = selectSingleDeep(stmt, cls.asInstanceOf[Class[JakonObject]])
-					stmt.close()
-					fki.field.set(res.entity, r)
+					selectForeignEntity(cls, fki, res)
 				}
 			})
 		}
 		res.entity
+	}
+
+	private def selectForeignEntity[T <: JakonObject](cls: Class[T], fki: ForeignKeyInfo, res: QueryResult[T])(implicit conn: Connection): Unit = {
+		val cls = fki.field.getType
+		val sql = "SELECT * FROM " + cls.getSimpleName + " WHERE id = ?"
+		val stmt = conn.prepareStatement(sql)
+		stmt.setInt(1, fki.id)
+		val r = selectSingleDeep(stmt, cls.asInstanceOf[Class[JakonObject]])
+		stmt.close()
+		fki.field.set(res.entity, r)
 	}
 
 	def selectDeep[T <: JakonObject](stmt: Statement, @Language("SQL") sql: String, cls: Class[T])(implicit conn: Connection): List[T] = {

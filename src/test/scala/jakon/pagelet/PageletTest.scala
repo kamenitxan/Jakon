@@ -1,5 +1,6 @@
 package jakon.pagelet
 
+import cz.kamenitxan.jakon.core.customPages.CustomPageInitializer
 import cz.kamenitxan.jakon.core.dynamic.PageletInitializer
 import org.openqa.selenium.By
 import test.TestBase
@@ -26,5 +27,24 @@ class PageletTest extends TestBase {
 
 		assert(f.driver.getPageSource.contains("pushedValue"))
 	}
+
+	test("CustomPageInitializer initCustomPages wrong class") { _ =>
+		try {
+			val cls = Seq(classOf[Object], classOf[Integer])
+			CustomPageInitializer.initCustomPages(cls)
+		} catch {
+			case _: Throwable => fail("Exception not excepted")
+		}
+	}
+
+	test("CustomPageInitializer initStaticPages wrong class") { _ =>
+		try {
+			val cls = Seq(classOf[Object], classOf[Integer])
+			CustomPageInitializer.initStaticPages(cls)
+		} catch {
+			case _: Throwable => fail("Exception not excepted")
+		}
+	}
+
 
 }

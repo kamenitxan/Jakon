@@ -1,17 +1,10 @@
 package cz.kamenitxan.jakon.core.fulltext
 
-import java.io.File
-
-import org.apache.lucene.analysis.standard.StandardAnalyzer
-import org.apache.lucene.index.IndexWriterConfig.OpenMode
-import org.apache.lucene.index.{IndexWriter, IndexWriterConfig}
-import org.apache.lucene.store.FSDirectory
-
 import scala.language.postfixOps
 
 
 object Lucene {
-	val indexDirectory = "fulltext"
+	/*val indexDirectory = "fulltext"
 	val index = FSDirectory.open(new File(indexDirectory).toPath)
 	val analyzer = new StandardAnalyzer()
 	val iwc = new IndexWriterConfig(analyzer)
@@ -23,7 +16,7 @@ object Lucene {
 		writer.commit()
 	}
 
-	/*def indexObject(obj: JakonObject): Unit = {
+	def indexObject(obj: JakonObject): Unit = {
 		val indexedText = obj.getClass.getFields.filter(f => {
 			val ann = f.getAnnotation(classOf[JakonField])
 			ann != null && ann.searched()

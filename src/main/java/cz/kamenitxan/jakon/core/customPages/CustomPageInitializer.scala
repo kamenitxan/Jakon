@@ -32,6 +32,7 @@ object CustomPageInitializer {
 		logger.info("Initializing static pages complete")
 	}
 
+	@scala.annotation.tailrec
 	private def isChildOf(child: Class[_], parent: Class[_]): Boolean = {
 		val supperClass = child.getSuperclass
 		if (supperClass == null) {
