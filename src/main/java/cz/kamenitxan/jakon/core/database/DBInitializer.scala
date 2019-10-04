@@ -1,6 +1,5 @@
 package cz.kamenitxan.jakon.core.database
 
-import java.beans.Transient
 import java.io.{BufferedReader, InputStreamReader}
 import java.sql.{Connection, SQLException}
 import java.util.stream.Collectors
@@ -10,7 +9,7 @@ import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper.getConnection
 import cz.kamenitxan.jakon.core.model._
 import cz.kamenitxan.jakon.webui.entity.JakonField
-import javax.persistence.ManyToOne
+import javax.persistence.{ManyToOne, Transient}
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.mutable

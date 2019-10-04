@@ -55,7 +55,7 @@ public class Routes {
 				return;
 			}
 			JakonUser user = req.session().attribute("user");
-			if (Settings.getDeployMode() == DeployMode.DEVEL || user == null) {
+			if (Settings.getDeployMode() == DeployMode.DEVEL && user == null) {
 				try (Connection conn = DBHelper.getConnection()) {
 					user = UserService.getMasterAdmin(conn);
 					req.session(true).attribute("user", user);

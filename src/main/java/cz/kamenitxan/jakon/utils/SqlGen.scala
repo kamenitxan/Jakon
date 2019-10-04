@@ -8,7 +8,7 @@ import cz.kamenitxan.jakon.core.database.converters.AbstractConverter
 import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.utils.TypeReferences._
 import cz.kamenitxan.jakon.webui.entity.JakonField
-import javax.persistence.{ManyToOne, OneToOne}
+import javax.persistence.{ManyToOne, OneToOne, Transient}
 import org.slf4j.{Logger, LoggerFactory}
 
 
@@ -93,7 +93,11 @@ object SqlGen {
 
 	private def getJakonFields(cls: Class[_ <: JakonObject]): List[Field] = {
 		val allFields = Utils.getFieldsUpTo(cls, classOf[JakonObject])
-		allFields.filter(f => f.getAnnotations.exists(fa => fa.annotationType().getName == classOf[JakonField].getName) && f.getName != "id")
+		allFields.filter(f =>
+			f.getAnnotations.exists(fa => fa.annotationType().getName == classOf[JakonField].getName)
+			  && f.getName != "id"
+			  && f.getAnnotation(classOf[Transient]) == null
+		)
 	}
 
 	private def setValue[T <: JakonObject](stmt: PreparedStatement, f: Field, i: Int, inst: T): Unit = {
@@ -135,11 +139,11 @@ object SqlGen {
 
 	def getSqlType(f: Field): Int = {
 		f.getType match {
-			case x if x.isEnum => 	JDBCType.VARCHAR.getVendorTypeNumber
+			case x if x.isEnum => JDBCType.VARCHAR.getVendorTypeNumber
 			case STRING => JDBCType.VARCHAR.getVendorTypeNumber
 			case BOOLEAN => JDBCType.BOOLEAN.getVendorTypeNumber
 			case _ if f.getDeclaredAnnotation(classOf[ManyToOne]) != null => JDBCType.INTEGER.getVendorTypeNumber
-			case INTEGER  => JDBCType.INTEGER.getVendorTypeNumber
+			case INTEGER => JDBCType.INTEGER.getVendorTypeNumber
 			case DOUBLE => JDBCType.DOUBLE.getVendorTypeNumber
 			case DATE => JDBCType.DATE.getVendorTypeNumber
 			case _ =>

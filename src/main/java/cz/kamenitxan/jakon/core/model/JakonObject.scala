@@ -124,7 +124,7 @@ abstract class JakonObject(@JakonField var childClass: String) extends Serializa
 
 	def updateObject(jid: Int, conn: Connection): Unit = {
 		logger.warn(s"updateObject method is not overridden $childClass")
-		val stmt = SqlGen.updateStmt(Class.forName(childClass).asInstanceOf[JakonObject], conn, jid)
+		val stmt = SqlGen.updateStmt(this, conn, jid)
 		stmt.executeUpdate()
 	}
 

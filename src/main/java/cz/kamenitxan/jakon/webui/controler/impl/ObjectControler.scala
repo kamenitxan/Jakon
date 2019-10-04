@@ -273,7 +273,7 @@ object ObjectControler {
 		val objectId = req.params(":id").toOptInt
 		val order = req.queryParams("currentOrder").toOptInt
 
-		val objectClass = DBHelper.getDaoClasses.filter(c => c.getName.contains(objectName)).head
+		val objectClass = DBHelper.getDaoClasses.filter(c => c.getSimpleName.equals(objectName)).head
 		if (!objectClass.getInterfaces.contains(classOf[Ordered])) {
 			PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "OBJECT_NOT_ORDERED")
 			redirect(req, res, "/admin/object/" + objectName)
