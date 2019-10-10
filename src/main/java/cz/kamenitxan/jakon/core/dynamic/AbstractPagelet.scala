@@ -22,7 +22,7 @@ abstract class AbstractPagelet extends IPagelet {
 	builder.loader(loader)
 	builder.extension(new PebbleExtension)
 	builder.strictVariables(true)
-	if (DeployMode.DEVEL == Settings.getDeployMode) {
+	if (DeployMode.PRODUCTION != Settings.getDeployMode) {
 		builder.templateCache(null)
 		builder.tagCache(null)
 		builder.cacheActive(false)

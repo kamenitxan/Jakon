@@ -6,7 +6,7 @@ import cz.kamenitxan.jakon.JakonInitializer
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.controler.IControler
 import cz.kamenitxan.jakon.core.customPages.AbstractCustomPage
-import cz.kamenitxan.jakon.core.database.{DBHelper, DBInitializer}
+import cz.kamenitxan.jakon.core.database.DBInitializer
 import cz.kamenitxan.jakon.core.task.TaskRunner
 import cz.kamenitxan.jakon.core.template.Pebble
 import cz.kamenitxan.jakon.core.template.utils.TemplateUtils
@@ -39,7 +39,7 @@ object Director {
 			logger.warn(s"JVM character encoding $enc is not UTF-8")
 		}
 
-		if (Settings.getDeployMode.equals(DeployMode.DEVEL)) {
+		if (Settings.getDeployMode != DeployMode.PRODUCTION) {
 			DBInitializer.createTables()
 		}
 		Future {
@@ -50,7 +50,7 @@ object Director {
 		Routes.init()
 		logger.info("Jakon started")
 
-		if (Settings.getDeployMode.equals(DeployMode.DEVEL)) {
+		if (Settings.getDeployMode != DeployMode.PRODUCTION) {
 			JakonInitializer.init()
 		}
 

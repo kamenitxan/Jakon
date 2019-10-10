@@ -5,5 +5,6 @@ package cz.kamenitxan.jakon.core.configuration;
  */
 public enum DeployMode {
 	DEVEL,
+	TESTING,
 	PRODUCTION
 }

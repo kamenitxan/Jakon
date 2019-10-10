@@ -81,7 +81,7 @@ class JakonInit {
 
 
 		afterAfter((_: Request, _: Response) => PageContext.destroy())
-		if (Settings.getDeployMode == DeployMode.DEVEL) {
+		if (Settings.getDeployMode != DeployMode.PRODUCTION) {
 			before((request: Request, _: Response) => {
 				DevRender.rerender(request.pathInfo())
 			})

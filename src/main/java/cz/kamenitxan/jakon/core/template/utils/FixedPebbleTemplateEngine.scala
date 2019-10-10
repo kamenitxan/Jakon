@@ -24,7 +24,7 @@ class FixedPebbleTemplateEngine() extends spark.TemplateEngine {
 	def this(loader: Loader[_]) = {
 		this()
 		val builder = new PebbleEngine.Builder().loader(loader).extension(new AdminPebbleExtension)
-		if (DeployMode.DEVEL == Settings.getDeployMode) {
+		if (DeployMode.PRODUCTION != Settings.getDeployMode) {
 			builder.templateCache(null)
 			builder.tagCache(null)
 			builder.cacheActive(false)

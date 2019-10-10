@@ -41,7 +41,7 @@ public class Routes {
 		}));
 		before("/admin", (request, response) -> {
 			JakonUser user = request.session().attribute("user");
-			if (Settings.getDeployMode() == DeployMode.PRODUCTION
+			if (Settings.getDeployMode() != DeployMode.DEVEL
 					&& request.session().attribute("user") != null
 					&& (user.acl().adminAllowed() || user.acl().masterAdmin())) {
 				response.redirect("/admin/index", 302);
