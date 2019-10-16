@@ -11,7 +11,7 @@ import javax.persistence._
 /**
   * Created by TPa on 31.08.16.
   */
-class JakonUser(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser].getName) with Serializable {
+class JakonUser extends JakonObject(childClass = classOf[JakonUser].getName) with Serializable {
 
 	@JakonField(searched = true) var username: String = ""
 	@JakonField(searched = true) var email: String = ""
@@ -22,8 +22,6 @@ class JakonUser(u: Unit = ()) extends JakonObject(childClass = classOf[JakonUser
 	@JakonField(searched = true) var enabled: Boolean = false
 	@ManyToOne
 	@JakonField(required = true) var acl: AclRule = _
-
-	def this() = this(u = ())
 
 	@Transient
 	override val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-user")

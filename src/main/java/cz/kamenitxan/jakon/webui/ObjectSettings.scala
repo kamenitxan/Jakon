@@ -7,7 +7,7 @@ class ObjectSettings(
                       /** font awesome icon show in administration */
                       val icon: String = "fa-file-o",
 
-                      /** asd */
-                      val noParentFieldInList: Boolean = false
+                      /** TODO javadoc */
+                      val noParentFieldInList: Boolean = false,
                     ) extends Serializable
 
