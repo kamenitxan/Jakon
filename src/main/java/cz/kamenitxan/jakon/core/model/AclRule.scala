@@ -3,6 +3,7 @@ package cz.kamenitxan.jakon.core.model
 import java.sql.{Connection, Statement}
 
 import cz.kamenitxan.jakon.core.database.converters.StringListConverter
+import cz.kamenitxan.jakon.validation.validators.NotEmpty
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence._
@@ -12,6 +13,7 @@ import javax.persistence._
   */
 @Entity
 class AclRule extends JakonObject(childClass = classOf[AclRule].getName) {
+	@NotEmpty
 	@JakonField(searched = true, listOrder = 0)
 	var name: String = ""
 	@JakonField(listOrder = 1)

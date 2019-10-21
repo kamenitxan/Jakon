@@ -5,22 +5,16 @@ import java.sql.{Connection, Statement}
 import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.JakonField
-import javax.persistence.{Column, Entity}
+import javax.persistence.Column
 
-import scala.beans.BeanProperty
-
-@Entity
 class EmailTemplateEntity(u: Unit = ()) extends JakonObject(classOf[EmailTemplateEntity].getName) {
-	@Column
 	@JakonField(searched = true)
 	var name: String = ""
 	@Column(name = "addressFrom")
 	@JakonField
 	var from: String = ""
-	@Column
 	@JakonField
 	var subject: String = ""
-	@Column
 	@JakonField(inputTemplate = "textarea", shownInList = false)
 	var template: String = ""
 

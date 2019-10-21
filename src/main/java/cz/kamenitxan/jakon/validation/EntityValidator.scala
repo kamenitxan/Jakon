@@ -3,9 +3,12 @@ package cz.kamenitxan.jakon.validation
 import java.lang.reflect.Field
 
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
+import org.slf4j.LoggerFactory
+import spark.Request
 
 
 object EntityValidator {
+	private val logger = LoggerFactory.getLogger(this.getClass)
 
 	def validate(prefix: String, validatedData: Map[Field, String]): Either[Seq[Message], Map[Field, String]] = {
 		val errors = validatedData.filter(f => {
@@ -18,6 +21,19 @@ object EntityValidator {
 		} else {
 			Left(errors)
 		}
+	}
+
+	def createFormData(req: Request, dataClass: Class[_]): Map[Field, String] = {
+		dataClass.getDeclaredFields.map(f => {
+			var res: (Field, String) = null
+			try {
+				f.setAccessible(true)
+				res = (f, req.queryParams(f.getName))
+			} catch {
+				case ex: Exception => logger.error("Exception when setting pagelet form data value", ex)
+			}
+			res
+		}).filter(t => t != null).toMap
 	}
 
 	private def validateField(prefix: String, f: Field, fieldValue: String, validatedData: Map[Field, String]): Seq[Message] = {

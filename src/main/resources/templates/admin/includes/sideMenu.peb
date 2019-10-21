@@ -1,14 +1,18 @@
 {# @pebvariable name="enableFiles" type="java.lang.Boolean" #}
+{# @pebvariable name="compactMessagesList" type="java.lang.Boolean" #}
 {# @pebvariable name="objectName" type="java.lang.String" #}
 {# @pebvariable name="modelClasses" type="java.util.List" #}
 {# @pebvariable name="jakonModelClasses" type="java.util.List" #}
 
 
-
 <!-- Navigation -->
 <nav class="navbar navbar-default navbar-static-top" style="margin-bottom: 0">
 {% include "includes/topMenu" %}
-{% include "includes/components/messagesList" %}
+{% if compactMessagesList %}
+    {% include "includes/components/compactMessagesList" %}
+{% else %}
+    {% include "includes/components/messagesList" %}
+{% endif %}
     <div class="navbar-default sidebar" role="navigation">
         <div class="sidebar-nav navbar-collapse">
             <ul class="nav" id="side-menu">

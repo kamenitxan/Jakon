@@ -6,6 +6,7 @@ import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{JakonObject, Ordered}
 import cz.kamenitxan.jakon.utils.Utils._
 import cz.kamenitxan.jakon.utils.{PageContext, Utils}
+import cz.kamenitxan.jakon.validation.EntityValidator
 import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
@@ -207,6 +208,17 @@ object ObjectControler {
 			conn.close()
 		} else {
 			obj = objectClass.newInstance()
+		}
+
+		val formData = EntityValidator.createFormData(req, objectClass)
+		EntityValidator.validate(objectClass.getSimpleName, formData) match {
+			case Left(result) =>
+				result.foreach(r => PageContext.getInstance().messages += r)
+				val redirectUrl = objectId match {
+					case Some(id) => s"/admin/object/$objectName/${id}"
+					case None => s"/admin/object/create/$objectName"
+				}
+				return redirect(req, res, redirectUrl)
 		}
 
 		var formOrder = 0

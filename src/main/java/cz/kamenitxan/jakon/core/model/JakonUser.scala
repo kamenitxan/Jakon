@@ -2,6 +2,7 @@ package cz.kamenitxan.jakon.core.model
 
 import java.sql.{Connection, Statement, Types}
 
+import cz.kamenitxan.jakon.validation.validators.{Email, NotEmpty}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.controler.impl.Authentication
 import cz.kamenitxan.jakon.webui.entity.JakonField
@@ -13,13 +14,18 @@ import javax.persistence._
   */
 class JakonUser extends JakonObject(childClass = classOf[JakonUser].getName) with Serializable {
 
+	@NotEmpty
 	@JakonField(searched = true) var username: String = ""
+	@NotEmpty
+	@Email
 	@JakonField(searched = true) var email: String = ""
 	@JakonField(searched = true) var emailConfirmed: Boolean = false
-	@JakonField(searched = true) var firstName: String = ""
-	@JakonField(searched = true) var lastName: String = ""
+	@JakonField(searched = true, required = false) var firstName: String = ""
+	@JakonField(searched = true, required = false) var lastName: String = ""
+	@NotEmpty
 	@JakonField(shownInList = false, searched = true) var password: String = ""
 	@JakonField(searched = true) var enabled: Boolean = false
+	@NotEmpty
 	@ManyToOne
 	@JakonField(required = true) var acl: AclRule = _
 

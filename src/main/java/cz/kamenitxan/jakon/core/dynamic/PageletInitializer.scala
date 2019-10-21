@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon.core.dynamic
 
-import java.lang.reflect.{Field, Method}
+import java.lang.reflect.Method
 import java.sql.Connection
 
 import com.google.gson.Gson
@@ -88,7 +88,7 @@ object PageletInitializer {
 			DBHelper.withDbConnection(conn => {
 				val dataClass = getDataClass(m)
 				if (post.validate() && dataClass.isDefined) {
-					val formData = createFormData(req, dataClass.get)
+					val formData = EntityValidator.createFormData(req, dataClass.get)
 					EntityValidator.validate(dataClass.get.getSimpleName, formData) match {
 						case Left(result) =>
 							if ("true".equals(req.queryParams(METHOD_VALDIATE))) {
@@ -130,19 +130,6 @@ object PageletInitializer {
 		}
 	}
 
-
-	private def createFormData(req: Request, dataClass: Class[_]): Map[Field, String] = {
-		dataClass.getDeclaredFields.map(f => {
-			var res: (Field, String) = null;
-			try {
-				f.setAccessible(true)
-				res = (f, req.queryParams(f.getName))
-			} catch {
-				case ex: Exception => logger.error("Exception when setting pagelet form data value", ex)
-			}
-			res
-		}).filter(t => t != null).toMap
-	}
 
 
 

@@ -43,7 +43,7 @@
     <!-- Custom Theme JavaScript -->
     <script src="/jakon/js/sb-admin-2.js"></script>
 <script>
-	const globals = require("utils/Globals.js");
+	const jakon = require("utils/Jakon.js");
 </script>
 </body>
 </html>
