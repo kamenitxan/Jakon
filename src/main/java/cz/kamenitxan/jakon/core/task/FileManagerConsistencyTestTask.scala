@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon.core.task
 
-import java.io.IOException
+import java.io.{File, IOException}
 import java.nio.ByteBuffer
 import java.nio.charset.Charset
 import java.nio.file._
@@ -20,6 +20,7 @@ class FileManagerConsistencyTestTask extends AbstractTask(classOf[FileManagerCon
 
 	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 	private val FILE_ATTR_NAME = "jakonFileId"
+	private val BASE_DIR = "/basePath"
 
 	override def start(): Unit = {
 		val osName = System.getProperty("os.name").toLowerCase
@@ -31,7 +32,8 @@ class FileManagerConsistencyTestTask extends AbstractTask(classOf[FileManagerCon
 			return
 		}
 
-		val realPath = Paths.get(REPOSITORY_BASE_PATH, "/basePath")
+		checkUploadDirectory()
+		val realPath = Paths.get(REPOSITORY_BASE_PATH, BASE_DIR)
 		DBHelper.withDbConnection(implicit conn => {
 			val files = JakonFileService.getAll
 
@@ -50,6 +52,18 @@ class FileManagerConsistencyTestTask extends AbstractTask(classOf[FileManagerCon
 				f.delete()
 			})
 		})
+	}
+
+	private def checkUploadDirectory(): Unit = {
+		val dir = new File(REPOSITORY_BASE_PATH + BASE_DIR)
+		if (!dir.exists()) {
+			val res = dir.mkdirs()
+			if (res) {
+				logger.info(s"Upload directory created: $dir")
+			} else {
+				logger.warn(s"Failed to create upload directory: $dir")
+			}
+		}
 	}
 
 	@throws[IOException]
