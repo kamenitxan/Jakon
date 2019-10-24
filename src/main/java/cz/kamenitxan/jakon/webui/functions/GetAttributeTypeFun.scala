@@ -5,6 +5,7 @@ import java.util
 import java.util.Date
 
 import com.mitchellbosecke.pebble.extension.Function
+import com.mitchellbosecke.pebble.template.{EvaluationContext, PebbleTemplate}
 
 /**
   * Created by TPa on 6.10.16.
@@ -17,7 +18,7 @@ class GetAttributeTypeFun extends Function {
 		names
 	}
 
-	override def execute(args: util.Map[String, Object]): Object = {
+	override def execute(args: util.Map[String, AnyRef], self: PebbleTemplate, context: EvaluationContext, lineNumber: Int): AnyRef = {
 		val attrName = args.get("attr").asInstanceOf[String]
 
 		val obj = args.get("object")

@@ -4,7 +4,6 @@ import java.util
 
 import com.mitchellbosecke.pebble.extension.Function
 import cz.kamenitxan.jakon.core.template.pebble.PebbleExtension
-
 /**
   * Created by tomaspavel on 6.10.16.
   */

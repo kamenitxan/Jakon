@@ -219,6 +219,7 @@ object ObjectControler {
 					case None => s"/admin/object/create/$objectName"
 				}
 				return redirect(req, res, redirectUrl)
+			case _ =>
 		}
 
 		var formOrder = 0

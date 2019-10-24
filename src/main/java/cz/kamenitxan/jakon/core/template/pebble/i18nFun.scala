@@ -7,7 +7,7 @@ import java.util
 import java.util.{Locale, MissingResourceException, ResourceBundle}
 
 import com.mitchellbosecke.pebble.extension.i18n.{UTF8Control, i18nFunction}
-import com.mitchellbosecke.pebble.template.EvaluationContext
+import com.mitchellbosecke.pebble.template.{EvaluationContext, PebbleTemplate}
 import cz.kamenitxan.jakon.core.configuration.Settings
 import org.slf4j.{Logger, LoggerFactory}
 
@@ -17,7 +17,7 @@ class i18nFun extends i18nFunction {
 
 	val templateDir: String = Settings.getTemplateDir
 
-	override def execute(args: util.Map[String, AnyRef]): AnyRef = {
+	override def execute(args: util.Map[String, AnyRef], self: PebbleTemplate, context: EvaluationContext, lineNumber: Int): AnyRef = {
 		val basename = args.get("bundle").asInstanceOf[String]
 		val key = args.get("key").asInstanceOf[String]
 		val params = args.get("params").asInstanceOf[Seq[String]]
