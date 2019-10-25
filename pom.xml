@@ -232,6 +232,19 @@
 			<artifactId>annotations</artifactId>
 			<version>16.0.2</version>
 		</dependency>
+
+		<!-- GPAPI common -->
+		<dependency>
+			<groupId>cz.gopay</groupId>
+			<artifactId>gp-java-api-v3-common</artifactId>
+			<version>3.4.6</version>
+		</dependency>
+		<!-- GPAPI Apache Http Client -->
+		<dependency>
+			<groupId>cz.gopay</groupId>
+			<artifactId>gp-java-api-v3-apache-http-client</artifactId>
+			<version>3.4.6</version>
+		</dependency>
 	</dependencies>
 
 	<build>
