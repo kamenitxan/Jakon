@@ -6,7 +6,7 @@ import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.webui.controler.impl.Authentication
 import org.openqa.selenium.htmlunit.HtmlUnitDriver
 import org.openqa.selenium.{By, WebDriver}
-import org.scalatest.{FunSuite, Outcome, fixture}
+import org.scalatest.{Outcome, fixture}
 
 /**
   * Created by TPa on 03.09.16.
@@ -50,7 +50,7 @@ class AuthTest extends fixture.FunSuite{
 		val stmt = DBHelper.getPreparedStatement(sql)
 		stmt.setString(1, email)
 		val result = DBHelper.selectSingle(stmt, classOf[JakonUser])
-		val user = result.entity.asInstanceOf[JakonUser]
+		val user = result.entity
 
 
 		assert(Authentication.checkPassword(password, user.password))

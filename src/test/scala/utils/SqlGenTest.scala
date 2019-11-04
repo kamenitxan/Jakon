@@ -39,4 +39,21 @@ class SqlGenTest extends TestBase {
 			case ex: Throwable => fail(ex)
 		}
 	}
+
+	test("DBHelper select") { _ =>
+		DBHelper.withDbConnection(conn => {
+			val stmt = conn.prepareStatement("SELECT * FROM JakonUser")
+			val users = DBHelper.select(stmt, classOf[JakonUser])
+			assert(users.nonEmpty)
+		})
+	}
+
+	/*test("DBHelper selectDeep") { _ =>
+		DBHelper.withDbConnection(implicit conn => {
+			val stmt = conn.prepareStatement("SELECT * FROM JakonUser")
+			val users = DBHelper.selectDeep(stmt, classOf[JakonUser])
+			assert(users.nonEmpty)
+			assert(users.forall( u => u.acl != null))
+		})
+	}*/
 }
