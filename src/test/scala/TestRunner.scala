@@ -10,6 +10,7 @@ import cz.kamenitxan.jakon.core.model.{Category, Page, Post}
 import cz.kamenitxan.jakon.core.template.Pebble
 import functions.LinkTest
 import jakon.pagelet.PageletTest
+import jakon.payment.PaymentTest
 import jakon.{DeployTest, ModelTest, RenderTest, SettingsTest}
 import org.scalatest.{BeforeAndAfterAll, Suites}
 import utils.mail.EmailTest
@@ -35,7 +36,8 @@ class TestRunner extends Suites(
 	new SettingsTest,
 	new i18nUtilTest,
 	new PageletTest,
-	new DeployTest
+	new DeployTest,
+	new PaymentTest
 ) with BeforeAndAfterAll {
 
 	override def beforeAll() {

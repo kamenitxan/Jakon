@@ -11,6 +11,8 @@ import cz.kamenitxan.jakon.core.dynamic.PageletInitializer
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.core.task.{FileManagerConsistencyTestTask, RenderTask, TaskRunner}
 import cz.kamenitxan.jakon.devtools.{DevRender, StaticFilesController}
+import cz.kamenitxan.jakon.payment.PaymentSettings
+import cz.kamenitxan.jakon.payment.entity.PaymentTransaction
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.utils.{LoggingExceptionHandler, PageContext}
 import cz.kamenitxan.jakon.webui.AdminSettings
@@ -49,6 +51,9 @@ class JakonInit {
 			TaskRunner.registerTask(new EmailSendTask(1, TimeUnit.MINUTES))
 		}
 		TaskRunner.registerTask(new FileManagerConsistencyTestTask)
+		if (PaymentSettings.isPaymentsEnabled) {
+			DBHelper.addDao(classOf[PaymentTransaction])
+		}
 	}
 
 	def afterInit(): Unit = {

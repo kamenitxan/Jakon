@@ -113,6 +113,7 @@ object SqlGen {
 			case STRING => stmt.setString(i, value.asInstanceOf[String])
 			case BOOLEAN => stmt.setBoolean(i, value.asInstanceOf[Boolean])
 			case INTEGER => stmt.setInt(i, value.asInstanceOf[Int])
+			case LONG => stmt.setLong(i, value.asInstanceOf[Long])
 			case DOUBLE => stmt.setDouble(i, value.asInstanceOf[Double])
 			case DATE => stmt.setDate(i, new java.sql.Date(value.asInstanceOf[Date].getTime))
 			case DATETIME => stmt.setObject(i, value)

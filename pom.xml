@@ -248,6 +248,12 @@
 			<groupId>cz.gopay</groupId>
 			<artifactId>gp-java-api-v3-apache-http-client</artifactId>
 			<version>3.4.6</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.httpcomponents</groupId>
+					<artifactId>httpclient</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 
