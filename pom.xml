@@ -31,6 +31,10 @@
 			<id>jcenter</id>
 			<url>https://jcenter.bintray.com/</url>
 		</repository>
+		<repository>
+			<id>app-engine</id>
+			<url>https://kamenitxans-maven-repository.appspot.com/</url>
+		</repository>
 	</repositories>
 
 	<distributionManagement>
