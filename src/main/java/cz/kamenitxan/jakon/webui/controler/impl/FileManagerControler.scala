@@ -534,7 +534,8 @@ object FileManagerControler {
 		env.put("create", "true")
 		var zipped = false
 
-		val zipfs = FileSystems.newFileSystem(URI.create("jar:file:" + zip.toString), env)
+		val appDir = dest.toAbsolutePath.toString.replace("upload/basePath", "")
+		val zipfs = FileSystems.newFileSystem(URI.create(s"jar:file:$appDir" + zip.toString), env)
 		try {
 			for (path <- paths) {
 				val realPath = Paths.get(REPOSITORY_BASE_PATH, path.toString)

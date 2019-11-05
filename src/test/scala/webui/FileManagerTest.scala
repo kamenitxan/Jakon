@@ -136,6 +136,17 @@ class FileManagerTest extends TestBase {
 		assert(res.contains("\"success\":true"))
 	}
 
+	test("file manager - download multiple") { _ =>
+		val url = new URL(host + prefix
+		  + "downloadMultipleFileUrl?action=downloadMultiple&toFilename=test.zip&items[]=%2FbasePath%2Ftest.txt&items[]=%2FbasePath%2Fnope2.png")
+		val con = url.openConnection.asInstanceOf[HttpURLConnection]
+		con.setRequestMethod("GET")
+		con.setRequestProperty("Content-Type", "application/json;charset=utf-8")
+
+		val resCode = con.getResponseCode
+		assert(resCode == 200)
+	}
+
 
 	test("file manager - rename file") { _ =>
 		val url = new URL(host + prefix + "renameUrl")
@@ -267,8 +278,8 @@ class FileManagerTest extends TestBase {
 		assert(res.contains("test2-copy.txt"))
 	}
 
-	test("file manager - delete file") { _ =>
-		val url = new URL(host + prefix + "getContentUrl")
+	test("file manager - compress same name") { _ =>
+		val url = new URL(host + prefix + "compressUrl")
 		val con = url.openConnection.asInstanceOf[HttpURLConnection]
 		con.setRequestMethod("POST")
 		con.setRequestProperty("Content-Type", "application/json;charset=utf-8")
@@ -276,7 +287,35 @@ class FileManagerTest extends TestBase {
 
 		con.setDoOutput(true)
 		val out = new DataOutputStream(con.getOutputStream)
-		out.write("{\"action\":\"remove\",\"items\":[\"/basePath/testFolder2/test2.txt\"]}".getBytes())
+		out.write(
+			"""{"action":"compress",
+			  |"items":["/basePath/testFolder2"],
+			  |"destination":"/basePath",
+			  |"compressedFilename":"testFolder2"}""".stripMargin.getBytes())
+		out.flush()
+
+		val resCode = con.getResponseCode
+		val res = Source.fromInputStream(con.getInputStream).mkString
+
+		assert(resCode == 200)
+		assert(res.nonEmpty)
+		assert(res.contains("\"success\":false"))
+	}
+
+	test("file manager - compress") { _ =>
+		val url = new URL(host + prefix + "compressUrl")
+		val con = url.openConnection.asInstanceOf[HttpURLConnection]
+		con.setRequestMethod("POST")
+		con.setRequestProperty("Content-Type", "application/json;charset=utf-8")
+
+
+		con.setDoOutput(true)
+		val out = new DataOutputStream(con.getOutputStream)
+		out.write(
+			"""{"action":"compress",
+			  |"items":["/basePath/testFolder2"],
+			  |"destination":"/basePath",
+			  |"compressedFilename":"testFolder2.zip"}""".stripMargin.getBytes())
 		out.flush()
 
 		val resCode = con.getResponseCode
@@ -286,6 +325,27 @@ class FileManagerTest extends TestBase {
 		assert(res.nonEmpty)
 		assert(res.contains("\"success\":true"))
 	}
+
+	test("file manager - delete file") { _ =>
+		val url = new URL(host + prefix + "getContentUrl")
+		val con = url.openConnection.asInstanceOf[HttpURLConnection]
+		con.setRequestMethod("POST")
+		con.setRequestProperty("Content-Type", "application/json;charset=utf-8")
+
+
+		con.setDoOutput(true)
+		val out = new DataOutputStream(con.getOutputStream)
+		out.write("{\"action\":\"remove\",\"items\":[\"/basePath/testFolder2/test2.txt\", \"/basePath/testFolder2.zip\"]}".getBytes())
+		out.flush()
+
+		val resCode = con.getResponseCode
+		val res = Source.fromInputStream(con.getInputStream).mkString
+
+		assert(resCode == 200)
+		assert(res.nonEmpty)
+		assert(res.contains("\"success\":true"))
+	}
+
 
 	test("file manager - remove folder") { _ =>
 		val url = new URL(host + prefix + "remove")
