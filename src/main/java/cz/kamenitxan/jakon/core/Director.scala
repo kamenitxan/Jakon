@@ -25,7 +25,7 @@ object Director {
 	var controllers: List[IControler] = List[IControler]()
 	final private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
-	val SELECT_EMAIL_TMPL_SQL = "SELECT addressFrom, template FROM EmailTemplateEntity WHERE name = ?"
+	val SELECT_EMAIL_TMPL_SQL = "SELECT addressFrom, template, subject FROM EmailTemplateEntity WHERE name = ?"
 
 	def init() {
 		Settings.setTemplateDir("templates/bacon/")

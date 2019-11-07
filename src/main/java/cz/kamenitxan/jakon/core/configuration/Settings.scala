@@ -7,6 +7,7 @@ import cz.kamenitxan.jakon.core.template.{Pebble, TemplateEngine}
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.utils.mail.EmailTypeHandler
 import cz.kamenitxan.jakon.webui.util.JakonFileLoader
+import javax.mail.Message
 import org.slf4j.LoggerFactory
 
 import scala.language.postfixOps
@@ -20,7 +21,11 @@ object Settings {
 	private val logger = LoggerFactory.getLogger(this.getClass.getName)
 	private var engine: TemplateEngine = _
 	private var adminEngine: spark.TemplateEngine = _
-	private var emailTypeHandler: EmailTypeHandler = _
+	private var emailTypeHandler: EmailTypeHandler = new EmailTypeHandler {
+		override def handle(emailType: String): (Message, Predef.Map[String, Any]) => Unit = (_, _) => {}
+
+		override def afterSend(emailType: String): Unit = {}
+	}
 	private var databaseType: DatabaseType = _
 
 	def doAfterLoad(): Unit = {

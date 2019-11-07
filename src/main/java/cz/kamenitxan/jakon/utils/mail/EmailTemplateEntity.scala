@@ -15,7 +15,7 @@ class EmailTemplateEntity(u: Unit = ()) extends JakonObject(classOf[EmailTemplat
 	var from: String = ""
 	@JakonField
 	var subject: String = ""
-	@JakonField(inputTemplate = "textarea", shownInList = false)
+	@JakonField(inputTemplate = "raw_textarea", shownInList = false)
 	var template: String = ""
 
 	def this() = this(u = ())

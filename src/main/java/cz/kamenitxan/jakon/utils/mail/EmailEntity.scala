@@ -67,7 +67,11 @@ class EmailEntity(u: Unit = ()) extends JakonObject(classOf[EmailEntity].getName
 	}
 
 	override def updateObject(jid: Int, conn: Connection): Unit = {
-		val sql = "UPDATE EmailEntity SET addressTo = ?, subject = ?, template = ?, lang = ?, emailType = ?, params = ?, sent = ?, sentDate = ? WHERE id = ?"
+		val sql = if (sentDate != null) {
+			"UPDATE EmailEntity SET addressTo = ?, subject = ?, template = ?, lang = ?, emailType = ?, params = ?, sent = ?, sentDate = ? WHERE id = ?"
+		} else {
+			"UPDATE EmailEntity SET addressTo = ?, subject = ?, template = ?, lang = ?, emailType = ?, params = ?, sent = ? WHERE id = ?"
+		}
 		val stmt = conn.prepareStatement(sql)
 		stmt.setString(1, to)
 		stmt.setString(2, subject)
@@ -76,8 +80,12 @@ class EmailEntity(u: Unit = ()) extends JakonObject(classOf[EmailEntity].getName
 		stmt.setString(5, emailType)
 		stmt.setString(6, new ScalaMapConverter().convertToDatabaseColumn(params))
 		stmt.setBoolean(7, sent)
-		stmt.setDate(8, new java.sql.Date(sentDate.getTime))
-		stmt.setInt(9, jid)
+		if (sentDate != null) {
+			stmt.setDate(8, new java.sql.Date(sentDate.getTime))
+			stmt.setInt(9, jid)
+		} else {
+			stmt.setInt(8, jid)
+		}
 		stmt.executeUpdate()
 	}
 }

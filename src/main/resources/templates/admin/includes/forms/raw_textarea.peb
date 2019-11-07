@@ -1,0 +1,5 @@
+{# @pebvariable name="field" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
+
+<div>
+	<textarea class="form-control" name="{{ field.name }}" cols="80" rows="20">{{ field.value | raw }}</textarea>
+</div>

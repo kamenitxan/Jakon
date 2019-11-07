@@ -10,7 +10,7 @@ import spark.{Request, Response}
 
 import scala.collection.mutable
 
-@ObjectExtension(value = classOf[JakonUser])
+@ObjectExtension(value = classOf[JakonUser], extensionType = ExtensionType.SINGLE)
 @Pagelet
 class JakonUserExtension extends AbstractObjectExtension {
 

@@ -5,6 +5,7 @@ import java.util
 import java.util.Locale
 
 import cz.kamenitxan.jakon.core.model.JakonObject
+import org.slf4j.{Logger, LoggerFactory}
 
 import scala.annotation.tailrec
 import scala.collection.JavaConversions._
@@ -15,6 +16,8 @@ import scala.util.Try
   * Created by TPa on 08.09.16.
   */
 object Utils {
+	final private val logger: Logger = LoggerFactory.getLogger(this.getClass)
+
 	def toJavaCollection(list: List[AnyRef]): util.Collection[AnyRef] = {
 		asJavaCollection(list)
 	}
@@ -87,5 +90,15 @@ object Utils {
 
 	def nonEmpty(s: String): Boolean = {
 		!isEmpty(s)
+	}
+
+	def measured[B](logFun: Long => String)(measuredFun: => B): B = {
+		// TODO: https://stackoverflow.com/questions/33909930/what-is-the-best-way-to-get-the-name-of-the-caller-class-in-an-object/
+		val startTime = System.currentTimeMillis()
+		val result = measuredFun
+		val stopTime = System.currentTimeMillis()
+		val elapsedTime = stopTime - startTime
+		logger.info(logFun.apply(elapsedTime))
+		result
 	}
 }

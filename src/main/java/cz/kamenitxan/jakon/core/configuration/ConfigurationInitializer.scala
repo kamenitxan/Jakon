@@ -3,6 +3,7 @@ package cz.kamenitxan.jakon.core.configuration
 import java.io.{File, FileInputStream, IOException}
 import java.util.Properties
 
+import cz.kamenitxan.jakon.utils.Utils
 import org.slf4j.LoggerFactory
 
 import scala.collection.mutable
@@ -17,25 +18,27 @@ object ConfigurationInitializer {
 
 	@throws[IOException]
 	def init(configFile: File): Unit = {
-		if (configFile == null) {
-			try {
-				init(new File("jakon_config.properties"))
-			} catch {
-				case e: Exception =>
-					logger.error("Config loading failed. Shuting down!", e)
-					System.exit(-1)
-			}
-		} else {
-			val input = new FileInputStream(configFile)
-			val prop = new Properties
-			prop.load(input)
-			val e = prop.propertyNames
-			while ( {
-				e.hasMoreElements
-			}) {
-				val key = e.nextElement.asInstanceOf[String]
-				val value = prop.getProperty(key).trim
-				conf.put(key, value)
+		Utils.measured(runtime => s"Configuration scaned in $runtime ms") {
+			if (configFile == null) {
+				try {
+					init(new File("jakon_config.properties"))
+				} catch {
+					case e: Exception =>
+						logger.error("Config loading failed. Shuting down!", e)
+						System.exit(-1)
+				}
+			} else {
+				val input = new FileInputStream(configFile)
+				val prop = new Properties
+				prop.load(input)
+				val e = prop.propertyNames
+				while ( {
+					e.hasMoreElements
+				}) {
+					val key = e.nextElement.asInstanceOf[String]
+					val value = prop.getProperty(key).trim
+					conf.put(key, value)
+				}
 			}
 		}
 	}

@@ -51,6 +51,9 @@ object UserService {
 		resetEmailEntity.create()
 
 		val email = new EmailEntity("FORGET_PASSWORD", user.email, tmpl.subject, Map[String, String](
+			"firstName" -> user.firstName,
+			"lastName" -> user.lastName,
+			"email" -> user.email,
 			"username" -> user.username,
 			"token" -> resetEmailEntity.token,
 			"protocol" -> (if (req.raw().isSecure) "https" else "http"),

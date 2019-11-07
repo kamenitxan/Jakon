@@ -81,6 +81,7 @@ object ObjectControler {
 				new Context(Map[String, Any](
 					"objectName" -> objectName,
 					"objects" -> pageItems,
+					"object" -> ocls.newInstance(), // used for ObjectExtensions
 					"pageNumber" -> pageNumber,
 					"pageCount" -> Math.max(Math.ceil(count / pageSize.toFloat), 1),
 					"objectCount" -> count,

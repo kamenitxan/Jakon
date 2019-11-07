@@ -66,7 +66,7 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 
 					val te = Settings.getTemplateEngine
 					val renderedMessage = te.renderTemplate(tmpl.template, e.params)
-					message.setContent(renderedMessage, "text/html")
+					message.setContent(renderedMessage, "text/html; charset=UTF-8")
 				}
 
 				if (e.emailType != null) {

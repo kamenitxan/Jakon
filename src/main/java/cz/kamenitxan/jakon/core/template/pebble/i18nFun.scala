@@ -26,14 +26,9 @@ class i18nFun extends i18nFunction {
 		val context = args.get("_context").asInstanceOf[EvaluationContext]
 		val locale = if (Settings.getDefaultLocale == null) context.getLocale else Settings.getDefaultLocale
 
-		val file = new File(templateDir)
-		val resourceDir = this.getClass.getClassLoader.getResource("templates/admin/")
-		val urls = Array(file.toURI.toURL, resourceDir.toURI.toURL)
-		val loader = new URLClassLoader(urls, null)
-
-		val bundle = ResourceBundle.getBundle(basename, locale, loader, new UTF8Control)
 		var phraseObject = ""
 		try {
+			val bundle = getBundle(basename, locale)
 			if (bundle.containsKey(key)) {
 				phraseObject = bundle.getString(key)
 			} else if (default != null) {
@@ -43,8 +38,8 @@ class i18nFun extends i18nFunction {
 			}
 		} catch {
 			case _: MissingResourceException => {
-				val bundle = ResourceBundle.getBundle(basename, new Locale("en", "US"), loader, new UTF8Control)
 				try {
+					val bundle = getBundle(basename, new Locale("en", "US"))
 					if (bundle.containsKey(key)) {
 						phraseObject = bundle.getString(key)
 					} else if (default != null) {
@@ -65,4 +60,24 @@ class i18nFun extends i18nFunction {
 		}
 		phraseObject
 	}
+
+	def getBundle(name: String, locale: Locale): ResourceBundle = {
+		val file = new File(templateDir)
+		val urls = Array(file.toURI.toURL)
+		val loader = new URLClassLoader(urls, null)
+		try {
+			val bundle = ResourceBundle.getBundle(name, locale, loader, new UTF8Control)
+			if (bundle.getLocale == locale) {
+				return bundle
+			}
+		} catch {
+			case _: MissingResourceException => // ignored
+		}
+		val bundle = ResourceBundle.getBundle(templateDir + name, locale, this.getClass.getClassLoader, new UTF8Control)
+		if (bundle.getLocale != locale) {
+			throw new MissingResourceException("Resource Bundle not found in correct locale", name, "")
+		}
+		bundle
+	}
 }
+
