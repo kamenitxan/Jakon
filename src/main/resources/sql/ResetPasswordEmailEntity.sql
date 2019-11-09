@@ -1,11 +1,10 @@
 CREATE TABLE ResetPasswordEmailEntity
 (
   expirationDate datetime,
-  objectSettings blob,
-  secret         varchar(255),
-  token          varchar(255),
-  user           blob,
-  id             integer NOT NULL REFERENCES JakonObject(id) ON DELETE CASCADE,
-  primary key (id)
+  secret         VARCHAR(255),
+  token          VARCHAR(255),
+  user           INTEGER NOT NULL REFERENCES JakonUser(id) ON DELETE CASCADE,
+  id             INTEGER NOT NULL REFERENCES JakonObject(id) ON DELETE CASCADE,
+  PRIMARY KEY (id)
 )
 
