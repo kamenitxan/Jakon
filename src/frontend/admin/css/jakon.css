@@ -6,6 +6,13 @@
 	width: 100%;
 }
 
+.navbar-brand {
+	padding: 0 !important;
+}
+.navbar-brand img {
+	height: 50px;
+}
+
 .navbar-user-icon {
 	width: 32px;
 	height: 32px;

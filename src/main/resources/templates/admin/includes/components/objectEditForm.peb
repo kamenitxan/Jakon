@@ -23,7 +23,10 @@
     </div>
     {% endif %}
 {% endfor %}
+    <input type="hidden" name="save_and_new" value="false" id="save_and_new">
     <input type="submit" class="btn btn-primary" value="{{ i18n("common","SAVE_BTN") }}">
+    <input type="submit" class="btn btn-primary" value="{{ i18n("common","SAVE_BTN_AND_NEW") }}"
+           onclick="document.querySelector('#save_and_new').value = 'true';">
 {% if withDelete %}
     <a href="/admin/object/delete/{{ objectName }}/{{ id }}" class="btn btn-danger">{{ i18n("common","DELETE_BTN") }}</a>
 {% endif %}

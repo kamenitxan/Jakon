@@ -45,17 +45,20 @@ object UserControler {
 
 		for (p <- params.filter(p => !p.equals("id"))) {
 			//TODO optimalizovat
-			val fieldRef: Field = Utils.getFieldsUpTo(user.getClass, classOf[Object]).find(f => f.getName.equals(p)).get
-			fieldRef.setAccessible(true)
-			val value = req.queryParams(p).conform(fieldRef)
-			// TODO: editace ACL
-			if (value != null) {
-				if (p.equals("password")) {
-					if (!value.asInstanceOf[String].startsWith("$2a$")) {
+			val fieldRefOpt = Utils.getFieldsUpTo(user.getClass, classOf[Object]).find(f => f.getName.equals(p))
+			if (fieldRefOpt.isDefined) {
+				val fieldRef = fieldRefOpt.get
+				fieldRef.setAccessible(true)
+				val value = req.queryParams(p).conform(fieldRef)
+				// TODO: editace ACL
+				if (value != null) {
+					if (p.equals("password")) {
+						if (!value.asInstanceOf[String].startsWith("$2a$")) {
+							fieldRef.set(user, value)
+						}
+					} else {
 						fieldRef.set(user, value)
 					}
-				} else {
-					fieldRef.set(user, value)
 				}
 			}
 		}

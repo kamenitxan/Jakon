@@ -23,7 +23,15 @@ object Utils {
 	}
 
 	implicit class StringImprovements(s: String) {
-		def toOptInt = Try(Integer.parseInt(s)).toOption
+		def toOptInt: Option[Int] = Try(Integer.parseInt(s)).toOption
+
+		def toBoolOrFalse: Boolean = {
+			try {
+				s.toBoolean
+			} catch {
+				case _: IllegalArgumentException => false
+			}
+		}
 
 		def getOrElse(`else`: String ): String = {
 			if (isEmpty(s)) {

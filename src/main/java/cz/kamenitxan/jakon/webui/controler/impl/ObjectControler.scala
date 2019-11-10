@@ -227,14 +227,16 @@ object ObjectControler {
 		for (p <- params.filter(p => !p.equals("id"))) {
 			//TODO optimalizovat
 			val fieldRefOpt = Utils.getFieldsUpTo(objectClass, classOf[Object]).find(f => f.getName.startsWith(p))
-			val fieldRef = fieldRefOpt.get
-			fieldRef.setAccessible(true)
-			val value = req.queryParams(p).conform(fieldRef)
-			if (value != null) {
-				p match {
-					case "visibleOrder" => formOrder = value.asInstanceOf[Int]
-					case "objectOrder" =>
-					case _ => fieldRef.set(obj, value)
+			if (fieldRefOpt.isDefined) {
+				val fieldRef = fieldRefOpt.get
+				fieldRef.setAccessible(true)
+				val value = req.queryParams(p).conform(fieldRef)
+				if (value != null) {
+					p match {
+						case "visibleOrder" => formOrder = value.asInstanceOf[Int]
+						case "objectOrder" =>
+						case _ => fieldRef.set(obj, value)
+					}
 				}
 			}
 		}
@@ -247,7 +249,12 @@ object ObjectControler {
 		} else {
 			obj.create()
 		}
-		redirect(req, res, "/admin/object/" + objectName)
+		if (req.queryParams("save_and_new").toBoolOrFalse) {
+			PageContext.getInstance().addMessage(MessageSeverity.SUCCESS, "NEW_OBJ_CREATED")
+			redirect(req, res, "/admin/object/create/" + objectName)
+		} else {
+			redirect(req, res, "/admin/object/" + objectName)
+		}
 	}
 
 	def deleteItem(req: Request, res: Response): Context = {
