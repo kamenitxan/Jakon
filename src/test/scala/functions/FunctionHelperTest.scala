@@ -3,6 +3,7 @@ package functions
 import java.util
 
 import cz.kamenitxan.jakon.core.function.{FunctionHelper, IFuncion}
+import cz.kamenitxan.jakon.core.template.pebble.ValueFun
 import org.scalatest.FunSuite
 
 class FunctionHelperTest extends FunSuite {
@@ -20,6 +21,32 @@ class FunctionHelperTest extends FunSuite {
 		FunctionHelper.register(new HelloFun)
 		val res = FunctionHelper.parse("{HelloFun()}")
 		assert(res == "helloWorld")
+	}
+
+	test("value fun") {
+		val fun = new ValueFun
+		val first = null
+		val second = null
+		val third = "3"
+
+		val args = new util.HashMap[String, AnyRef]()
+		args.put(null, first)
+		args.put(null, second)
+		args.put(null, third)
+		assert("3" == fun.execute(args, null, null, 0))
+	}
+
+	test("value fun - only null") {
+		val fun = new ValueFun
+		val first = null
+		val second = null
+		val third = null
+
+		val args = new util.HashMap[String, AnyRef]()
+		args.put(null, first)
+		args.put(null, second)
+		args.put(null, third)
+		assert(null == fun.execute(args, null, null, 0))
 	}
 
 }

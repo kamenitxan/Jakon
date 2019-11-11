@@ -30,6 +30,12 @@ class UtilsTest extends FunSuite {
 		assert(!"test".isNullOrEmpty)
 	}
 
+	test("StringImprovements urlEncode") {
+		assert("AAAAEOadfo0q8yu1kwuF%2FACMMcOszbXH%2BDTWsP5Da3MijNXA" == "AAAAEOadfo0q8yu1kwuF/ACMMcOszbXH+DTWsP5Da3MijNXA".urlEncode)
+		val nil: String = null
+		assert(nil.urlEncode == null)
+	}
+
 	test("Main") {
 		val app = new Main.JakonApp
 		assert(app != null)

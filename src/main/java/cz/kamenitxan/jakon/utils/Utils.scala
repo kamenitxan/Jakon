@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.utils
 
 import java.lang.reflect.Field
+import java.net.URLEncoder
 import java.util
 import java.util.Locale
 
@@ -47,6 +48,15 @@ object Utils {
 			} else {
 				s.isEmpty
 			}
+		}
+
+		def urlEncode: String = {
+			if (s == null) {
+				null
+			} else {
+				URLEncoder.encode(s, "UTF-8")
+			}
+
 		}
 	}
 

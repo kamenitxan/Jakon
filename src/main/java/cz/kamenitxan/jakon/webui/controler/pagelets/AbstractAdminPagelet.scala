@@ -31,7 +31,7 @@ abstract class AbstractAdminPagelet extends IPagelet {
 		redirect(req, res, target, null)
 	}
 
-	def redirect(req: Request, res: Response, target: String, requestParams: AnyRef): mutable.Map[String, Any] = {
+	def redirect(req: Request, res: Response, target: String, requestParams: Map[String, Any]): mutable.Map[String, Any] = {
 		req.session().attribute(PageContext.MESSAGES_KEY, PageContext.getInstance().messages)
 		req.session().attribute(AbstractPagelet.REQUEST_PARAMS, requestParams)
 		res.redirect(target)

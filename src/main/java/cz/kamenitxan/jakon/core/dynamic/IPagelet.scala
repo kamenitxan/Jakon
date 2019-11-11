@@ -10,5 +10,5 @@ trait IPagelet {
 
 	def redirect(req: Request, res: Response, target: String): mutable.Map[String, Any]
 
-	def redirect(req: Request, res: Response, target: String, requestParams: AnyRef): mutable.Map[String, Any]
+	def redirect(req: Request, res: Response, target: String, requestParams: Map[String, Any]): mutable.Map[String, Any]
 }

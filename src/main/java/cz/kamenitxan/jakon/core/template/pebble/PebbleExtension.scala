@@ -13,6 +13,7 @@ class PebbleExtension extends AbstractExtension {
 		val extensions = new util.HashMap[String, Function]()
 		extensions.put("i18n", new i18nFun)
 		extensions.put("link", new LinkFun)
+		extensions.put("value", new ValueFun)
 		extensions
 	}
 

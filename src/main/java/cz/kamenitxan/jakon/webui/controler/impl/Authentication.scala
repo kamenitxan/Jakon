@@ -64,6 +64,7 @@ object Authentication {
 					}
 
 				} else {
+					PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "WRONG_EMAIL_OR_PASSWORD")
 					logger.info("User " + user.username + " failed to provide correct password")
 				}
 			} finally {

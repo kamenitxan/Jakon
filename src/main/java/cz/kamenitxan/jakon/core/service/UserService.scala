@@ -7,6 +7,7 @@ import cz.kamenitxan.jakon.core.Director.SELECT_EMAIL_TMPL_SQL
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonUser
+import cz.kamenitxan.jakon.utils.Utils.StringImprovements
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.utils.security.AesEncryptor
 import cz.kamenitxan.jakon.webui.entity.ResetPasswordEmailEntity
@@ -41,7 +42,7 @@ object UserService {
 		val resetEmailEntity = new ResetPasswordEmailEntity()
 		resetEmailEntity.user = user
 		resetEmailEntity.secret = Random.alphanumeric.take(10).mkString
-		resetEmailEntity.token = AesEncryptor.encrypt(resetEmailEntity.secret)
+		resetEmailEntity.token = AesEncryptor.encrypt(resetEmailEntity.secret).urlEncode
 		resetEmailEntity.expirationDate = {
 			val cal: Calendar = Calendar.getInstance
 			cal.setTime(new Date)

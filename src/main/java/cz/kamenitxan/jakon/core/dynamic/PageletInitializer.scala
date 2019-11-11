@@ -95,7 +95,8 @@ object PageletInitializer {
 								gson.toJson(result)
 							} else {
 								result.foreach(r => PageContext.getInstance().messages += r)
-								controller.redirect(req, res, controllerAnn.path() + post.path(), formData)
+								val rp = formData.map(kv => (kv._1.getName, kv._2))
+								controller.redirect(req, res, controllerAnn.path() + post.path(), rp)
 							}
 						case Right(result) =>
 							if ("true".equals(req.queryParams(METHOD_VALDIATE))) {
