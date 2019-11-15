@@ -1,5 +1,6 @@
 package cz.kamenitxan.jakon.webui.controler.impl
 
+import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
 import cz.kamenitxan.jakon.utils.security.oauth.{Facebook, Google}
@@ -54,6 +55,11 @@ object Authentication {
 					stmt.setInt(1, result.foreignIds.getOrElse("acl_id", null).id)
 					val aclResult = DBHelper.selectSingle(stmt, classOf[AclRule])
 					user.acl = aclResult.entity
+
+					if (Settings.getDeployMode == DeployMode.PRODUCTION && user.acl.masterAdmin && password == "admin") {
+						PageContext.getInstance().addMessage(MessageSeverity.WARNING, "DEFAULT_ADMIN_PASSWORD")
+						req.session().attribute(PageContext.MESSAGES_KEY, PageContext.getInstance().messages)
+					}
 
 					logger.info("User " + user.username + " logged in")
 					req.session(true).attribute("user", user)

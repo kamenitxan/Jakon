@@ -1,9 +1,11 @@
 package cz.kamenitxan.jakon.utils
 
+import java.io.{BufferedReader, InputStreamReader}
 import java.lang.reflect.Field
 import java.net.URLEncoder
 import java.util
 import java.util.Locale
+import java.util.stream.Collectors
 
 import cz.kamenitxan.jakon.core.model.JakonObject
 import org.slf4j.{Logger, LoggerFactory}
@@ -34,7 +36,7 @@ object Utils {
 			}
 		}
 
-		def getOrElse(`else`: String ): String = {
+		def getOrElse(`else`: String): String = {
 			if (isEmpty(s)) {
 				`else`
 			} else {
@@ -118,5 +120,15 @@ object Utils {
 		val elapsedTime = stopTime - startTime
 		logger.info(logFun.apply(elapsedTime))
 		result
+	}
+
+	def getResourceFromJar(name: String): Option[String] = {
+		val resource = this.getClass.getResourceAsStream(name)
+		if (resource != null) {
+			val res = new BufferedReader(new InputStreamReader(resource)).lines().collect(Collectors.joining("\n"))
+			Option.apply(res)
+		} else {
+			Option.empty
+		}
 	}
 }

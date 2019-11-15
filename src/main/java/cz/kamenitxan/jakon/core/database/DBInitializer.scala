@@ -8,6 +8,7 @@ import com.zaxxer.hikari.HikariConfig
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper.getConnection
 import cz.kamenitxan.jakon.core.model._
+import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence.{ManyToOne, Transient}
 import org.slf4j.{Logger, LoggerFactory}
@@ -60,9 +61,9 @@ object DBInitializer {
 				logger.debug(className + " found in DB")
 			} else {
 				logger.info(className + " not found in DB")
-				val resource = this.getClass.getResourceAsStream(s"/sql/$className.sql")
-				if (resource != null) {
-					var sql = new BufferedReader(new InputStreamReader(resource)).lines().collect(Collectors.joining("\n"))
+				val resource = Utils.getResourceFromJar(s"/sql/$className.sql")
+				if (resource.nonEmpty) {
+					var sql = resource.get
 					if (Settings.getDatabaseType == DatabaseType.SQLITE) {
 						sql = sql.replaceAll("AUTO_INCREMENT", "")
 					}

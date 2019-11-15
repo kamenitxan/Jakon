@@ -1,6 +1,7 @@
 {% extends "core" %}
 
 {% block content %}
+{% include "includes/components/messagesList" %}
     <div id="wrapper">
 
     {% include "includes/sideMenu" %}

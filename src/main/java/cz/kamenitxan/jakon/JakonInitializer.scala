@@ -6,6 +6,7 @@ import cz.kamenitxan.jakon.core.Director.SELECT_EMAIL_TMPL_SQL
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
+import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.utils.mail.EmailTemplateEntity
 
 object JakonInitializer {
@@ -46,11 +47,12 @@ object JakonInitializer {
 				stmt.setString(1, "REGISTRATION")
 				val tmpl = DBHelper.selectSingle(stmt, classOf[EmailTemplateEntity]).entity
 				if (tmpl == null) {
+					val tmpl = Utils.getResourceFromJar("/templates/admin/email/registration.peb")
 					val emailTemplateEntity = new EmailTemplateEntity()
 					emailTemplateEntity.subject = "Jakon Registration"
 					emailTemplateEntity.from = "admin@jakon.cz"
 					emailTemplateEntity.name = "REGISTRATION"
-					emailTemplateEntity.template = "registration"
+					emailTemplateEntity.template = tmpl.getOrElse("registrationTemplate")
 					emailTemplateEntity.create()
 				}
 
@@ -58,11 +60,12 @@ object JakonInitializer {
 				stmt2.setString(1, "FORGET_PASSWORD")
 				val tmpl2 = DBHelper.selectSingle(stmt2, classOf[EmailTemplateEntity]).entity
 				if (tmpl2 == null) {
+					val tmpl = Utils.getResourceFromJar("/templates/admin/email/forgetPassword.peb")
 					val emailTemplateEntity = new EmailTemplateEntity()
 					emailTemplateEntity.subject = "Forget password"
 					emailTemplateEntity.from = "admin@jakon.cz"
 					emailTemplateEntity.name = "FORGET_PASSWORD"
-					emailTemplateEntity.template = "forgetPassword"
+					emailTemplateEntity.template = tmpl.getOrElse("forgetPasswordTemplate")
 					emailTemplateEntity.create()
 				}
 			}
