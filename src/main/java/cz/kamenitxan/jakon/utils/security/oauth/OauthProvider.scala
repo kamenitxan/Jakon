@@ -4,16 +4,15 @@ import java.sql.Connection
 
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
+import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.webui.controler.impl.Authentication.{SQL_FIND_ACL, SQL_FIND_USER}
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
-import org.slf4j.{Logger, LoggerFactory}
 import spark.Request
 
 import scala.util.Random
 
 trait OauthProvider {
-	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
 	val isEnabled: Boolean
 
@@ -36,7 +35,7 @@ trait OauthProvider {
 			val aclResult = DBHelper.selectSingle(stmt, classOf[AclRule])
 			user.acl = aclResult.entity
 
-			logger.info("User " + user.username + " logged in")
+			Logger.info("User " + user.username + " logged in")
 			req.session(true).attribute("user", user)
 			true
 		}

@@ -236,6 +236,12 @@
 			<artifactId>annotations</artifactId>
 			<version>16.0.2</version>
 		</dependency>
+		<dependency>
+			<!-- for logging -->
+			<groupId>com.lihaoyi</groupId>
+			<artifactId>sourcecode_2.12</artifactId>
+			<version>0.1.8</version>
+		</dependency>
 	</dependencies>
 
 	<build>

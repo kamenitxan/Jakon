@@ -12,13 +12,12 @@ import java.util.concurrent.TimeUnit
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{FileType, JakonFile}
 import cz.kamenitxan.jakon.core.service.{JakonFileService, UserService}
+import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.Utils._
 import cz.kamenitxan.jakon.webui.controler.impl.FileManagerControler.REPOSITORY_BASE_PATH
-import org.slf4j.{Logger, LoggerFactory}
 
 class FileManagerConsistencyTestTask extends AbstractTask(classOf[FileManagerConsistencyTestTask].getSimpleName, 1, TimeUnit.HOURS) {
 
-	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 	private val FILE_ATTR_NAME = "jakonFileId"
 	private val BASE_DIR = "/basePath"
 
@@ -28,7 +27,7 @@ class FileManagerConsistencyTestTask extends AbstractTask(classOf[FileManagerCon
 		if (isMacOs) {
 			// https://bugs.openjdk.java.net/browse/JDK-8030048
 			// (fs) Support UserDefinedFileAttributeView/extended attributes on OS X / HFS+
-			logger.warn(s"FileManagerConsistencyTest is not supported on Mac OS X")
+			Logger.warn(s"FileManagerConsistencyTest is not supported on Mac OS X")
 			return
 		}
 
@@ -48,7 +47,7 @@ class FileManagerConsistencyTestTask extends AbstractTask(classOf[FileManagerCon
 				}
 			})
 			files.filter(f => !f.mappedToFs).foreach(f => {
-				logger.warn(s"JakonFile(id=${f.id}, name=${f.name}) not found on FS")
+				Logger.warn(s"JakonFile(id=${f.id}, name=${f.name}) not found on FS")
 				f.delete()
 			})
 		})
@@ -59,16 +58,16 @@ class FileManagerConsistencyTestTask extends AbstractTask(classOf[FileManagerCon
 		if (!dir.exists()) {
 			val res = dir.mkdirs()
 			if (res) {
-				logger.info(s"Upload directory created: $dir")
+				Logger.info(s"Upload directory created: $dir")
 			} else {
-				logger.warn(s"Failed to create upload directory: $dir")
+				Logger.warn(s"Failed to create upload directory: $dir")
 			}
 		}
 	}
 
 	@throws[IOException]
 	private def visitFileOrDirectory(file: Path, attrs: BasicFileAttributes, realPath: Path, files: List[JakonFile])(implicit conn: Connection) = {
-		logger.debug(s"Visiting $file")
+		Logger.debug(s"Visiting $file")
 		val fileName = file.toString.substring(realPath.toString.length)
 		val fileId = getIdFromAttrs(file)
 		if (fileId.isDefined) {
@@ -76,7 +75,7 @@ class FileManagerConsistencyTestTask extends AbstractTask(classOf[FileManagerCon
 			if (jakonFile.isDefined) {
 				jakonFile.get.mappedToFs = true
 			} else {
-				logger.error(s"File with id=${fileId.get} found on FS and not in DB")
+				Logger.error(s"File with id=${fileId.get} found on FS and not in DB")
 				val jakonFile = createJakonFile(file)
 				writeIdToAttrs(file, jakonFile.id)
 			}

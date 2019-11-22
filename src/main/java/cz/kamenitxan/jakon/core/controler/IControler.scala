@@ -1,12 +1,12 @@
 package cz.kamenitxan.jakon.core.controler
 
-import org.slf4j.{Logger, LoggerFactory}
+import cz.kamenitxan.jakon.logging.Logger
+
 
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 01.05.16.
   */
 trait IControler {
-	final private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 	implicit val caller: IControler = this
 
 	protected def generate(): Unit
@@ -16,6 +16,6 @@ trait IControler {
 		generate()
 		val stopTime = System.currentTimeMillis()
 		val elapsedTime = stopTime - startTime
-		logger.info(this.getClass.getSimpleName + " generated in " + elapsedTime + " ms")
+		Logger.info(this.getClass.getSimpleName + " generated in " + elapsedTime + " ms")
 	}
 }

@@ -10,8 +10,8 @@ import cz.kamenitxan.jakon.core.database.DBInitializer
 import cz.kamenitxan.jakon.core.task.TaskRunner
 import cz.kamenitxan.jakon.core.template.Pebble
 import cz.kamenitxan.jakon.core.template.utils.TemplateUtils
+import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.webui.Routes
-import org.slf4j.{Logger, LoggerFactory}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -23,7 +23,6 @@ import scala.concurrent.Future
 object Director {
 	var customPages: List[IControler] = List[IControler]()
 	var controllers: List[IControler] = List[IControler]()
-	final private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
 	val SELECT_EMAIL_TMPL_SQL = "SELECT addressFrom, template, subject FROM EmailTemplateEntity WHERE name = ?"
 
@@ -36,7 +35,7 @@ object Director {
 	def start(): Unit = {
 		val enc = Charset.defaultCharset()
 		if (Charset.forName("UTF-8") != enc) {
-			logger.warn(s"JVM character encoding $enc is not UTF-8")
+			Logger.warn(s"JVM character encoding $enc is not UTF-8")
 		}
 
 		if (Settings.getDeployMode != DeployMode.PRODUCTION) {
@@ -48,13 +47,13 @@ object Director {
 
 		TaskRunner.startTaskRunner()
 		Routes.init()
-		logger.info("Jakon started")
+		Logger.info("Jakon started")
 
 		if (Settings.getDeployMode != DeployMode.PRODUCTION) {
 			JakonInitializer.init()
 		}
 
-		logger.info("Jakon default init complete")
+		Logger.info("Jakon default init complete")
 	}
 
 	def render() {
@@ -71,7 +70,7 @@ object Director {
 		}
 		//TODO: moznost vypnout administraci
 		//TemplateUtils.copy("templates/admin/static", Settings.getOutputDir)
-		logger.info("Render complete")
+		Logger.info("Render complete")
 	}
 
 	def registerCustomPage(page: AbstractCustomPage) {

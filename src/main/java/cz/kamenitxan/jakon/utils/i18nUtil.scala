@@ -6,10 +6,9 @@ import java.util.{Locale, MissingResourceException, ResourceBundle}
 
 import com.mitchellbosecke.pebble.extension.i18n.UTF8Control
 import cz.kamenitxan.jakon.core.configuration.Settings
-import org.slf4j.{Logger, LoggerFactory}
+import cz.kamenitxan.jakon.logging.Logger
 
 object i18nUtil {
-	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
 	def getTranslation(basename: String, key: String, locale: Locale): String = {
 		getTranslation(basename, key, locale, null)
@@ -27,7 +26,7 @@ object i18nUtil {
 			bundle = ResourceBundle.getBundle(basename, locale, loader, new UTF8Control)
 		} catch {
 			case _: MissingResourceException =>
-				logger.warn(s"Translation bundle not found. basename=$basename, locale=$locale")
+				Logger.warn(s"Translation bundle not found. basename=$basename, locale=$locale")
 				return key
 		}
 		var phraseObject = ""

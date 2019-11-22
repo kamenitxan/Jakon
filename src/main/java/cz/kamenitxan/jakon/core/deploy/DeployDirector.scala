@@ -13,13 +13,12 @@ import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.deploy.entity.Server
 import cz.kamenitxan.jakon.core.model.KeyValueEntity
 import cz.kamenitxan.jakon.core.service.KeyValueService
-import org.slf4j.{Logger, LoggerFactory}
+import cz.kamenitxan.jakon.logging.Logger
 
 import scala.collection.JavaConverters._
 import scala.io.Source
 
 object DeployDirector {
-	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 	private val KV_PREFIX = "SERVER_LAST_DEPLOY_"
 
 	val servers: List[Server] = {
@@ -44,7 +43,7 @@ object DeployDirector {
 			b.toList
 		} catch {
 			case e: Throwable =>
-				logger.error("Failed to load deploy servers", e)
+				Logger.error("Failed to load deploy servers", e)
 				List[Server]()
 		} finally {
 			conn.close()

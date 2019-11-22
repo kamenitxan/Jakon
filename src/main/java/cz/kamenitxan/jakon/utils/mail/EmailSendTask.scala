@@ -8,7 +8,6 @@ import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.task.AbstractTask
 import javax.mail._
 import javax.mail.internet.{InternetAddress, MimeMessage}
-import org.slf4j.LoggerFactory
 
 object EmailSendTask {
 	val TMPL_LANG = "tmplLanguage"
@@ -18,7 +17,6 @@ object EmailSendTask {
 }
 
 class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[EmailSendTask].getSimpleName, period, unit) {
-	private val logger = LoggerFactory.getLogger(this.getClass)
 
 	override def start(): Unit = {
 		val conn = DBHelper.getConnection

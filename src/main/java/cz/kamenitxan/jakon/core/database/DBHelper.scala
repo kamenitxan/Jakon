@@ -8,12 +8,12 @@ import com.zaxxer.hikari.HikariDataSource
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
 import cz.kamenitxan.jakon.core.database.converters.AbstractConverter
 import cz.kamenitxan.jakon.core.model._
+import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.TypeReferences._
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence.{Column, ManyToOne}
 import org.intellij.lang.annotations.Language
-import org.slf4j.{Logger, LoggerFactory}
 import org.sqlite.SQLiteConfig
 
 import scala.collection.mutable
@@ -22,7 +22,6 @@ import scala.collection.mutable
   * Created by Kamenitxan (kamenitxan@me.com) on 20.12.15.
   */
 object DBHelper {
-	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
 	val objects: mutable.ArrayBuffer[Class[_ <: JakonObject]] = mutable.ArrayBuffer[Class[_ <: JakonObject]]()
 	val ds = new HikariDataSource(DBInitializer.config)
@@ -47,7 +46,7 @@ object DBHelper {
 				connection = DriverManager.getConnection(Settings.getDatabaseConnPath,config.toProperties);
 			} catch {
 				case ex: SQLException =>
-					logger.error("Failed to get SQLITE connection with foreign key support")
+					Logger.error("Failed to get SQLITE connection with foreign key support")
 					connection = ds.getConnection
 			}
 			return connection
@@ -130,10 +129,10 @@ object DBHelper {
 							if (converter.getName != classOf[AbstractConverter[_]].getName) {
 								field.set(obj, converter.newInstance().convertToEntityAttribute(rs.getString(columnName)))
 							} else {
-								logger.error(s"Convertor not specified for data type on ${obj.getClass.getSimpleName}.${field.getName}")
+								Logger.error(s"Convertor not specified for data type on ${obj.getClass.getSimpleName}.${field.getName}")
 							}
 						} else {
-							logger.warn("Uknown data type on " + cls.getSimpleName + s".$fieldName")
+							Logger.warn("Uknown data type on " + cls.getSimpleName + s".$fieldName")
 						}
 				}
 

@@ -2,13 +2,12 @@ package cz.kamenitxan.jakon.validation
 
 import java.lang.reflect.Field
 
+import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
-import org.slf4j.LoggerFactory
 import spark.Request
 
 
 object EntityValidator {
-	private val logger = LoggerFactory.getLogger(this.getClass)
 
 	def validate(prefix: String, validatedData: Map[Field, String]): Either[Seq[Message], Map[Field, String]] = {
 		val errors = validatedData.filter(f => {
@@ -30,7 +29,7 @@ object EntityValidator {
 				f.setAccessible(true)
 				res = (f, req.queryParams(f.getName))
 			} catch {
-				case ex: Exception => logger.error("Exception when setting pagelet form data value", ex)
+				case ex: Exception => Logger.error("Exception when setting pagelet form data value", ex)
 			}
 			res
 		}).filter(t => t != null).toMap

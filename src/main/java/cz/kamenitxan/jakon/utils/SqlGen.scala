@@ -6,14 +6,13 @@ import java.util.Date
 
 import cz.kamenitxan.jakon.core.database.converters.AbstractConverter
 import cz.kamenitxan.jakon.core.model.JakonObject
+import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.TypeReferences._
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence.{ManyToOne, OneToOne, Transient}
-import org.slf4j.{Logger, LoggerFactory}
 
 
 object SqlGen {
-	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
 	private def createSql(cls: Class[_ <: JakonObject], annotatedFields: List[Field]): String = {
 		val annotatedFields = getJakonFields(cls)
@@ -37,7 +36,7 @@ object SqlGen {
 		sb.append(") VALUES (?, ?")
 		annotatedFields.tail.foreach(_ => sb.append(", ?"))
 		sb.append(");")
-		logger.trace(s"generated sql: ${sb.toString()}")
+		Logger.debug(s"generated sql: ${sb.toString()}")
 		sb.toString()
 	}
 
@@ -126,13 +125,13 @@ object SqlGen {
 				} else if (jakonField != null) {
 					val converter = jakonField.converter()
 					if (converter.getName != classOf[AbstractConverter[_]].getName) {
-						logger.error(s"Converters are unsupported on ${inst.getClass.getSimpleName}.${f.getName}")
+						Logger.error(s"Converters are unsupported on ${inst.getClass.getSimpleName}.${f.getName}")
 						stmt.setString(i, "")
 					} else {
-						logger.error(s"Convertor not specified for data type on ${inst.getClass.getSimpleName}.${f.getName}")
+						Logger.error(s"Convertor not specified for data type on ${inst.getClass.getSimpleName}.${f.getName}")
 					}
 				} else {
-					logger.error(s"Uknown data type on ${inst.getClass.getSimpleName}.${f.getName}")
+					Logger.error(s"Uknown data type on ${inst.getClass.getSimpleName}.${f.getName}")
 				}
 		}
 	}
@@ -147,7 +146,7 @@ object SqlGen {
 			case DOUBLE => JDBCType.DOUBLE.getVendorTypeNumber
 			case DATE => JDBCType.DATE.getVendorTypeNumber
 			case _ =>
-				logger.error(s"Uknown sql type ${f.getType} on field ${f.getName}")
+				Logger.error(s"Uknown sql type ${f.getType} on field ${f.getName}")
 				0
 		}
 	}

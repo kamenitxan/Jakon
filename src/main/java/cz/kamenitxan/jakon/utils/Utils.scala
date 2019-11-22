@@ -8,7 +8,7 @@ import java.util.Locale
 import java.util.stream.Collectors
 
 import cz.kamenitxan.jakon.core.model.JakonObject
-import org.slf4j.{Logger, LoggerFactory}
+import cz.kamenitxan.jakon.logging.Logger
 
 import scala.annotation.tailrec
 import scala.collection.JavaConversions._
@@ -19,7 +19,6 @@ import scala.util.Try
   * Created by TPa on 08.09.16.
   */
 object Utils {
-	final private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
 	def toJavaCollection(list: List[AnyRef]): util.Collection[AnyRef] = {
 		asJavaCollection(list)
@@ -118,7 +117,7 @@ object Utils {
 		val result = measuredFun
 		val stopTime = System.currentTimeMillis()
 		val elapsedTime = stopTime - startTime
-		logger.info(logFun.apply(elapsedTime))
+		Logger.info(logFun.apply(elapsedTime))
 		result
 	}
 

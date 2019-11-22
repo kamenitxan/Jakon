@@ -11,21 +11,18 @@ import cz.kamenitxan.jakon.core.dynamic.PageletInitializer
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.core.task.{FileManagerConsistencyTestTask, RenderTask, TaskRunner}
 import cz.kamenitxan.jakon.devtools.{DevRender, StaticFilesController}
+import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.utils.{LoggingExceptionHandler, PageContext}
 import cz.kamenitxan.jakon.webui.AdminSettings
-import cz.kamenitxan.jakon.webui.controler.impl.{DeployControler, TaskController}
+import cz.kamenitxan.jakon.webui.controler.impl.{DeployControler, LogViewer, TaskController}
 import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, ResetPasswordEmailEntity}
-import org.slf4j.LoggerFactory
 import spark.Spark._
 import spark.debug.DebugScreen.enableDebugScreen
 import spark.{Request, Response}
 
 
 class JakonInit {
-	private val logger = LoggerFactory.getLogger(this.getClass)
-
-
 	def daoSetup(): Unit = {
 	}
 
@@ -33,9 +30,10 @@ class JakonInit {
 
 	def adminControllers() {
 		if (Files.exists(Paths.get("servers.json"))) {
-			AdminSettings.registerCustomController(new DeployControler().getClass)
+			AdminSettings.registerCustomController(classOf[DeployControler])
 		}
 		AdminSettings.registerCustomController(classOf[TaskController])
+		AdminSettings.registerCustomController(classOf[LogViewer])
 	}
 
 	def taskSetup(): Unit = {
@@ -73,7 +71,7 @@ class JakonInit {
 		val portNumber: Int = arguments.find(a => a._1 == "port").map(a => a._2.toInt).getOrElse(Settings.getPort)
 		port(portNumber)
 
-		logger.info("Starting in " + Settings.getDeployMode + " mode")
+		Logger.info("Starting in " + Settings.getDeployMode + " mode")
 
 		daoSetup()
 		adminControllers()

@@ -3,12 +3,12 @@ package cz.kamenitxan.jakon.webui.controler.impl
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
+import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.security.oauth.{Facebook, Google}
 import cz.kamenitxan.jakon.utils.{PageContext, Utils}
 import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import org.mindrot.jbcrypt.BCrypt
-import org.slf4j.{Logger, LoggerFactory}
 import spark.{ModelAndView, Request, Response}
 
 import scala.language.postfixOps
@@ -17,7 +17,6 @@ import scala.language.postfixOps
   * Created by TPa on 03.09.16.
   */
 object Authentication {
-	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
 	val SQL_FIND_USER = "SELECT * FROM JakonUser WHERE email = ?"
 	val SQL_FIND_ACL = "SELECT * FROM AclRule WHERE id = ?"
@@ -44,7 +43,7 @@ object Authentication {
 
 				val result = DBHelper.selectSingle(stmt, classOf[JakonUser])
 				if (result.entity == null) {
-					logger.info("User " + email + " not found when logging in")
+					Logger.info("User " + email + " not found when logging in")
 					PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "WRONG_EMAIL_OR_PASSWORD")
 					return new Context(null, "login")
 				}
@@ -61,7 +60,7 @@ object Authentication {
 						req.session().attribute(PageContext.MESSAGES_KEY, PageContext.getInstance().messages)
 					}
 
-					logger.info("User " + user.username + " logged in")
+					Logger.info("User " + user.username + " logged in")
 					req.session(true).attribute("user", user)
 					if (Utils.isEmpty(redirectTo)) {
 						res.redirect("/admin/index")
@@ -71,7 +70,7 @@ object Authentication {
 
 				} else {
 					PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "WRONG_EMAIL_OR_PASSWORD")
-					logger.info("User " + user.username + " failed to provide correct password")
+					Logger.info("User " + user.username + " failed to provide correct password")
 				}
 			} finally {
 				conn.close()

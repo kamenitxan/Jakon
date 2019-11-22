@@ -5,14 +5,14 @@ package cz.kamenitxan.jakon.logging
   */
 sealed trait LogSeverity {
 
-	class Debug extends LogSeverity
-
-	class Info extends LogSeverity
-
-	class Warning extends LogSeverity
-
-	class Error extends LogSeverity
-
-	class Critical extends LogSeverity
-
 }
+
+case object Debug extends LogSeverity
+
+case object Info extends LogSeverity
+
+case object Warning extends LogSeverity
+
+case object Error extends LogSeverity
+
+case object Critical extends LogSeverity

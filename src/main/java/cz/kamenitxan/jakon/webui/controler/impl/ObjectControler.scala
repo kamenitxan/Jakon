@@ -4,6 +4,7 @@ import java.sql.Connection
 
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{JakonObject, Ordered}
+import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.Utils._
 import cz.kamenitxan.jakon.utils.{PageContext, Utils}
 import cz.kamenitxan.jakon.validation.EntityValidator
@@ -11,7 +12,6 @@ import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
-import org.slf4j.LoggerFactory
 import spark.{ModelAndView, Request, Response}
 
 import scala.collection.JavaConverters._
@@ -22,7 +22,6 @@ import scala.util.Try
   * Created by TPa on 08.09.16.
   */
 object ObjectControler {
-	private val logger = LoggerFactory.getLogger(this.getClass)
 	val excludedFields = List("url", "sectionName", "objectSettings", "childClass")
 	private val numberTypes = classOf[Int] :: classOf[Integer] :: classOf[Double] :: classOf[Float] :: Nil
 	private val boolTypes = classOf[Boolean] :: classOf[java.lang.Boolean] :: Nil
@@ -90,7 +89,7 @@ object ObjectControler {
 				), "objects/list")
 			} catch {
 				case ex: Throwable =>
-					logger.error("Excetion when getting object list", ex)
+					Logger.error("Excetion when getting object list", ex)
 					throw ex
 			} finally {
 				conn.close()

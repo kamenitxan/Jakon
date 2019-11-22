@@ -12,6 +12,7 @@ import java.util.Date
 import java.util.zip.{ZipEntry, ZipOutputStream}
 
 import cz.kamenitxan.jakon.core.model.{FileType, JakonFile}
+import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.entity.FileManagerMode
@@ -23,7 +24,6 @@ import org.apache.commons.fileupload.FileUploadException
 import org.apache.commons.fileupload.disk.DiskFileItemFactory
 import org.apache.commons.fileupload.servlet.ServletFileUpload
 import org.apache.commons.io.FileUtils
-import org.slf4j.{Logger, LoggerFactory}
 import spark.{Request, Response}
 
 import scala.annotation.switch
@@ -59,7 +59,6 @@ import scala.collection.JavaConversions._
   * @author Kamenitxan this implementation
   */
 object FileManagerControler {
-	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 	val REPOSITORY_BASE_PATH = "upload"
 	private var DATE_FORMAT = "EEE, d MMM yyyy HH:mm:ss z" // (Wed, 4 Jul 2001 12:08:56)
 	private val enabledAction: util.Map[FileManagerMode, Boolean] = new util.HashMap[FileManagerMode, Boolean]
@@ -103,7 +102,7 @@ object FileManagerControler {
 				}
 			} catch {
 				case ex: IOException =>
-					logger.error(ex.getMessage, ex)
+					Logger.error(ex.getMessage, ex)
 					throw ex
 			} finally {
 				response.getOutputStream.flush()
@@ -172,7 +171,7 @@ object FileManagerControler {
 			}
 		} catch {
 			case ex@(_: ServletException | _: IOException) =>
-				logger.error(ex.getMessage, ex)
+				Logger.error(ex.getMessage, ex)
 				setError(ex, res.raw())
 		}
 		res
@@ -248,7 +247,7 @@ object FileManagerControler {
 	}
 
 	private def isSupportFeature(mode: FileManagerMode) = {
-		logger.debug("check support {}", mode)
+		Logger.debug(s"check support $mode")
 		enabledAction.get(mode)
 	}
 
@@ -263,7 +262,7 @@ object FileManagerControler {
 	@throws[ServletException]
 	private def uploadFile(request: HttpServletRequest, response: HttpServletResponse): Unit = {
 		if (isSupportFeature(FileManagerMode.upload)) {
-			logger.debug("upload now")
+			Logger.debug("upload now")
 			try {
 				var destination: String = null
 				val files = new util.HashMap[String, InputStream]
@@ -281,13 +280,13 @@ object FileManagerControler {
 					}
 				}
 				if (files.isEmpty) {
-					logger.debug("file size  = 0")
+					Logger.debug("file size  = 0")
 					throw new Exception("file size  = 0")
 				} else {
 					for (fileEntry <- files.entrySet) {
 						val path = Paths.get(REPOSITORY_BASE_PATH + destination, fileEntry.getKey)
 						if (!write(fileEntry.getValue, path)) {
-							logger.debug("write error")
+							Logger.debug("write error")
 							throw new Exception("write error")
 						}
 					}
@@ -300,13 +299,13 @@ object FileManagerControler {
 				}
 			} catch {
 				case e: FileUploadException =>
-					logger.error("Cannot parse multipart request: DiskFileItemFactory.parseRequest", e)
+					Logger.error("Cannot parse multipart request: DiskFileItemFactory.parseRequest", e)
 					throw new ServletException("Cannot parse multipart request: DiskFileItemFactory.parseRequest", e)
 				case e: IOException =>
-					logger.error("Cannot parse multipart request: item.getInputStream")
+					Logger.error("Cannot parse multipart request: item.getInputStream")
 					throw new ServletException("Cannot parse multipart request: item.getInputStream", e)
 				case e: Exception =>
-					logger.error("Cannot write file", e)
+					Logger.error("Cannot write file", e)
 					throw new ServletException("Cannot write file", e)
 			}
 		} else {
@@ -318,7 +317,7 @@ object FileManagerControler {
 		try {
 			val onlyFolders = "true".equalsIgnoreCase(params.getAsString("onlyFolders"))
 			val path = params.getAsString("path")
-			logger.debug(s"list path: Paths.get('$REPOSITORY_BASE_PATH', '$path'), onlyFolders: $onlyFolders")
+			Logger.debug(s"list path: Paths.get('$REPOSITORY_BASE_PATH', '$path'), onlyFolders: $onlyFolders")
 			val resultList = new util.ArrayList[JSONObject]
 			val directoryStream = Files.newDirectoryStream(Paths.get(REPOSITORY_BASE_PATH, path))
 			try {
@@ -338,7 +337,7 @@ object FileManagerControler {
 				})
 
 			} catch {
-				case ex: IOException => logger.error("Error while listing files", ex)
+				case ex: IOException => Logger.error("Error while listing files", ex)
 			} finally {
 				if (directoryStream != null) directoryStream.close()
 			}
@@ -348,14 +347,14 @@ object FileManagerControler {
 			json
 		} catch {
 			case e: Exception =>
-				logger.error("list:" + e.getMessage, e)
+				Logger.error("list:" + e.getMessage, e)
 				error(e.getMessage)
 		}
 	}
 
 	private def createFolder(params: JSONObject) = try {
 		val path = Paths.get(REPOSITORY_BASE_PATH, params.getAsString("newPath"))
-		logger.debug(s"createFolder path: $path")
+		Logger.debug(s"createFolder path: $path")
 		val createdDirectory = Files.createDirectories(path)
 		val fo = new JakonFile()
 		fo.fileType = FileType.FOLDER
@@ -369,7 +368,7 @@ object FileManagerControler {
 		case _: FileAlreadyExistsException =>
 			success()
 		case e: IOException =>
-			logger.error("createFolder:" + e.getMessage, e)
+			Logger.error("createFolder:" + e.getMessage, e)
 			error(e.getMessage)
 	}
 
@@ -380,14 +379,14 @@ object FileManagerControler {
 			val permsCode = params.getAsString("permsCode") // "653"
 			val recursive = "true".equalsIgnoreCase(params.getAsString("recursive"))
 			for (path <- paths) {
-				logger.debug(s"changepermissions path: $path, perms: $perms, permsCode: $permsCode, recursive: $recursive")
+				Logger.debug(s"changepermissions path: $path, perms: $perms, permsCode: $permsCode, recursive: $recursive")
 				val f = Paths.get(REPOSITORY_BASE_PATH, path.toString).toFile
 				setPermissions(f, perms, recursive)
 			}
 			success()
 		} catch {
 			case e: IOException =>
-				logger.error("changepermissions:" + e.getMessage, e)
+				Logger.error("changepermissions:" + e.getMessage, e)
 				error(e.getMessage)
 		}
 	}*/
@@ -398,7 +397,7 @@ object FileManagerControler {
 		for (obj <- paths) {
 			val path = Paths.get(REPOSITORY_BASE_PATH, obj.toString)
 			val mpath = newpath.resolve(path.getFileName)
-			logger.debug(s"mv $path to $mpath exists? ${Files.exists(mpath)}")
+			Logger.debug(s"mv $path to $mpath exists? ${Files.exists(mpath)}")
 			if (Files.exists(mpath)) return error(mpath.toString + " already exits!")
 		}
 		for (obj <- paths) {
@@ -409,7 +408,7 @@ object FileManagerControler {
 		success()
 	} catch {
 		case e: IOException =>
-			logger.error("move:" + e.getMessage, e)
+			Logger.error("move:" + e.getMessage, e)
 			error(e.getMessage)
 	}
 
@@ -417,7 +416,7 @@ object FileManagerControler {
 		try {
 			val path = params.getAsString("item")
 			val newpath = params.getAsString("newItemPath")
-			logger.debug(s"rename from: $path to: $newpath")
+			Logger.debug(s"rename from: $path to: $newpath")
 			val srcFile = new File(REPOSITORY_BASE_PATH, path)
 			val destFile = new File(REPOSITORY_BASE_PATH, newpath)
 			if (srcFile.isFile) {
@@ -429,7 +428,7 @@ object FileManagerControler {
 			success()
 		} catch {
 			case e: IOException =>
-				logger.error("rename:" + e.getMessage, e)
+				Logger.error("rename:" + e.getMessage, e)
 				error(e.getMessage)
 		}
 	}
@@ -451,7 +450,7 @@ object FileManagerControler {
 			} else {
 				val msg = if (error.nonEmpty) "\n" else "\nBut remove remove: \n/"
 				sb.append(msg).append(path.subpath(1, path.getNameCount).toString)
-				logger.debug("remove {}", path)
+				Logger.debug(s"remove $path")
 			}
 		}
 		if (error.nonEmpty) {
@@ -471,7 +470,7 @@ object FileManagerControler {
 			json
 		} catch {
 			case ex: IOException =>
-				logger.error("getContent:" + ex.getMessage, ex)
+				Logger.error("getContent:" + ex.getMessage, ex)
 				error(ex.getMessage)
 		}
 	}
@@ -479,14 +478,14 @@ object FileManagerControler {
 	private def editFile(params: JSONObject) = { // get content
 		try {
 			val path = params.getAsString("item")
-			logger.debug(s"editFile path: $path")
+			Logger.debug(s"editFile path: $path")
 			val srcFile = new File(REPOSITORY_BASE_PATH, path)
 			val content = params.getAsString("content")
 			FileUtils.writeStringToFile(srcFile, content)
 			success()
 		} catch {
 			case e: IOException =>
-				logger.error("editFile:" + e.getMessage, e)
+				Logger.error("editFile:" + e.getMessage, e)
 				error(e.getMessage)
 		}
 	}
@@ -503,7 +502,7 @@ object FileManagerControler {
 					Paths.get(".", newFileName)
 				}
 				val mpath = newpath.resolve(path.getFileName)
-				logger.debug(s"mv $path to $mpath exists? ${Files.exists(mpath)}")
+				Logger.debug(s"mv $path to $mpath exists? ${Files.exists(mpath)}")
 				if (Files.exists(mpath)) {
 					return error(mpath.toString + " already exits!")
 				}
@@ -517,7 +516,7 @@ object FileManagerControler {
 			success()
 		} catch {
 			case e: IOException =>
-				logger.error("copy:" + e.getMessage, e)
+				Logger.error("copy:" + e.getMessage, e)
 				error(e.getMessage)
 		}
 	}
@@ -549,7 +548,7 @@ object FileManagerControler {
 					@throws[IOException]
 					override def visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult = {
 						val pathInZipFile = zipfs.getPath(file.toString.substring(dest.toString.length))
-						logger.debug("compress: '{}'", pathInZipFile)
+						Logger.debug(s"compress: '$pathInZipFile'")
 						Files.copy(file, pathInZipFile, StandardCopyOption.REPLACE_EXISTING)
 						FileVisitResult.CONTINUE
 					}
@@ -560,7 +559,7 @@ object FileManagerControler {
 					if (!Files.isDirectory(pathInZipFolder)) {
 						Files.createDirectories(pathInZipFolder)
 					}
-					logger.debug("compress: '{}]", pathInZipFile)
+					Logger.debug(s"compress: '$pathInZipFile'")
 					Files.copy(realPath, pathInZipFile, StandardCopyOption.REPLACE_EXISTING)
 				}
 			}
@@ -573,7 +572,7 @@ object FileManagerControler {
 		success()
 	} catch {
 		case e: IOException =>
-			logger.error("compress:" + e.getMessage, e)
+			Logger.error("compress:" + e.getMessage, e)
 			error(e.getClass.getSimpleName + ":" + e.getMessage)
 	}
 
@@ -597,12 +596,12 @@ object FileManagerControler {
 						if (file.getNameCount > 0) {
 							val dest = folder.resolve(if (file.getNameCount < 1) ""
 							else file.subpath(0, file.getNameCount).toString)
-							logger.debug(s"extract $file to $dest")
+							Logger.debug(s"extract $file to $dest")
 							try {
 								Files.copy(file, dest, StandardCopyOption.REPLACE_EXISTING)
 							} catch {
 								case ex: Exception =>
-									logger.error(ex.getMessage, ex)
+									Logger.error(ex.getMessage, ex)
 							}
 						}
 						FileVisitResult.CONTINUE
@@ -624,7 +623,7 @@ object FileManagerControler {
 		} catch {
 			case e: IOException =>
 				if (genFolder) FileUtils.deleteQuietly(folder.toFile)
-				logger.error("extract:" + e.getMessage, e)
+				Logger.error("extract:" + e.getMessage, e)
 				error(e.getMessage)
 		}
 	}*/
@@ -656,7 +655,7 @@ object FileManagerControler {
 			true
 		} catch {
 			case ex: IOException =>
-				logger.error(ex.getMessage, ex)
+				Logger.error(ex.getMessage, ex)
 				false
 		}
 	}

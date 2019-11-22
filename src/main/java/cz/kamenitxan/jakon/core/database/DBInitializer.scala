@@ -1,17 +1,15 @@
 package cz.kamenitxan.jakon.core.database
 
-import java.io.{BufferedReader, InputStreamReader}
 import java.sql.{Connection, SQLException}
-import java.util.stream.Collectors
 
 import com.zaxxer.hikari.HikariConfig
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper.getConnection
 import cz.kamenitxan.jakon.core.model._
+import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence.{ManyToOne, Transient}
-import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.mutable
 
@@ -19,7 +17,6 @@ import scala.collection.mutable
   * Created by TPa on 17/09/2019.
   */
 object DBInitializer {
-	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
 	DBHelper.addDao(classOf[AclRule])
 	DBHelper.addDao(classOf[JakonUser])
@@ -58,9 +55,9 @@ object DBInitializer {
 			stmt.close()
 
 			if (found) {
-				logger.debug(className + " found in DB")
+				Logger.debug(className + " found in DB")
 			} else {
-				logger.info(className + " not found in DB")
+				Logger.info(className + " not found in DB")
 				val resource = Utils.getResourceFromJar(s"/sql/$className.sql")
 				if (resource.nonEmpty) {
 					var sql = resource.get
@@ -71,7 +68,7 @@ object DBInitializer {
 					stmt.execute(sql)
 					stmt.close()
 				} else {
-					logger.error(s"Table definition for $className not found")
+					Logger.error(s"Table definition for $className not found")
 				}
 			}
 
@@ -86,10 +83,10 @@ object DBInitializer {
 			checkChilds
 			checkCollumns
 		} catch {
-			case ex: Exception => logger.error("Exception occurred when checking DB consistency", ex)
+			case ex: Exception => Logger.error("Exception occurred when checking DB consistency", ex)
 		} finally {
 			conn.close()
-			logger.info("DB consistency check complete")
+			Logger.info("DB consistency check complete")
 		}
 	}
 
@@ -116,7 +113,7 @@ object DBInitializer {
 			stmt.setInt(1, id)
 			val rs = stmt.executeQuery()
 			if (!rs.next()) {
-				logger.error(s"Child record not found for id: $id")
+				Logger.error(s"Child record not found for id: $id")
 				val deleteSql = "DELETE FROM JakonObject WHERE id = ?"
 				val delStmt = conn.prepareStatement(deleteSql)
 				delStmt.setInt(1, id)
@@ -149,7 +146,7 @@ object DBInitializer {
 					  collumns.find(c => c.name == f.getName)
 				  }
 				  if (column.isEmpty) {
-					  logger.error(s"Field ${jo.getSimpleName}.${f.getName} is not in DB")
+					  cz.kamenitxan.jakon.logging.Logger.error(s"Field ${jo.getSimpleName}.${f.getName} is not in DB")
 				  }
 			  })
 		})

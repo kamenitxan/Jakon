@@ -5,13 +5,11 @@ import cz.kamenitxan.jakon.core.dynamic.{Pagelet, PageletInitializer}
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.controler.objectextension.{ObjectExtension, ObjectExtensionInitializer}
 import io.github.classgraph.{ClassGraph, ClassInfoList, ScanResult}
-import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.JavaConverters._
 
 
 object AnnotationScanner {
-	final private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
 	private val scanResult = {
 		val cg = new ClassGraph().enableAllInfo()

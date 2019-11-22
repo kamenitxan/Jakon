@@ -1,0 +1,70 @@
+{# @pebvariable name="log" type="cz.kamenitxan.jakon.logging.Log" #}
+{# @pebvariable name="logs" type="java.util.List" #}
+
+{% extends "core" %}
+
+{% block content %}
+{% include "includes/sideMenu" %}
+
+<div id="page-wrapper">
+	<div class="row">
+		<div class="col-lg-12">
+			<h1 class="page-header"><i class="fa fa-tasks"></i> {{ i18n("common","LOG_TITLE") }}</h1>
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+	<!-- /.row -->
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+				<!-- /.panel-heading -->
+				<div class="panel-body logs">
+					<table width="100%" class="table table-bordered table-hover logTable" id="dataTables-example">
+						<thead>
+						<tr>
+							<th>{{ i18n("common","LOG_TIME") }}</th>
+							<th>{{ i18n("common","LOG_SEVERITY") }}</th>
+							<th>{{ i18n("common","LOG_MESSAGE") }}</th>
+							<th>{{ i18n("common","LOG_CAUSE") }}</th>
+							<th>{{ i18n("common","LOG_SOURCE") }}</th>
+						</tr>
+						<tr>
+							<th></th>
+							<th><select id="logSeverity">
+								<option value="ALL">{{ i18n("common","LOG_ALL") }}</option>
+                                {% for s in severities %}
+									<option value="{{ s }}">{{ s }}</option>
+                                {% endfor %}
+							</select>
+							</th>
+							<th></th>
+							<th></th>
+							<th></th>
+						</tr>
+						</thead>
+						<tbody>
+                        {% for log in logs %}
+						<tr class="{{ log.severity }}">
+							<td>{{ log.time | date }}</td>
+							<td>{{ log.severity }}</td>
+							<td>{{ log.message }}</td>
+							<td>{{ log.cause }}</td>
+							<td>{{ log.source }}</td>
+						</tr>
+                        {% endfor %}
+						</tbody>
+					</table>
+					<!-- /.table-responsive -->
+				</div>
+				<!-- /.panel-body -->
+			</div>
+			<!-- /.panel -->
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+</div>
+<script>
+	const FRcls = new (require("logs.js"));
+	const FR = FRcls.init();
+</script>
+{% endblock %}

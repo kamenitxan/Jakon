@@ -7,15 +7,14 @@ import java.util.Objects
 
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.template.TemplateEngine
+import cz.kamenitxan.jakon.logging.Logger
 import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
-import org.slf4j.{Logger, LoggerFactory}
 
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 20.12.15.
   */
 object TemplateUtils {
-	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
 	def getEngine: TemplateEngine = Settings.getTemplateEngine
 
@@ -36,7 +35,7 @@ object TemplateUtils {
 		bw.write(content)
 		bw.close()
 	} catch {
-		case e: IOException => logger.error("Error occurred while saving page", e)
+		case e: IOException => Logger.error("Error occurred while saving page", e)
 	}
 
 	def getFileSuffix(path: String): String = {
@@ -55,7 +54,7 @@ object TemplateUtils {
 			validate(path)
 			Files.walkFileTree(path, new CleanDirVisitor)
 		} catch {
-			case e: IOException => logger.error("Error occurred while cleaning path", e)
+			case e: IOException => Logger.error("Error occurred while cleaning path", e)
 		}
 	}
 
@@ -72,7 +71,7 @@ object TemplateUtils {
 			validate(from)
 			Files.walkFileTree(from, util.EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, new CopyDirVisitor(from, to))
 		} catch {
-			case e: IOException => logger.error("Error occurred while copying files", e)
+			case e: IOException => Logger.error("Error occurred while copying files", e)
 		}
 	}
 

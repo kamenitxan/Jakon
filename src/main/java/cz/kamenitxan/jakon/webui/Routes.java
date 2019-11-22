@@ -25,6 +25,7 @@ import static spark.Spark.*;
 /**
  * Created by TPa on 03.09.16.
  */
+// TODO: to scala
 public class Routes {
 	private static final Logger LOG = LoggerFactory.getLogger(Routes.class);
 
