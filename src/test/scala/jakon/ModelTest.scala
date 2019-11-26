@@ -7,7 +7,7 @@ class ModelTest extends TestBase {
 
 	test("Page") { _ =>
 		val page = new Page()
-		page.setContent("test")
+		page.content = "test"
 
 		val order = 1
 		page.objectOrder = order

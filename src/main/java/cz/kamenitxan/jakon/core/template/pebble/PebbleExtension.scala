@@ -20,6 +20,7 @@ class PebbleExtension extends AbstractExtension {
 	override def getFilters: util.Map[String, Filter] = {
 		val extensions = new util.HashMap[String, Filter]()
 		extensions.put("date", new JakonDateFilter)
+		extensions.put("md", new MarkdownFilter)
 		extensions
 	}
 }
