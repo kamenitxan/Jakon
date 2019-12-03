@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon.utils
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 import java.util.Date
 
 object TypeReferences {
@@ -13,7 +13,8 @@ object TypeReferences {
 	val INTEGER_j = classOf[java.lang.Integer]
 	val LIST_j = classOf[java.util.List[Any]]
 	val MAP = classOf[Map[Any, Any]]
-	val DATE = classOf[Date]
+	val DATE = classOf[LocalDate]
+	val DATE_o = classOf[Date]
 	val DATETIME = classOf[LocalDateTime]
 	val SEQ = classOf[Seq[Any]]
 }

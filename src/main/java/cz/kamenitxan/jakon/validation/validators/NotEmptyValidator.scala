@@ -9,7 +9,7 @@ import cz.kamenitxan.jakon.validation.{ValidationResult, Validator}
 class NotEmptyValidator extends Validator {
 	private val error = "EMPTY"
 
-	override def isValid(value: String, a: Annotation, data: Map[Field, String]): Option[ValidationResult] = {
+	override def isValid(value: String, a: Annotation, field: Field, data: Map[Field, String]): Option[ValidationResult] = {
 		val ann = a.asInstanceOf[NotEmpty]
 		if (value == null) {
 			return ValidationResult(error)

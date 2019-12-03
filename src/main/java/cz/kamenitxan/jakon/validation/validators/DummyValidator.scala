@@ -6,5 +6,5 @@ import java.lang.reflect.Field
 import cz.kamenitxan.jakon.validation.{ValidationResult, Validator}
 
 class DummyValidator extends Validator {
-	override def isValid(value: String, a: Annotation, data: Map[Field, String]): Option[ValidationResult] = Option.empty
+	override def isValid(value: String, a: Annotation, field: Field, data: Map[Field, String]): Option[ValidationResult] = Option.empty
 }

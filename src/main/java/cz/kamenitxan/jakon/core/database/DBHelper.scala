@@ -110,7 +110,7 @@ object DBHelper {
 					case BOOLEAN => field.set(obj, rs.getBoolean(columnName))
 					case INTEGER => field.set(obj, rs.getInt(columnName))
 					case DOUBLE => field.set(obj, rs.getDouble(columnName))
-					case DATE => field.set(obj, rs.getDate(columnName))
+					case DATE_o => field.set(obj, rs.getDate(columnName))
 					case DATETIME => field.set(obj, LocalDateTime.parse(rs.getString(columnName), DateTimeFormatter.ISO_LOCAL_DATE_TIME))
 					case x if x.isEnum =>
 						val m = x.getMethod("valueOf", classOf[String])

@@ -9,7 +9,7 @@ class PositiveOrZeroValidator extends Validator {
 	private val error = "NOT_POSITIVE"
 	private val nan = "NOT_A_NUMBER"
 
-	override def isValid(value: String, a: Annotation, data: Map[Field, String]): Option[ValidationResult] = {
+	override def isValid(value: String, a: Annotation, field: Field, data: Map[Field, String]): Option[ValidationResult] = {
 		if (value == null) return Option.empty
 
 		val numberValue = try {

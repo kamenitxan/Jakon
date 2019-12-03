@@ -2,6 +2,7 @@ package cz.kamenitxan.jakon.utils
 
 import java.lang.reflect.Field
 import java.sql.{Connection, JDBCType, PreparedStatement, Statement}
+import java.time.LocalDate
 import java.util.Date
 
 import cz.kamenitxan.jakon.core.database.converters.AbstractConverter
@@ -113,7 +114,8 @@ object SqlGen {
 			case BOOLEAN => stmt.setBoolean(i, value.asInstanceOf[Boolean])
 			case INTEGER => stmt.setInt(i, value.asInstanceOf[Int])
 			case DOUBLE => stmt.setDouble(i, value.asInstanceOf[Double])
-			case DATE => stmt.setDate(i, new java.sql.Date(value.asInstanceOf[Date].getTime))
+			case DATE => stmt.setDate(i, java.sql.Date.valueOf(value.asInstanceOf[LocalDate]))
+			case DATE_o => stmt.setDate(i, new java.sql.Date(value.asInstanceOf[Date].getTime))
 			case DATETIME => stmt.setObject(i, value)
 			case x if x.isEnum =>
 				val nameMethod = value.getClass.getMethod("name")
@@ -144,7 +146,7 @@ object SqlGen {
 			case _ if f.getDeclaredAnnotation(classOf[ManyToOne]) != null => JDBCType.INTEGER.getVendorTypeNumber
 			case INTEGER => JDBCType.INTEGER.getVendorTypeNumber
 			case DOUBLE => JDBCType.DOUBLE.getVendorTypeNumber
-			case DATE => JDBCType.DATE.getVendorTypeNumber
+			case DATE_o | DATE => JDBCType.DATE.getVendorTypeNumber
 			case _ =>
 				Logger.error(s"Uknown sql type ${f.getType} on field ${f.getName}")
 				0

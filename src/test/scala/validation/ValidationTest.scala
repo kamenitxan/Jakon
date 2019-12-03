@@ -3,18 +3,20 @@ package validation
 import java.lang.annotation.Annotation
 import java.lang.reflect.Field
 
+import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.validation.Validator
 import cz.kamenitxan.jakon.validation.validators._
 import org.scalatest.FunSuite
 import org.scalatest.prop.TableDrivenPropertyChecks.{forAll, _}
 import org.scalatest.prop.TableFor2
 import sun.reflect.annotation.AnnotationParser
+import utils.TestObject
 
 class ValidationTest extends FunSuite {
 
-	private def testTable(v: Validator, ann: Annotation, data: TableFor2[String, Boolean], obj: Map[Field, String] = null) = {
+	private def testTable(v: Validator, ann: Annotation, data: TableFor2[String, Boolean], obj: Map[Field, String] = null, field: Field = null): Any = {
 		forAll(data) { (value, expectedResult) => {
-			val res = v.isValid(value, ann, obj)
+			val res = v.isValid(value, ann, field, obj)
 			assert(res.isEmpty == expectedResult)
 		}
 		}
@@ -260,5 +262,20 @@ class ValidationTest extends FunSuite {
 		val v = new EmailValidator
 		val ann = AnnotationParser.annotationForMap(classOf[cz.kamenitxan.jakon.validation.validators.Email], null)
 		testTable(v, ann, data)
+	}
+
+	test("past") {
+		val data: TableFor2[String, Boolean] = Table(
+			("value", "expectedResult"),
+			//("test", true), // TODO
+			(null, true),
+			("1999-02-20", true),
+			("2030-02-20", false)
+		)
+
+		val v = new PastValidator
+		val ann = AnnotationParser.annotationForMap(classOf[cz.kamenitxan.jakon.validation.validators.Past], null)
+		val (_, f) = Utils.getClassByFieldName(classOf[TestObject], "localDate")
+		testTable(v, ann, data, field = f)
 	}
 }
