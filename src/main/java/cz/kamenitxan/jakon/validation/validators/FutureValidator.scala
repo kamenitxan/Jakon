@@ -11,7 +11,7 @@ import cz.kamenitxan.jakon.utils.TypeReferences._
 import cz.kamenitxan.jakon.validation.{ValidationResult, Validator}
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
 
-class PastValidator extends Validator {
+class FutureValidator extends Validator {
 	private val error = "NOT_PAST"
 
 	override def isValid(value: String, a: Annotation, field: Field, data: Map[Field, String]): Option[ValidationResult] = {
@@ -20,10 +20,10 @@ class PastValidator extends Validator {
 		val res = try {
 			val conformedValue = value.conform(field)
 			field.getType match {
-				case DATE => conformedValue.asInstanceOf[LocalDate].isBefore(LocalDate.now())
+				case DATE => conformedValue.asInstanceOf[LocalDate].isAfter(LocalDate.now())
 				case DATETIME =>
 					val now = LocalDateTime.now().withSecond(0).withNano(0)
-					conformedValue.asInstanceOf[LocalDateTime].isBefore(now)
+					conformedValue.asInstanceOf[LocalDateTime].isAfter(now)
 				case _ =>
 					throw new UnsupportedOperationException
 			}

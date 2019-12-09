@@ -18,7 +18,7 @@ object FieldConformer {
 
 	//val DATE_FORMAT = "MM/dd/yyyy"
 	val DATE_FORMAT = "yyyy-MM-dd"
-	val DATETIME_FORMAT = "MM/dd/yyyy'T'HH:mm"
+	val DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm"
 
 	implicit class StringConformer(val s: String) {
 
@@ -48,8 +48,8 @@ object FieldConformer {
 					val sdf = new SimpleDateFormat(DATE_FORMAT)
 					sdf.parse(s)
 				case DATETIME =>
-					val sdf = new SimpleDateFormat()
-					sdf.parse(s)
+					val formatter = DateTimeFormatter.ofPattern(DATETIME_FORMAT)
+					LocalDateTime.parse(s, formatter)
 				case LIST_j =>
 					s.split("\r\n").map(line => line.conform(Class.forName(genericType.getTypeName), null)).toList.asJava
 				case x if x.isEnum =>

@@ -80,6 +80,9 @@ object Settings {
 	@ConfigurationValue(name = "MAIL.auth", required = false)
 	private var emailAuth: String = _
 
+	@ConfigurationValue(name = "MAIL.tls", required = false, defaultValue = "false")
+	private var emailTls: Boolean = _
+
 	@ConfigurationValue(name = "MAIL.host", required = false)
 	private var emailHost: String = _
 
@@ -179,6 +182,8 @@ object Settings {
 	def isEmailEnabled: Boolean = emailEnabled
 
 	def getEmailAuth: String = emailAuth
+
+	def getEmailTls: Boolean = emailTls
 
 	def getEmailHost: String = emailHost
 

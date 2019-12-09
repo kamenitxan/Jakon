@@ -20,8 +20,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * <p>
  * Supported types are:
  * <ul>
- *     <li>{@code java.util.Date}</li>
- *     <li>{@code java.util.Calendar}</li>
  *     <li>{@code java.time.Instant}</li>
  *     <li>{@code java.time.LocalDate}</li>
  *     <li>{@code java.time.LocalDateTime}</li>

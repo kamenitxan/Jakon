@@ -1,6 +1,6 @@
 package utils
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime}
 import java.util.Date
 
 import cz.kamenitxan.jakon.core.database.converters.ScalaMapConverter
@@ -26,6 +26,8 @@ class TestObject extends JakonObject(classOf[TestObject].getName) {
 	var date: Date = _
 	@JakonField
 	var localDate: LocalDate = _
+	@JakonField
+	var localDateTime: LocalDateTime = _
 	@ManyToMany
 	@JakonField
 	var self: TestObject = _
