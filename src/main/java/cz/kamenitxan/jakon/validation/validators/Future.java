@@ -14,8 +14,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * <p>
  * Supported types are:
  * <ul>
- *     <li>{@code java.util.Date}</li>
- *     <li>{@code java.util.Calendar}</li>
  *     <li>{@code java.time.Instant}</li>
  *     <li>{@code java.time.LocalDate}</li>
  *     <li>{@code java.time.LocalDateTime}</li>
@@ -36,7 +34,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target({FIELD})
 @Retention(RUNTIME)
-@ValidatedBy(DummyValidator.class)
+@ValidatedBy(FutureValidator.class)
 public @interface Future {
 	MessageSeverity severity() default MessageSeverity.ERROR;
 }

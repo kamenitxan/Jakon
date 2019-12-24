@@ -2,8 +2,8 @@ package cz.kamenitxan.jakon.webui.conform
 
 import java.lang.reflect.{Field, ParameterizedType, Type}
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.{LocalDate, LocalDateTime}
 
 import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.utils.TypeReferences._
@@ -18,7 +18,7 @@ object FieldConformer {
 
 	//val DATE_FORMAT = "MM/dd/yyyy"
 	val DATE_FORMAT = "yyyy-MM-dd"
-	val DATETIME_FORMAT = "MM/dd/yyyy'T'HH:mm"
+	val DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm"
 
 	implicit class StringConformer(val s: String) {
 
@@ -42,11 +42,14 @@ object FieldConformer {
 				case DOUBLE | DOUBLE_j => s toDouble
 				case INTEGER | INTEGER_j => s toInt
 				case DATE =>
+					val formatter = DateTimeFormatter.ofPattern(DATE_FORMAT)
+					LocalDate.parse(s, formatter)
+				case DATE_o =>
 					val sdf = new SimpleDateFormat(DATE_FORMAT)
 					sdf.parse(s)
 				case DATETIME =>
-					val sdf = new SimpleDateFormat()
-					sdf.parse(s)
+					val formatter = DateTimeFormatter.ofPattern(DATETIME_FORMAT)
+					LocalDateTime.parse(s, formatter)
 				case LIST_j =>
 					s.split("\r\n").map(line => line.conform(Class.forName(genericType.getTypeName), null)).toList.asJava
 				case x if x.isEnum =>
@@ -85,7 +88,7 @@ object FieldConformer {
 						case INTEGER | INTEGER_j =>
 							val fv = f.get(obj)
 							infos = new FieldInfo(an, HtmlType.NUMBER, f, fv) :: infos
-						case DATE =>
+						case DATE_o =>
 							val sdf = new SimpleDateFormat(DATE_FORMAT)
 							if (f.get(obj) != null) {
 								val value = sdf.format(f.get(obj))

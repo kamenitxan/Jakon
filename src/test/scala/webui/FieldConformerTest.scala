@@ -1,5 +1,6 @@
 package webui
 
+import java.time.LocalDate
 import java.util.{Calendar, Date, GregorianCalendar}
 
 import cz.kamenitxan.jakon.core.model.{JakonObject, JakonUser}
@@ -12,7 +13,7 @@ import org.scalatest.FunSuite
 
 class FieldConformerTest extends FunSuite {
 
-	private val fieldCount = 9
+	private val fieldCount = 10
 
 	class TestObject extends JakonObject(classOf[TestObject].getName) {
 		//TODO oneToMany
@@ -31,6 +32,8 @@ class FieldConformerTest extends FunSuite {
 		var date: Date = new Date()
 		@JakonField
 		var date2: Date = _
+		@JakonField
+		var localDate: LocalDate = _
 		@ManyToMany
 		@JakonField
 		var self: TestObject = _
@@ -77,6 +80,12 @@ class FieldConformerTest extends FunSuite {
 	test("conform date") {
 		val conformed = "1999-02-20".conform(getField("date"))
 		val d = new GregorianCalendar(1999, Calendar.FEBRUARY, 20).getTime
+		assert(d == conformed)
+	}
+
+	test("conform localDate") {
+		val conformed = "1999-02-20".conform(getField("localDate"))
+		val d = LocalDate.of(1999, 2, 20)
 		assert(d == conformed)
 	}
 

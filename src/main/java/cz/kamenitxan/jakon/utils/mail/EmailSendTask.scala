@@ -28,7 +28,9 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 
 			val prop = new Properties()
 			prop.put("mail.smtp.auth", Settings.getEmailAuth)
-			//prop.put("mail.smtp.starttls.enable", Settings.getProperty(SettingValue.MAIL_TLS))
+			if (Settings.getEmailTls) {
+				prop.put("mail.smtp.starttls.enable", "true")
+			}
 			prop.put("mail.smtp.host", Settings.getEmailHost)
 			prop.put("mail.smtp.port", Settings.getEmailPort)
 			val mailSession = Session.getInstance(prop, new Authenticator() {

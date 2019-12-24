@@ -15,9 +15,14 @@ class Logs {
     filterSeverity(severity) {
         const all = severity === "ALL";
         if (all) {
-            console.log("ALLLLL")
+            const selected = document.querySelectorAll(".logTable tbody tr");
+            selected.forEach(l => l.classList.remove("hidden"))
         } else {
-            console.log(severity)
+            const other = document.querySelectorAll(".logTable tbody tr:not(" + severity + ")");
+            const selected = document.querySelectorAll(".logTable tbody tr." + severity);
+            other.forEach(l => l.classList.add("hidden"));
+            selected.forEach(l => l.classList.remove("hidden"))
+
         }
     }
 }

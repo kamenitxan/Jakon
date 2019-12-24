@@ -43,7 +43,7 @@ object EntityValidator {
 		for (an <- anns) {
 			val by: ValidatedBy = an.annotationType().getAnnotation(classOf[ValidatedBy])
 			val validator: Validator = by.value().newInstance()
-			val result = validator.isValid(fieldValue, an, validatedData)
+			val result = validator.isValid(fieldValue, an, f, validatedData)
 			if (result.isDefined) {
 				lazy val severityM = an.annotationType().getDeclaredMethod("severity")
 				val severity: MessageSeverity = if (result.get.severity.isDefined) {

@@ -8,7 +8,7 @@ import cz.kamenitxan.jakon.validation.{ValidationResult, Validator}
 class NullValidator extends Validator {
 	private val error = "NOT_NULL"
 
-	override def isValid(value: String, a: Annotation, data: Map[Field, String]): Option[ValidationResult] = {
+	override def isValid(value: String, a: Annotation, field: Field, data: Map[Field, String]): Option[ValidationResult] = {
 		if (value == null) {
 			Option.empty
 		} else {

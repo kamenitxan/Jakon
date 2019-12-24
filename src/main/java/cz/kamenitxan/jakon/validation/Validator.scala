@@ -6,7 +6,7 @@ import java.lang.reflect.Field
 import scala.language.implicitConversions
 
 trait Validator {
-	def isValid(value: String, a: Annotation, data: Map[Field, String]): Option[ValidationResult]
+	def isValid(value: String, a: Annotation, field: Field, data: Map[Field, String]): Option[ValidationResult]
 
 	implicit def result2Opt(validationResult: ValidationResult): Option[ValidationResult] = {
 		validationResult.toOpt
