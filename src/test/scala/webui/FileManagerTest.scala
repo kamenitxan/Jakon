@@ -3,6 +3,7 @@ package webui
 import java.io.DataOutputStream
 import java.net.{HttpURLConnection, URL}
 
+import org.apache.commons.lang3.SystemUtils
 import test.TestBase
 
 import scala.io.Source
@@ -12,6 +13,7 @@ class FileManagerTest extends TestBase {
 
 
 	test("file manager - create folder") { _ =>
+		assume(!SystemUtils.IS_OS_WINDOWS)
 		val url = new URL(host + prefix + "createFolderUrl")
 		val con = url.openConnection.asInstanceOf[HttpURLConnection]
 		con.setRequestMethod("GET")
@@ -30,6 +32,7 @@ class FileManagerTest extends TestBase {
 	}
 
 	test("file manager - list") { _ =>
+		assume(!SystemUtils.IS_OS_WINDOWS)
 		val url = new URL(host + prefix + "listUrl")
 		val con = url.openConnection.asInstanceOf[HttpURLConnection]
 		con.setRequestMethod("GET")
@@ -49,6 +52,7 @@ class FileManagerTest extends TestBase {
 	}
 
 	test("file manager - rename dir") { _ =>
+		assume(!SystemUtils.IS_OS_WINDOWS)
 		val url = new URL(host + prefix + "rename")
 		val con = url.openConnection.asInstanceOf[HttpURLConnection]
 		con.setRequestMethod("GET")
@@ -67,6 +71,7 @@ class FileManagerTest extends TestBase {
 	}
 
 	test("file manager - list renamed") { _ =>
+		assume(!SystemUtils.IS_OS_WINDOWS)
 		val url = new URL(host + prefix + "listUrl")
 		val con = url.openConnection.asInstanceOf[HttpURLConnection]
 		con.setRequestMethod("GET")
@@ -86,6 +91,7 @@ class FileManagerTest extends TestBase {
 	}
 
 	test("file manager - download nonexistent") { _ =>
+		assume(!SystemUtils.IS_OS_WINDOWS)
 		val url = new URL(host + prefix + "downloadFileUrl?action=download&path=%2FbasePath%2FCzech-Republic-Flag.png")
 		val con = url.openConnection.asInstanceOf[HttpURLConnection]
 		con.setRequestMethod("GET")
@@ -97,6 +103,7 @@ class FileManagerTest extends TestBase {
 	}
 
 	test("file manager - download multiple nonexistent") { _ =>
+		assume(!SystemUtils.IS_OS_WINDOWS)
 		val url = new URL(host + prefix
 		  + "downloadMultipleFileUrl?action=downloadMultiple&toFilename=test.zip&items[]=%2FbasePath%2Fnope.png&items[]=%2FbasePath%2Fnope2.png")
 		val con = url.openConnection.asInstanceOf[HttpURLConnection]
@@ -113,6 +120,7 @@ class FileManagerTest extends TestBase {
 	val LF = 0x0A
 
 	test("file manager - upload") { _ =>
+		assume(!SystemUtils.IS_OS_WINDOWS)
 		val url = new URL(host + prefix + "uploadUrl")
 		val con = url.openConnection.asInstanceOf[HttpURLConnection]
 		con.setRequestMethod("POST")
@@ -137,6 +145,7 @@ class FileManagerTest extends TestBase {
 	}
 
 	test("file manager - download multiple") { _ =>
+		assume(!SystemUtils.IS_OS_WINDOWS)
 		val url = new URL(host + prefix
 		  + "downloadMultipleFileUrl?action=downloadMultiple&toFilename=test.zip&items[]=%2FbasePath%2Ftest.txt&items[]=%2FbasePath%2Fnope2.png")
 		val con = url.openConnection.asInstanceOf[HttpURLConnection]
@@ -149,6 +158,7 @@ class FileManagerTest extends TestBase {
 
 
 	test("file manager - rename file") { _ =>
+		assume(!SystemUtils.IS_OS_WINDOWS)
 		val url = new URL(host + prefix + "renameUrl")
 		val con = url.openConnection.asInstanceOf[HttpURLConnection]
 		con.setRequestMethod("POST")
@@ -169,6 +179,7 @@ class FileManagerTest extends TestBase {
 	}
 
 	test("file manager - get content") { _ =>
+		assume(!SystemUtils.IS_OS_WINDOWS)
 		val url = new URL(host + prefix + "getContentUrl")
 		val con = url.openConnection.asInstanceOf[HttpURLConnection]
 		con.setRequestMethod("POST")
@@ -189,6 +200,7 @@ class FileManagerTest extends TestBase {
 	}
 
 	test("file manager - edit") { _ =>
+		assume(!SystemUtils.IS_OS_WINDOWS)
 		val url = new URL(host + prefix + "editUrl")
 		val con = url.openConnection.asInstanceOf[HttpURLConnection]
 		con.setRequestMethod("POST")
@@ -212,6 +224,7 @@ class FileManagerTest extends TestBase {
 	}
 
 	test("file manager - move") { _ =>
+		assume(!SystemUtils.IS_OS_WINDOWS)
 		val url = new URL(host + prefix + "editUrl")
 		val con = url.openConnection.asInstanceOf[HttpURLConnection]
 		con.setRequestMethod("POST")
@@ -235,6 +248,7 @@ class FileManagerTest extends TestBase {
 	}
 
 	test("file manager - copy") { _ =>
+		assume(!SystemUtils.IS_OS_WINDOWS)
 		val url = new URL(host + prefix + "copyUrl")
 		val con = url.openConnection.asInstanceOf[HttpURLConnection]
 		con.setRequestMethod("POST")
@@ -259,6 +273,7 @@ class FileManagerTest extends TestBase {
 	}
 
 	test("file manager - list moved + copied") { _ =>
+		assume(!SystemUtils.IS_OS_WINDOWS)
 		val url = new URL(host + prefix + "listUrl")
 		val con = url.openConnection.asInstanceOf[HttpURLConnection]
 		con.setRequestMethod("GET")
@@ -279,6 +294,7 @@ class FileManagerTest extends TestBase {
 	}
 
 	test("file manager - compress same name") { _ =>
+		assume(!SystemUtils.IS_OS_WINDOWS)
 		val url = new URL(host + prefix + "compressUrl")
 		val con = url.openConnection.asInstanceOf[HttpURLConnection]
 		con.setRequestMethod("POST")
@@ -303,6 +319,7 @@ class FileManagerTest extends TestBase {
 	}
 
 	test("file manager - compress") { _ =>
+		assume(!SystemUtils.IS_OS_WINDOWS)
 		val url = new URL(host + prefix + "compressUrl")
 		val con = url.openConnection.asInstanceOf[HttpURLConnection]
 		con.setRequestMethod("POST")
@@ -327,6 +344,7 @@ class FileManagerTest extends TestBase {
 	}
 
 	test("file manager - delete file") { _ =>
+		assume(!SystemUtils.IS_OS_WINDOWS)
 		val url = new URL(host + prefix + "getContentUrl")
 		val con = url.openConnection.asInstanceOf[HttpURLConnection]
 		con.setRequestMethod("POST")
@@ -348,6 +366,7 @@ class FileManagerTest extends TestBase {
 
 
 	test("file manager - remove folder") { _ =>
+		assume(!SystemUtils.IS_OS_WINDOWS)
 		val url = new URL(host + prefix + "remove")
 		val con = url.openConnection.asInstanceOf[HttpURLConnection]
 		con.setRequestMethod("GET")
@@ -366,6 +385,7 @@ class FileManagerTest extends TestBase {
 	}
 
 	test("file manager - list removed") { _ =>
+		assume(!SystemUtils.IS_OS_WINDOWS)
 		val url = new URL(host + prefix + "listUrl")
 		val con = url.openConnection.asInstanceOf[HttpURLConnection]
 		con.setRequestMethod("GET")
@@ -385,6 +405,7 @@ class FileManagerTest extends TestBase {
 	}
 
 	test("file manager - change permission") { _ =>
+		assume(!SystemUtils.IS_OS_WINDOWS)
 		val url = new URL(host + prefix + "permissionsUrl")
 		val con = url.openConnection.asInstanceOf[HttpURLConnection]
 		con.setRequestMethod("POST")

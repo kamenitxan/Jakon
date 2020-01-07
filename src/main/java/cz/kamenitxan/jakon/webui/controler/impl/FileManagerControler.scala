@@ -24,6 +24,7 @@ import org.apache.commons.fileupload.FileUploadException
 import org.apache.commons.fileupload.disk.DiskFileItemFactory
 import org.apache.commons.fileupload.servlet.ServletFileUpload
 import org.apache.commons.io.FileUtils
+import org.apache.commons.lang3.SystemUtils
 import spark.{Request, Response}
 
 import scala.annotation.switch
@@ -248,7 +249,12 @@ object FileManagerControler {
 
 	private def isSupportFeature(mode: FileManagerMode) = {
 		Logger.debug(s"check support $mode")
-		enabledAction.get(mode)
+		if (SystemUtils.IS_OS_WINDOWS) {
+			Logger.error("File manager is not available on Windows")
+			false
+		} else {
+			enabledAction.get(mode)
+		}
 	}
 
 	private def notSupportFeature(mode: FileManagerMode): JSONObject = error("This implementation not support " + mode + " feature")

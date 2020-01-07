@@ -40,7 +40,7 @@ class SecurityTest extends TestBase {
 		assert(toenc == dec)
 	}
 
-	test("OauthProvider") { f =>
+	test("OauthProvider") { _ =>
 	    assert("redirectTo" == OauthProvider.REDIRECT_TO)
 	}
 
@@ -50,7 +50,7 @@ class SecurityTest extends TestBase {
 		checkPageLoad(".panel-title")
 	}
 
-	test("test provider bob") { f =>
+	test("test provider bob") { _ =>
 		PageContext.init(fakeReq, null)
 		PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "")
 		val provider = new TestOauthProvider("bob@test.test")
@@ -59,7 +59,7 @@ class SecurityTest extends TestBase {
 		PageContext.destroy()
 	}
 
-	test("test provider admin") { f =>
+	test("test provider admin") { _ =>
 		PageContext.init(fakeReq, null)
 		PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "")
 		val provider = new TestOauthProvider("admin@admin.cz")
