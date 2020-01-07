@@ -1,5 +1,6 @@
 import functions.FunctionHelperTest
 import org.scalatest.{BeforeAndAfterAll, Suites}
+import template.pebble.Pebble
 import utils.UtilsTest
 import validation.ValidationTest
 import webui.FieldConformerTest
@@ -11,7 +12,8 @@ class UnitTestRunner extends Suites(
 	new UtilsTest,
 	new FieldConformerTest,
 	new ValidationTest,
-	new FunctionHelperTest
+	new FunctionHelperTest,
+	new Pebble
 ) with BeforeAndAfterAll {
 
 }

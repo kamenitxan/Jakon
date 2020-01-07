@@ -2,10 +2,11 @@ package cz.kamenitxan.jakon.core.template.pebble
 
 import java.util
 
-import com.github.rjeschke.txtmark.Processor
 import com.mitchellbosecke.pebble.extension.Filter
 import com.mitchellbosecke.pebble.template.{EvaluationContext, PebbleTemplate}
 import cz.kamenitxan.jakon.core.function.FunctionHelper
+import org.commonmark.parser.Parser
+import org.commonmark.renderer.html.HtmlRenderer
 
 class MarkdownFilter extends Filter {
 
@@ -19,8 +20,14 @@ class MarkdownFilter extends Filter {
 object MarkdownFilter {
 
 	def parseString(input: String): String = {
-		val renderedMarkdown = Processor.process(input)
-		val result = FunctionHelper.parse(renderedMarkdown)
+		val parser = Parser.builder.build
+		val document = parser.parse(input)
+		val renderer = HtmlRenderer.builder.build
+		val renderedString = renderer.render(document)
+		  .replace("\r\n", "<br>")
+		  .replace("\n", "<br>")
+		  .replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;")
+		val result = FunctionHelper.parse(renderedString)
 		result
 	}
 
