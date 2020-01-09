@@ -3,7 +3,6 @@ package cz.kamenitxan.jakon.logging
 import org.slf4j.LoggerFactory
 
 object Logger {
-	val logRepository = new InMemoryLogRepository
 
 	def debug(message: String, cause: Throwable = null)(implicit line: sourcecode.Line, file: sourcecode.FullName): Unit = {
 		log(Debug, message, cause)

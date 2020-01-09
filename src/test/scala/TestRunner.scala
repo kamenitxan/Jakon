@@ -11,6 +11,7 @@ import cz.kamenitxan.jakon.core.template.Pebble
 import functions.LinkTest
 import jakon.pagelet.PageletTest
 import jakon.{DeployTest, ModelTest, RenderTest, SettingsTest}
+import logging.LoggingTest
 import org.scalatest.{BeforeAndAfterAll, Suites}
 import utils.mail.EmailTest
 import utils.{SecurityTest, SqlGenTest, TestObject, i18nUtilTest}
@@ -35,7 +36,8 @@ class TestRunner extends Suites(
 	new SettingsTest,
 	new i18nUtilTest,
 	new PageletTest,
-	new DeployTest
+	new DeployTest,
+	new LoggingTest
 ) with BeforeAndAfterAll {
 
 	override def beforeAll() {
