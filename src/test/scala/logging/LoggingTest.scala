@@ -33,8 +33,12 @@ class LoggingTest extends TestBase {
 	}
 
 	test("too many logs") { _ =>
-		for (i <- 1 to 200000) {
+		for (i <- 1 to 100000) {
 			Logger.debug(i.toString)
+			Logger.info(i.toString)
+			Logger.warn(i.toString)
+			Logger.error(i.toString)
+			Logger.critical(i.toString)
 		}
 	}
 

@@ -43,33 +43,8 @@ object JakonInitializer {
 
 
 			if (Settings.isEmailEnabled) {
-				val stmt = conn.prepareStatement(SELECT_EMAIL_TMPL_SQL)
-				stmt.setString(1, "REGISTRATION")
-				val tmpl = DBHelper.selectSingle(stmt, classOf[EmailTemplateEntity]).entity
-				if (tmpl == null) {
-					val tmpl = Utils.getResourceFromJar("/templates/admin/email/registration.peb")
-					val emailTemplateEntity = new EmailTemplateEntity()
-					emailTemplateEntity.subject = "Jakon Registration"
-					emailTemplateEntity.from = "admin@jakon.cz"
-					emailTemplateEntity.name = "REGISTRATION"
-					emailTemplateEntity.template = tmpl.getOrElse("registrationTemplate")
-					emailTemplateEntity.create()
-				}
-
-				val stmt2 = conn.prepareStatement(SELECT_EMAIL_TMPL_SQL)
-				stmt2.setString(1, "FORGET_PASSWORD")
-				val tmpl2 = DBHelper.selectSingle(stmt2, classOf[EmailTemplateEntity]).entity
-				if (tmpl2 == null) {
-					val tmpl = Utils.getResourceFromJar("/templates/admin/email/forgetPassword.peb")
-					val emailTemplateEntity = new EmailTemplateEntity()
-					emailTemplateEntity.subject = "Forget password"
-					emailTemplateEntity.from = "admin@jakon.cz"
-					emailTemplateEntity.name = "FORGET_PASSWORD"
-					emailTemplateEntity.template = tmpl.getOrElse("forgetPasswordTemplate")
-					emailTemplateEntity.create()
-				}
+				createDefaultEmailTemplates()(conn)
 			}
-			createDefaultEmailTemplates()(conn)
 		} finally {
 			conn.close()
 		}
@@ -77,6 +52,33 @@ object JakonInitializer {
 
 	def createDefaultEmailTemplates()(conn: Connection) = {
 		val resourceDir = this.getClass.getResourceAsStream(s"/templates/defaultEmailTemplates")
-		//TODO
+
+		val stmt = conn.prepareStatement(SELECT_EMAIL_TMPL_SQL)
+		stmt.setString(1, "REGISTRATION")
+		val tmpl = DBHelper.selectSingle(stmt, classOf[EmailTemplateEntity]).entity
+		if (tmpl == null) {
+			val tmpl = Utils.getResourceFromJar("/templates/admin/email/registration.peb")
+			val emailTemplateEntity = new EmailTemplateEntity()
+			emailTemplateEntity.subject = "Jakon Registration"
+			emailTemplateEntity.from = "admin@jakon.cz"
+			emailTemplateEntity.name = "REGISTRATION"
+			emailTemplateEntity.template = tmpl.getOrElse("registrationTemplate")
+			emailTemplateEntity.create()
+		}
+
+		val stmt2 = conn.prepareStatement(SELECT_EMAIL_TMPL_SQL)
+		stmt2.setString(1, "FORGET_PASSWORD")
+		val tmpl2 = DBHelper.selectSingle(stmt2, classOf[EmailTemplateEntity]).entity
+		if (tmpl2 == null) {
+			val tmpl = Utils.getResourceFromJar("/templates/admin/email/forgetPassword.peb")
+			val emailTemplateEntity = new EmailTemplateEntity()
+			emailTemplateEntity.subject = "Forget password"
+			emailTemplateEntity.from = "admin@jakon.cz"
+			emailTemplateEntity.name = "FORGET_PASSWORD"
+			emailTemplateEntity.template = tmpl.getOrElse("forgetPasswordTemplate")
+			emailTemplateEntity.create()
+		}
+
+
 	}
 }
