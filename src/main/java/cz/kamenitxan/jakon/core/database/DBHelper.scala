@@ -46,7 +46,7 @@ object DBHelper {
 				connection = DriverManager.getConnection(Settings.getDatabaseConnPath,config.toProperties);
 			} catch {
 				case ex: SQLException =>
-					Logger.error("Failed to get SQLITE connection with foreign key support")
+					Logger.error("Failed to get SQLITE connection with foreign key support", ex)
 					connection = ds.getConnection
 			}
 			return connection
@@ -140,6 +140,8 @@ object DBHelper {
 		})
 		new QueryResult(obj, foreignIds)
 	}
+
+	//TODO: parametr cls muze byt implicit
 
 	def select[T <: JakonObject](stmt: PreparedStatement, cls: Class[T]): List[QueryResult[T]] = {
 		val rs = execute(stmt)

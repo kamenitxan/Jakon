@@ -15,6 +15,7 @@ import cz.kamenitxan.jakon.webui.Routes
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.Try
 
 
 /**
@@ -59,6 +60,7 @@ object Director {
 	def render() {
 		TemplateUtils.clean(Settings.getOutputDir)
 		controllers.foreach(i => {
+			//TODO: poslat chybu dale ale neukoncit generovani
 			i.generateRun()
 		})
 		customPages.foreach(i => {

@@ -21,3 +21,16 @@ Scala static web generator
     </dependency>
 <dependencies>
 ```
+
+# Build
+- Scala is build by Maven
+- Administration frontend is build by [Brunch](https://brunch.io/)
+    - build run by ```brunch build```
+
+# Features
+- Static site generator
+    - dynamic forms are supported too
+- Administration is automatically generated
+- wysiwyg editor
+- file manager
+- multiple language support
