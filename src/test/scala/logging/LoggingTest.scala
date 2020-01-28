@@ -34,12 +34,13 @@ class LoggingTest extends TestBase {
 
 	test("too many logs") { _ =>
 		for (i <- 1 to 100000) {
-			implicit val repositoryOnly: Boolean = true
-			Logger.debug(i.toString)(implicitly[sourcecode.Line], implicitly[sourcecode.FullName])
-			Logger.info(i.toString)(implicitly[sourcecode.Line], implicitly[sourcecode.FullName])
-			Logger.warn(i.toString)(implicitly[sourcecode.Line], implicitly[sourcecode.FullName])
-			Logger.error(i.toString)(implicitly[sourcecode.Line], implicitly[sourcecode.FullName])
-			Logger.critical(i.toString)(implicitly[sourcecode.Line], implicitly[sourcecode.FullName])
+			//TODO: proverit proc tohle loguje jen error pri testu
+			val tooMany = if (i > 20) true else false
+			Logger.debug(i.toString)(implicitly[sourcecode.Line], implicitly[sourcecode.FullName], repositoryOnly = tooMany)
+			Logger.info(i.toString)(implicitly[sourcecode.Line], implicitly[sourcecode.FullName], repositoryOnly = tooMany)
+			Logger.warn(i.toString)(implicitly[sourcecode.Line], implicitly[sourcecode.FullName], repositoryOnly = tooMany)
+			Logger.error(i.toString)(implicitly[sourcecode.Line], implicitly[sourcecode.FullName], repositoryOnly = tooMany)
+			Logger.critical(i.toString)(implicitly[sourcecode.Line], implicitly[sourcecode.FullName], repositoryOnly = tooMany)
 		}
 	}
 
