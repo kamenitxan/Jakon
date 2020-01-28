@@ -27,12 +27,14 @@ object Logger {
 	private def log(severity: LogSeverity, message: String, cause: Throwable = null, repositoryOnly: Boolean)(implicit line: sourcecode.Line, file: sourcecode.FullName): Unit = {
 		val source = file.value + ":" + line.value
 		val log = new Log(severity, message, cause, source)
-		severity match {
-			case Debug => LoggerFactory.getLogger(source).debug(message, cause)
-			case Info => LoggerFactory.getLogger(source).info(message, cause)
-			case Warning => LoggerFactory.getLogger(source).warn(message, cause)
-			case Error => LoggerFactory.getLogger(source).error(message, cause)
-			case Critical => LoggerFactory.getLogger(source).error(message, cause)
+		if (!repositoryOnly) {
+			severity match {
+				case Debug => LoggerFactory.getLogger(source).debug(message, cause)
+				case Info => LoggerFactory.getLogger(source).info(message, cause)
+				case Warning => LoggerFactory.getLogger(source).warn(message, cause)
+				case Error => LoggerFactory.getLogger(source).error(message, cause)
+				case Critical => LoggerFactory.getLogger(source).error(message, cause)
+			}
 		}
 		LogService.getRepository.addLog(log)
 	}
