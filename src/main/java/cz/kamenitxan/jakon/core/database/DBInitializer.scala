@@ -18,11 +18,6 @@ import scala.collection.mutable
   */
 object DBInitializer {
 
-	DBHelper.addDao(classOf[AclRule])
-	DBHelper.addDao(classOf[JakonUser])
-	DBHelper.addDao(classOf[KeyValueEntity])
-	DBHelper.addDao(classOf[JakonFile])
-
 	val config = new HikariConfig
 	config.setJdbcUrl(Settings.getDatabaseConnPath)
 	config.setUsername(Settings.getDatabaseUser)
@@ -33,6 +28,20 @@ object DBInitializer {
 	if (Settings.getDatabaseType == DatabaseType.SQLITE) {
 		config.addDataSourceProperty("PRAGMA foreign_keys", "ON")
 		config.addDataSourceProperty("PRAGMA journal_mode", "wal")
+	}
+
+	def dbExists(): Unit = {
+		if (Settings.getDatabaseType == DatabaseType.SQLITE) {
+			Logger.critical("SQLite DB file does not exist. Restart Jakon in DEVEL mode to create it.")
+			System.exit(42)
+		}
+	}
+
+	def registerCoreObjects(): Unit = {
+		DBHelper.addDao(classOf[AclRule])
+		DBHelper.addDao(classOf[JakonUser])
+		DBHelper.addDao(classOf[KeyValueEntity])
+		DBHelper.addDao(classOf[JakonFile])
 	}
 
 	def createTables(): Unit = {

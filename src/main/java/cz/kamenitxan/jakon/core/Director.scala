@@ -39,8 +39,11 @@ object Director {
 			Logger.warn(s"JVM character encoding $enc is not UTF-8")
 		}
 
+		DBInitializer.registerCoreObjects()
 		if (Settings.getDeployMode != DeployMode.PRODUCTION) {
 			DBInitializer.createTables()
+		} else {
+			DBInitializer.dbExists()
 		}
 		Future {
 			DBInitializer.checkDbConsistency()

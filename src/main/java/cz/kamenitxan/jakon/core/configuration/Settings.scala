@@ -4,11 +4,11 @@ import java.util._
 
 import cz.kamenitxan.jakon.core.template.utils.FixedPebbleTemplateEngine
 import cz.kamenitxan.jakon.core.template.{Pebble, TemplateEngine}
+import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.utils.mail.EmailTypeHandler
 import cz.kamenitxan.jakon.webui.util.JakonFileLoader
 import javax.mail.Message
-import org.slf4j.LoggerFactory
 
 import scala.language.postfixOps
 
@@ -18,7 +18,6 @@ import scala.language.postfixOps
 //noinspection VarCouldBeVal,ScalaUnusedSymbol
 @Configuration
 object Settings {
-	private val logger = LoggerFactory.getLogger(this.getClass.getName)
 	private var engine: TemplateEngine = _
 	private var adminEngine: spark.TemplateEngine = _
 	private var emailTypeHandler: EmailTypeHandler = new EmailTypeHandler {
@@ -169,7 +168,15 @@ object Settings {
 
 	def getDeployMode: DeployMode = deployMode
 
-	def setDeployMode(deployMode: String): Unit = this.deployMode = DeployMode.valueOf(deployMode)
+	def setDeployMode(deployMode: String): Unit = this.deployMode = {
+		try {
+			DeployMode.valueOf(deployMode)
+		} catch {
+			case ex: IllegalArgumentException =>
+				Logger.error(s"Unknown deploy mode $deployMode. Setting PRODUCTION instead")
+				DeployMode.PRODUCTION
+		}
+	}
 
 	def setDeployMode(deployMode: DeployMode): Unit = this.deployMode = deployMode
 

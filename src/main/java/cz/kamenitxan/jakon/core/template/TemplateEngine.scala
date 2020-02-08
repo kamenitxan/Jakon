@@ -23,7 +23,7 @@ trait TemplateEngine {
 	  * @param context      render parameters
 	  * @return rendered template
 	  */
-	def renderString(templateName: String, context: Map[String, AnyRef]): String
+	def renderToString(templateName: String, context: Map[String, AnyRef]): String
 
 	/**
 	  * Renders provided template

@@ -44,7 +44,7 @@ class Pebble extends TemplateEngine {
 		}
 	}
 
-	override def renderString(templateName: String, context: Map[String, AnyRef]): String = {
+	override def renderToString(templateName: String, context: Map[String, AnyRef]): String = {
 		renderString(templateName, mapAsJavaMap(context))
 	}
 

@@ -24,8 +24,5 @@ object Main {
 
 		Director.registerControler(new PageControler)
 
-		override def adminControllers(): Unit = {
-			super.adminControllers()
-		}
 	}
 }
