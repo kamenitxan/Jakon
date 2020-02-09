@@ -45,7 +45,7 @@ class LoggingTest extends TestBase {
 	}
 
 	private def getLogByValue(msg: String): Boolean = {
-		val s: mutable.Seq[Log] = LogService.getLogs
+		val s = LogService.getLogs
 		val log = s.find(_.message == msg)
 		log.nonEmpty
 	}

@@ -6,5 +6,7 @@ package cz.kamenitxan.jakon.logging
 trait LogRepository {
 	def addLog(log: Log): Unit
 
+	def getLogs: Seq[Log]
+
 	def clean(): Unit
 }

@@ -36,6 +36,8 @@ object Logger {
 				case Critical => LoggerFactory.getLogger(source).error(message, cause)
 			}
 		}
-		LogService.getRepository.addLog(log)
+		if (LogService.getRepository != null) {
+			LogService.getRepository.addLog(log)
+		}
 	}
 }

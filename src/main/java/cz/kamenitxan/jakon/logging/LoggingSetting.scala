@@ -22,6 +22,8 @@ object LoggingSetting {
 	private var maxInfoAge: Int = _
 	@ConfigurationValue(name = "LOGGING.maxDebugAge", required = true, defaultValue = "60")
 	private var maxDebugAge: Int = _
+	@ConfigurationValue(name = "LOGGING.logRepository", required = true, defaultValue = "cz.kamenitxan.jakon.logging.InMemoryLogRepository")
+	private var logRepository: LogRepository = _
 
 	def getMaxLimit: Int = maxLimit
 
@@ -50,4 +52,11 @@ object LoggingSetting {
 	def getMaxDebugAge: Int = maxDebugAge
 
 	def setMaxDebugAge(maxDebugAge: String): Unit = this.maxDebugAge = maxDebugAge.toInt
+
+	def getLogRepository: LogRepository = logRepository
+
+	def setLogRepository(cls: String): Unit = {
+		this.logRepository = Class.forName(cls).newInstance().asInstanceOf[LogRepository]
+		Logger.debug(s"lr = $logRepository")
+	}
 }

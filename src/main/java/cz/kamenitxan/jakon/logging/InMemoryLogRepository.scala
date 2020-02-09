@@ -38,5 +38,5 @@ class InMemoryLogRepository extends LogRepository {
 		})
 	}
 
-
+	override def getLogs: Seq[Log] = logs
 }

@@ -1,16 +1,13 @@
 package cz.kamenitxan.jakon.logging
 
-import scala.collection.mutable
-
 object LogService {
-	val repository = new InMemoryLogRepository
 
 	def getRepository: LogRepository = {
-		repository
+		LoggingSetting.getLogRepository
 	}
 
-	def getLogs: mutable.Buffer[Log] = {
-		repository.logs
+	def getLogs:Seq[Log] = {
+		LoggingSetting.getLogRepository.getLogs
 	}
 
 }
