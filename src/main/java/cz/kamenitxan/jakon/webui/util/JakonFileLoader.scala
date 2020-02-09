@@ -18,7 +18,7 @@ class JakonFileLoader(templateDir: String, loadFromJar: Boolean = false) extends
 			is = this.getClass.getResourceAsStream(s"/$ADMIN_TMPL_DIR/$tmpl.peb")
 		}
 		if (is == null) {
-			throw new LoaderException(null, "Could not find template \"" + getPathBuilder(templateDir).toString() + tmpl + "\"")
+			throw new LoaderException(null, s"Could not find template \"${getPathBuilder(templateDir).toString() + tmpl}\"")
 		}
 
 		try {
