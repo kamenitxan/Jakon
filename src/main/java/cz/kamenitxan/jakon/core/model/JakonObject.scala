@@ -5,23 +5,20 @@ import java.sql._
 
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
 import cz.kamenitxan.jakon.core.database.{Crud, DBHelper}
+import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.SqlGen
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.json.Json
 import javax.persistence._
-import org.slf4j.{Logger, LoggerFactory}
 
 import scala.annotation.switch
 import scala.language.postfixOps
 
 /**
   * Created by TPa on 22.04.16.
-  *
-  * @param childClass java.lang.Class.getName()
   */
-abstract class JakonObject(@JakonField var childClass: String) extends Serializable with Crud {
-	private lazy val logger: Logger = LoggerFactory.getLogger(this.getClass)
+abstract class JakonObject(implicit s: sourcecode.FullName) extends Serializable with Crud {
 
 	@Id
 	@JakonField(disabled = true, required = false, listOrder = -99, searched = true)
@@ -30,6 +27,8 @@ abstract class JakonObject(@JakonField var childClass: String) extends Serializa
 	var url: String = ""
 	@JakonField(listOrder = -95, searched = true)
 	var published: Boolean = true
+	@JakonField
+	var childClass: String = s.value
 
 	val objectSettings: ObjectSettings
 
@@ -94,7 +93,7 @@ abstract class JakonObject(@JakonField var childClass: String) extends Serializa
 	}
 
 	def createObject(jid: Int, conn: Connection): Int = {
-		logger.warn(s"createObject method is not overridden for $childClass")
+		Logger.warn(s"createObject method is not overridden for $childClass")
 		val stmt = SqlGen.insertStmt(this, conn, jid)
 		executeInsert(stmt)
 	}
@@ -123,7 +122,7 @@ abstract class JakonObject(@JakonField var childClass: String) extends Serializa
 	}
 
 	def updateObject(jid: Int, conn: Connection): Unit = {
-		logger.warn(s"updateObject method is not overridden $childClass")
+		Logger.warn(s"updateObject method is not overridden $childClass")
 		val stmt = SqlGen.updateStmt(this, conn, jid)
 		stmt.executeUpdate()
 	}

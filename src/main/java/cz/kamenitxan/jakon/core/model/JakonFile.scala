@@ -5,7 +5,7 @@ import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence.ManyToOne
 
-class JakonFile() extends JakonObject(childClass = classOf[JakonFile].getName) {
+class JakonFile extends JakonObject {
 
 	@JakonField
 	var name: String = _

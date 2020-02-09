@@ -15,7 +15,7 @@ class FieldConformerTest extends FunSuite {
 
 	private val fieldCount = 10
 
-	class TestObject extends JakonObject(classOf[TestObject].getName) {
+	class TestObject extends JakonObject {
 		//TODO oneToMany
 
 		@JakonField

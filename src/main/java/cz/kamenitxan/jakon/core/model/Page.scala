@@ -12,7 +12,7 @@ import javax.persistence._
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
   */
-class Page(u: Unit = ()) extends JakonObject(classOf[Page].getName) with Ordered {
+class Page extends JakonObject with Ordered {
 	@JakonField
 	var title: String = ""
 	@JakonField(inputTemplate = "textarea")
@@ -27,8 +27,6 @@ class Page(u: Unit = ()) extends JakonObject(classOf[Page].getName) with Ordered
 	@Transient
 	@JakonField(listOrder = -96)
 	override var visibleOrder: Int = _
-
-	def this() = this(u = ())
 
 	override def createUrl: String = "/page/" + title.replaceAll(" ", "_").toLowerCase
 

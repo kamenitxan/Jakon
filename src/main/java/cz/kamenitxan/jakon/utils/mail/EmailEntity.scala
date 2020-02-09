@@ -11,7 +11,7 @@ import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence.Column
 
 
-class EmailEntity(u: Unit = ()) extends JakonObject(classOf[EmailEntity].getName) {
+class EmailEntity(u: Unit = ()) extends JakonObject {
 	@Column(name = "addressTo")
 	@JakonField
 	var to: String = ""

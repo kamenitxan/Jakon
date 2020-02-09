@@ -7,7 +7,7 @@ import cz.kamenitxan.jakon.core.model.{JakonObject, JakonUser}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import javax.persistence.ManyToOne
 
-class ResetPasswordEmailEntity(u: Unit = ()) extends JakonObject(classOf[ResetPasswordEmailEntity].getName) {
+class ResetPasswordEmailEntity extends JakonObject {
 
 	@ManyToOne
 	@JakonField(disabled = true)
@@ -18,8 +18,6 @@ class ResetPasswordEmailEntity(u: Unit = ()) extends JakonObject(classOf[ResetPa
 	var secret: String = ""
 	@JakonField(disabled = true)
 	var expirationDate: Date = _
-
-	def this() = this(u = ())
 
 
 	override def createObject(jid: Int, conn: Connection): Int = {

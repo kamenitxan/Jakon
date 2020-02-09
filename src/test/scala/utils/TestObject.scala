@@ -9,7 +9,7 @@ import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.{JakonField, MessageSeverity}
 import javax.persistence.ManyToMany
 
-class TestObject extends JakonObject(classOf[TestObject].getName) {
+class TestObject extends JakonObject {
 	//TODO oneToMany
 	@ManyToMany
 	@JakonField

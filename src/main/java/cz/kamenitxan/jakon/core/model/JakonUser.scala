@@ -12,7 +12,7 @@ import javax.persistence._
 /**
   * Created by TPa on 31.08.16.
   */
-class JakonUser extends JakonObject(childClass = classOf[JakonUser].getName) with Serializable {
+class JakonUser extends JakonObject with Serializable {
 
 	@NotEmpty
 	@JakonField(searched = true) var username: String = ""

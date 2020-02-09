@@ -38,7 +38,7 @@ public class Post extends JakonObject {
 
 
 	public Post() {
-		super(Post.class.getName());
+		super(new sourcecode.FullName("cz.kamenitxan.jakon.core.model.Post"));
 	}
 
 

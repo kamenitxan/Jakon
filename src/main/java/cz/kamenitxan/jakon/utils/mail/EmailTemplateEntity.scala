@@ -7,7 +7,7 @@ import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence.Column
 
-class EmailTemplateEntity(u: Unit = ()) extends JakonObject(classOf[EmailTemplateEntity].getName) {
+class EmailTemplateEntity extends JakonObject {
 	@JakonField(searched = true)
 	var name: String = ""
 	@Column(name = "addressFrom")
@@ -17,8 +17,6 @@ class EmailTemplateEntity(u: Unit = ()) extends JakonObject(classOf[EmailTemplat
 	var subject: String = ""
 	@JakonField(inputTemplate = "raw_textarea", shownInList = false)
 	var template: String = ""
-
-	def this() = this(u = ())
 
 	override val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-envelope")
 

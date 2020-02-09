@@ -9,14 +9,12 @@ import javax.persistence.Transient
 /**
   * Created by TPa on 2019-07-03.
   */
-class KeyValueEntity(u: Unit = ()) extends JakonObject(classOf[KeyValueEntity].getName) {
+class KeyValueEntity extends JakonObject {
 
 	@JakonField
 	var name: String = _
 	@JakonField
 	var value: String = _
-
-	def this() = this(u = ())
 
 	override def createObject(jid: Int, conn: Connection): Int = {
 		val sql = "INSERT INTO KeyValueEntity (id, name, value) VALUES (?, ?, ?)"

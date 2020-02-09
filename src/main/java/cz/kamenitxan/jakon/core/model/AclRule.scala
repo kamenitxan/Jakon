@@ -12,7 +12,7 @@ import javax.persistence._
   * Created by TPa on 30.04.18.
   */
 @Entity
-class AclRule extends JakonObject(childClass = classOf[AclRule].getName) {
+class AclRule extends JakonObject {
 	@NotEmpty
 	@JakonField(searched = true, listOrder = 0)
 	var name: String = ""

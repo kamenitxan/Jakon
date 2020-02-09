@@ -9,7 +9,7 @@ import cz.kamenitxan.jakon.core.template.utils.TemplateUtils
 /**
   * Created by TPa on 26.04.16.
   */
-abstract class AbstractCustomPage extends JakonObject(childClass = classOf[AbstractCustomPage].getName) with IControler {
+abstract class AbstractCustomPage extends JakonObject with IControler {
 	protected val engine: TemplateEngine = TemplateUtils.getEngine
 
 }

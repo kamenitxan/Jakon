@@ -7,7 +7,7 @@ import cz.kamenitxan.jakon.core.model.{JakonObject, JakonUser}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import javax.persistence.ManyToOne
 
-class ConfirmEmailEntity(u: Unit = ()) extends JakonObject(classOf[ConfirmEmailEntity].getName) {
+class ConfirmEmailEntity extends JakonObject {
 
 	@ManyToOne
 	@JakonField(disabled = true)
@@ -18,8 +18,6 @@ class ConfirmEmailEntity(u: Unit = ()) extends JakonObject(classOf[ConfirmEmailE
 	var secret: String = ""
 	@JakonField(disabled = true)
 	var expirationDate: Date = _
-
-	def this() = this(u = ())
 
 	override val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-envelope")
 
