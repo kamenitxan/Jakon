@@ -21,6 +21,8 @@ class TestObject extends JakonObject {
 	@JakonField
 	var double: Double = 1.0
 	@JakonField
+	var float: Float = 1f
+	@JakonField
 	var integer: Int = 2
 	@JakonField
 	var date: Date = _

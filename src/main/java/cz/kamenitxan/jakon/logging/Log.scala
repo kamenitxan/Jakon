@@ -13,4 +13,6 @@ class Log(
          ) {
 
 	val time: LocalDateTime = LocalDateTime.now()
+
+	override def toString: String = s"Log($severity, $message, $source)"
 }

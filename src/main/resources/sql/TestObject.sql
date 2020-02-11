@@ -4,6 +4,7 @@ CREATE TABLE TestObject
     string         VARCHAR(255),
     boolean        BOOLEAN,
     `double`       DOUBLE,
+    `float`        FLOAT,
     `integer`      INTEGER,
     user_id        INTEGER NOT NULL REFERENCES JakonUser (id) ON DELETE CASCADE,
     date           DATETIME,
