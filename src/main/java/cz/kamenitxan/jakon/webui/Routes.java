@@ -112,6 +112,7 @@ public class Routes {
 						switch (an.method()) {
 							case get:
 								get("/admin/" + an.path(), ((req, res) -> (Context) m.invoke(instance, req, res)), te);
+								break;
 							case post:
 								post("/admin/" + an.path(), ((req, res) -> (Context) m.invoke(instance, req, req)), te);
 						}

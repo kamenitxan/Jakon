@@ -46,7 +46,7 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 				}
 
 
-				if (e.template != null && e.template != null) {
+				if (e.template != null) {
 					val tmplLangSuffix = if (e.params != null) {
 						e.params.getOrElse("tmplLanguage", "")
 					} else {
