@@ -376,26 +376,31 @@
 					</execution>
 				</executions>
 			</plugin>
-				<plugin>
-					<groupId>org.scoverage</groupId>
-					<artifactId>scoverage-maven-plugin</artifactId>
-					<version>${scoverage.plugin.version}</version>
-					<configuration>
-						<minimumCoverage>80</minimumCoverage>
-						<failOnMinimumCoverage>true</failOnMinimumCoverage>
+			<plugin>
+				<groupId>org.scoverage</groupId>
+				<artifactId>scoverage-maven-plugin</artifactId>
+				<version>${scoverage.plugin.version}</version>
+				<configuration>
+					<minimumCoverage>80</minimumCoverage>
+					<failOnMinimumCoverage>true</failOnMinimumCoverage>
 
-						<!-- enable surefire and failsafe tests in SCoverage -->
-						<additionalForkedProjectProperties>skipTests=false</additionalForkedProjectProperties>
-					</configuration>
-					<executions>
-						<execution>
-							<goals>
-								<goal>report</goal> <!-- or integration-check -->
-							</goals>
-							<phase>prepare-package</phase> <!-- or any other phase -->
-						</execution>
-					</executions>
-				</plugin>
+					<!-- enable surefire and failsafe tests in SCoverage -->
+					<additionalForkedProjectProperties>skipTests=false</additionalForkedProjectProperties>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>report</goal> <!-- or integration-check -->
+						</goals>
+						<phase>prepare-package</phase> <!-- or any other phase -->
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.sonarsource.scanner.maven</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>3.6.0.1398</version>
+			</plugin>
 		</plugins>
 	</build>
 
