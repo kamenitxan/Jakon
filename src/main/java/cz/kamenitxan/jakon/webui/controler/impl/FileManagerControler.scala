@@ -201,7 +201,7 @@ object FileManagerControler {
 			br.close()
 
 			val params: JSONObject = JSONValue.parse(str, classOf[JSONObject])
-			val mode: FileManagerMode = FileManagerMode.valueOf(params.getAsString("action"))
+			val mode: FileManagerMode = FileManagerMode.ofAction(params.getAsString("action"))
 			responseJsonObject = (mode: @switch) match {
 				case FileManagerMode.CREATE_FOLDER =>
 					executeIfSupported(mode, params, p => createFolder(p))
