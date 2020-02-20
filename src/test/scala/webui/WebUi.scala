@@ -1,6 +1,8 @@
 package webui
 
+import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.BasicJakonObject
+import cz.kamenitxan.jakon.core.service.UserService
 import cz.kamenitxan.jakon.webui.api.AbstractRequest
 import cz.kamenitxan.jakon.webui.functions.{AdminPebbleExtension, GetAttributeTypeFun, LinkFun}
 import test.TestBase
@@ -24,7 +26,7 @@ class WebUi extends TestBase {
 	}
 
 
-	test("GetAttributeTypeFun") { f =>
+	test("GetAttributeTypeFun") { _ =>
 		val fun = new GetAttributeTypeFun()
 		val args = fun.getArgumentNames
 		assert(!args.isEmpty)
@@ -43,5 +45,15 @@ class WebUi extends TestBase {
 	test("AbstractRequest") { _ =>
 		val req = new AbstractRequest("test")
 		assert(req != null)
+	}
+
+	test("Send user password reset email") { f =>
+		DBHelper.withDbConnection(implicit conn => {
+			val user = UserService.getMasterAdmin
+			val url = host + s"/admin/profile/object/JakonUser/${user.id}/resetPassword"
+			f.driver.get(url)
+
+			assert(checkPageLoad()(f.driver))
+		})
 	}
 }
