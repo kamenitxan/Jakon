@@ -162,10 +162,10 @@ object FileManagerControler {
 	def executePost(req: Request, res: Response): Response = {
 		try { // if request contains multipart-form-data
 			if (ServletFileUpload.isMultipartContent(req.raw())) {
-				if (isSupportFeature(FileManagerMode.upload)) {
+				if (isSupportFeature(FileManagerMode.UPLOAD)) {
 					uploadFile(req.raw(), res.raw())
 				} else {
-					setError(new IllegalAccessError(notSupportFeature(FileManagerMode.upload).getAsString("error")), res.raw())
+					setError(new IllegalAccessError(notSupportFeature(FileManagerMode.UPLOAD).getAsString("error")), res.raw())
 				}
 			} else { // all other post request has jspn params in body}
 				fileOperation(req.raw(), res.raw())
@@ -179,16 +179,16 @@ object FileManagerControler {
 	}
 
 	def init(): Unit = {
-		enabledAction.put(FileManagerMode.rename, true)
-		enabledAction.put(FileManagerMode.move, true)
-		enabledAction.put(FileManagerMode.remove, true)
-		enabledAction.put(FileManagerMode.edit, true)
-		enabledAction.put(FileManagerMode.createFolder, true)
-		enabledAction.put(FileManagerMode.changePermissions, false)
-		enabledAction.put(FileManagerMode.compress, true)
-		enabledAction.put(FileManagerMode.extract, false)
-		enabledAction.put(FileManagerMode.copy, true)
-		enabledAction.put(FileManagerMode.upload, true)
+		enabledAction.put(FileManagerMode.RENAME, true)
+		enabledAction.put(FileManagerMode.MOVE, true)
+		enabledAction.put(FileManagerMode.REMOVE, true)
+		enabledAction.put(FileManagerMode.EDIT, true)
+		enabledAction.put(FileManagerMode.CREATE_FOLDER, true)
+		enabledAction.put(FileManagerMode.CHANGE_PERMISSIONS, false)
+		enabledAction.put(FileManagerMode.COMPRESS, true)
+		enabledAction.put(FileManagerMode.EXTRACT, false)
+		enabledAction.put(FileManagerMode.COPY, true)
+		enabledAction.put(FileManagerMode.UPLOAD, true)
 	}
 
 
@@ -203,27 +203,27 @@ object FileManagerControler {
 			val params: JSONObject = JSONValue.parse(str, classOf[JSONObject])
 			val mode: FileManagerMode = FileManagerMode.valueOf(params.getAsString("action"))
 			responseJsonObject = (mode: @switch) match {
-				case FileManagerMode.createFolder =>
+				case FileManagerMode.CREATE_FOLDER =>
 					executeIfSupported(mode, params, p => createFolder(p))
-				case FileManagerMode.changePermissions =>
+				case FileManagerMode.CHANGE_PERMISSIONS =>
 					executeIfSupported(mode, params, p => null) //changePermissions(p))
-				case FileManagerMode.compress =>
+				case FileManagerMode.COMPRESS =>
 					executeIfSupported(mode, params, p => compress(p))
-				case FileManagerMode.copy =>
+				case FileManagerMode.COPY =>
 					executeIfSupported(mode, params, p => copy(p))
-				case FileManagerMode.remove =>
+				case FileManagerMode.REMOVE =>
 					executeIfSupported(mode, params, p => remove(p))
-				case FileManagerMode.getContent =>
+				case FileManagerMode.GET_CONTENT =>
 					getContent(params)
-				case FileManagerMode.edit => // get content
+				case FileManagerMode.EDIT => // get content
 					executeIfSupported(mode, params, p => editFile(p))
-				case FileManagerMode.extract =>
+				case FileManagerMode.EXTRACT =>
 					executeIfSupported(mode, params, p => null) //extract(p))
-				case FileManagerMode.list =>
+				case FileManagerMode.LIST =>
 					list(params)
-				case FileManagerMode.rename =>
+				case FileManagerMode.RENAME =>
 					executeIfSupported(mode, params, p => rename(p))
-				case FileManagerMode.move =>
+				case FileManagerMode.MOVE =>
 					executeIfSupported(mode, params, p => move(p))
 				case _ =>
 					throw new UnsupportedOperationException("not implemented")
@@ -267,7 +267,7 @@ object FileManagerControler {
 	  */
 	@throws[ServletException]
 	private def uploadFile(request: HttpServletRequest, response: HttpServletResponse): Unit = {
-		if (isSupportFeature(FileManagerMode.upload)) {
+		if (isSupportFeature(FileManagerMode.UPLOAD)) {
 			Logger.debug("upload now")
 			try {
 				var destination: String = null
@@ -315,7 +315,7 @@ object FileManagerControler {
 					throw new ServletException("Cannot write file", e)
 			}
 		} else {
-			throw new ServletException(notSupportFeature(FileManagerMode.upload).getAsString("error"))
+			throw new ServletException(notSupportFeature(FileManagerMode.UPLOAD).getAsString("error"))
 		}
 	}
 

@@ -1,6 +1,6 @@
 package jakon.pagelet
 
-import cz.kamenitxan.jakon.core.customPages.CustomPageInitializer
+import cz.kamenitxan.jakon.core.custom_pages.CustomPageInitializer
 import cz.kamenitxan.jakon.core.dynamic.PageletInitializer
 import org.openqa.selenium.By
 import test.TestBase

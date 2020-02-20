@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon.core.model
 
-import java.sql.{Connection, Statement, Types}
+import java.sql.Connection
 
 import cz.kamenitxan.jakon.webui.ObjectSettings
 
@@ -11,9 +11,13 @@ class BasicJakonObject extends JakonObject with Ordered {
 
 	override val objectSettings: ObjectSettings = new ObjectSettings()
 
-	override def createObject(jid: Int, conn: Connection): Int = { jid }
+	override def createObject(jid: Int, conn: Connection): Int = {
+		jid
+	}
 
-	override def updateObject(jid: Int, conn: Connection): Unit = {}
+	override def updateObject(jid: Int, conn: Connection): Unit = {
+		// BasicJakonObject does nothing
+	}
 
 	override var visibleOrder: Int = _
 	override var objectOrder: Double = _

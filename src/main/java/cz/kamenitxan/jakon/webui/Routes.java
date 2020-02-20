@@ -108,7 +108,9 @@ public class Routes {
 				for (Method m : methods) {
 					ExecuteFun an = m.getAnnotation(ExecuteFun.class);
 					if (an != null) {
-						m.setAccessible(true);
+						if (!m.isAccessible()) {
+							m.setAccessible(true);
+						}
 						switch (an.method()) {
 							case get:
 								get("/admin/" + an.path(), ((req, res) -> (Context) m.invoke(instance, req, res)), te);

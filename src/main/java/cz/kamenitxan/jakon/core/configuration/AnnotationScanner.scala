@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon.core.configuration
 
-import cz.kamenitxan.jakon.core.customPages.{CustomPage, CustomPageInitializer, StaticPage}
+import cz.kamenitxan.jakon.core.custom_pages.{CustomPage, CustomPageInitializer, StaticPage}
 import cz.kamenitxan.jakon.core.dynamic.{Pagelet, PageletInitializer}
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.controler.objectextension.{ObjectExtension, ObjectExtensionInitializer}

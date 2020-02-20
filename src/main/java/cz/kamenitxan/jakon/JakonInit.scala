@@ -24,6 +24,7 @@ import spark.{Request, Response}
 
 class JakonInit {
 	def daoSetup(): Unit = {
+		// override to add custom DB entities
 	}
 
 	var routesSetup: () => Unit = () => {}
@@ -38,7 +39,6 @@ class JakonInit {
 
 	def taskSetup(): Unit = {
 		TaskRunner.registerTask(new RenderTask(10, TimeUnit.MINUTES))
-		//TaskRunner.registerTask(new FulltextTask)
 		if (Settings.isEmailEnabled) {
 			DBHelper.addDao(classOf[EmailEntity])
 			DBHelper.addDao(classOf[EmailTemplateEntity])
@@ -51,7 +51,7 @@ class JakonInit {
 	}
 
 	def afterInit(): Unit = {
-
+		// override to do some stuff after Jakon start
 	}
 
 	def run(args: Array[String]): Unit = {

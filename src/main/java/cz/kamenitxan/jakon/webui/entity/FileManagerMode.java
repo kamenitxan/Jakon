@@ -5,5 +5,5 @@ package cz.kamenitxan.jakon.webui.entity;
  */
 public
 enum FileManagerMode {
-	list, rename, move, copy, remove, edit, getContent, createFolder, changePermissions, compress, extract, upload
+	LIST, RENAME, MOVE, COPY, REMOVE, EDIT, GET_CONTENT, CREATE_FOLDER, CHANGE_PERMISSIONS, COMPRESS, EXTRACT, UPLOAD
 }

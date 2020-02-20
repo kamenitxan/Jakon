@@ -4,7 +4,7 @@ import cz.kamenitxan.jakon.JakonInit
 import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.controler.PageControler
-import cz.kamenitxan.jakon.core.customPages.AbstractStaticPage
+import cz.kamenitxan.jakon.core.custom_pages.AbstractStaticPage
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{Category, Page, Post}
 import cz.kamenitxan.jakon.core.template.Pebble

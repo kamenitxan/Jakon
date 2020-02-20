@@ -6,7 +6,7 @@ public enum MessageSeverity {
 	WARNING("alert-warning"),
 	ERROR("alert-danger");
 
-	public String value;
+	public final String value;
 
 	MessageSeverity(String value) {
 		this.value = value;

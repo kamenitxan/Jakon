@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.core.customPages
+package cz.kamenitxan.jakon.core.custom_pages
 
 import cz.kamenitxan.jakon.webui.ObjectSettings
 

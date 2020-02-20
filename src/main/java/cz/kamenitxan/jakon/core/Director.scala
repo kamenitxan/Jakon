@@ -5,7 +5,7 @@ import java.nio.charset.Charset
 import cz.kamenitxan.jakon.JakonInitializer
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.controler.IControler
-import cz.kamenitxan.jakon.core.customPages.AbstractCustomPage
+import cz.kamenitxan.jakon.core.custom_pages.AbstractCustomPage
 import cz.kamenitxan.jakon.core.database.DBInitializer
 import cz.kamenitxan.jakon.core.task.TaskRunner
 import cz.kamenitxan.jakon.core.template.Pebble
@@ -15,7 +15,6 @@ import cz.kamenitxan.jakon.webui.Routes
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.Try
 
 
 /**

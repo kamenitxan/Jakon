@@ -254,11 +254,11 @@ object DBHelper {
 	}
 
 	def count(@Language("SQL") countSql: String)(implicit conn: Connection): Long = {
-		val usr_stmt = conn.createStatement()
-		val rs = usr_stmt.executeQuery(countSql)
+		val usrStmt = conn.createStatement()
+		val rs = usrStmt.executeQuery(countSql)
 		rs.next()
 		val userCount = rs.getInt(1)
-		usr_stmt.close()
+		usrStmt.close()
 		userCount
 	}
 

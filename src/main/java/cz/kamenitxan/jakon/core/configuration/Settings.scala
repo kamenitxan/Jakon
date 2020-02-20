@@ -23,7 +23,9 @@ object Settings {
 	private var emailTypeHandler: EmailTypeHandler = new EmailTypeHandler {
 		override def handle(emailType: String): (Message, Predef.Map[String, Any]) => Unit = (_, _) => {}
 
-		override def afterSend(emailType: String): Unit = {}
+		override def afterSend(emailType: String): Unit = {
+			// override this to execute something after emails is send
+		}
 	}
 	private var databaseType: DatabaseType = _
 
