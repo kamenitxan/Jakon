@@ -8,6 +8,9 @@
 <form action="/pagelet/post" method="post">
 	<input type="submit" value="send" id="testSubmit">
 </form>
+<form action="/pagelet/stringPost" method="post">
+	<input type="submit" value="send" id="testSubmit2">
+</form>
 <form action="/pagelet/post" method="post">
 	<input type="hidden" value="true" name="validate">
 	<input type="text" name="name">

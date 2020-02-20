@@ -6,6 +6,7 @@ import java.sql.Connection
 import com.google.gson.Gson
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.utils.PageContext
+import cz.kamenitxan.jakon.utils.TypeReferences._
 import cz.kamenitxan.jakon.validation.EntityValidator
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
 import cz.kamenitxan.jakon.webui.controler.pagelets.AbstractAdminPagelet
@@ -61,7 +62,7 @@ object PageletInitializer {
 
 	private def initGetAnnotation(get: Get, controllerAnn: Pagelet, m: Method, c: Class[_]): Unit = {
 		//TODO m.getReturnType.is
-		Spark.get(controllerAnn.path() + get.path(), (req, res) => {
+		Spark.get(controllerAnn.path() + get.path(), (req: Request, res: Response) => {
 			val controller: IPagelet = c.newInstance().asInstanceOf[IPagelet]
 			DBHelper.withDbConnection(conn => {
 				val methodArgs = createMethodArgs(m, req, res, conn)
@@ -82,7 +83,7 @@ object PageletInitializer {
 	}
 
 	private def initPostAnnotation(post: Post, controllerAnn: Pagelet, m: Method, c: Class[_]): Unit = {
-		Spark.post(controllerAnn.path() + post.path(), (req, res) => {
+		Spark.post(controllerAnn.path() + post.path(), (req: Request, res: Response) => {
 			val controller = c.newInstance().asInstanceOf[IPagelet]
 
 			DBHelper.withDbConnection(conn => {
@@ -115,9 +116,14 @@ object PageletInitializer {
 	}
 
 	private def invokePost(req: Request, res: Response, controller: IPagelet, m: Method, post: Post, methodArgs: MethodArgs) = {
-		val context = m.invoke(controller, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
 		if (notRedirected(res)) {
-			controller.render(context, post.template(), req)
+			m.getReturnType match {
+				case STRING =>
+					m.invoke(controller, methodArgs.array: _*)
+				case _ =>
+					val context = m.invoke(controller, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
+					controller.render(context, post.template(), req)
+			}
 		} else {
 			""
 		}

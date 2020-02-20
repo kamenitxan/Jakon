@@ -28,6 +28,19 @@ class PageletTest extends TestBase {
 		assert(f.driver.getPageSource.contains("pushedValue"))
 	}
 
+	test("example pagelet post - string") { f =>
+		PageletInitializer.initControllers(Seq(classOf[TestPagelet]))
+
+		val postUrl = host + "/pagelet/get"
+		f.driver.get(postUrl)
+
+		val submit = f.driver.findElement(By.cssSelector("#testSubmit2"))
+		submit.click()
+
+		assert(f.driver.getPageSource.contains("StringResponse"))
+	}
+
+
 	test("CustomPageInitializer initCustomPages wrong class") { _ =>
 		try {
 			val cls = Seq(classOf[Object], classOf[Integer])

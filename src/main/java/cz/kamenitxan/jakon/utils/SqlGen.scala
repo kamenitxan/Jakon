@@ -149,6 +149,7 @@ object SqlGen {
 			case FLOAT => JDBCType.FLOAT.getVendorTypeNumber
 			case DOUBLE => JDBCType.DOUBLE.getVendorTypeNumber
 			case DATE_o | DATE => JDBCType.DATE.getVendorTypeNumber
+			case DATETIME => JDBCType.TIMESTAMP.getVendorTypeNumber
 			case _ =>
 				Logger.error(s"Uknown sql type ${f.getType} on field ${f.getName}")
 				0

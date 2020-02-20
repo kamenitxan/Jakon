@@ -20,4 +20,9 @@ class TestPagelet extends AbstractPagelet {
 		redirect(req, res, "/pagelet/get")
 	}
 
+	@Post(path = "/stringPost", template = "")
+	def post2(req: Request, res: Response): String = {
+		"StringResponse"
+	}
+
 }
