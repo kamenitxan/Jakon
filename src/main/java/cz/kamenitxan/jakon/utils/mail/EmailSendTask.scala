@@ -40,9 +40,9 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[E
 				val message = new MimeMessage(mailSession)
 				message.setRecipients(Message.RecipientType.TO, e.to)
 				message.setSubject(e.subject)
-				val force_bcc = Settings.getEmailForceBcc
-				if (force_bcc != null) {
-					message.setRecipients(Message.RecipientType.BCC, force_bcc)
+				val forceBcc = Settings.getEmailForceBcc
+				if (forceBcc != null) {
+					message.setRecipients(Message.RecipientType.BCC, forceBcc)
 				}
 
 

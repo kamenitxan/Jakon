@@ -16,12 +16,10 @@ object i18nUtil {
 
 	def getTranslation(basename: String, key: String, locale: Locale, default: String): String = {
 		val file = new File(Settings.getTemplateDir)
-		val resourceDir = this.getClass.getClassLoader.getResource("templates/admin/")
 		val urls = Array(file.toURI.toURL)
 		val loader = new URLClassLoader(urls)
 
 		var bundle: ResourceBundle = null
-		var adminBundle: ResourceBundle = null
 		try {
 			bundle = ResourceBundle.getBundle(basename, locale, loader, new UTF8Control)
 		} catch {

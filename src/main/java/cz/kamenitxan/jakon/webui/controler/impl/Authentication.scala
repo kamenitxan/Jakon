@@ -92,16 +92,15 @@ object Authentication {
 	}
 
 
-
-	def hashPassword(password_plaintext: String): String = {
+	def hashPassword(passwordPlaintext: String): String = {
 		val salt = BCrypt.gensalt(12)
-		BCrypt.hashpw(password_plaintext, salt)
+		BCrypt.hashpw(passwordPlaintext, salt)
 	}
 
-	def checkPassword(password_plaintext: String, stored_hash: String): Boolean = {
-		if (null == stored_hash || !stored_hash.startsWith("$2a$"))
+	def checkPassword(passwordPlaintext: String, storedHash: String): Boolean = {
+		if (null == storedHash || !storedHash.startsWith("$2a$"))
 			throw new java.lang.IllegalArgumentException("Invalid hash provided for comparison")
 
-		BCrypt.checkpw(password_plaintext, stored_hash)
+		BCrypt.checkpw(passwordPlaintext, storedHash)
 	}
 }
