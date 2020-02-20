@@ -20,6 +20,7 @@ class FileManagerConsistencyTestTask extends AbstractTask(classOf[FileManagerCon
 
 	private val FILE_ATTR_NAME = "jakonFileId"
 	private val BASE_DIR = "/basePath"
+	private val IMG_SUFFIXES = Seq(".png", ".jpg")
 
 	override def start(): Unit = {
 		val osName = System.getProperty("os.name").toLowerCase
@@ -91,7 +92,16 @@ class FileManagerConsistencyTestTask extends AbstractTask(classOf[FileManagerCon
 
 	private def createJakonFile(file: Path)(implicit conn: Connection) = {
 		val jf = new JakonFile()
-		jf.fileType = if (Files.isDirectory(file)) FileType.FOLDER else FileType.FILE
+		jf.fileType = if (Files.isDirectory(file)) {
+			FileType.FOLDER
+		} else {
+			println(file.getFileName)
+			val isImg = IMG_SUFFIXES.find(s => file.endsWith(s))
+			isImg match {
+				case Some(_) => FileType.IMAGE
+				case None => FileType.FILE
+			}
+		}
 		jf.name = file.getFileName.toString
 		jf.path = file.getParent.toString
 		jf.created = LocalDateTime.now()

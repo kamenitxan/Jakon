@@ -6,7 +6,6 @@ import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.webui.api.objects.{SearchRequest, SearchResponse}
 import spark.{Request, Response}
 
-import scala.collection.JavaConverters._
 import scala.language.postfixOps
 
 
@@ -47,5 +46,9 @@ object Api {
 			conn.close()
 		}
 		new SearchResponse(false, List[JakonObject]())
+	}
+
+	def getImages() = {
+
 	}
 }
