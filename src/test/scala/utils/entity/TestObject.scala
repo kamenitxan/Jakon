@@ -1,4 +1,4 @@
-package utils
+package utils.entity
 
 import java.time.{LocalDate, LocalDateTime}
 import java.util.Date

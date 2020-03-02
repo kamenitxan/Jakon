@@ -13,8 +13,9 @@ import jakon.pagelet.PageletTest
 import jakon.{DeployTest, ModelTest, RenderTest, SettingsTest}
 import logging.LoggingTest
 import org.scalatest.{BeforeAndAfterAll, Suites}
+import utils.entity.TestObject
 import utils.mail.EmailTest
-import utils.{SecurityTest, SqlGenTest, TestObject, i18nUtilTest}
+import utils.{SecurityTest, SqlGenTest, i18nUtilTest}
 import webui._
 
 /**

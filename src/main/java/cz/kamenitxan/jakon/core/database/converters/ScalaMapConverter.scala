@@ -2,6 +2,9 @@ package cz.kamenitxan.jakon.core.database.converters
 
 import java.util
 
+import cz.kamenitxan.jakon.logging.Logger
+import org.apache.commons.lang3.StringUtils
+
 import scala.collection.JavaConverters._
 import scala.language.postfixOps
 
@@ -13,6 +16,12 @@ class ScalaMapConverter extends AbstractMapConverter[String, String] {
 	}
 
 	override def convertToEntityAttribute(dbData: String): Map[String, String] = {
-		gson.fromJson(dbData, classOf[util.Map[String, String]]).asScala.toMap
+		val resultMap = gson.fromJson(dbData, classOf[util.Map[String, String]])
+		if (resultMap != null) {
+			resultMap.asScala.toMap
+		} else {
+			Logger.warn(s"Result is null. dbData: '${StringUtils.abbreviate(dbData, 30)}'")
+			null
+		}
 	}
 }

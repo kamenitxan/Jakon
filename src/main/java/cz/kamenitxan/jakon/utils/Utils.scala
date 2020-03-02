@@ -65,7 +65,7 @@ object Utils {
 		var currentClassFields = startClass.getDeclaredFields toList
 		val parentClass = startClass.getSuperclass
 		if (parentClass != null && (exclusiveParent == null || (parentClass != exclusiveParent))) {
-			var parentClassFields: List[Field] = getFieldsUpTo(parentClass, exclusiveParent)
+			val parentClassFields: List[Field] = getFieldsUpTo(parentClass, exclusiveParent)
 			currentClassFields = parentClassFields ::: currentClassFields
 		}
 		currentClassFields

@@ -34,7 +34,7 @@
 							<tr>
                             {% for field in fields %}
                                 {% if field.an.shownInList %}
-                                    <th>{{ i18n(bundle="objects", key=objectName + "_" + field.name, def=field.name) }}</th>
+                                    <th>{{ i18n(bundle="objects", key=field.field.getDeclaringClass.getSimpleName + "_" + field.name, def=field.name) }}</th>
                                 {% endif %}
                             {% endfor %}
 							</tr>

@@ -14,6 +14,7 @@ import cz.kamenitxan.jakon.webui.conform.FieldConformer._
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import spark.{ModelAndView, Request, Response}
 
+import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.util.Try
@@ -56,8 +57,9 @@ object ObjectControler {
 					""
 				}
 				val filterSql = parseFilterParams(filterParams, objectClass.get)
+				val joinSql = createSqlJoin(objectClass.get)
 				// language=SQL
-				val listSql = s"SELECT * FROM JakonObject INNER JOIN $objectName ON JakonObject.id = $objectName.id $filterSql $order LIMIT $pageSize OFFSET $first"
+				val listSql = s"SELECT * FROM JakonObject $joinSql $filterSql $order LIMIT $pageSize OFFSET $first"
 				val stmt2 = conn.createStatement()
 				val resultList = DBHelper.selectDeep(stmt2, listSql, ocls)
 				// TODO: nacist foreign key objekty
@@ -68,7 +70,7 @@ object ObjectControler {
 				}
 
 				val upperClass = {
-					val objectSettings = objectClass.get.newInstance().objectSettings
+					val objectSettings = objectClass.get.getDeclaredConstructor().newInstance().objectSettings
 					if (objectSettings != null && objectSettings.noParentFieldInList) {
 						objectClass.get.getSuperclass
 					} else {
@@ -162,12 +164,13 @@ object ObjectControler {
 		}
 		var obj: JakonObject = null
 		if (objectId.nonEmpty) {
-			implicit val conn = DBHelper.getConnection
+			implicit val conn: Connection = DBHelper.getConnection
 			try {
+				val joinSql = createSqlJoin(objectClass)
 				// language=SQL
-				val stmt = conn.prepareStatement(s"SELECT * FROM $objectName INNER JOIN JakonObject ON JakonObject.id = $objectName.id WHERE $objectName.id = ?")
+				val stmt = conn.prepareStatement(s"SELECT * FROM JakonObject $joinSql WHERE $objectName.id = ?")
 				stmt.setInt(1, objectId.get)
-				obj = Option(DBHelper.selectSingleDeep(stmt, objectClass)).getOrElse(objectClass.newInstance())
+				obj = Option(DBHelper.selectSingleDeep(stmt, objectClass)).getOrElse(objectClass.getDeclaredConstructor().newInstance())
 				if (obj.getClass.getInterfaces.contains(classOf[Ordered])) {
 					obj.asInstanceOf[Ordered].fetchVisibleOrder
 				}
@@ -175,7 +178,7 @@ object ObjectControler {
 				conn.close()
 			}
 		} else {
-			obj = objectClass.newInstance()
+			obj = objectClass.getDeclaredConstructor().newInstance()
 		}
 		//TODO: moznost udelat promene required
 		val fields = Utils.getFieldsUpTo(objectClass, classOf[Object]).filter(n => !excludedFields.contains(n.getName))
@@ -302,7 +305,7 @@ object ObjectControler {
 
 		val newOrder = if (up) order.get - 1 else order.get + 1
 
-		implicit val conn = DBHelper.getConnection
+		implicit val conn: Connection = DBHelper.getConnection
 		try {
 
 			val ps = conn.prepareStatement("SELECT * FROM " + objectName + " WHERE id = ?")
@@ -322,5 +325,16 @@ object ObjectControler {
 		req.session().attribute(PageContext.MESSAGES_KEY, PageContext.getInstance().messages)
 		res.redirect(target)
 		null
+	}
+
+	@tailrec
+	private def createSqlJoin(cls: Class[_], sql: String = ""): String = {
+		if (cls != null && cls != classOf[JakonObject]) {
+			val objectName = cls.getSimpleName
+			val newSql = sql + s"INNER JOIN $objectName ON JakonObject.id = $objectName.id "
+			createSqlJoin(cls.getSuperclass, newSql)
+		} else {
+			sql
+		}
 	}
 }

@@ -13,7 +13,7 @@ import org.scalatest.FunSuite
 import org.scalatest.prop.TableDrivenPropertyChecks.{forAll, _}
 import org.scalatest.prop.TableFor2
 import sun.reflect.annotation.AnnotationParser
-import utils.TestObject
+import utils.entity.TestObject
 
 class ValidationTest extends FunSuite {
 
