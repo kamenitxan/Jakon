@@ -1,7 +1,5 @@
 package cz.kamenitxan.jakon.webui.controler.impl
 
-import java.lang.reflect.Field
-
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.utils.{PageContext, Utils}
 import cz.kamenitxan.jakon.webui.Context

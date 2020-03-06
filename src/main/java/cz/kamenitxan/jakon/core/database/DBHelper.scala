@@ -24,8 +24,11 @@ import scala.collection.mutable
 object DBHelper {
 
 	val objects: mutable.ArrayBuffer[Class[_ <: JakonObject]] = mutable.ArrayBuffer[Class[_ <: JakonObject]]()
-	val ds = new HikariDataSource(DBInitializer.config)
-	ds.setLeakDetectionThreshold(60 * 1000)
+	lazy val ds = {
+		val tds = new HikariDataSource(DBInitializer.config)
+		tds.setLeakDetectionThreshold(60 * 1000)
+		tds
+	}
 
 
 	def addDao[T <: JakonObject](jobject: Class[T]) {

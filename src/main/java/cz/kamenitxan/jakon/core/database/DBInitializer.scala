@@ -1,5 +1,6 @@
 package cz.kamenitxan.jakon.core.database
 
+import java.io.File
 import java.sql.{Connection, SQLException}
 
 import com.zaxxer.hikari.HikariConfig
@@ -32,8 +33,12 @@ object DBInitializer {
 
 	def dbExists(): Unit = {
 		if (Settings.getDatabaseType == DatabaseType.SQLITE) {
-			Logger.critical("SQLite DB file does not exist. Restart Jakon in DEVEL mode to create it.")
-			System.exit(42)
+			val dbFile = Settings.getDatabaseConnPath.replace("jdbc:sqlite:", "")
+			val exists = new File(dbFile).exists()
+			if (!exists) {
+				Logger.critical("SQLite DB file does not exist. Restart Jakon in DEVEL mode to create it.")
+				System.exit(42)
+			}
 		}
 	}
 

@@ -121,6 +121,7 @@ object PageletInitializer {
 				case STRING =>
 					m.invoke(controller, methodArgs.array: _*)
 				case _ =>
+					// TODO: log error
 					val context = m.invoke(controller, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
 					controller.render(context, post.template(), req)
 			}

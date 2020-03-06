@@ -2,7 +2,6 @@ package cz.kamenitxan.jakon.utils
 
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
-import org.slf4j.LoggerFactory
 import spark.{Request, Response}
 
 import scala.collection.mutable

@@ -4,8 +4,6 @@ import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence._
 
-import scala.beans.BeanProperty
-
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
   */
