@@ -232,7 +232,7 @@ object ObjectControler {
 			if (fieldRefOpt.isDefined) {
 				val fieldRef = fieldRefOpt.get
 				fieldRef.setAccessible(true)
-				val value = req.queryParams(p).conform(fieldRef)
+				val value = req.queryParams(p).trim.conform(fieldRef)
 				if (value != null) {
 					p match {
 						case "visibleOrder" => formOrder = value.asInstanceOf[Int]

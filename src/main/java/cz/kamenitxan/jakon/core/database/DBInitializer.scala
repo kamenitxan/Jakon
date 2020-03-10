@@ -10,7 +10,7 @@ import cz.kamenitxan.jakon.core.model._
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.entity.JakonField
-import javax.persistence.{ManyToOne, Transient}
+import javax.persistence.{Column, ManyToOne, Transient}
 
 import scala.collection.mutable
 
@@ -153,14 +153,17 @@ object DBInitializer {
 			jo.getDeclaredFields
 			  .filter(f => f.getAnnotation(classOf[JakonField]) != null && f.getAnnotation(classOf[Transient]) == null)
 			  .foreach(f => {
+				  val columnAnn = f.getAnnotation(classOf[Column])
 				  val manyToOne = f.getAnnotation(classOf[ManyToOne])
-				  val column = if (manyToOne != null) {
+				  val column = if (columnAnn != null) {
+					  collumns.find(c => c.name == columnAnn.name())
+				  } else if (manyToOne != null) {
 					  collumns.find(c => c.name == f.getName + "_id")
 				  } else {
 					  collumns.find(c => c.name == f.getName)
 				  }
 				  if (column.isEmpty) {
-					  cz.kamenitxan.jakon.logging.Logger.error(s"Field ${jo.getSimpleName}.${f.getName} is not in DB")
+					  Logger.error(s"Field ${jo.getSimpleName}.${f.getName} is not in DB")
 				  }
 			  })
 		})

@@ -5,6 +5,7 @@ import java.sql.Connection
 
 import com.google.gson.Gson
 import cz.kamenitxan.jakon.core.database.DBHelper
+import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.utils.TypeReferences._
 import cz.kamenitxan.jakon.validation.EntityValidator
@@ -12,23 +13,21 @@ import cz.kamenitxan.jakon.webui.conform.FieldConformer._
 import cz.kamenitxan.jakon.webui.controler.pagelets.AbstractAdminPagelet
 import cz.kamenitxan.jakon.webui.entity.CustomControllerInfo
 import cz.kamenitxan.jakon.webui.{AdminSettings, Context}
-import org.slf4j.LoggerFactory
 import spark.{Request, Response, Spark}
 
 import scala.collection.mutable
 
 
 object PageletInitializer {
-	private val logger = LoggerFactory.getLogger(this.getClass)
 	private val METHOD_VALDIATE = "validate"
 	private val gson = new Gson
 
 	val protectedPrefixes = mutable.Buffer[String]()
 
 	def initControllers(controllers: Seq[Class[_]]): Unit = {
-		logger.info("Initializing pagelets")
+		Logger.info("Initializing pagelets")
 		controllers.foreach(c => {
-			logger.debug("Initializing pagelet: " + c.getSimpleName)
+			Logger.debug("Initializing pagelet: " + c.getSimpleName)
 			val controllerAnn = c.getAnnotation(classOf[Pagelet])
 			if (controllerAnn.authRequired()) {
 				protectedPrefixes += controllerAnn.path()
@@ -56,7 +55,7 @@ object PageletInitializer {
 				AdminSettings.customControllersInfo += new CustomControllerInfo(inst.name, inst.icon, controllerAnn.path() + get.path())
 			}
 		})
-		logger.info("Pagelet initialization complete")
+		Logger.info("Pagelet initialization complete")
 	}
 
 
@@ -74,7 +73,13 @@ object PageletInitializer {
 						}
 						context = context ++ Context.getAdminContext
 					}
-					controller.render(context, get.template(), req)
+					try {
+						controller.render(context, get.template(), req)
+					} catch {
+						case ex: Exception =>
+							Logger.error("Pagelet get method threw exception", ex)
+							throw ex
+					}
 				} else {
 					""
 				}
@@ -99,10 +104,10 @@ object PageletInitializer {
 								val rp = formData.map(kv => (kv._1.getName, kv._2))
 								controller.redirect(req, res, controllerAnn.path() + post.path(), rp)
 							}
-						case Right(result) =>
+						case Right(_) =>
 							if ("true".equals(req.queryParams(METHOD_VALDIATE))) {
 								gson.toJson(true)
-							}  else {
+							} else {
 								val methodArgs = createMethodArgs(m, req, res, conn)
 								invokePost(req, res, controller, m, post, methodArgs)
 							}
@@ -121,9 +126,14 @@ object PageletInitializer {
 				case STRING =>
 					m.invoke(controller, methodArgs.array: _*)
 				case _ =>
-					// TODO: log error
-					val context = m.invoke(controller, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
-					controller.render(context, post.template(), req)
+					try {
+						val context = m.invoke(controller, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
+						controller.render(context, post.template(), req)
+					} catch {
+						case ex: Exception =>
+							Logger.error("Pagelet post method threw exception", ex)
+							throw ex
+					}
 			}
 		} else {
 			""
@@ -157,17 +167,17 @@ object PageletInitializer {
 			case CONNECTION_CLS => conn
 			case t =>
 				val data = t.newInstance().asInstanceOf[AnyRef]
-				logger.trace(s"Creating pagelet data: {${t.getSimpleName}}")
+				Logger.debug(s"Creating pagelet data: {${t.getSimpleName}}")
 				t.getDeclaredFields.foreach(f => {
 					try {
 						f.setAccessible(true)
 						f.set(data, req.queryParams(f.getName).conform(f))
 					} catch {
-						case ex: Exception => logger.error("Exception when setting pagelet data value", ex)
+						case ex: Exception => Logger.error("Exception when setting pagelet data value", ex)
 					}
 				})
 				dataRef = data
-				logger.trace(data.toString)
+				Logger.debug(data.toString)
 				data
 		}
 		new MethodArgs(arr, dataRef)

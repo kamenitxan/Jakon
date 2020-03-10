@@ -51,7 +51,7 @@ object FieldConformer {
 					val formatter = DateTimeFormatter.ofPattern(DATETIME_FORMAT)
 					LocalDateTime.parse(s, formatter)
 				case LIST_j =>
-					s.split("\r\n").map(line => line.conform(Class.forName(genericType.getTypeName), null)).toList.asJava
+					s.split("\r\n").map(line => line.trim.conform(Class.forName(genericType.getTypeName), null)).toList.asJava
 				case x if x.isEnum =>
 					val m = x.getMethod("valueOf", classOf[String])
 					m.invoke(t, s)

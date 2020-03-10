@@ -18,7 +18,9 @@ import scala.language.postfixOps
   */
 object Authentication {
 
+	// language=SQL
 	val SQL_FIND_USER = "SELECT * FROM JakonUser WHERE email = ?"
+	// language=SQL
 	val SQL_FIND_ACL = "SELECT * FROM AclRule WHERE id = ?"
 
 	def loginGet(req: Request): ModelAndView = {
@@ -49,7 +51,10 @@ object Authentication {
 				}
 
 				val user = result.entity
-				if (checkPassword(password, user.password) && user.enabled) {
+				if (!user.enabled) {
+					PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "USER_NOT_ENABLED")
+					Logger.debug("User " + user.username + " is not enabled")
+				} else if (checkPassword(password, user.password)) {
 					val stmt = conn.prepareStatement(SQL_FIND_ACL)
 					stmt.setInt(1, result.foreignIds.getOrElse("acl_id", null).id)
 					val aclResult = DBHelper.selectSingle(stmt, classOf[AclRule])

@@ -5,7 +5,6 @@ import cz.kamenitxan.jakon.core.template.utils.TemplateUtils;
 import cz.kamenitxan.jakon.webui.ObjectSettings;
 import cz.kamenitxan.jakon.webui.entity.JakonField;
 
-import javax.persistence.Column;
 import javax.persistence.ManyToOne;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -17,22 +16,17 @@ import java.util.regex.Pattern;
  */
 public class Post extends JakonObject {
 
-	@Column
 	@JakonField(listOrder = 4)
 	private Date date;
-	@Column
 	@JakonField(required = false, listOrder = 2)
 	private String perex;
 	@ManyToOne
 	@JakonField(required = false, inputTemplate = "String", listOrder = 5)
 	private Category category;
-	@Column
 	@JakonField(listOrder = 1, searched = true)
 	private String title;
-	@Column
 	@JakonField(inputTemplate = "textarea", listOrder = 3)
 	private String content;
-	@Column
 	@JakonField(listOrder = 6)
 	private boolean showComments = false;
 
