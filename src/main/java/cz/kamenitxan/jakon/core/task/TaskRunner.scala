@@ -25,7 +25,7 @@ object TaskRunner {
 
 	def registerTask(task: AbstractTask): Unit = {
 		taskList += task
-		logger.info("Task " + task.name + " was registered")
+		logger.info("Task " + task.name.value + " was registered")
 	}
 
 	def startTaskRunner(): Unit = {

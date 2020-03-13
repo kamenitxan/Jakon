@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit
 
 import scala.language.postfixOps
 
-class FulltextTask() extends AbstractTask(classOf[FulltextTask].getSimpleName, 0, TimeUnit.MINUTES) {
+class FulltextTask() extends AbstractTask(0, TimeUnit.MINUTES) {
 
 	override def start(): Unit = {
 		/*val classes = DBHelper.objects

@@ -9,7 +9,7 @@ import cz.kamenitxan.jakon.core.configuration.{AnnotationScanner, ConfigurationI
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.dynamic.PageletInitializer
 import cz.kamenitxan.jakon.core.model.JakonUser
-import cz.kamenitxan.jakon.core.task.{FileManagerConsistencyTestTask, RenderTask, TaskRunner}
+import cz.kamenitxan.jakon.core.task.{FileManagerConsistencyTestTask, RenderTask, ResetPasswordRequestCleanerTask, TaskRunner}
 import cz.kamenitxan.jakon.devtools.{DevRender, StaticFilesController}
 import cz.kamenitxan.jakon.logging.{LogCleanerTask, Logger}
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
@@ -48,6 +48,7 @@ class JakonInit {
 		}
 		TaskRunner.registerTask(new FileManagerConsistencyTestTask)
 		TaskRunner.registerTask(new LogCleanerTask)
+		TaskRunner.registerTask(new ResetPasswordRequestCleanerTask)
 	}
 
 	def afterInit(): Unit = {

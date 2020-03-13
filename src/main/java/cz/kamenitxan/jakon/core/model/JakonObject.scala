@@ -76,6 +76,8 @@ abstract class JakonObject(implicit s: sourcecode.FullName) extends Serializable
 			if (id != jid) {
 				throw new SQLNonTransientException(s"Child object id($id) is not same as parent id($jid)")
 			}
+			afterCreate()
+			afterAll()
 			conn.commit()
 		} catch {
 			case e: Exception => {
@@ -98,7 +100,9 @@ abstract class JakonObject(implicit s: sourcecode.FullName) extends Serializable
 		executeInsert(stmt)
 	}
 
-	def afterCreate(): Unit = {}
+	def afterCreate(): Unit = {
+		// this will be executed after JakonObject creation
+	}
 
 	final def update(): Unit = {
 		val conn = DBHelper.getConnection
@@ -111,6 +115,8 @@ abstract class JakonObject(implicit s: sourcecode.FullName) extends Serializable
 			stmt.setInt(3, id)
 			stmt.executeUpdate()
 			updateObject(id, conn)
+			afterUpdate()
+			afterAll()
 			conn.commit()
 		} catch {
 			case e: Exception =>
@@ -127,7 +133,9 @@ abstract class JakonObject(implicit s: sourcecode.FullName) extends Serializable
 		stmt.executeUpdate()
 	}
 
-	def afterUpdate(): Unit = {}
+	def afterUpdate(): Unit = {
+		// this will be executed after JakonObject update
+	}
 
 	def delete(): Unit = {
 		val sql = "DELETE FROM JakonObject WHERE id = ?"
@@ -136,11 +144,17 @@ abstract class JakonObject(implicit s: sourcecode.FullName) extends Serializable
 			stmt.setInt(1, id)
 			stmt.executeUpdate()
 		})
+		afterDelete()
+		afterAll()
 	}
 
-	def afterDelete(): Unit = {}
+	def afterDelete(): Unit = {
+		// this will be executed after JakonObject deletion
+	}
 
-	def afterAll(): Unit = {}
+	def afterAll(): Unit = {
+		// this will be executed after JakonObject creation, update or deletion
+	}
 
 
 	override def toString: String = {

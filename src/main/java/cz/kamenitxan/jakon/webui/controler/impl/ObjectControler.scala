@@ -26,6 +26,7 @@ object ObjectControler {
 	val excludedFields = List("url", "sectionName", "objectSettings", "childClass")
 	private val numberTypes = classOf[Int] :: classOf[Integer] :: classOf[Double] :: classOf[Float] :: Nil
 	private val boolTypes = classOf[Boolean] :: classOf[java.lang.Boolean] :: Nil
+	private val UNAUTHORIZED_TMPL = "pages/unauthorized"
 
 	val pageSize = 10
 
@@ -39,7 +40,7 @@ object ObjectControler {
 			if (!isAuthorized(objectClass.get)) {
 				return new Context(Map[String, Any](
 					"objectName" -> objectName
-				), "pages/unauthorized")
+				), UNAUTHORIZED_TMPL)
 			}
 			implicit val conn: Connection = DBHelper.getConnection
 			try {
@@ -160,7 +161,7 @@ object ObjectControler {
 		if (!isAuthorized(objectClass)) {
 			return new Context(Map[String, Any](
 				"objectName" -> objectName
-			), "pages/unauthorized")
+			), UNAUTHORIZED_TMPL)
 		}
 		var obj: JakonObject = null
 		if (objectId.nonEmpty) {
@@ -200,7 +201,7 @@ object ObjectControler {
 		if (!isAuthorized(objectClass)) {
 			return new Context(Map[String, Any](
 				"objectName" -> objectName
-			), "pages/unauthorized")
+			), UNAUTHORIZED_TMPL)
 		}
 		var obj: JakonObject = null
 		if (objectId.nonEmpty) {
@@ -266,7 +267,7 @@ object ObjectControler {
 		if (!isAuthorized(objectClass)) {
 			return new Context(Map[String, Any](
 				"objectName" -> objectName
-			), "pages/unauthorized")
+			), UNAUTHORIZED_TMPL)
 		}
 
 		// language=SQL

@@ -8,7 +8,7 @@ import cz.kamenitxan.jakon.core.Director
   * Created by TPa on 27.05.18.
   */
 
-class RenderTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[RenderTask].getSimpleName, period, unit) {
+class RenderTask(period: Long, unit: TimeUnit) extends AbstractTask(period, unit) {
 
 	override def start(): Unit = {
 		Director.render()

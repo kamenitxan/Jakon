@@ -16,7 +16,7 @@ object EmailSendTask {
 	private val SELECT_EMAIL_TMPL_SQL = "SELECT addressFrom, template FROM EmailTemplateEntity WHERE name = ? OR name = ? LIMIT 1"
 }
 
-class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[EmailSendTask].getSimpleName, period, unit) {
+class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(period, unit) {
 
 	override def start(): Unit = {
 		val conn = DBHelper.getConnection

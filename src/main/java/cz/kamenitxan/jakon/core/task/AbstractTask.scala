@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory
 /**
   * Created by TPa on 27.05.18.
   */
-abstract class AbstractTask(val name: String, val period: Long, val unit: TimeUnit) extends Runnable {
+abstract class AbstractTask(val period: Long, val unit: TimeUnit)(implicit val name: sourcecode.Name) extends Runnable {
 	private val logger = LoggerFactory.getLogger(this.getClass)
 	var lastRun: LocalDateTime = _
 	var lastExecutionTime: Long = _
@@ -22,10 +22,9 @@ abstract class AbstractTask(val name: String, val period: Long, val unit: TimeUn
 			start()
 			lastRunSuccessful = true
 		} catch {
-			case ex: Exception => {
+			case ex: Exception =>
 				lastRunSuccessful = false
 				logger.error("Error while running task", ex)
-			}
 		}
 
 		val end = System.currentTimeMillis()

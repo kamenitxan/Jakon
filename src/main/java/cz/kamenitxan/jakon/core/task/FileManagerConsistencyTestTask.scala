@@ -16,7 +16,7 @@ import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.Utils._
 import cz.kamenitxan.jakon.webui.controler.impl.FileManagerControler.REPOSITORY_BASE_PATH
 
-class FileManagerConsistencyTestTask extends AbstractTask(classOf[FileManagerConsistencyTestTask].getSimpleName, 1, TimeUnit.HOURS) {
+class FileManagerConsistencyTestTask extends AbstractTask(1, TimeUnit.HOURS) {
 
 	private val FILE_ATTR_NAME = "jakonFileId"
 	private val BASE_DIR = "/basePath"

@@ -15,8 +15,6 @@ import scala.language.postfixOps
 
 object FieldConformer {
 
-
-	//val DATE_FORMAT = "MM/dd/yyyy"
 	val DATE_FORMAT = "yyyy-MM-dd"
 	val DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm"
 

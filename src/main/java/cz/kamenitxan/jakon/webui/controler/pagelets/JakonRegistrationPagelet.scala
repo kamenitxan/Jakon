@@ -9,6 +9,7 @@ import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.utils.security.AesEncryptor
+import cz.kamenitxan.jakon.webui.controler.pagelets.data.JakonRegistrationData
 import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, Message, MessageSeverity}
 import spark.{Request, Response}
 
@@ -22,6 +23,7 @@ class JakonRegistrationPagelet extends AbstractAdminPagelet {
 
 	@Get(path = "",template = "pagelet/registration/register")
 	def registrationGet(response: Response) = {
+		// just render
 	}
 
 

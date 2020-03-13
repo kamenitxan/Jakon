@@ -61,8 +61,9 @@ import scala.collection.JavaConversions._
   */
 object FileManagerControler {
 	val REPOSITORY_BASE_PATH = "upload"
-	private var DATE_FORMAT = "EEE, d MMM yyyy HH:mm:ss z" // (Wed, 4 Jul 2001 12:08:56)
+	private val DATE_FORMAT = "EEE, d MMM yyyy HH:mm:ss z" // (Wed, 4 Jul 2001 12:08:56)
 	private val enabledAction: util.Map[FileManagerMode, Boolean] = new util.HashMap[FileManagerMode, Boolean]
+	private val JSON_RESPONSE_TYPE = "application/json;charset=UTF-8"
 
 	init()
 
@@ -233,7 +234,7 @@ object FileManagerControler {
 			case e@(_: IOException | _: ServletException) =>
 				responseJsonObject = error(e.getMessage)
 		}
-		response.setContentType("application/json;charset=UTF-8")
+		response.setContentType(JSON_RESPONSE_TYPE)
 		val out = response.getWriter
 		out.print(responseJsonObject)
 		out.flush()
@@ -298,7 +299,7 @@ object FileManagerControler {
 					}
 					var responseJsonObject: JSONObject = null
 					responseJsonObject = this.success()
-					response.setContentType("application/json;charset=UTF-8")
+					response.setContentType(JSON_RESPONSE_TYPE)
 					val out: PrintWriter = response.getWriter
 					out.print(responseJsonObject)
 					out.flush()
@@ -694,7 +695,7 @@ object FileManagerControler {
 	private def setError(t: Throwable, response: HttpServletResponse): Unit = {
 		try { // { "result": { "success": false, "error": "message" } }
 			val responseJsonObject = error(t.getMessage)
-			response.setContentType("application/json;charset=UTF-8")
+			response.setContentType(JSON_RESPONSE_TYPE)
 			val out = response.getWriter
 			out.print(responseJsonObject)
 			out.flush()

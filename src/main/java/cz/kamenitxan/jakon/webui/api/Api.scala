@@ -49,6 +49,6 @@ object Api {
 	}
 
 	def getImages() = {
-
+		// TODO: get images endpoint
 	}
 }

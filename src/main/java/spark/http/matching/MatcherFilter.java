@@ -33,6 +33,7 @@ import java.io.IOException;
  * Matches Spark routes and filters.
  *
  * @author Per Wendel
+ * @author kamenitxan
  */
 public class MatcherFilter implements Filter {
 
@@ -90,7 +91,7 @@ public class MatcherFilter implements Filter {
 
 		String httpMethodStr = method.toLowerCase();
 		String uri = httpRequest.getRequestURI();
-		String acceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER);
+		String acceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER).replaceAll("[\n|\r|\t]", "_");
 
 		Body body = Body.create();
 
@@ -146,11 +147,9 @@ public class MatcherFilter implements Filter {
 				body.set("");
 			}
 
-			if (body.notSet() && hasOtherHandlers) {
-				if (servletRequest instanceof HttpRequestWrapper) {
-					((HttpRequestWrapper) servletRequest).notConsumed(true);
-					return;
-				}
+			if (body.notSet() && hasOtherHandlers && servletRequest instanceof HttpRequestWrapper) {
+				((HttpRequestWrapper) servletRequest).notConsumed(true);
+				return;
 			}
 
 			if (body.notSet() && !externalContainer) {
@@ -163,7 +162,7 @@ public class MatcherFilter implements Filter {
 					responseWrapper.setDelegate(RequestResponseFactory.create(httpResponse));
 					body.set(CustomErrorPages.getFor(404, requestWrapper, responseWrapper));
 				} else {
-					body.set(String.format(CustomErrorPages.NOT_FOUND));
+					body.set(CustomErrorPages.NOT_FOUND);
 				}
 			}
 		} finally {
@@ -199,6 +198,7 @@ public class MatcherFilter implements Filter {
 
 	@Override
 	public void destroy() {
+		// nothing to clean
 	}
 
 

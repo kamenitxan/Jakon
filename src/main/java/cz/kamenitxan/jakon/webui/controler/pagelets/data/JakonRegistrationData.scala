@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.webui.controler.pagelets
+package cz.kamenitxan.jakon.webui.controler.pagelets.data
 
 import cz.kamenitxan.jakon.validation.validators.{Email, EqualsWithOther, NotEmpty, Size}
 
