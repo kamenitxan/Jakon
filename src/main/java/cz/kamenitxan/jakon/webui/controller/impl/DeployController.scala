@@ -1,17 +1,17 @@
-package cz.kamenitxan.jakon.webui.controler.impl
+package cz.kamenitxan.jakon.webui.controller.impl
 
 import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.deploy.DeployDirector
 import cz.kamenitxan.jakon.webui.Context
-import cz.kamenitxan.jakon.webui.controler.{AbstractController, ExecuteFun}
+import cz.kamenitxan.jakon.webui.controller.{AbstractController, ExecuteFun}
 import spark.route.HttpMethod
 import spark.{Request, Response}
 
 import scala.collection.JavaConverters._
 
 
-class DeployControler extends AbstractController {
+class DeployController extends AbstractController {
 	override val template: String = "pages/deploy"
 	override val icon: String = "fa-server"
 

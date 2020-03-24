@@ -15,7 +15,7 @@ import cz.kamenitxan.jakon.logging.{LogCleanerTask, Logger}
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.utils.{LoggingExceptionHandler, PageContext}
 import cz.kamenitxan.jakon.webui.AdminSettings
-import cz.kamenitxan.jakon.webui.controler.impl.{DeployControler, LogViewer, TaskController}
+import cz.kamenitxan.jakon.webui.controller.impl.{DeployController, LogViewer, TaskController}
 import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, ResetPasswordEmailEntity}
 import spark.Spark._
 import spark.debug.DebugScreen.enableDebugScreen
@@ -31,7 +31,7 @@ class JakonInit {
 
 	def adminControllers() {
 		if (Files.exists(Paths.get("servers.json"))) {
-			AdminSettings.registerCustomController(classOf[DeployControler])
+			AdminSettings.registerCustomController(classOf[DeployController])
 		}
 		AdminSettings.registerCustomController(classOf[TaskController])
 		AdminSettings.registerCustomController(classOf[LogViewer])

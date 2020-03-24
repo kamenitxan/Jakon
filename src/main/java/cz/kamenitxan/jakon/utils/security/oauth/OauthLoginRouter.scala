@@ -5,7 +5,7 @@ import java.sql.Connection
 import cz.kamenitxan.jakon.core.dynamic.{Get, Pagelet}
 import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.utils.Utils._
-import cz.kamenitxan.jakon.webui.controler.pagelets.AbstractAdminPagelet
+import cz.kamenitxan.jakon.webui.controller.pagelets.AbstractAdminPagelet
 import cz.kamenitxan.jakon.webui.entity.MessageSeverity
 import org.slf4j.LoggerFactory
 import spark.{Request, Response}

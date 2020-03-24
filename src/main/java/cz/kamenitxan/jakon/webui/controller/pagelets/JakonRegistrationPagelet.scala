@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.webui.controler.pagelets
+package cz.kamenitxan.jakon.webui.controller.pagelets
 
 import java.util.{Calendar, Date}
 

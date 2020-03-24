@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.core.controler
+package cz.kamenitxan.jakon.core.controller
 
 import java.util
 
@@ -11,7 +11,7 @@ import org.slf4j.{Logger, LoggerFactory}
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 01.05.16.
   */
-class PageControler extends IControler {
+class PageController extends IController {
 	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
 	val template = "page"

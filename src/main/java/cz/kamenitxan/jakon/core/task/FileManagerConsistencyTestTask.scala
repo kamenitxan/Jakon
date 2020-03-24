@@ -14,7 +14,7 @@ import cz.kamenitxan.jakon.core.model.{FileType, JakonFile}
 import cz.kamenitxan.jakon.core.service.{JakonFileService, UserService}
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.Utils._
-import cz.kamenitxan.jakon.webui.controler.impl.FileManagerControler.REPOSITORY_BASE_PATH
+import cz.kamenitxan.jakon.webui.controller.impl.FileManagerController.REPOSITORY_BASE_PATH
 
 class FileManagerConsistencyTestTask extends AbstractTask(1, TimeUnit.HOURS) {
 

@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.webui.controler
+package cz.kamenitxan.jakon.webui.controller
 
 import cz.kamenitxan.jakon.webui.Context
 import spark.{Request, Response}

@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.webui.controler.impl
+package cz.kamenitxan.jakon.webui.controller.impl
 
 import java.io._
 import java.net.URI
@@ -59,7 +59,7 @@ import scala.collection.JavaConversions._
   * @author Paolo Biavati https://github.com/paolobiavati (java servlet version)
   * @author Kamenitxan this implementation
   */
-object FileManagerControler {
+object FileManagerController {
 	val REPOSITORY_BASE_PATH = "upload"
 	private val DATE_FORMAT = "EEE, d MMM yyyy HH:mm:ss z" // (Wed, 4 Jul 2001 12:08:56)
 	private val enabledAction: util.Map[FileManagerMode, Boolean] = new util.HashMap[FileManagerMode, Boolean]

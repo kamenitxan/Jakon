@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.webui.controler.objectextension;
+package cz.kamenitxan.jakon.webui.controller.objectextension;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

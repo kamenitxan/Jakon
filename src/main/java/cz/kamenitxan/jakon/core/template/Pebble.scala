@@ -8,7 +8,7 @@ import com.mitchellbosecke.pebble.error.PebbleException
 import com.mitchellbosecke.pebble.loader.StringLoader
 import com.mitchellbosecke.pebble.template.PebbleTemplate
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
-import cz.kamenitxan.jakon.core.controler.IControler
+import cz.kamenitxan.jakon.core.controller.IController
 import cz.kamenitxan.jakon.core.template.pebble.PebbleExtension
 import cz.kamenitxan.jakon.core.template.utils.TemplateUtils
 import cz.kamenitxan.jakon.devtools.DevRender
@@ -35,7 +35,7 @@ class Pebble extends TemplateEngine {
 	private val engine = builder.build()
 	private val stringEngine = builder.loader(new StringLoader()).build()
 
-	def render(templateName: String, path: String, context: util.Map[String, AnyRef])(implicit caller: IControler) {
+	def render(templateName: String, path: String, context: util.Map[String, AnyRef])(implicit caller: IController) {
 
 		val output = renderString(templateName, context)
 		TemplateUtils.saveRenderedPage(output, path)

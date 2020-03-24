@@ -7,7 +7,7 @@ import com.mitchellbosecke.pebble.template.{EvaluationContext, PebbleTemplate}
 import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.webui.AdminSettings
-import cz.kamenitxan.jakon.webui.controler.objectextension.{ExtensionType, ObjectExtension}
+import cz.kamenitxan.jakon.webui.controller.objectextension.{ExtensionType, ObjectExtension}
 
 import scala.collection.mutable
 

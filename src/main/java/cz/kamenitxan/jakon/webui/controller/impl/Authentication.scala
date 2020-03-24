@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.webui.controler.impl
+package cz.kamenitxan.jakon.webui.controller.impl
 
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper

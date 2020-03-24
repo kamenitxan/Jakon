@@ -4,7 +4,7 @@ import java.nio.charset.Charset
 
 import cz.kamenitxan.jakon.JakonInitializer
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
-import cz.kamenitxan.jakon.core.controler.IControler
+import cz.kamenitxan.jakon.core.controller.IController
 import cz.kamenitxan.jakon.core.custom_pages.AbstractCustomPage
 import cz.kamenitxan.jakon.core.database.DBInitializer
 import cz.kamenitxan.jakon.core.task.TaskRunner
@@ -21,8 +21,8 @@ import scala.concurrent.Future
   * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
   */
 object Director {
-	var customPages: List[IControler] = List[IControler]()
-	var controllers: List[IControler] = List[IControler]()
+	var customPages: List[IController] = List[IController]()
+	var controllers: List[IController] = List[IController]()
 
 	val SELECT_EMAIL_TMPL_SQL = "SELECT addressFrom, template, subject FROM EmailTemplateEntity WHERE name = ?"
 
@@ -82,7 +82,7 @@ object Director {
 
 	}
 
-	def registerControler(controler: IControler) {
+	def registerControler(controler: IController) {
 		controllers = controllers.::(controler)
 	}
 }

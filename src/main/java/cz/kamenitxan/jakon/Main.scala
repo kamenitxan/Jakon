@@ -1,7 +1,7 @@
 package cz.kamenitxan.jakon
 
 import cz.kamenitxan.jakon.core.Director
-import cz.kamenitxan.jakon.core.controler.PageControler
+import cz.kamenitxan.jakon.core.controller.PageController
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{Category, Page, Post}
 import cz.kamenitxan.jakon.logging.Logger
@@ -22,7 +22,7 @@ object Main {
 			DBHelper.addDao(classOf[Page])
 		}
 
-		Director.registerControler(new PageControler)
+		Director.registerControler(new PageController)
 
 	}
 }

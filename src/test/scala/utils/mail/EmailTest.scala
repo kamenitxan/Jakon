@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
-import cz.kamenitxan.jakon.webui.controler.pagelets.JakonRegistrationPagelet
+import cz.kamenitxan.jakon.webui.controller.pagelets.JakonRegistrationPagelet
 import org.scalatest.FunSuite
 import test.TestEmailTypeHandler
 

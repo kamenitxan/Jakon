@@ -1,9 +1,9 @@
 package cz.kamenitxan.jakon.webui
 
 import cz.kamenitxan.jakon.core.model.JakonObject
-import cz.kamenitxan.jakon.webui.controler.AbstractController
-import cz.kamenitxan.jakon.webui.controler.impl.Dashboard
-import cz.kamenitxan.jakon.webui.controler.objectextension.AbstractObjectExtension
+import cz.kamenitxan.jakon.webui.controller.AbstractController
+import cz.kamenitxan.jakon.webui.controller.impl.Dashboard
+import cz.kamenitxan.jakon.webui.controller.objectextension.AbstractObjectExtension
 import cz.kamenitxan.jakon.webui.entity.CustomControllerInfo
 import spark.{Request, Response}
 

@@ -2,7 +2,7 @@ package jakon
 
 import cz.kamenitxan.jakon.JakonInit
 import cz.kamenitxan.jakon.core.Director
-import cz.kamenitxan.jakon.core.controler.PageControler
+import cz.kamenitxan.jakon.core.controller.PageController
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{BasicJakonObject, Category, Page, Post}
 
@@ -15,7 +15,7 @@ class TestJakonApp extends JakonInit {
 		DBHelper.addDao(classOf[BasicJakonObject])
 	}
 
-	Director.registerControler(new PageControler)
+	Director.registerControler(new PageController)
 
 	override def adminControllers(): Unit = {
 		super.adminControllers()

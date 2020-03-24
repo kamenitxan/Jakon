@@ -3,7 +3,7 @@ package cz.kamenitxan.jakon.core.configuration
 import cz.kamenitxan.jakon.core.custom_pages.{CustomPage, CustomPageInitializer, StaticPage}
 import cz.kamenitxan.jakon.core.dynamic.{Pagelet, PageletInitializer}
 import cz.kamenitxan.jakon.utils.Utils
-import cz.kamenitxan.jakon.webui.controler.objectextension.{ObjectExtension, ObjectExtensionInitializer}
+import cz.kamenitxan.jakon.webui.controller.objectextension.{ObjectExtension, ObjectExtensionInitializer}
 import io.github.classgraph.{ClassGraph, ClassInfoList, ScanResult}
 
 import scala.collection.JavaConverters._

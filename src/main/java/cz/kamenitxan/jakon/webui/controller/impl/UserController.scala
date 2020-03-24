@@ -1,11 +1,11 @@
-package cz.kamenitxan.jakon.webui.controler.impl
+package cz.kamenitxan.jakon.webui.controller.impl
 
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.utils.{PageContext, Utils}
 import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
-import cz.kamenitxan.jakon.webui.controler.impl.ObjectControler.excludedFields
+import cz.kamenitxan.jakon.webui.controller.impl.ObjectController.excludedFields
 import spark.{ModelAndView, Request, Response}
 
 import scala.collection.JavaConverters._
@@ -14,7 +14,7 @@ import scala.language.postfixOps
 /**
   * Created by TPa on 01.05.18.
   */
-object UserControler {
+object UserController {
 
 	def render(req: Request, res: Response): ModelAndView = {
 		if (PageContext.getInstance().getLoggedUser.isEmpty) {

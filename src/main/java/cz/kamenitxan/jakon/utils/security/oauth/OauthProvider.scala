@@ -6,7 +6,7 @@ import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.PageContext
-import cz.kamenitxan.jakon.webui.controler.impl.Authentication.{SQL_FIND_ACL, SQL_FIND_USER}
+import cz.kamenitxan.jakon.webui.controller.impl.Authentication.{SQL_FIND_ACL, SQL_FIND_USER}
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import spark.Request
 

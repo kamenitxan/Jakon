@@ -3,7 +3,7 @@ package webui
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonUser
-import cz.kamenitxan.jakon.webui.controler.impl.Authentication
+import cz.kamenitxan.jakon.webui.controller.impl.Authentication
 import org.openqa.selenium.htmlunit.HtmlUnitDriver
 import org.openqa.selenium.{By, WebDriver}
 import org.scalatest.{Outcome, fixture}

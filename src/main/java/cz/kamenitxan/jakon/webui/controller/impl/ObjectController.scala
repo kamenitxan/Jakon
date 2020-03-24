@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.webui.controler.impl
+package cz.kamenitxan.jakon.webui.controller.impl
 
 import java.sql.Connection
 
@@ -22,7 +22,7 @@ import scala.util.Try
 /**
   * Created by TPa on 08.09.16.
   */
-object ObjectControler {
+object ObjectController {
 	val excludedFields = List("url", "sectionName", "objectSettings", "childClass")
 	private val numberTypes = classOf[Int] :: classOf[Integer] :: classOf[Double] :: classOf[Float] :: Nil
 	private val boolTypes = classOf[Boolean] :: classOf[java.lang.Boolean] :: Nil

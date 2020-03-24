@@ -1,8 +1,8 @@
-package cz.kamenitxan.jakon.webui.controler.impl
+package cz.kamenitxan.jakon.webui.controller.impl
 
 import cz.kamenitxan.jakon.logging._
 import cz.kamenitxan.jakon.webui.Context
-import cz.kamenitxan.jakon.webui.controler.AbstractController
+import cz.kamenitxan.jakon.webui.controller.AbstractController
 import spark.{Request, Response}
 
 import scala.collection.JavaConverters._

@@ -1,8 +1,8 @@
-package cz.kamenitxan.jakon.webui.controler.impl
+package cz.kamenitxan.jakon.webui.controller.impl
 
 import cz.kamenitxan.jakon.core.task.TaskRunner
 import cz.kamenitxan.jakon.webui.Context
-import cz.kamenitxan.jakon.webui.controler.{AbstractController, ExecuteFun}
+import cz.kamenitxan.jakon.webui.controller.{AbstractController, ExecuteFun}
 import spark.route.HttpMethod
 import spark.{Request, Response}
 

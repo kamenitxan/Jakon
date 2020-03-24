@@ -10,7 +10,7 @@ import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.utils.TypeReferences._
 import cz.kamenitxan.jakon.validation.EntityValidator
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
-import cz.kamenitxan.jakon.webui.controler.pagelets.AbstractAdminPagelet
+import cz.kamenitxan.jakon.webui.controller.pagelets.AbstractAdminPagelet
 import cz.kamenitxan.jakon.webui.entity.CustomControllerInfo
 import cz.kamenitxan.jakon.webui.{AdminSettings, Context}
 import spark.{Request, Response, Spark}

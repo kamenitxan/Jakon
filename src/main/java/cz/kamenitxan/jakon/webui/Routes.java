@@ -7,12 +7,12 @@ import cz.kamenitxan.jakon.core.database.DBHelper;
 import cz.kamenitxan.jakon.core.model.JakonUser;
 import cz.kamenitxan.jakon.core.service.UserService;
 import cz.kamenitxan.jakon.webui.api.Api;
-import cz.kamenitxan.jakon.webui.controler.AbstractController;
-import cz.kamenitxan.jakon.webui.controler.ExecuteFun;
-import cz.kamenitxan.jakon.webui.controler.impl.Authentication;
-import cz.kamenitxan.jakon.webui.controler.impl.FileManagerControler;
-import cz.kamenitxan.jakon.webui.controler.impl.ObjectControler;
-import cz.kamenitxan.jakon.webui.controler.impl.UserControler;
+import cz.kamenitxan.jakon.webui.controller.AbstractController;
+import cz.kamenitxan.jakon.webui.controller.ExecuteFun;
+import cz.kamenitxan.jakon.webui.controller.impl.Authentication;
+import cz.kamenitxan.jakon.webui.controller.impl.FileManagerController;
+import cz.kamenitxan.jakon.webui.controller.impl.ObjectController;
+import cz.kamenitxan.jakon.webui.controller.impl.UserController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.TemplateEngine;
@@ -72,25 +72,25 @@ public class Routes {
 		post("/admin", Authentication::loginPost, te);
 		get("/admin/index", (request, response) -> AdminSettings.dashboardController().apply(request, response), te);
 		get("/admin/logout", Authentication::logoutPost, te);
-		get("/admin/profile", UserControler::render, te);
-		post("/admin/profile", UserControler::update, te);
+		get("/admin/profile", UserController::render, te);
+		post("/admin/profile", UserController::update, te);
 
-		get("/admin/object/:name", ObjectControler::getList, te);
-		get("/admin/object/create/:name", ObjectControler::getItem, te);
-		post("/admin/object/create/:name", ObjectControler::updateItem, te);
-		get("/admin/object/delete/:name/:id", ObjectControler::deleteItem, te);
-		get("/admin/object/moveUp/:name/:id", (req, res) -> ObjectControler.moveInList(req, res, true), te);
-		get("/admin/object/moveDown/:name/:id", (req, res) -> ObjectControler.moveInList(req, res, false), te);
-		get("/admin/object/:name/:id", ObjectControler::getItem, te);
-		post("/admin/object/:name/:id", ObjectControler::updateItem, te);
+		get("/admin/object/:name", ObjectController::getList, te);
+		get("/admin/object/create/:name", ObjectController::getItem, te);
+		post("/admin/object/create/:name", ObjectController::updateItem, te);
+		get("/admin/object/delete/:name/:id", ObjectController::deleteItem, te);
+		get("/admin/object/moveUp/:name/:id", (req, res) -> ObjectController.moveInList(req, res, true), te);
+		get("/admin/object/moveDown/:name/:id", (req, res) -> ObjectController.moveInList(req, res, false), te);
+		get("/admin/object/:name/:id", ObjectController::getItem, te);
+		post("/admin/object/:name/:id", ObjectController::updateItem, te);
 
 		if (AdminSettings.enableFiles()) {
 			path("/admin/files", () -> {
-				get("/", FileManagerControler::getManager, te);
-				get("/frame", FileManagerControler::getManagerFrame, te);
+				get("/", FileManagerController::getManager, te);
+				get("/frame", FileManagerController::getManagerFrame, te);
 
-				get("/:method", FileManagerControler::executeGet);
-				post("/:method", FileManagerControler::executePost);
+				get("/:method", FileManagerController::executeGet);
+				post("/:method", FileManagerController::executePost);
 			});
 		}
 

@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.core.controler
+package cz.kamenitxan.jakon.core.controller
 
 import cz.kamenitxan.jakon.logging.Logger
 
@@ -6,8 +6,8 @@ import cz.kamenitxan.jakon.logging.Logger
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 01.05.16.
   */
-trait IControler {
-	implicit val caller: IControler = this
+trait IController {
+	implicit val caller: IController = this
 
 	protected def generate(): Unit
 

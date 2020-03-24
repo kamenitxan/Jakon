@@ -4,7 +4,7 @@ import java.sql.{Connection, Statement, Types}
 
 import cz.kamenitxan.jakon.validation.validators.{Email, NotEmpty}
 import cz.kamenitxan.jakon.webui.ObjectSettings
-import cz.kamenitxan.jakon.webui.controler.impl.Authentication
+import cz.kamenitxan.jakon.webui.controller.impl.Authentication
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence._
 
