@@ -24,6 +24,9 @@ class GetAttributeFun extends Function {
 		val obj = args.get("object")
 		if (obj != null) {
 			val field = getField(obj.getClass, attrName)
+			if (field == null) {
+				return null
+			}
 			field.setAccessible(true)
 			field.get(obj)
 		} else {
@@ -38,8 +41,7 @@ class GetAttributeFun extends Function {
 			if (f.isDefined) {
 				f.get
 			} else {
-				// TODO
-				f.get
+				null
 			}
 		} catch {
 			case e: NoSuchFieldException => getField(obj.getSuperclass, attrName)

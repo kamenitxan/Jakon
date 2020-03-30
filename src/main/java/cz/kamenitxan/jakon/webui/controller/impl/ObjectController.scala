@@ -27,6 +27,8 @@ object ObjectController {
 	private val numberTypes = classOf[Int] :: classOf[Integer] :: classOf[Double] :: classOf[Float] :: Nil
 	private val boolTypes = classOf[Boolean] :: classOf[java.lang.Boolean] :: Nil
 	private val UNAUTHORIZED_TMPL = "pages/unauthorized"
+	private val ListTmpl = "objects/list"
+	private val ObjectPath = "/admin/object/"
 
 	val pageSize = 10
 
@@ -90,7 +92,7 @@ object ObjectController {
 					"objectCount" -> count,
 					"fields" -> fi,
 					"filterParams" -> filterParams.asJava
-				), "objects/list")
+				), ListTmpl)
 			} catch {
 				case ex: Throwable =>
 					Logger.error("Excetion when getting object list", ex)
@@ -207,7 +209,7 @@ object ObjectController {
 			PageContext.getInstance().addMessage(MessageSeverity.SUCCESS, "NEW_OBJ_CREATED")
 			redirect(req, res, "/admin/object/create/" + objectName)
 		} else {
-			redirect(req, res, "/admin/object/" + objectName)
+			redirect(req, res, ObjectPath + objectName)
 		}
 	}
 
@@ -229,8 +231,8 @@ object ObjectController {
 		stmt.executeUpdate()
 		conn.close()
 
-		res.redirect("/admin/object/" + objectName)
-		new Context(Map[String, Any](), "objects/list")
+		res.redirect(ObjectPath + objectName)
+		new Context(Map[String, Any](), ListTmpl)
 	}
 
 	private def isAuthorized(objectClass: Class[_]): Boolean = {
@@ -251,7 +253,7 @@ object ObjectController {
 		val objectClass = DBHelper.getDaoClasses.filter(c => c.getSimpleName.equals(objectName)).head
 		if (!objectClass.getInterfaces.contains(classOf[Ordered])) {
 			PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "OBJECT_NOT_ORDERED")
-			redirect(req, res, "/admin/object/" + objectName)
+			redirect(req, res, ObjectPath + objectName)
 		}
 
 
@@ -269,8 +271,8 @@ object ObjectController {
 			conn.close()
 		}
 
-		res.redirect("/admin/object/" + objectName)
-		new Context(Map[String, Any](), "objects/list")
+		res.redirect(ObjectPath + objectName)
+		new Context(Map[String, Any](), ListTmpl)
 	}
 
 	private def redirect(req: Request, res: Response, target: String): Context = {

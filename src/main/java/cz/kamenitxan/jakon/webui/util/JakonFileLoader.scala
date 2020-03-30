@@ -37,8 +37,6 @@ class JakonFileLoader(templateDir: String, loadFromJar: Boolean = false) extends
 
 		var templateName = tmpl + (if (getSuffix == null) "" else getSuffix)
 
-		//logger.debug("Looking for template in {}{}.", path.toString, templateName)
-
 		/*
 		 * if template name contains path segments, move those segments into the
 		 * path variable. The below technique needs to know the difference
@@ -59,8 +57,7 @@ class JakonFileLoader(templateDir: String, loadFromJar: Boolean = false) extends
 		if (file.exists && file.isFile) try
 			return new FileInputStream(file)
 		catch {
-			case e: FileNotFoundException =>
-
+			case _: FileNotFoundException =>
 		}
 		null
 	}

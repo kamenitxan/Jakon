@@ -39,12 +39,12 @@ class FileManagerConsistencyTestTask extends AbstractTask(1, TimeUnit.HOURS) {
 
 			Files.walkFileTree(realPath, new SimpleFileVisitor[Path]() {
 				override def preVisitDirectory(dir: Path, attrs: BasicFileAttributes): FileVisitResult = {
-					visitFileOrDirectory(dir, attrs, realPath, files)
+					visitFileOrDirectory(dir, realPath, files)
 				}
 
 				@throws[IOException]
 				override def visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult = {
-					visitFileOrDirectory(file, attrs, realPath, files)
+					visitFileOrDirectory(file, realPath, files)
 				}
 			})
 			files.filter(f => !f.mappedToFs).foreach(f => {
@@ -67,7 +67,7 @@ class FileManagerConsistencyTestTask extends AbstractTask(1, TimeUnit.HOURS) {
 	}
 
 	@throws[IOException]
-	private def visitFileOrDirectory(file: Path, attrs: BasicFileAttributes, realPath: Path, files: List[JakonFile])(implicit conn: Connection) = {
+	private def visitFileOrDirectory(file: Path, realPath: Path, files: List[JakonFile])(implicit conn: Connection) = {
 		Logger.debug(s"Visiting $file")
 		val fileName = file.toString.substring(realPath.toString.length)
 		val fileId = getIdFromAttrs(file)

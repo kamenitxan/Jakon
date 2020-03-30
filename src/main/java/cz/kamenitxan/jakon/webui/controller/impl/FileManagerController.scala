@@ -64,6 +64,7 @@ object FileManagerController {
 	private val DATE_FORMAT = "EEE, d MMM yyyy HH:mm:ss z" // (Wed, 4 Jul 2001 12:08:56)
 	private val enabledAction: util.Map[FileManagerMode, Boolean] = new util.HashMap[FileManagerMode, Boolean]
 	private val JSON_RESPONSE_TYPE = "application/json;charset=UTF-8"
+	private val AlreadyExists = " already exits!"
 
 	init()
 
@@ -405,7 +406,7 @@ object FileManagerController {
 			val path = Paths.get(REPOSITORY_BASE_PATH, obj.toString)
 			val mpath = newpath.resolve(path.getFileName)
 			Logger.debug(s"mv $path to $mpath exists? ${Files.exists(mpath)}")
-			if (Files.exists(mpath)) return error(mpath.toString + " already exits!")
+			if (Files.exists(mpath)) return error(mpath.toString + AlreadyExists)
 		}
 		for (obj <- paths) {
 			val path = Paths.get(REPOSITORY_BASE_PATH, obj.toString)
@@ -511,7 +512,7 @@ object FileManagerController {
 				val mpath = newpath.resolve(path.getFileName)
 				Logger.debug(s"mv $path to $mpath exists? ${Files.exists(mpath)}")
 				if (Files.exists(mpath)) {
-					return error(mpath.toString + " already exits!")
+					return error(mpath.toString + AlreadyExists)
 				}
 			}
 			for (obj <- paths) {
@@ -534,7 +535,7 @@ object FileManagerController {
 		val dest = Paths.get(REPOSITORY_BASE_PATH, paramDest)
 		val zip = dest.resolve(params.getAsString("compressedFilename"))
 		if (Files.exists(zip)) {
-			return error(zip.toString + " already exits!")
+			return error(zip.toString + AlreadyExists)
 		}
 		val env = new util.HashMap[String, String]
 		env.put("create", "true")
