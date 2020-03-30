@@ -12,8 +12,13 @@ import cz.kamenitxan.jakon.utils.TypeReferences._
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence.{ManyToOne, OneToOne, Transient}
 
+import scala.collection.mutable
+
 
 object SqlGen {
+
+	private val NumberTypes = classOf[Int] :: classOf[Integer] :: classOf[Double] :: classOf[Float] :: Nil
+	private val BoolTypes = classOf[Boolean] :: classOf[java.lang.Boolean] :: Nil
 
 	private def createSql(cls: Class[_ <: JakonObject], annotatedFields: List[Field]): String = {
 		val annotatedFields = getJakonFields(cls)
@@ -154,6 +159,53 @@ object SqlGen {
 				Logger.error(s"Uknown sql type ${f.getType} on field ${f.getName}")
 				0
 		}
+	}
+
+	def parseFilterParams(kv: mutable.Map[String, String], objectClass: Class[_]): String = {
+		if (kv.isEmpty) {
+			return ""
+		}
+		var notFirst = false
+		val sb = new mutable.StringBuilder()
+		sb.append("WHERE ")
+		for ((fieldName, v) <- kv) {
+			if (notFirst) {
+				sb.append(" AND ")
+			}
+			val clr = Utils.getClassByFieldName(objectClass, fieldName)
+			sb.append(clr._1.getSimpleName)
+			sb.append(".")
+			sb.append(fieldName)
+			v match {
+				case param if param.contains("*") =>
+					sb.append(" LIKE \"")
+					sb.append(param.replace("*", "%"))
+					sb.append("\"")
+				case param =>
+					sb.append(" = ")
+					if (NumberTypes.contains(clr._2.getType)) {
+						try {
+							v.toDouble
+							sb.append(param)
+						} catch {
+							case _: NumberFormatException => sb.append("\"" + v + "\"")
+						}
+					} else if (BoolTypes.contains(clr._2.getType)) {
+						try {
+							val pbv = v.toBoolean
+							if (pbv) sb.append(1) else sb.append(0)
+						} catch {
+							case _: IllegalArgumentException => sb.append("\"" + v + "\"")
+						}
+					} else {
+						sb.append("\"")
+						sb.append(v)
+						sb.append("\"")
+					}
+			}
+			notFirst = true
+		}
+		sb.toString()
 	}
 
 }

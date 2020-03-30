@@ -72,3 +72,8 @@ textarea {
 .list_filter {
 	width: 100%;
 }
+
+/** object extensions */
+.extension_holder {
+	margin-bottom: 5px;
+}

@@ -1,0 +1,16 @@
+{# @pebvariable name="object" type="cz.kamenitxan.jakon.core.model.JakonObject" #}
+{# @pebvariable name="e" type="cz.kamenitxan.jakon.utils.mail.EmailTemplateEntity" #}
+{# @pebvariable name="emailTemplates" type="java.util.List" #}
+{# @pebvariable name="filterParams" type="java.util.Map" #}
+<form method="get" action="{% if object.id != 0 %}{{ object.id }}{% else %}JakonUser{% endif %}/sendEmail" class="form-inline">
+{% for kv in filterParams %}
+	<input type="hidden" name="{{ kv.key }}" value="{{ kv.value }}">
+{% endfor %}
+	<select name="emailType" class="form-control" style="max-width: 300px">
+		<option value="---">---</option>
+		{% for e in emailTemplates %}
+			<option value="{{ e.name }}">{{ e.name }}</option>
+		{% endfor %}
+	</select>
+	<input type="submit" class="btn btn-primary" value="{{ i18n("objects/extension/extension","JUEE_SEND_EMAIL") }}">
+</form>

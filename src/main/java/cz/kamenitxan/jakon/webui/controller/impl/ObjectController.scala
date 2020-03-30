@@ -6,7 +6,7 @@ import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{JakonObject, Ordered}
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.Utils._
-import cz.kamenitxan.jakon.utils.{PageContext, Utils}
+import cz.kamenitxan.jakon.utils.{PageContext, SqlGen, Utils}
 import cz.kamenitxan.jakon.validation.EntityValidator
 import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
@@ -57,7 +57,7 @@ object ObjectController {
 				} else {
 					""
 				}
-				val filterSql = parseFilterParams(filterParams, objectClass.get)
+				val filterSql = SqlGen.parseFilterParams(filterParams, objectClass.get)
 				val joinSql = createSqlJoin(objectClass.get)
 				// language=SQL
 				val listSql = s"SELECT * FROM JakonObject $joinSql $filterSql $order LIMIT $pageSize OFFSET $first"
@@ -70,6 +70,7 @@ object ObjectController {
 					resultList
 				}
 
+				import scala.language.existentials
 				val upperClass = {
 					val objectSettings = objectClass.get.getDeclaredConstructor().newInstance().objectSettings
 					if (objectSettings != null && objectSettings.noParentFieldInList) {
@@ -83,7 +84,7 @@ object ObjectController {
 				new Context(Map[String, Any](
 					"objectName" -> objectName,
 					"objects" -> pageItems,
-					"object" -> ocls.newInstance(), // used for ObjectExtensions
+					"object" -> ocls.getDeclaredConstructor().newInstance(), // used for ObjectExtensions
 					"pageNumber" -> pageNumber,
 					"pageCount" -> Math.max(Math.ceil(count / pageSize.toFloat), 1),
 					"objectCount" -> count,
@@ -102,56 +103,6 @@ object ObjectController {
 			new Context(Map[String, Any](), "errors/404")
 		}
 	}
-
-	private def parseFilterParams(kv: mutable.Map[String, String], objectClass: Class[_]): String = {
-		if (kv.isEmpty) {
-			return ""
-		}
-		var notFirst = false
-		val sb = new mutable.StringBuilder()
-		sb.append("WHERE ")
-		for ((fieldName, v) <- kv) {
-			if (notFirst) {
-				sb.append(" AND ")
-			}
-			val clr = Utils.getClassByFieldName(objectClass, fieldName)
-			sb.append(clr._1.getSimpleName)
-			sb.append(".")
-			sb.append(fieldName)
-			v match {
-				case param if param.contains("*") =>
-					sb.append(" LIKE \"")
-					sb.append(param.replace("*", "%"))
-					sb.append("\"")
-				case param =>
-					sb.append(" = ")
-					if (numberTypes.contains(clr._2.getType)) {
-						try {
-							v.toDouble
-							sb.append(param)
-						} catch {
-							case _: NumberFormatException => sb.append("\"" + v + "\"")
-						}
-
-					} else if (boolTypes.contains(clr._2.getType)) {
-						try {
-							val pbv = v.toBoolean
-							if (pbv) sb.append(1) else sb.append(0)
-						} catch {
-							case _: IllegalArgumentException => sb.append("\"" + v + "\"")
-						}
-
-					} else {
-						sb.append("\"")
-						sb.append(v)
-						sb.append("\"")
-					}
-			}
-			notFirst = true
-		}
-		sb.toString()
-	}
-
 
 	def getItem(req: Request, res: Response): Context = {
 		val objectName = req.params(":name")
@@ -208,10 +159,10 @@ object ObjectController {
 			val conn = DBHelper.getConnection
 			val stmt = conn.prepareStatement("SELECT id FROM JakonObject WHERE id = ?")
 			stmt.setInt(1, objectId.get)
-			obj = Option(DBHelper.selectSingle(stmt, objectClass).entity).getOrElse(objectClass.newInstance())
+			obj = Option(DBHelper.selectSingle(stmt, objectClass).entity).getOrElse(objectClass.getDeclaredConstructor().newInstance())
 			conn.close()
 		} else {
-			obj = objectClass.newInstance()
+			obj = objectClass.getDeclaredConstructor().newInstance()
 		}
 
 		val formData = EntityValidator.createFormData(req, objectClass)

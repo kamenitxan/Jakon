@@ -24,11 +24,12 @@ class ObjectExtensionFun extends Function {
 			  et == extensionType || et == ExtensionType.BOTH
 		  })
 		  .map(oe => {
-			  oe.newInstance().render(
+			  val instance = oe.getDeclaredConstructor().newInstance()
+			  "<div class=\"extension_holder\">" + instance.render(
 				  mutable.Map[String, Any](
 					  "object" -> obj
-				  ), "objects/extension/" + obj.getClass.getSimpleName, PageContext.getInstance().req
-			  )
+				  ), "objects/extension/" + instance.getClass.getSimpleName, PageContext.getInstance().req
+			  ) + "</div>"
 		  })
 		if (result.nonEmpty) {
 			"<hr>" + result.mkString
