@@ -22,7 +22,7 @@ object Main {
 			DBHelper.addDao(classOf[Page])
 		}
 
-		Director.registerControler(new PageController)
+		Director.registerController(new PageController)
 
 	}
 }

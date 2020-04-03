@@ -11,14 +11,14 @@ object DevRender {
 	private val registeredPaths = mutable.HashMap[String, IController]()
 
 	def registerPath(path: String, caller: IController): Unit = {
-		val controler = controllers.find(c => c.getClass.getCanonicalName != null && c.getClass.getCanonicalName.equals(caller.getClass.getCanonicalName))
-		if (controler.isEmpty) return
+		val controller = controllers.find(c => c.getClass.getCanonicalName != null && c.getClass.getCanonicalName.equals(caller.getClass.getCanonicalName))
+		if (controller.isEmpty) return
 		val prefix = if (path.startsWith("/")) {
 			""
 		} else {
 			"/"
 		}
-		registeredPaths += (prefix + path + TemplateUtils.getFileSuffix(path) -> controler.get)
+		registeredPaths += (prefix + path + TemplateUtils.getFileSuffix(path) -> controller.get)
 	}
 
 	def rerender(path: String): Unit = {

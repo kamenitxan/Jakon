@@ -31,7 +31,7 @@ import scala.annotation.switch
 import scala.collection.JavaConversions._
 
 /**
-  * This controler serve angular-filemanager call<br>
+  * This controller serve angular-filemanager call<br>
   *
   * that catch all request to path /fm&#47;*<br>
   * in angular-filemanager-master/index.html uncomment links to js files<br>

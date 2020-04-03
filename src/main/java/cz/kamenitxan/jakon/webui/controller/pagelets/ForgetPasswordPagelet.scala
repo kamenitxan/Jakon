@@ -9,7 +9,7 @@ import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.core.service.UserService
 import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.utils.Utils.StringImprovements
-import cz.kamenitxan.jakon.webui.controler.pagelets.data.{ForgetPasswordData, SetPasswordData}
+import cz.kamenitxan.jakon.webui.controller.pagelets.data.{ForgetPasswordData, SetPasswordData}
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity, ResetPasswordEmailEntity}
 import spark.{Request, Response}
 

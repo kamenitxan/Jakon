@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.webui.controler.pagelets.data
+package cz.kamenitxan.jakon.webui.controller.pagelets.data
 
 import cz.kamenitxan.jakon.validation.validators.{EqualsWithOther, NotEmpty, Size}
 

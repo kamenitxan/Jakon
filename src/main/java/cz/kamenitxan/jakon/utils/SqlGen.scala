@@ -156,7 +156,7 @@ object SqlGen {
 			case DATE_o | DATE => JDBCType.DATE.getVendorTypeNumber
 			case DATETIME => JDBCType.TIMESTAMP.getVendorTypeNumber
 			case _ =>
-				Logger.error(s"Uknown sql type ${f.getType} on field ${f.getName}")
+				Logger.error(s"Unknown sql type ${f.getType} on field ${f.getName}")
 				0
 		}
 	}
@@ -176,7 +176,8 @@ object SqlGen {
 			sb.append(clr._1.getSimpleName)
 			sb.append(".")
 			sb.append(fieldName)
-			v match {
+			val value = v.trim.toLowerCase
+			value match {
 				case param if param.contains("*") =>
 					sb.append(" LIKE \"")
 					sb.append(param.replace("*", "%"))

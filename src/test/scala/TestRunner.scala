@@ -84,7 +84,7 @@ class TestJakonApp extends JakonInit{
 		DBHelper.addDao(classOf[TestObject])
 	}
 
-	Director.registerControler(new PageController)
+	Director.registerController(new PageController)
 
 	override def adminControllers(): Unit = {
 		super.adminControllers()

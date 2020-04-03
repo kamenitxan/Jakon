@@ -82,7 +82,7 @@ object Director {
 
 	}
 
-	def registerControler(controler: IController) {
-		controllers = controllers.::(controler)
+	def registerController(controller: IController) {
+		controllers = controllers.::(controller)
 	}
 }
