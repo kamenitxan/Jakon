@@ -20,7 +20,7 @@ class WebUi extends TestBase {
 		assert(!args.isEmpty)
 
 		val params = new java.util.HashMap[String, AnyRef]()
-		params.put("JakonObject_id", java.lang.Long.valueOf("1"))
+		params.put("id", java.lang.Long.valueOf("1"))
 		val res = fun.execute(params, null, null, 0)
 		assert(res != null)
 	}
@@ -35,7 +35,7 @@ class WebUi extends TestBase {
 		testObj.id = 888
 
 		val params = new java.util.HashMap[String, AnyRef]()
-		params.put("attr", "JakonObject_id")
+		params.put("attr", "id")
 		params.put("object", testObj)
 		val res = fun.execute(params, null, null, 0)
 		assert(res != null)

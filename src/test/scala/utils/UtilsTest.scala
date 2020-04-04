@@ -10,9 +10,9 @@ import org.scalatest.FunSuite
 class UtilsTest extends FunSuite {
 
 	test("getClassByFieldName") {
-		val cls = Utils.getClassByFieldName(classOf[JakonUser], "JakonObject_id")
+		val cls = Utils.getClassByFieldName(classOf[JakonUser], "id")
 		assert(classOf[JakonObject] == cls._1)
-		assert("JakonObject_id" == cls._2.getName)
+		assert("id" == cls._2.getName)
 	}
 
 	test("StringImprovements getOrElse") {

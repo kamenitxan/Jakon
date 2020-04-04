@@ -5,7 +5,6 @@ import java.net.URLClassLoader
 import java.util.{Locale, MissingResourceException, ResourceBundle}
 
 import com.mitchellbosecke.pebble.extension.i18n.UTF8Control
-import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.logging.Logger
 import Utils._
 

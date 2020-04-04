@@ -25,7 +25,7 @@ class LinkTest extends FunSuite{
 			fun.execute(params)
 		}
 		params.put("target", "_blank")
-		params.put("JakonObject_id", page.id.toString)
+		params.put("id", page.id.toString)
 		params.put("text", "linkText")
 
 		assert(fun.execute(params) === "<a href=\"/page/test_page\" target=\"_blank\" >linkText</a>")
