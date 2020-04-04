@@ -186,21 +186,21 @@ object SqlGen {
 					sb.append(" = ")
 					if (NumberTypes.contains(clr._2.getType)) {
 						try {
-							v.toDouble
+							value.toDouble
 							sb.append(param)
 						} catch {
-							case _: NumberFormatException => sb.append("\"" + v + "\"")
+							case _: NumberFormatException => sb.append("\"" + value + "\"")
 						}
 					} else if (BoolTypes.contains(clr._2.getType)) {
 						try {
-							val pbv = v.toBoolean
+							val pbv = value.toBoolean
 							if (pbv) sb.append(1) else sb.append(0)
 						} catch {
-							case _: IllegalArgumentException => sb.append("\"" + v + "\"")
+							case _: IllegalArgumentException => sb.append("\"" + value + "\"")
 						}
 					} else {
 						sb.append("\"")
-						sb.append(v)
+						sb.append(value)
 						sb.append("\"")
 					}
 			}

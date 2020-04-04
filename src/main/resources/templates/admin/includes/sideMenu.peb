@@ -29,10 +29,10 @@
                 <li>
 					<a href="/admin/index"><i class="fa fa-dashboard fa-fw"></i> {{ i18n("common","DASHBOARD") }}</a>
                 </li>
-                <li{%if modelClasses contains objectName %} class="active"{% endif %}>
+                <li{% if modelClasses contains objectName or jakonModelClasses contains modelClasses %} class="active"{% endif %}>
 					<a href="#"><i class="fa fa-edit fa-fw"></i> {{ i18n("common","JAKON_OBJECTS") }}<span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
-					<li>
+					<li {% if jakonModelClasses contains modelClasses %} class="active"{% endif %}>
 						<a href="#">{{ i18n("common","JAKON_CORE_OBJECTS") }} <span class="fa arrow"></span></a>
 					<ul class="nav nav-third-level">
                     {% for model in jakonModelClasses %}
