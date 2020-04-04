@@ -35,4 +35,8 @@ class i18nUtilTest extends TestBase {
 		assert("test_en" == i18nUtil.getTranslation(templateDir, bundle, "OVERRIDE_TEST", en))
 		assert("test_cz" == i18nUtil.getTranslation(templateDir, bundle, "OVERRIDE_TEST", cs))
 	}
+
+	test("getTranslation only en") { _ =>
+		assert("test_en" == i18nUtil.getTranslation(templateDir, bundle, "ONLY_EN_TEST", cs))
+	}
 }

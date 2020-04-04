@@ -100,7 +100,7 @@ object SqlGen {
 		val allFields = Utils.getFieldsUpTo(cls, classOf[JakonObject])
 		allFields.filter(f =>
 			f.getAnnotations.exists(fa => fa.annotationType().getName == classOf[JakonField].getName)
-			  && f.getName != "id"
+			  && f.getName != "JakonObject_id"
 			  && f.getAnnotation(classOf[Transient]) == null
 		)
 	}

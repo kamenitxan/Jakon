@@ -11,7 +11,7 @@ import cz.kamenitxan.jakon.core.model.BasicJakonObject
 class Link extends IFuncion {
 	def execute(params: util.Map[String, String]): String = {
 		if (params == null) throw new IllegalArgumentException("Link parameters null")
-		val objectId = Integer.valueOf(params.getOrDefault("id", null))
+		val objectId = Integer.valueOf(params.getOrDefault("JakonObject_id", null))
 		val target = params.getOrDefault("target", null)
 		val text = params.getOrDefault("text", null)
 		if (objectId == null || text == null) {

@@ -28,7 +28,7 @@ object UserController {
 		new Context(Map[String, Any](
 			"objectName" -> classOf[JakonUser].getSimpleName,
 			"object" -> user,
-			"id" -> user.id,
+			"JakonObject_id" -> user.id,
 			"fields" -> f), "pages/profile")
 	}
 
@@ -41,7 +41,7 @@ object UserController {
 		val params = req.queryParams() asScala
 		val user = PageContext.getInstance().getLoggedUser.get
 
-		for (p <- params.filter(p => !p.equals("id"))) {
+		for (p <- params.filter(p => !p.equals("JakonObject_id"))) {
 			//TODO optimalizovat
 			val fieldRefOpt = Utils.getFieldsUpTo(user.getClass, classOf[Object]).find(f => f.getName.equals(p))
 			if (fieldRefOpt.isDefined) {
