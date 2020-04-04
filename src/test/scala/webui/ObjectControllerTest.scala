@@ -30,8 +30,6 @@ class ObjectControllerTest extends TestBase {
 
 	}
 
-
-
 	test("user settings") { f =>
 		val url = host + "/admin/profile"
 		f.driver.get(url)
@@ -54,7 +52,7 @@ class ObjectControllerTest extends TestBase {
 	}
 
 	test("test move") { f =>
-	    implicit val driver = f.driver
+	    implicit val driver: WebDriver = f.driver
 	    val p1 = new Page()
 		p1.title = "page1"
 		p1.create()
@@ -95,13 +93,13 @@ class ObjectControllerTest extends TestBase {
 	}
 
 	test("test move not ordered") { f =>
-		implicit val driver = f.driver
+		implicit val driver: WebDriver = f.driver
 		f.driver.get(host + "/admin/object/moveDown/JakonUser/4?currentOrder=1")
 		checkSiteMessage("OBJECT_NOT_ORDERED")
 	}
 
 	test("delete item") { f =>
-		implicit val driver = f.driver
+		implicit val driver: WebDriver = f.driver
 		val url = host + "/admin/object/Page"
 		f.driver.get(url)
 		assert(checkPageLoad(f.driver))
@@ -125,6 +123,14 @@ class ObjectControllerTest extends TestBase {
 		val secondId = secondElements.head.getText
 
 		assert(firstId != secondId)
+	}
+
+	test("test list non existent") { f =>
+		val url = host + "/admin/object/invalid"
+		f.driver.get(url)
+
+		assert(checkPageLoad(f.driver))
+		f.driver.getPageSource.contains("404")
 	}
 
 }

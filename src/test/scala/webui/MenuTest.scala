@@ -90,4 +90,9 @@ class MenuTest extends fixture.FunSuite {
 		f.driver.get(host + "files/")
 		assert(checkPageLoad(f.driver))
 	}
+
+	test("logs page") { f =>
+		f.driver.get(host + "logs")
+		assert(checkPageLoad(f.driver))
+	}
 }

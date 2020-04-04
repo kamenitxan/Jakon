@@ -1,9 +1,7 @@
 package logging
 
-import cz.kamenitxan.jakon.logging.{Log, LogService, Logger}
+import cz.kamenitxan.jakon.logging._
 import test.TestBase
-
-import scala.collection.mutable
 
 class LoggingTest extends TestBase {
 
@@ -42,6 +40,35 @@ class LoggingTest extends TestBase {
 			Logger.error(i.toString)(implicitly[sourcecode.Line], implicitly[sourcecode.FullName], repositoryOnly = tooMany)
 			Logger.critical(i.toString)(implicitly[sourcecode.Line], implicitly[sourcecode.FullName], repositoryOnly = tooMany)
 		}
+	}
+
+	test("Log toString") { _ =>
+		val log = new Log(Debug, "test_msg", null, "test:00")
+		assert("Log(Debug, test_msg, test:00)" == log.toString)
+	}
+
+	test("VoidLogRepository addLog") { _ =>
+		val rep = new VoidLogRepository
+		val log = new Log(Debug, "test_msg", null, "test:00")
+		try {
+			rep.addLog(log)
+		} catch {
+			case ex: Exception => fail(ex)
+		}
+	}
+
+	test("VoidLogRepository clean") { _ =>
+		val rep = new VoidLogRepository
+		try {
+			rep.clean()
+		} catch {
+			case ex: Exception => fail(ex)
+		}
+	}
+
+	test("VoidLogRepository getLogs") { _ =>
+		val rep = new VoidLogRepository
+		assert(rep.getLogs.isEmpty)
 	}
 
 	private def getLogByValue(msg: String): Boolean = {
