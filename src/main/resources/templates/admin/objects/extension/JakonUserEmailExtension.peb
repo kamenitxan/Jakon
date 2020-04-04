@@ -12,5 +12,5 @@
 			<option value="{{ e.name }}">{{ e.name }}</option>
 		{% endfor %}
 	</select>
-	<input type="submit" class="btn btn-primary" value="{{ i18n("objects/extension/extension","JUEE_SEND_EMAIL") }}">
+	<input type="submit" class="btn btn-primary" value="{{ i18n("objects/extension/extension","JUEE_SEND_EMAIL") }}" id="JakonUserEmailExtensionBtn">
 </form>

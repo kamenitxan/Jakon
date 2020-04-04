@@ -21,6 +21,11 @@ class i18nUtilTest extends TestBase {
 		assert("TEST_TEST" == i18nUtil.getTranslation(templateDir, bundle, "TEST_TEST", cs))
 	}
 
+	test("getTranslation noExisting bundle") { _ =>
+		assert("TEST_TEST" == i18nUtil.getTranslation(templateDir, "invalid", "TEST_TEST", en))
+		assert("TEST_TEST" == i18nUtil.getTranslation(templateDir, "invalid", "TEST_TEST", cs))
+	}
+
 	test("getTranslation default") { _ =>
 		assert("def" == i18nUtil.getTranslation(templateDir, bundle, "TEST_TEST", en, "def"))
 		assert("def" == i18nUtil.getTranslation(templateDir, bundle, "TEST_TEST", cs, "def"))

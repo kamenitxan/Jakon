@@ -38,7 +38,8 @@ class TestRunner extends Suites(
 	new i18nUtilTest,
 	new PageletTest,
 	new DeployTest,
-	new LoggingTest
+	new LoggingTest,
+	new ObjectExtensionTest
 ) with BeforeAndAfterAll {
 
 	override def beforeAll() {
