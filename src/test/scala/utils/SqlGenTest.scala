@@ -6,6 +6,8 @@ import cz.kamenitxan.jakon.utils.SqlGen
 import test.TestBase
 import utils.entity.TestObject
 
+import scala.collection.mutable
+
 class SqlGenTest extends TestBase {
 
 	test("insertStmt") { _ =>
@@ -57,4 +59,20 @@ class SqlGenTest extends TestBase {
 			assert(users.forall( u => u.acl != null))
 		})
 	}*/
+
+	test("parseFilterParams invalid number") { _ =>
+		val params = mutable.Map(
+			"double" -> "invalid"
+		)
+		val res = SqlGen.parseFilterParams(params, classOf[TestObject])
+		assert("WHERE TestObject.double = \"invalid\"" == res)
+	}
+
+	test("parseFilterParams invalid boolean") { _ =>
+		val params = mutable.Map(
+			"boolean" -> "invalid"
+		)
+		val res = SqlGen.parseFilterParams(params, classOf[TestObject])
+		assert("WHERE TestObject.boolean = \"invalid\"" == res)
+	}
 }

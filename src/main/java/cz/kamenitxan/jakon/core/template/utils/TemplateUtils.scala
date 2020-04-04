@@ -76,7 +76,7 @@ object TemplateUtils {
 	}
 
 	@throws[IOException]
-	private def validate(paths: Path*) = for (path <- paths) {
+	private def validate(paths: Path*): Unit = for (path <- paths) {
 		Objects.requireNonNull(path)
 		if (!Files.isDirectory(path)) {
 			Files.createDirectories(path)
@@ -84,6 +84,11 @@ object TemplateUtils {
 		}
 	}
 
+	/**
+	 * Parses given markdown text to html
+	 * @param text markdown text
+	 * @return html result
+	 */
 	def parseMarkdown(text: String): String = {
 		val document = parser.parse(text)
 		renderer.render(document)

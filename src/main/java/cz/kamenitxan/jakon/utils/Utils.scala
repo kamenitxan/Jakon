@@ -3,7 +3,6 @@ package cz.kamenitxan.jakon.utils
 import java.io.{BufferedReader, InputStreamReader}
 import java.lang.reflect.Field
 import java.net.URLEncoder
-import java.util
 import java.util.Locale
 import java.util.stream.Collectors
 
@@ -11,7 +10,6 @@ import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.logging.Logger
 
 import scala.annotation.tailrec
-import scala.collection.JavaConversions._
 import scala.language.postfixOps
 import scala.util.Try
 
@@ -19,10 +17,6 @@ import scala.util.Try
   * Created by TPa on 08.09.16.
   */
 object Utils {
-
-	def toJavaCollection(list: List[AnyRef]): util.Collection[AnyRef] = {
-		asJavaCollection(list)
-	}
 
 	implicit class StringImprovements(s: String) {
 		def toOptInt: Option[Int] = Try(Integer.parseInt(s)).toOption
