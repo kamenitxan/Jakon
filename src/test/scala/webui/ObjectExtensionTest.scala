@@ -4,7 +4,6 @@ import java.util.Locale
 
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.service.UserService
-import cz.kamenitxan.jakon.utils.i18nUtil
 import org.openqa.selenium.{By, WebDriver}
 import test.TestBase
 

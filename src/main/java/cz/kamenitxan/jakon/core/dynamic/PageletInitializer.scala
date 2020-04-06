@@ -49,7 +49,7 @@ object PageletInitializer {
 		controllers.filter(c => classOf[AbstractAdminPagelet].isAssignableFrom(c) && c.getAnnotation(classOf[Pagelet]).showInAdmin()).foreach(c => {
 			val apa = c.getDeclaredMethods.find(m => m.getAnnotation(classOf[Get]) != null)
 			if (apa.nonEmpty) {
-				val inst = c.newInstance().asInstanceOf[AbstractAdminPagelet]
+				val inst = c.getDeclaredConstructor().newInstance().asInstanceOf[AbstractAdminPagelet]
 				val controllerAnn = c.getAnnotation(classOf[Pagelet])
 				val get = apa.get.getAnnotation(classOf[Get])
 				AdminSettings.customControllersInfo += new CustomControllerInfo(inst.name, inst.icon, controllerAnn.path() + get.path())
@@ -62,7 +62,7 @@ object PageletInitializer {
 	private def initGetAnnotation(get: Get, controllerAnn: Pagelet, m: Method, c: Class[_]): Unit = {
 		//TODO m.getReturnType.is
 		Spark.get(controllerAnn.path() + get.path(), (req: Request, res: Response) => {
-			val controller: IPagelet = c.newInstance().asInstanceOf[IPagelet]
+			val controller: IPagelet = c.getDeclaredConstructor().newInstance().asInstanceOf[IPagelet]
 			DBHelper.withDbConnection(conn => {
 				val methodArgs = createMethodArgs(m, req, res, conn)
 				var context = m.invoke(controller, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
@@ -89,7 +89,7 @@ object PageletInitializer {
 
 	private def initPostAnnotation(post: Post, controllerAnn: Pagelet, m: Method, c: Class[_]): Unit = {
 		Spark.post(controllerAnn.path() + post.path(), (req: Request, res: Response) => {
-			val controller = c.newInstance().asInstanceOf[IPagelet]
+			val controller = c.getDeclaredConstructor().newInstance().asInstanceOf[IPagelet]
 
 			DBHelper.withDbConnection(conn => {
 				val dataClass = getDataClass(m)
@@ -166,12 +166,13 @@ object PageletInitializer {
 			case RESPONSE_CLS => res
 			case CONNECTION_CLS => conn
 			case t =>
-				val data = t.newInstance().asInstanceOf[AnyRef]
+				val data = t.getDeclaredConstructor().newInstance().asInstanceOf[AnyRef]
 				Logger.debug(s"Creating pagelet data: {${t.getSimpleName}}")
 				t.getDeclaredFields.foreach(f => {
 					try {
+						val value = req.queryMap(f.getName).values().mkString("\r\n")
 						f.setAccessible(true)
-						f.set(data, req.queryParams(f.getName).conform(f))
+						f.set(data, value.conform(f))
 					} catch {
 						case ex: Exception => Logger.error("Exception when setting pagelet data value", ex)
 					}

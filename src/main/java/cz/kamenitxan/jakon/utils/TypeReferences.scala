@@ -14,6 +14,7 @@ object TypeReferences {
 	val DOUBLE_j = classOf[java.lang.Double]
 	val INTEGER_j = classOf[java.lang.Integer]
 	val LIST_j = classOf[java.util.List[Any]]
+	val ARRAY_LIST_j = classOf[java.util.ArrayList[Any]]
 	val MAP = classOf[Map[Any, Any]]
 	val DATE = classOf[LocalDate]
 	val DATE_o = classOf[Date]

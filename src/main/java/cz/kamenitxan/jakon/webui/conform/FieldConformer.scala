@@ -48,14 +48,16 @@ object FieldConformer {
 				case DATETIME =>
 					val formatter = DateTimeFormatter.ofPattern(DATETIME_FORMAT)
 					LocalDateTime.parse(s, formatter)
-				case LIST_j =>
+				case LIST_j | ARRAY_LIST_j =>
 					s.split("\r\n").map(line => line.trim.conform(Class.forName(genericType.getTypeName), null)).toList.asJava
+				case SEQ =>
+					s.split("\r\n").map(line => line.trim.conform(Class.forName(genericType.getTypeName), null)).toSeq
 				case x if x.isEnum =>
 					val m = x.getMethod("valueOf", classOf[String])
 					m.invoke(t, s)
 				case _ =>
 					if (classOf[JakonObject].isAssignableFrom(t)) {
-						val obj = t.newInstance().asInstanceOf[JakonObject]
+						val obj = t.getDeclaredConstructor().newInstance().asInstanceOf[JakonObject]
 						obj.id = s.toInt
 						obj
 					} else {

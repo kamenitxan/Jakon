@@ -1,6 +1,7 @@
 package webui
 
 import java.time.LocalDate
+import java.util
 import java.util.{Calendar, Date, GregorianCalendar}
 
 import cz.kamenitxan.jakon.core.model.{JakonObject, JakonUser}
@@ -13,7 +14,7 @@ import org.scalatest.FunSuite
 
 class FieldConformerTest extends FunSuite {
 
-	private val fieldCount = 10
+	private val fieldCount = 14
 
 	class TestObject extends JakonObject {
 		//TODO oneToMany
@@ -39,6 +40,14 @@ class FieldConformerTest extends FunSuite {
 		var self: TestObject = _
 		@JakonField
 		var enum: MessageSeverity = MessageSeverity.ERROR
+		@JakonField
+		var listJInt: util.ArrayList[Integer] = _
+		@JakonField
+		var listJString: util.ArrayList[String] = _
+		@JakonField
+		var seqI: Seq[Int] = _
+		@JakonField
+		var seqS: Seq[String] = _
 
 
 		override val objectSettings: ObjectSettings = null
@@ -87,6 +96,40 @@ class FieldConformerTest extends FunSuite {
 		val conformed = "1999-02-20".conform(getField("localDate"))
 		val d = LocalDate.of(1999, 2, 20)
 		assert(d == conformed)
+	}
+
+	test("conform list_j integer") {
+		val conformed = "1\r\n2\r\n3".conform(getField("listJInt"))
+		assert(conformed.asInstanceOf[util.List[Integer]].contains(1))
+		assert(conformed.asInstanceOf[util.List[Integer]].contains(2))
+		assert(conformed.asInstanceOf[util.List[Integer]].contains(3))
+	}
+
+	test("conform list_j string") {
+		val conformed = "1\r\n2\r\n3".conform(getField("listJString"))
+		assert(conformed.asInstanceOf[util.List[String]].contains("1"))
+		assert(conformed.asInstanceOf[util.List[String]].contains("2"))
+		assert(conformed.asInstanceOf[util.List[String]].contains("3"))
+	}
+
+	test("conform list_j empty") {
+		val conformed = "".conform(getField("listJString"))
+		assert(conformed == null)
+	}
+
+	// TODO
+	/*test("conform seq integer") {
+		val conformed = "1\r\n2\r\n3".conform(getField("seqI"))
+		assert(conformed.asInstanceOf[Seq[Integer]].contains(1))
+		assert(conformed.asInstanceOf[Seq[Integer]].contains(2))
+		assert(conformed.asInstanceOf[Seq[Integer]].contains(3))
+	}*/
+
+	test("conform seq string") {
+		val conformed = "1\r\n2\r\n3".conform(getField("seqS"))
+		assert(conformed.asInstanceOf[Seq[String]].contains("1"))
+		assert(conformed.asInstanceOf[Seq[String]].contains("2"))
+		assert(conformed.asInstanceOf[Seq[String]].contains("3"))
 	}
 
 	test("empty field infos") {
