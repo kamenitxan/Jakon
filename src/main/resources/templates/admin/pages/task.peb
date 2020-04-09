@@ -32,7 +32,7 @@
                         <tbody>
                         {% for task in tasks %}
                         <tr>
-                            <td>{{ task.name }}</td>
+                            <td>{{ task.name.value }}</td>
                             <td>{{ task.lastRun | date }}</td>
                             <td>{{ task.lastExecutionTime }}ms</td>
                             <td>{% include "includes/formaters/boolean" with {"value":task.lastRunSuccessful} %}</td>

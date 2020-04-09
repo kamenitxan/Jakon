@@ -1,5 +1,6 @@
 package cz.kamenitxan.jakon.webui.controller.objectextension
 
+import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.dynamic.{Get, Pagelet}
 import cz.kamenitxan.jakon.core.model.JakonUser
@@ -15,7 +16,11 @@ import scala.collection.mutable
 class JakonUserExtension extends AbstractObjectExtension {
 
 	override def render(context: mutable.Map[String, Any], templatePath: String, req: Request): String = {
-		super.render(context, templatePath, req)
+		if (Settings.isEmailEnabled) {
+			super.render(context, templatePath, req)
+		} else {
+			""
+		}
 	}
 
 	@Get(path = "/admin/object/JakonUser/:id/resetPassword", template = "")

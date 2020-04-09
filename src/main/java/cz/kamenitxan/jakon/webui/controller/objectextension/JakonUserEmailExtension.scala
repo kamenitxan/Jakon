@@ -23,16 +23,20 @@ class JakonUserEmailExtension extends AbstractObjectExtension {
 	private val Sql = "SELECT name from EmailTemplateEntity"
 
 	override def render(context: mutable.Map[String, Any], templatePath: String, req: Request): String = {
-		val templates = DBHelper.withDbConnection(implicit conn => {
-			val stmt = conn.createStatement()
-			DBHelper.select(stmt, Sql, classOf[EmailTemplateEntity]).map(_.entity)
-		})
-		context += "emailTemplates" -> templates.asJava
-		context += "filterParams" -> req.queryMap().toMap.asScala
-		  .filter(kv => kv._1.startsWith("filter_") && !kv._2.head.isEmpty)
-		  .mapValues(v => new String(v.flatten))
-		  .asJava
-		super.render(context, templatePath, req)
+		if (Settings.isEmailEnabled) {
+			val templates = DBHelper.withDbConnection(implicit conn => {
+				val stmt = conn.createStatement()
+				DBHelper.select(stmt, Sql, classOf[EmailTemplateEntity]).map(_.entity)
+			})
+			context += "emailTemplates" -> templates.asJava
+			context += "filterParams" -> req.queryMap().toMap.asScala
+			  .filter(kv => kv._1.startsWith("filter_") && !kv._2.head.isEmpty)
+			  .mapValues(v => new String(v.flatten))
+			  .asJava
+			super.render(context, templatePath, req)
+		} else {
+			""
+		}
 	}
 
 	@Get(path = "/admin/object/JakonUser/:id/sendEmail", template = "")

@@ -45,10 +45,10 @@ class JakonInit {
 			DBHelper.addDao(classOf[ConfirmEmailEntity])
 			DBHelper.addDao(classOf[ResetPasswordEmailEntity])
 			TaskRunner.registerTask(new EmailSendTask(1, TimeUnit.MINUTES))
+			TaskRunner.registerTask(new ResetPasswordRequestCleanerTask)
 		}
 		TaskRunner.registerTask(new FileManagerConsistencyTestTask)
 		TaskRunner.registerTask(new LogCleanerTask)
-		TaskRunner.registerTask(new ResetPasswordRequestCleanerTask)
 	}
 
 	def afterInit(): Unit = {
