@@ -26,7 +26,7 @@ object i18nUtil {
 		  .find(_.isDefined)
 		  .flatten
 
-		if (result.isDefined) {
+		if (result.isDefined && result.get.nonEmpty) {
 			result.get
 		} else {
 			Logger.warn(s"Translation not found for key: $basename.$key")
