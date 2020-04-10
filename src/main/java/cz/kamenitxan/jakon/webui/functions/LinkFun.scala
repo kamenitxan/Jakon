@@ -12,7 +12,7 @@ class LinkFun extends Function {
 	val URL_BY_ID_SQL = "SELECT url FROM JakonObject WHERE id = ?"
 
 	override def execute(args: util.Map[String, AnyRef], self: PebbleTemplate, context: EvaluationContext, lineNumber: Int): AnyRef = {
-		val id = args.get("JakonObject_id").asInstanceOf[Long].toInt
+		val id = args.get("id").asInstanceOf[Long].toInt
 		val conn = DBHelper.getConnection
 		try {
 			val stmt = conn.prepareStatement(URL_BY_ID_SQL)
@@ -29,7 +29,7 @@ class LinkFun extends Function {
 
 	override def getArgumentNames: util.ArrayList[String] = {
 		val names = new util.ArrayList[String]
-		names.add("JakonObject_id")
+		names.add("id")
 		names
 	}
 }

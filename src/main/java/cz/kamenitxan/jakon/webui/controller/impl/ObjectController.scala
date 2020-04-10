@@ -140,7 +140,7 @@ object ObjectController {
 		new Context(Map[String, Any](
 			"objectName" -> objectName,
 			"object" -> obj,
-			"JakonObject_id" -> obj.id,
+			"id" -> obj.id,
 			"fields" -> f
 		), "objects/single")
 	}
@@ -180,7 +180,7 @@ object ObjectController {
 		}
 
 		var formOrder = 0
-		for (p <- params.filter(p => !p.equals("JakonObject_id"))) {
+		for (p <- params.filter(p => !p.equals("id"))) {
 			//TODO optimalizovat
 			val fieldRefOpt = Utils.getFieldsUpTo(objectClass, classOf[Object]).find(f => f.getName.startsWith(p))
 			if (fieldRefOpt.isDefined) {

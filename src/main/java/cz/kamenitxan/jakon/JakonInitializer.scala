@@ -12,7 +12,7 @@ import cz.kamenitxan.jakon.utils.mail.EmailTemplateEntity
 object JakonInitializer {
 
 	def init(): Unit = {
-		implicit val conn = DBHelper.getConnection
+		implicit val conn: Connection = DBHelper.getConnection
 		try {
 			val masterAdminStmt = conn.prepareStatement("SELECT * FROM AclRule WHERE masterAdmin = ?")
 			masterAdminStmt.setBoolean(1, true)
