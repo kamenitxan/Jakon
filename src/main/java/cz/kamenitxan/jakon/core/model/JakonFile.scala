@@ -16,7 +16,7 @@ class JakonFile extends JakonObject {
 	var author: JakonUser = _
 	@JakonField
 	var created: LocalDateTime = _
-	@JakonField
+	@JakonField(disabled = true)
 	var fileType: FileType = _
 
 	@transient

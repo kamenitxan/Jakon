@@ -28,7 +28,7 @@ class TaskController extends AbstractController {
 	@ExecuteFun(path = "task/run/:name", method = HttpMethod.get)
 	def runSingle(req: Request, res: Response): Context = {
 		val name = req.params(":name")
-		val task = TaskRunner.taskList.find(t => t.name.equals(name))
+		val task = TaskRunner.taskList.find(t => t.name.value.equals(name))
 		if (task.isDefined) TaskRunner.runSingle(task.get)
 		res.redirect("/admin/task")
 		new Context(Map[String, Any](), template)

@@ -36,7 +36,7 @@
                             <td>{{ task.lastRun | date }}</td>
                             <td>{{ task.lastExecutionTime }}ms</td>
                             <td>{% include "includes/formaters/boolean" with {"value":task.lastRunSuccessful} %}</td>
-                            <td><a href="/admin/task/run/{{ task.name }}"><i class="fa fa-play"></i></a></td>
+                            <td><a href="/admin/task/run/{{ task.name.value }}"><i class="fa fa-play"></i></a></td>
                         </tr>
                         {% endfor %}
                         </tbody>

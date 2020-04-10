@@ -48,7 +48,7 @@ object Api {
 		new SearchResponse(false, List[JakonObject]())
 	}
 
-	def getImages() = {
+	def getImages(req: Request, res: Response) = {
 		// TODO: get images endpoint
 	}
 }

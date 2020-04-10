@@ -74,7 +74,13 @@ class FileManagerConsistencyTestTask extends AbstractTask(1, TimeUnit.HOURS) {
 		if (fileId.isDefined) {
 			val jakonFile = files.find(f => f.id == fileId.get)
 			if (jakonFile.isDefined) {
-				jakonFile.get.mappedToFs = true
+				val jf = jakonFile.get
+				jf.mappedToFs = true
+				val fileType = getFileType(file)
+				if (jf.fileType != fileType) {
+					jf.fileType = fileType
+					jf.update()
+				}
 			} else {
 				Logger.error(s"File with id=${fileId.get} found on FS and not in DB")
 				val jakonFile = createJakonFile(file)
@@ -92,22 +98,25 @@ class FileManagerConsistencyTestTask extends AbstractTask(1, TimeUnit.HOURS) {
 
 	private def createJakonFile(file: Path)(implicit conn: Connection) = {
 		val jf = new JakonFile()
-		jf.fileType = if (Files.isDirectory(file)) {
-			FileType.FOLDER
-		} else {
-			println(file.getFileName)
-			val isImg = IMG_SUFFIXES.find(s => file.endsWith(s))
-			isImg match {
-				case Some(_) => FileType.IMAGE
-				case None => FileType.FILE
-			}
-		}
+		jf.fileType = getFileType(file)
 		jf.name = file.getFileName.toString
 		jf.path = file.getParent.toString
 		jf.created = LocalDateTime.now()
 		jf.author = UserService.getMasterAdmin()
 		jf.create()
 		jf
+	}
+
+	private def getFileType(file: Path) = {
+		if (Files.isDirectory(file)) {
+			FileType.FOLDER
+		} else {
+			val isImg = IMG_SUFFIXES.find(s => file.getFileName.toString.endsWith(s))
+			isImg match {
+				case Some(_) => FileType.IMAGE
+				case None => FileType.FILE
+			}
+		}
 	}
 
 	private def getIdFromAttrs(file: Path): Option[Int] = {
