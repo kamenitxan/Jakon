@@ -46,9 +46,9 @@ object Routes {
 		before("/admin/*", new Filter {
 			override def handle(req: Request, res: Response): Unit = {
 				if (req.pathInfo != "/admin/register"
-				  || req.pathInfo != "/admin/logout"
-				  || req.pathInfo != "/admin/login"
-				  || !req.pathInfo.startsWith("/admin/login/oauth")) {
+				  && req.pathInfo != "/admin/logout"
+				  && req.pathInfo != "/admin/login"
+				  && !req.pathInfo.startsWith("/admin/login/oauth")) {
 					var user: JakonUser = req.session.attribute("user")
 					if ((Settings.getDeployMode eq DeployMode.DEVEL) && user == null) {
 						DBHelper.withDbConnection(implicit conn => {

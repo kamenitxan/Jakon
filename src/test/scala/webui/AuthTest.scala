@@ -8,11 +8,13 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver
 import org.openqa.selenium.{By, WebDriver}
 import org.scalatest.{Outcome, fixture}
 
+import scala.util.Random
+
 /**
   * Created by TPa on 03.09.16.
   */
 class AuthTest extends fixture.FunSuite{
-	val email = "test@gmail.com"
+	val email = "test@gmail.com" + Random.nextInt()
 	val password = "paßßw0rd"
 	var host = ""
 

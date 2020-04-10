@@ -3,6 +3,8 @@ package jakon
 import cz.kamenitxan.jakon.core.model._
 import test.TestBase
 
+import scala.util.Random
+
 class ModelTest extends TestBase {
 
 	test("Page") { _ =>
@@ -56,7 +58,7 @@ class ModelTest extends TestBase {
 
 	test("KeyValueEntity") { _ =>
 		val obj = new KeyValueEntity()
-		obj.name = "test"
+		obj.name = "test" + Random.nextInt()
 		obj.value = "test"
 		obj.create()
 		obj.update()

@@ -12,15 +12,15 @@ import functions.LinkTest
 import jakon.pagelet.PageletTest
 import jakon.{DeployTest, ModelTest, RenderTest, SettingsTest}
 import logging.LoggingTest
-import org.scalatest.{BeforeAndAfterAll, Suites}
+import org.scalatest.{BeforeAndAfterAll, Suite, Suites}
 import utils.entity.TestObject
 import utils.mail.EmailTest
 import utils.{SecurityTest, SqlGenTest, i18nUtilTest}
 import webui._
 
 /**
-  * Created by TPa on 27.08.16.
-  */
+ * Created by TPa on 27.08.16.
+ */
 class TestRunner extends Suites(
 	new RenderTest,
 	new LinkTest,
@@ -42,8 +42,9 @@ class TestRunner extends Suites(
 	new ObjectExtensionTest
 ) with BeforeAndAfterAll {
 
-	override def beforeAll() {
+	val config = "jakonConfig=jakon_config_test_dev.properties"
 
+	override def beforeAll() {
 		new File("jakonUnitTest.sqlite").delete()
 		println("Before!")
 		Director.init()
@@ -51,10 +52,10 @@ class TestRunner extends Suites(
 
 		val app = new TestJakonApp()
 		try {
-			app.run(Array[String]("jakonConfig=jakon_config_test.properties"))
+			app.run(Array[String](config))
 		} catch {
 			case _: IOException =>
-				app.run(Array[String]("jakonConfig=jakon_config_test.properties", s"port=${(Settings.getPort + 1).toString}"))
+				app.run(Array[String](config, s"port=${(Settings.getPort + 1).toString}"))
 		}
 
 		val staticPage = new AbstractStaticPage("staticPage", "static") {}
@@ -70,13 +71,9 @@ class TestRunner extends Suites(
 		Director.render()
 	}
 
-	override def afterAll() {
-		println("After!")  // shut down the web server
-		new File("jakonUnitTest.sqlite").delete()
-	}
 }
 
-class TestJakonApp extends JakonInit{
+class TestJakonApp extends JakonInit {
 
 	override def daoSetup() = {
 		DBHelper.addDao(classOf[Category])

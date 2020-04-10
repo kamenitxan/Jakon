@@ -10,11 +10,13 @@ import cz.kamenitxan.jakon.webui.controller.pagelets.JakonRegistrationPagelet
 import org.scalatest.FunSuite
 import test.TestEmailTypeHandler
 
+import scala.util.Random
+
 class EmailTest extends FunSuite {
 
 	test("registrationEmailTest") {
 		val user = new JakonUser()
-		user.email = "test@test.com"
+		user.email = "test@test.com" + Random.nextInt()
 		user.create()
 		new JakonRegistrationPagelet().sendRegistrationEmail(user)
 	}

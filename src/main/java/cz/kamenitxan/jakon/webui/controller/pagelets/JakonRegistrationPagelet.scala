@@ -22,7 +22,8 @@ class JakonRegistrationPagelet extends AbstractAdminPagelet {
 	private val SQL_SELECT_EMAIL_TMPL = "SELECT subject FROM EmailTemplateEntity WHERE name = \"REGISTRATION\""
 
 	@Get(path = "",template = "pagelet/registration/register")
-	def registrationGet(response: Response) = {
+	def registrationGet(response: Response): Unit = {
+		println("reg tuna")
 		// just render
 	}
 
