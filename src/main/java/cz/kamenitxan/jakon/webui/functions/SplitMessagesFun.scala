@@ -7,7 +7,6 @@ import com.mitchellbosecke.pebble.template.{EvaluationContext, PebbleTemplate}
 import cz.kamenitxan.jakon.webui.entity.Message
 
 import scala.collection.JavaConverters._
-import scala.collection.convert.Wrappers
 
 
 /**
@@ -21,7 +20,8 @@ class SplitMessagesFun extends Function {
 	}
 
 	override def execute(args: util.Map[String, AnyRef], self: PebbleTemplate, context: EvaluationContext, lineNumber: Int): AnyRef = {
-		val messages = args.get("messages").asInstanceOf[Wrappers.MutableSeqWrapper[Message]].underlying
+		// TODO
+		val messages = args.get("messages").asInstanceOf[java.util.List[Message]].asScala
 		val map = new util.HashMap[String, util.ArrayList[Message]]()
 		messages.groupBy(m => m._severity).foreach(g => map.put(g._1.value, new util.ArrayList[Message](g._2.asJava)))
 		map

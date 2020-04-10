@@ -26,7 +26,7 @@ object PageContext {
 		val ctx = new PageContext(req, res)
 		context.set(ctx)
 		if (req.session().attribute(MESSAGES_KEY) != null) {
-			req.session().attribute(MESSAGES_KEY).asInstanceOf[mutable.MutableList[Message]].foreach(m => {
+			req.session().attribute(MESSAGES_KEY).asInstanceOf[mutable.ArrayDeque[Message]].foreach(m => {
 				context.get().messages += m
 			})
 			req.session().removeAttribute(MESSAGES_KEY)
@@ -44,7 +44,7 @@ object PageContext {
 }
 
 case class PageContext(req: Request, res: Response) {
-	val messages = new mutable.MutableList[Message]()
+	val messages = new mutable.ArrayDeque[Message]()
 
 	def getLoggedUser: Option[JakonUser] = {
 		Option.apply(req.session.attribute("user"))

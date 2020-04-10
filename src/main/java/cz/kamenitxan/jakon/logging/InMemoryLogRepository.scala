@@ -8,7 +8,7 @@ import scala.collection.mutable
   * Created by TPa on 15/11/2019.
   */
 class InMemoryLogRepository extends LogRepository {
-	var logs: mutable.Buffer[Log] = mutable.Buffer()
+	var logs: mutable.ArrayDeque[Log] = mutable.ArrayDeque()
 
 	def addLog(log: Log): Unit = {
 		if (LoggingSetting.getMaxLimit != 0 && logs.size >= LoggingSetting.getMaxLimit) {
@@ -38,5 +38,5 @@ class InMemoryLogRepository extends LogRepository {
 		})
 	}
 
-	override def getLogs: Seq[Log] = logs
+	override def getLogs: Seq[Log] = logs.toSeq
 }

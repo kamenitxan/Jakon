@@ -13,7 +13,7 @@ import scala.collection.mutable
 object TaskRunner {
 	private val logger = LoggerFactory.getLogger(this.getClass)
 	private val scheduledExecutor = Executors.newScheduledThreadPool(1)
-	var taskList: mutable.MutableList[AbstractTask] = mutable.MutableList[AbstractTask]()
+	var taskList: mutable.ArrayDeque[AbstractTask] = mutable.ArrayDeque[AbstractTask]()
 
 	def schedule(task: AbstractTask): ScheduledFuture[_] = {
 		scheduledExecutor.scheduleAtFixedRate(task, 0, task.period, task.unit)

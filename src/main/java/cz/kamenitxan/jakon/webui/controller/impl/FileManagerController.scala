@@ -28,7 +28,7 @@ import org.apache.commons.lang3.SystemUtils
 import spark.{Request, Response}
 
 import scala.annotation.switch
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 /**
   * This controller serve angular-filemanager call<br>
@@ -276,7 +276,7 @@ object FileManagerController {
 				val files = new util.HashMap[String, InputStream]
 				val sfu = new ServletFileUpload(new DiskFileItemFactory)
 				sfu.setHeaderEncoding("UTF-8")
-				val items = sfu.parseRequest(request)
+				val items = sfu.parseRequest(request).asScala
 				for (item <- items) {
 					if (item.isFormField) { // Process regular form field (input type="text|radio|checkbox|etc", select, etc).
 						if ("destination" == item.getFieldName) {
@@ -291,13 +291,13 @@ object FileManagerController {
 					Logger.debug("file size  = 0")
 					throw new Exception("file size  = 0")
 				} else {
-					for (fileEntry <- files.entrySet) {
+					files.entrySet.forEach(fileEntry => {
 						val path = Paths.get(REPOSITORY_BASE_PATH + destination, fileEntry.getKey)
 						if (!write(fileEntry.getValue, path)) {
 							Logger.debug("write error")
 							throw new Exception("write error")
 						}
-					}
+					})
 					var responseJsonObject: JSONObject = null
 					responseJsonObject = this.success()
 					response.setContentType(JSON_RESPONSE_TYPE)
@@ -330,7 +330,7 @@ object FileManagerController {
 			val directoryStream = Files.newDirectoryStream(Paths.get(REPOSITORY_BASE_PATH, path))
 			try {
 				val dt = new SimpleDateFormat(DATE_FORMAT)
-				directoryStream.filterNot(p => {
+				directoryStream.asScala.filterNot(p => {
 					val attrs = Files.readAttributes(p, classOf[BasicFileAttributes])
 					onlyFolders && !attrs.isDirectory
 				}).foreach(p => {
@@ -402,17 +402,17 @@ object FileManagerController {
 	private def move(params: JSONObject): JSONObject = try { //TODO: minidev json should be rewrited to gson
 		val paths = params.get("items").asInstanceOf[JSONArray]
 		val newpath = Paths.get(REPOSITORY_BASE_PATH, params.getAsString("newPath"))
-		for (obj <- paths) {
+		paths.forEach(obj => {
 			val path = Paths.get(REPOSITORY_BASE_PATH, obj.toString)
 			val mpath = newpath.resolve(path.getFileName)
 			Logger.debug(s"mv $path to $mpath exists? ${Files.exists(mpath)}")
 			if (Files.exists(mpath)) return error(mpath.toString + AlreadyExists)
-		}
-		for (obj <- paths) {
+		})
+		paths.forEach(obj => {
 			val path = Paths.get(REPOSITORY_BASE_PATH, obj.toString)
 			val mpath = newpath.resolve(path.getFileName)
 			Files.move(path, mpath, StandardCopyOption.REPLACE_EXISTING)
-		}
+		})
 		success()
 	} catch {
 		case e: IOException =>
@@ -446,7 +446,7 @@ object FileManagerController {
 		val paths = params.get("items").asInstanceOf[JSONArray]
 		val error = new StringBuilder
 		val sb = new StringBuilder
-		for (obj <- paths) {
+		paths.forEach(obj => {
 			val path = Paths.get(REPOSITORY_BASE_PATH, obj.toString)
 			if (!FileUtils.deleteQuietly(path.toFile)) {
 				val errrMsg = if (error.nonEmpty) {
@@ -460,7 +460,7 @@ object FileManagerController {
 				sb.append(msg).append(path.subpath(1, path.getNameCount).toString)
 				Logger.debug(s"remove $path")
 			}
-		}
+		})
 		if (error.nonEmpty) {
 			if (sb.nonEmpty) {
 				sb.append("\nPlease refresh this folder to list last result.")
@@ -503,7 +503,7 @@ object FileManagerController {
 			val paths = params.get("items").asInstanceOf[JSONArray]
 			val newpath = Paths.get(REPOSITORY_BASE_PATH, params.getAsString("newPath"))
 			val newFileName = params.getAsString("singleFilename")
-			for (obj <- paths) {
+			paths.forEach(obj => {
 				val path = if (newFileName == null) {
 					Paths.get(REPOSITORY_BASE_PATH, obj.toString)
 				} else {
@@ -514,13 +514,13 @@ object FileManagerController {
 				if (Files.exists(mpath)) {
 					return error(mpath.toString + AlreadyExists)
 				}
-			}
-			for (obj <- paths) {
+			})
+			paths.forEach(obj => {
 				val path = Paths.get(REPOSITORY_BASE_PATH, obj.toString)
 				val mpath = newpath.resolve(if (newFileName == null) path.getFileName
 				else Paths.get(".", newFileName).getFileName)
 				Files.copy(path, mpath, StandardCopyOption.REPLACE_EXISTING)
-			}
+			})
 			success()
 		} catch {
 			case e: IOException =>
@@ -544,7 +544,7 @@ object FileManagerController {
 		val appDir = dest.toAbsolutePath.toString.replace("upload/basePath", "")
 		val zipfs = FileSystems.newFileSystem(URI.create(s"jar:file:$appDir" + zip.toString), env)
 		try {
-			for (path <- paths) {
+			paths.forEach(path => {
 				val realPath = Paths.get(REPOSITORY_BASE_PATH, path.toString)
 				if (Files.isDirectory(realPath)) Files.walkFileTree(Paths.get(REPOSITORY_BASE_PATH, path.toString), new SimpleFileVisitor[Path]() {
 					@throws[IOException]
@@ -570,7 +570,7 @@ object FileManagerController {
 					Logger.debug(s"compress: '$pathInZipFile'")
 					Files.copy(realPath, pathInZipFile, StandardCopyOption.REPLACE_EXISTING)
 				}
-			}
+			})
 			zipped = true
 		} finally {
 			if (!zipped) Files.deleteIfExists(zip)

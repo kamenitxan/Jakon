@@ -81,7 +81,9 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(period, u
 					e.update()
 					Settings.getEmailTypeHandler.afterSend(e.emailType)
 				} catch {
-					case ex: Exception => Logger.error(s"Failed to send email (id:${e.id})", ex)
+					case ex: Exception =>
+						Logger.error(s"Failed to send email (id:${e.id})", ex)
+						throw ex
 				}
 			})
 		} finally {

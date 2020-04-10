@@ -19,7 +19,8 @@ import cz.kamenitxan.jakon.webui.controller.impl.{DeployController, LogViewer, T
 import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, ResetPasswordEmailEntity}
 import spark.Spark._
 import spark.debug.DebugScreen.enableDebugScreen
-import spark.{Request, Response}
+import spark.servlet.SparkFilter
+import spark.{Filter, Request, Response, Route, servlet}
 
 
 class JakonInit {
@@ -29,7 +30,7 @@ class JakonInit {
 
 	var routesSetup: () => Unit = () => {}
 
-	def adminControllers() {
+	def adminControllers(): Unit = {
 		if (Files.exists(Paths.get("servers.json"))) {
 			AdminSettings.registerCustomController(classOf[DeployController])
 		}
@@ -94,13 +95,15 @@ class JakonInit {
 		AnnotationScanner.load()
 		if (Settings.getDeployMode !=  DeployMode.DEVEL) {
 			PageletInitializer.protectedPrefixes.foreach(pp => {
-				before(pp + "/*", (req: Request, res: Response) => {
-					val user: JakonUser = req.session.attribute("user")
-					if (user == null || (!user.acl.adminAllowed && !user.acl.allowedFrontendPrefixes.contains(pp))) {
-						Logger.debug(s"Used $user denied access to '$pp/*'")
-						res.redirect(Settings.getLoginPath + s"?redirectTo=${req.pathInfo()}", 302)
+				before(pp + "/*", new Filter {
+					override def handle(req: Request, res: Response): Unit = {
+						val user: JakonUser = req.session.attribute("user")
+						if (user == null || (!user.acl.adminAllowed && !user.acl.allowedFrontendPrefixes.contains(pp))) {
+							Logger.debug(s"Used $user denied access to '$pp/*'")
+							res.redirect(Settings.getLoginPath + s"?redirectTo=${req.pathInfo()}", 302)
+						}
 					}
-				})
+				} )
 			})
 		}
 		Director.start()

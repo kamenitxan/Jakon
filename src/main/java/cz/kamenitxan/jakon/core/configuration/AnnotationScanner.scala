@@ -61,7 +61,7 @@ object AnnotationScanner {
 	implicit class ClassInfoListExtensions(val cil: ClassInfoList) {
 
 		def loadScalaClasses(): Seq[Class[_]] = {
-			cil.loadClasses().asScala
+			cil.loadClasses().asScala.toSeq
 		}
 	}
 

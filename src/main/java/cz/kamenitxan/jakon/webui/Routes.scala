@@ -11,7 +11,7 @@ import cz.kamenitxan.jakon.webui.controller.{AbstractController, ExecuteFun}
 import cz.kamenitxan.jakon.webui.controller.impl.{Authentication, FileManagerController, ObjectController, UserController}
 import spark.Spark._
 import spark.route.HttpMethod
-import spark.{Request, Response, ResponseTransformer}
+import spark.{Filter, Request, Response, ResponseTransformer}
 
 
 /**
@@ -24,34 +24,41 @@ object Routes {
 		val gson = new Gson
 		val gsonTransformer: ResponseTransformer = (model: Any) => gson.toJson(model)
 
-		before("*", (request: Request, _: Response) => {
-			// also prepares page context
-			if (!request.pathInfo.startsWith("/jakon/")) {
-				Logger.debug("Processing req: " + request.pathInfo)
-			}
-		})
-		before("/admin", (request: Request, response: Response) => {
-			val user: JakonUser = request.session.attribute("user")
-			if ((Settings.getDeployMode ne DeployMode.DEVEL)
-			  && request.session.attribute("user") != null
-			  && (user.acl.adminAllowed || user.acl.masterAdmin)) {
-				response.redirect("/admin/index", 302)
-			}
-		})
-		before("/admin/*", (req: Request, res: Response) => {
-			if (req.pathInfo != "/admin/register"
-			  || req.pathInfo != "/admin/logout"
-			  || req.pathInfo != "/admin/login"
-			  || !req.pathInfo.startsWith("/admin/login/oauth")) {
-				var user: JakonUser = req.session.attribute("user")
-				if ((Settings.getDeployMode eq DeployMode.DEVEL) && user == null) {
-					DBHelper.withDbConnection(implicit conn => {
-						user = UserService.getMasterAdmin
-						req.session(true).attribute("user", user)
-					})
+		before("*", new Filter {
+			override def handle(request: Request, response: Response): Unit = {
+				// also prepares page context
+				if (!request.pathInfo.startsWith("/jakon/")) {
+					Logger.debug("Processing req: " + request.pathInfo)
 				}
-				if (user == null || !user.acl.adminAllowed && !user.acl.masterAdmin) {
-					res.redirect("/admin", 302)
+			}
+		})
+		before("/admin", new Filter {
+			override def handle(request: Request, response: Response): Unit = {
+				val user: JakonUser = request.session.attribute("user")
+				if ((Settings.getDeployMode ne DeployMode.DEVEL)
+				  && request.session.attribute("user") != null
+				  && (user.acl.adminAllowed || user.acl.masterAdmin)) {
+					response.redirect("/admin/index", 302)
+				}
+			}
+		})
+
+		before("/admin/*", new Filter {
+			override def handle(req: Request, res: Response): Unit = {
+				if (req.pathInfo != "/admin/register"
+				  || req.pathInfo != "/admin/logout"
+				  || req.pathInfo != "/admin/login"
+				  || !req.pathInfo.startsWith("/admin/login/oauth")) {
+					var user: JakonUser = req.session.attribute("user")
+					if ((Settings.getDeployMode eq DeployMode.DEVEL) && user == null) {
+						DBHelper.withDbConnection(implicit conn => {
+							user = UserService.getMasterAdmin
+							req.session(true).attribute("user", user)
+						})
+					}
+					if (user == null || !user.acl.adminAllowed && !user.acl.masterAdmin) {
+						res.redirect("/admin", 302)
+					}
 				}
 			}
 		})
