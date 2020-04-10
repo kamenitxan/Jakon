@@ -39,21 +39,20 @@ object Routes {
 			}
 		})
 		before("/admin/*", (req: Request, res: Response) => {
-			if (req.pathInfo == "/admin/register"
-			  || req.pathInfo == "/admin/logout"
-			  || req.pathInfo == "/admin/login"
-			  || req.pathInfo.startsWith("/admin/login/oauth")) {
-				return
-			}
-			var user: JakonUser = req.session.attribute("user")
-			if ((Settings.getDeployMode eq DeployMode.DEVEL) && user == null) {
-				DBHelper.withDbConnection(implicit conn => {
-					user = UserService.getMasterAdmin
-					req.session(true).attribute("user", user)
-				})
-			}
-			if (user == null || !user.acl.adminAllowed && !user.acl.masterAdmin) {
-				res.redirect("/admin", 302)
+			if (req.pathInfo != "/admin/register"
+			  || req.pathInfo != "/admin/logout"
+			  || req.pathInfo != "/admin/login"
+			  || !req.pathInfo.startsWith("/admin/login/oauth")) {
+				var user: JakonUser = req.session.attribute("user")
+				if ((Settings.getDeployMode eq DeployMode.DEVEL) && user == null) {
+					DBHelper.withDbConnection(implicit conn => {
+						user = UserService.getMasterAdmin
+						req.session(true).attribute("user", user)
+					})
+				}
+				if (user == null || !user.acl.adminAllowed && !user.acl.masterAdmin) {
+					res.redirect("/admin", 302)
+				}
 			}
 		})
 
