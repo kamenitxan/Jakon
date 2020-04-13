@@ -7,7 +7,7 @@ import cz.kamenitxan.jakon.webui.controller.objectextension.AbstractObjectExtens
 import cz.kamenitxan.jakon.webui.entity.CustomControllerInfo
 import spark.{Request, Response}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.mutable
 
 object AdminSettings {

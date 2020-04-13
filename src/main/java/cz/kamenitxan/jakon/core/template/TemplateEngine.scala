@@ -4,7 +4,7 @@ import java.util
 
 import cz.kamenitxan.jakon.core.controller.IController
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
@@ -13,7 +13,7 @@ trait TemplateEngine {
 	def render(templateName: String, path: String, context: util.Map[String, AnyRef])(implicit caller: IController): Unit
 
 	def render(templateName: String, path: String, context: Map[String, AnyRef])(implicit caller: IController): Unit = {
-		render(templateName, path, mapAsJavaMap(context))
+		render(templateName, path, context.asJava)
 	}
 
 	/**

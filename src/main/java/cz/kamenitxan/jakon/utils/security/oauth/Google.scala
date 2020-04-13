@@ -12,7 +12,7 @@ import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.utils.Utils.StringImprovements
 import spark.Request
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 
 @Configuration

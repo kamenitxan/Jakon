@@ -5,7 +5,7 @@ import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.controller.AbstractController
 import spark.{Request, Response}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class LogViewer extends AbstractController {
 	override val template: String = "pages/logViewer"

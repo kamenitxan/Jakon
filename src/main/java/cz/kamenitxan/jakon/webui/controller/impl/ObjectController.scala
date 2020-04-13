@@ -15,7 +15,7 @@ import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import spark.{ModelAndView, Request, Response}
 
 import scala.annotation.tailrec
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.mutable
 import scala.util.Try
 

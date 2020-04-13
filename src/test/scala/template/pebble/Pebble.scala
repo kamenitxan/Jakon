@@ -1,9 +1,9 @@
 package template.pebble
 
 import cz.kamenitxan.jakon.core.template.pebble.MarkdownFilter
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class Pebble extends FunSuite {
+class Pebble extends AnyFunSuite {
 
 	val testContent = "```\nclass ExampleTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[ExampleTask].getSimpleName, period, unit) {  " +
 	  "\n\toverride def start(): Unit = {\n\t\t???\n\t}\n}\n```\n\nThen in JakonInit\n\n```\ndef taskSetup(): Unit = {\n\t\tTaskRunner.registerTask(new ExampleTask(10, TimeUnit.MINUTES))\n}\n```\n"

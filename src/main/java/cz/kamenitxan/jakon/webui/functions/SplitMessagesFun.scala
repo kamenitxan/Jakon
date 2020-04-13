@@ -6,7 +6,7 @@ import com.mitchellbosecke.pebble.extension.Function
 import com.mitchellbosecke.pebble.template.{EvaluationContext, PebbleTemplate}
 import cz.kamenitxan.jakon.webui.entity.Message
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 
 /**

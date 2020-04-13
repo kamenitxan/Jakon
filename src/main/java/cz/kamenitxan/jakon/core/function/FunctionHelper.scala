@@ -13,7 +13,7 @@ object FunctionHelper {
 
 	register(new Link)
 
-	def register(f: IFuncion) {
+	def register(f: IFuncion): Unit = {
 		functions.put(f.getName, f)
 	}
 

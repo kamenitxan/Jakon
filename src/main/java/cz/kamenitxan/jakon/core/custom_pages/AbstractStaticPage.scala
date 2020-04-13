@@ -9,7 +9,7 @@ abstract class AbstractStaticPage(val templateName: String, pageUrl: String) ext
 	this.url = pageUrl
 
 
-	override def generate() {
+	override def generate(): Unit = {
 		engine.render(templateName, url, Map[String, AnyRef]())
 	}
 

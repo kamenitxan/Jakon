@@ -15,7 +15,7 @@ import cz.kamenitxan.jakon.core.model.KeyValueEntity
 import cz.kamenitxan.jakon.core.service.KeyValueService
 import cz.kamenitxan.jakon.logging.Logger
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.io.Source
 
 object DeployDirector {
@@ -27,6 +27,7 @@ object DeployDirector {
 			val gson = new Gson()
 			import java.util
 			val listType: Type = new TypeToken[util.ArrayList[Server]]() {}.getType
+			// TODO: close source
 			val s = gson.fromJson(Source.fromFile("servers.json").mkString, listType).asInstanceOf[util.ArrayList[Server]]
 			val b = s.asScala.zipWithIndex
 			  .map(zi => {
@@ -67,7 +68,7 @@ object DeployDirector {
 
 	private def updateLastDeployTime(s: Server) = {
 		val key = KV_PREFIX + s.id
-		implicit val conn = DBHelper.getConnection
+		implicit val conn: Connection = DBHelper.getConnection
 		try {
 			KeyValueService.deleteByKey(key)
 			val dateTime = s.lastDeployed.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)

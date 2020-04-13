@@ -12,7 +12,7 @@ import cz.kamenitxan.jakon.utils.{PageContext, SqlGen}
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import spark.{Request, Response}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.mutable
 
 @ObjectExtension(value = classOf[JakonUser], extensionType = ExtensionType.BOTH)

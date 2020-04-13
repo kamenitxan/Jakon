@@ -6,7 +6,7 @@ import cz.kamenitxan.jakon.webui.controller.{AbstractController, ExecuteFun}
 import spark.route.HttpMethod
 import spark.{Request, Response}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 /**
   * Created by TPa on 27.05.18.

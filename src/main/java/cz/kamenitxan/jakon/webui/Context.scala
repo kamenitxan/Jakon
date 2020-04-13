@@ -4,7 +4,7 @@ import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.utils.PageContext
 import spark.ModelAndView
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 /**
   * Created by TPa on 06.09.16.

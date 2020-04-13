@@ -28,7 +28,7 @@ import org.apache.commons.lang3.SystemUtils
 import spark.{Request, Response}
 
 import scala.annotation.switch
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 /**
   * This controller serve angular-filemanager call<br>

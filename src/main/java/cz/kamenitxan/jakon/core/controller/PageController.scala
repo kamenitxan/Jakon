@@ -18,7 +18,7 @@ class PageController extends IController {
 
 	val ALL_PAGES_SQL = "SELECT * FROM Page JOIN JakonObject ON Page.id = JakonObject.id"
 
-	def generate() {
+	def generate(): Unit = {
 		val e: TemplateEngine = TemplateUtils.getEngine
 		val conn = DBHelper.getConnection
 		try {

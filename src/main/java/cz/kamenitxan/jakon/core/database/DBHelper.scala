@@ -31,7 +31,7 @@ object DBHelper {
 	}
 
 
-	def addDao[T <: JakonObject](jobject: Class[T]) {
+	def addDao[T <: JakonObject](jobject: Class[T]): Unit = {
 		objects += jobject
 	}
 

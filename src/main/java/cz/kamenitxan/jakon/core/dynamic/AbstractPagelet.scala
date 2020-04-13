@@ -8,7 +8,7 @@ import cz.kamenitxan.jakon.utils.PageContext
 import spark._
 import spark.template.pebble.PebbleTemplateEngine
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.mutable
 
 /**

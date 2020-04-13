@@ -8,7 +8,7 @@ import cz.kamenitxan.jakon.logging.Logger
 
 object Main {
 
-	def main(args: Array[String]) {
+	def main(args: Array[String]): Unit = {
 		Logger.info("Starting Jakon")
 		val app = new JakonApp()
 		app.run(args)

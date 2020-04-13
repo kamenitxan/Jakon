@@ -8,7 +8,7 @@ import cz.kamenitxan.jakon.webui.controller.{AbstractController, ExecuteFun}
 import spark.route.HttpMethod
 import spark.{Request, Response}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 
 class DeployController extends AbstractController {

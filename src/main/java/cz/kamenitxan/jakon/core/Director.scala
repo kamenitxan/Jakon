@@ -26,7 +26,7 @@ object Director {
 
 	val SELECT_EMAIL_TMPL_SQL = "SELECT addressFrom, template, subject FROM EmailTemplateEntity WHERE name = ?"
 
-	def init() {
+	def init(): Unit = {
 		Settings.setTemplateDir("templates/bacon/")
 		Settings.setTemplateEngine(new Pebble)
 		Settings.setOutputDir("out")
@@ -59,7 +59,7 @@ object Director {
 		Logger.info("Jakon default init complete")
 	}
 
-	def render() {
+	def render(): Unit = {
 		TemplateUtils.clean(Settings.getOutputDir)
 		controllers.foreach(i => {
 			//TODO: poslat chybu dale ale neukoncit generovani
@@ -77,12 +77,12 @@ object Director {
 		Logger.info("Render complete")
 	}
 
-	def registerCustomPage(page: AbstractCustomPage) {
+	def registerCustomPage(page: AbstractCustomPage): Unit = {
 		customPages = customPages.::(page)
 
 	}
 
-	def registerController(controller: IController) {
+	def registerController(controller: IController): Unit = {
 		controllers = controllers.::(controller)
 	}
 }

@@ -14,7 +14,7 @@ import cz.kamenitxan.jakon.core.template.utils.TemplateUtils
 import cz.kamenitxan.jakon.devtools.DevRender
 import cz.kamenitxan.jakon.webui.util.JakonFileLoader
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 
 /**
@@ -35,7 +35,7 @@ class Pebble extends TemplateEngine {
 	private val engine = builder.build()
 	private val stringEngine = builder.loader(new StringLoader()).build()
 
-	def render(templateName: String, path: String, context: util.Map[String, AnyRef])(implicit caller: IController) {
+	def render(templateName: String, path: String, context: util.Map[String, AnyRef])(implicit caller: IController): Unit = {
 
 		val output = renderString(templateName, context)
 		TemplateUtils.saveRenderedPage(output, path)
@@ -45,7 +45,7 @@ class Pebble extends TemplateEngine {
 	}
 
 	override def renderToString(templateName: String, context: Map[String, AnyRef]): String = {
-		renderString(templateName, mapAsJavaMap(context))
+		renderString(templateName, context.asJava)
 	}
 
 	private def renderString(templateName: String, context: util.Map[String, AnyRef]): String = {
@@ -68,7 +68,7 @@ class Pebble extends TemplateEngine {
 
 	override def renderTemplate(template: String, context: Map[String, AnyRef]): String = {
 		val writer = new StringWriter()
-		stringEngine.getTemplate(template).evaluate(writer, mapAsJavaMap(context))
+		stringEngine.getTemplate(template).evaluate(writer, context.asJava)
 		writer.toString
 	}
 }

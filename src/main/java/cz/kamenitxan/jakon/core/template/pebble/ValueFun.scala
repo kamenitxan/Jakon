@@ -5,7 +5,7 @@ import java.util
 import com.mitchellbosecke.pebble.extension.Function
 import com.mitchellbosecke.pebble.template.{EvaluationContext, PebbleTemplate}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 /**
   * @return first not null argument

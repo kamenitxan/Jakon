@@ -8,7 +8,7 @@ import cz.kamenitxan.jakon.webui.conform.FieldConformer._
 import cz.kamenitxan.jakon.webui.controller.impl.ObjectController.excludedFields
 import spark.{ModelAndView, Request, Response}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.language.postfixOps
 
 /**
