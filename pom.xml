@@ -371,7 +371,7 @@
 				<executions>
 					<execution>
 						<goals>
-							<goal>test</goal>
+							<goal>report</goal>
 						</goals>
 						<phase>prepare-package</phase> <!-- or any other phase -->
 					</execution>
