@@ -34,9 +34,9 @@ object DBInitializer {
 	def dbExists(): Unit = {
 		if (Settings.getDatabaseType == DatabaseType.SQLITE) {
 			val dbFile = Settings.getDatabaseConnPath.replace("jdbc:sqlite:", "")
-			val exists = new File(dbFile).exists()
-			if (!exists) {
-				Logger.critical("SQLite DB file does not exist. Restart Jakon in DEVEL mode to create it.")
+			val file = new File(dbFile)
+			if (!file.exists()) {
+				Logger.critical(s"SQLite DB(${file.getPath}) file does not exist. Restart Jakon in DEVEL mode to create it.")
 				System.exit(42)
 			}
 		}
