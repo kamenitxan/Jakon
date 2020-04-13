@@ -4,9 +4,9 @@ import java.util
 
 import cz.kamenitxan.jakon.core.function.{FunctionHelper, IFuncion}
 import cz.kamenitxan.jakon.core.template.pebble.ValueFun
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class FunctionHelperTest extends FunSuite {
+class FunctionHelperTest extends AnyFunSuite {
 	test("function split params") {
 		val params = FunctionHelper.splitParams("param1=val1 param2=val2")
 		assert(params.containsKey("param1"))

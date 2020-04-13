@@ -4,7 +4,7 @@ import cz.kamenitxan.jakon.core.model.Page
 import org.openqa.selenium.{By, WebDriver}
 import test.TestBase
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 /**
   * Created by TPa on 2019-03-19.

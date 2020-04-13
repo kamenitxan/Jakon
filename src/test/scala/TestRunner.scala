@@ -9,7 +9,7 @@ import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{Category, Page, Post}
 import cz.kamenitxan.jakon.core.template.Pebble
 import functions.LinkTest
-import jakon.pagelet.PageletTest
+import jakon.pagelet.{JsonPageletTest, PageletTest}
 import jakon.{DeployTest, ModelTest, RenderTest, SettingsTest}
 import logging.LoggingTest
 import org.scalatest.{BeforeAndAfterAll, Suite, Suites}
@@ -37,6 +37,7 @@ class TestRunner extends Suites(
 	new SettingsTest,
 	new i18nUtilTest,
 	new PageletTest,
+	new JsonPageletTest,
 	new DeployTest,
 	new LoggingTest,
 	new ObjectExtensionTest
@@ -44,7 +45,7 @@ class TestRunner extends Suites(
 
 	val config = "jakonConfig=jakon_config_test_dev.properties"
 
-	override def beforeAll() {
+	override def beforeAll(): Unit = {
 		new File("jakonUnitTest.sqlite").delete()
 		println("Before!")
 		Director.init()

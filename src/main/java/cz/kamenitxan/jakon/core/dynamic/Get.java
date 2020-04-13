@@ -10,5 +10,5 @@ import java.lang.annotation.Target;
 public @interface Get {
 	String path();
 
-	String template();
+	String template() default "";
 }

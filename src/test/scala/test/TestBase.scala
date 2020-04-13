@@ -3,13 +3,14 @@ package test
 import cz.kamenitxan.jakon.core.configuration.Settings
 import org.openqa.selenium.htmlunit.HtmlUnitDriver
 import org.openqa.selenium.{By, WebDriver, WebElement}
-import org.scalatest.{Assertion, Outcome, fixture}
+import org.scalatest.funsuite.FixtureAnyFunSuite
+import org.scalatest.{Assertion, Outcome}
 
-import scala.collection.JavaConverters._
 import scala.collection.mutable
+import scala.jdk.CollectionConverters._
 
 
-class TestBase extends fixture.FunSuite{
+class TestBase extends FixtureAnyFunSuite {
 	var host = ""
 	val admin = "/admin/"
 

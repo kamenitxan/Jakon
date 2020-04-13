@@ -8,7 +8,7 @@ import java.util.{Collections, Locale}
 import javax.servlet.http._
 import javax.servlet._
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.mutable
 
 

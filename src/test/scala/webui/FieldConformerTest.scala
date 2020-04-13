@@ -10,9 +10,9 @@ import cz.kamenitxan.jakon.webui.conform.FieldConformer
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
 import cz.kamenitxan.jakon.webui.entity.{JakonField, MessageSeverity}
 import javax.persistence.ManyToMany
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class FieldConformerTest extends FunSuite {
+class FieldConformerTest extends AnyFunSuite {
 
 	private val fieldCount = 14
 

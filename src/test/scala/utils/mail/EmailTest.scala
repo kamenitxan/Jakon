@@ -7,12 +7,12 @@ import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.webui.controller.pagelets.JakonRegistrationPagelet
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 import test.TestEmailTypeHandler
 
 import scala.util.Random
 
-class EmailTest extends FunSuite {
+class EmailTest extends AnyFunSuite {
 
 	test("registrationEmailTest") {
 		val user = new JakonUser()

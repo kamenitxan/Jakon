@@ -6,17 +6,18 @@ import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.webui.controller.impl.Authentication
 import org.openqa.selenium.htmlunit.HtmlUnitDriver
 import org.openqa.selenium.{By, WebDriver}
-import org.scalatest.{Outcome, fixture}
+import org.scalatest.Outcome
+import org.scalatest.funsuite.FixtureAnyFunSuite
 
 import scala.util.Random
 
 /**
   * Created by TPa on 03.09.16.
   */
-class AuthTest extends fixture.FunSuite{
-	val email = "test@gmail.com" + Random.nextInt()
-	val password = "paßßw0rd"
-	var host = ""
+class AuthTest extends FixtureAnyFunSuite {
+	private val email = "test@gmail.com" + Random.nextInt()
+	private val password = "paßßw0rd"
+	private var host = ""
 
 
 	case class FixtureParam(driver: WebDriver)

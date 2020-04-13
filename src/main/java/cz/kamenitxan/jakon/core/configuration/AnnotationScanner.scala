@@ -1,15 +1,15 @@
 package cz.kamenitxan.jakon.core.configuration
 
 import cz.kamenitxan.jakon.core.custom_pages.{CustomPage, CustomPageInitializer, StaticPage}
-import cz.kamenitxan.jakon.core.dynamic.{Pagelet, PageletInitializer}
+import cz.kamenitxan.jakon.core.dynamic.{JsonPagelet, JsonPageletInitializer, Pagelet, PageletInitializer}
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.controller.objectextension.{ObjectExtension, ObjectExtensionInitializer}
 import io.github.classgraph.{ClassGraph, ClassInfoList, ScanResult}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 
-object AnnotationScanner {
+class AnnotationScanner {
 
 	private val scanResult = {
 		val cg = new ClassGraph().enableAllInfo()
@@ -38,7 +38,9 @@ object AnnotationScanner {
 
 	private def loadControllers(scanResult: ScanResult): Unit = {
 		val controllers = scanResult.getClassesWithAnnotation(classOf[Pagelet].getCanonicalName).loadScalaClasses()
+		val jsonControllers = scanResult.getClassesWithAnnotation(classOf[JsonPagelet].getCanonicalName).loadScalaClasses()
 		PageletInitializer.initControllers(controllers)
+		JsonPageletInitializer.initControllers(jsonControllers)
 	}
 
 	private def loadCustomPages(scanResult: ScanResult): Unit = {

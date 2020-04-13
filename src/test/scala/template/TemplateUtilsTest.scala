@@ -1,12 +1,12 @@
 package template
 
 import cz.kamenitxan.jakon.core.template.utils.TemplateUtils
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
 /**
  * Created by TPa on 04.04.2020.
  */
-class TemplateUtilsTest extends FunSuite {
+class TemplateUtilsTest extends AnyFunSuite {
 
 	test("parseMarkdown text") {
 		val input = "just text"

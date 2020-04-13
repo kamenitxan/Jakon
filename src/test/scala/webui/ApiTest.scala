@@ -4,11 +4,11 @@ import java.io.DataOutputStream
 import java.net.{HttpURLConnection, URL}
 
 import cz.kamenitxan.jakon.core.configuration.Settings
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
 import scala.io.Source
 
-class ApiTest extends FunSuite {
+class ApiTest extends AnyFunSuite {
 
 	var host = ""
 

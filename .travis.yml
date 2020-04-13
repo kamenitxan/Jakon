@@ -2,7 +2,8 @@ language: java
 jdk: openjdk8
 install: true
 script:
-- mvn -X install sonar:sonar -Dsonar.projectKey=kamenitxan_Jakon
+- mvn install sonar:sonar -Dsonar.projectKey=kamenitxan_Jakon
+- mvn test -Pprod-test
 cache:
   directories:
     - "$HOME/.m2"

@@ -159,7 +159,7 @@ object PageletInitializer {
 		m.getParameterTypes.find(c => c != REQUEST_CLS && c != RESPONSE_CLS && c != CONNECTION_CLS)
 	}
 
-	private def createMethodArgs(m: Method, req: Request, res: Response, conn: Connection): MethodArgs = {
+	private[dynamic] def createMethodArgs(m: Method, req: Request, res: Response, conn: Connection): MethodArgs = {
 		var dataRef: AnyRef = null
 		val arr = m.getParameterTypes.map {
 			case REQUEST_CLS => req

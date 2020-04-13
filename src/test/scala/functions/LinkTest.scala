@@ -1,15 +1,15 @@
 package functions
 
 import cz.kamenitxan.jakon.core.function.FunctionHelper
-import org.scalatest.FunSuite
 import java.util
 
 import cz.kamenitxan.jakon.core.model.Page
+import org.scalatest.funsuite.AnyFunSuite
 
 /**
   * Created by TPa on 01.09.16.
   */
-class LinkTest extends FunSuite{
+class LinkTest extends AnyFunSuite{
 	test("link test") {
 		val page = new Page()
 		page.title = "test page"

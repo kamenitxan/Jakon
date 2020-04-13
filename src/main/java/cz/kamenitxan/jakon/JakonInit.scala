@@ -67,7 +67,8 @@ class JakonInit {
 		val configName = arguments.find(a => a._1 == "jakonConfig").map(a => a._2)
 		val configFile = if (configName.nonEmpty) new File(configName.get) else null
 		ConfigurationInitializer.init(configFile)
-		AnnotationScanner.loadConfiguration()
+		val annotationScanner = new AnnotationScanner
+		annotationScanner.loadConfiguration()
 
 		staticFiles.externalLocation(Settings.getStaticDir)
 		staticFiles.location("/static")
@@ -92,7 +93,7 @@ class JakonInit {
 			notFound((req: Request, res: Response) => new StaticFilesController().doGet(req, res))
 		}
 		routesSetup()
-		AnnotationScanner.load()
+		annotationScanner.load()
 		if (Settings.getDeployMode !=  DeployMode.DEVEL) {
 			PageletInitializer.protectedPrefixes.foreach(pp => {
 				before(pp + "/*", new Filter {

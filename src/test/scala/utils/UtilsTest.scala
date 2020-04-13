@@ -4,10 +4,10 @@ import cz.kamenitxan.jakon.Main
 import cz.kamenitxan.jakon.core.model.{JakonObject, JakonUser}
 import cz.kamenitxan.jakon.utils.Utils._
 import cz.kamenitxan.jakon.utils.{TypeReferences, Utils}
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
 
-class UtilsTest extends FunSuite {
+class UtilsTest extends AnyFunSuite {
 
 	test("getClassByFieldName") {
 		val cls = Utils.getClassByFieldName(classOf[JakonUser], "id")
