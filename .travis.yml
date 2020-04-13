@@ -3,7 +3,7 @@ jdk: openjdk8
 install: true
 script:
 - mvn install sonar:sonar -Dsonar.projectKey=kamenitxan_Jakon
-- mvn test -Pprod-test scoverage:report
+- mvn -Pprod-test scoverage:report
 cache:
   directories:
     - "$HOME/.m2"
