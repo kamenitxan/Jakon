@@ -3,7 +3,9 @@ jdk: openjdk8
 install: true
 script:
 - mvn install sonar:sonar -Dsonar.projectKey=kamenitxan_Jakon
+- bash <(curl -s https://codecov.io/bash)
 - mvn -Pprod-test scoverage:report
+- bash <(curl -s https://codecov.io/bash)
 cache:
   directories:
     - "$HOME/.m2"
@@ -14,6 +16,3 @@ addons:
     organization: "kamenitxan"
     token:
       secure: "o+V9mHaSdgeczYvKHBeQgmuztFe8cZXRQ0fjU8lYidHrHHWQ7MTihBzmqBTDK0pV8f+xMwDkWNhSBxfHXEVt48Rcl20vpxbwda5ju0N+/41C2m8AIU323YKUwT6i1O+AWx+1MBV1avPPT67RiiJBUtoQfHRJWeZTZPKC3Y87ydWzw3iCnl5a0IBWc8dYgMqpH1Q19jw4CUgyV4Npiyrw3y9ge6Tt2Ldz0B4ctodk43YaZSwNZnxY+YeUTRS3WxEQLbPjPWvs1w7I6SS5lJEPn4Y5OUll4/frTMEuTKgmoTWKsOFhSKYvKMv563CaBVpiDNB2q3I1ALGC9X4vjMAAHhkzm9VqyVEGFZyxeTcUHeY/8kazS9AMcL23W0KI5ljAqxndLSUx/5kPJRbAex/Y0X9haFHJ2sAP1uEAEU8hdrYpBQmx+PQzEwDyUHfITycEwFWd8EZ+B2I1VI+R/UcCPE9xnoUPC2gfznuy5ZrVRioycUzENbrdz7XmkgJHvts/Azu8DJGKiSXYBVVXulUjcdCWrrsu7PVZYJVJklKwNaG05sG4jQOTzGyhcgILI0uvri5cDED7ThIsnScGItsdJhZiTNMPblouCMIQd1oMF8nyyvBdv51MtgFgUHl/l3MAXtR3fWaEJ/q+o83ZoJH2xAToR/fNaz33SSkFjkHP/9Y="
-
-after_success:
-- bash <(curl -s https://codecov.io/bash)
