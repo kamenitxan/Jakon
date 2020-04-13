@@ -19,7 +19,7 @@
 		<scala.version>2.13.1</scala.version>
 		<spark.version>2.9.1</spark.version>
 		<lucene.version>7.5.0</lucene.version>
-		<scoverage.plugin.version>1.4.0-RC1</scoverage.plugin.version>
+		<scoverage.plugin.version>1.4.1</scoverage.plugin.version>
 	</properties>
 
 	<repositories>
