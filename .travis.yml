@@ -10,7 +10,6 @@ cache:
 env:
   - MOZ_HEADLESS=1
 addons:
-  firefox: latest
   sonarcloud:
     organization: "kamenitxan"
     token:

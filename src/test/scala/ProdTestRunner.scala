@@ -56,11 +56,6 @@ class ProdTestRunner extends Suites(
 		Director.render()
 	}
 
-	override def afterAll(): Unit = {
-		println("After!")  // shut down the web server
-		new File("jakonUnitTest.sqlite").delete()
-	}
-
 }
 
 
