@@ -33,7 +33,7 @@ class TestJsonPagelet extends AbstractJsonPagelet {
 	}
 
 	@Post(path = "/postNoValidation", validate = false)
-	def post(req: Request, res: Response): String = {
+	def postNoValidation(req: Request, res: Response): String = {
 		"string"
 	}
 
