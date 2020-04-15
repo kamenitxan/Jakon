@@ -24,7 +24,7 @@ import scala.collection.mutable
 object DBHelper {
 
 	val objects: mutable.ArrayBuffer[Class[_ <: JakonObject]] = mutable.ArrayBuffer[Class[_ <: JakonObject]]()
-	lazy val ds = {
+	private lazy val ds = {
 		val tds = new HikariDataSource(DBInitializer.config)
 		tds.setLeakDetectionThreshold(60 * 1000)
 		tds
@@ -132,10 +132,10 @@ object DBHelper {
 							if (converter.getName != classOf[AbstractConverter[_]].getName) {
 								field.set(obj, converter.newInstance().convertToEntityAttribute(rs.getString(columnName)))
 							} else {
-								Logger.error(s"Convertor not specified for data type on ${obj.getClass.getSimpleName}.${field.getName}")
+								Logger.error(s"Converter not specified for data type on ${obj.getClass.getSimpleName}.${field.getName}")
 							}
 						} else {
-							Logger.warn("Uknown data type on " + cls.getSimpleName + s".$fieldName")
+							Logger.warn("Unknown data type on " + cls.getSimpleName + s".$fieldName")
 						}
 				}
 

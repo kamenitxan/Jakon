@@ -35,6 +35,19 @@ object EntityValidator {
 		}).filter(t => t != null).toMap
 	}
 
+	def createFormData(data: Any): Map[Field, String] = {
+		data.getClass.getDeclaredFields.map(f => {
+			var res: (Field, String) = null
+			try {
+				f.setAccessible(true)
+				res = (f, f.get(data).toString)
+			} catch {
+				case ex: Exception => Logger.error("Exception when setting pagelet form data value", ex)
+			}
+			res
+		}).filter(t => t != null).toMap
+	}
+
 	private def validateField(prefix: String, f: Field, fieldValue: String, validatedData: Map[Field, String]): Seq[Message] = {
 		if (!f.isAccessible) {
 			f.setAccessible(true)

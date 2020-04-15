@@ -1,6 +1,8 @@
 package cz.kamenitxan.jakon
 
-import cz.kamenitxan.jakon.core.dynamic.{AbstractJsonPagelet, Get, JsonPagelet}
+import java.sql.Connection
+
+import cz.kamenitxan.jakon.core.dynamic.{AbstractJsonPagelet, Get, JsonPagelet, Post}
 import cz.kamenitxan.jakon.logging.LoggingSetting
 import spark.{Request, Response}
 
@@ -18,5 +20,30 @@ class TestJsonPagelet extends AbstractJsonPagelet {
 	@Get(path = "/throw")
 	def throwEx(req: Request, res: Response): String = {
 		throw new IllegalAccessException()
+	}
+
+	@Get(path = "/withDataAndConnection")
+	def withDataAndConnection(req: Request, res: Response, data: TestJsonPageletData, conn: Connection): String = {
+		data.msg
+	}
+
+	@Post(path = "/post")
+	def post(req: Request, res: Response): String = {
+		"string"
+	}
+
+	@Post(path = "/postNoValidation", validate = false)
+	def post(req: Request, res: Response): String = {
+		"string"
+	}
+
+	@Post(path = "/postThrow")
+	def postThrowEx(req: Request, res: Response): String = {
+		throw new IllegalAccessException()
+	}
+
+	@Post(path = "/postWithDataAndConnection")
+	def postWithDataAndConnection(req: Request, res: Response, data: TestJsonPageletData, conn: Connection): String = {
+		data.msg
 	}
 }

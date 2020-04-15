@@ -149,18 +149,12 @@ object PageletInitializer {
 	}
 
 
-
-
-	private val REQUEST_CLS = classOf[Request]
-	private val RESPONSE_CLS = classOf[Response]
-	private val CONNECTION_CLS = classOf[Connection]
-
-	private def getDataClass(m: Method): Option[Class[_]] = {
+	def getDataClass(m: Method): Option[Class[_]] = {
 		m.getParameterTypes.find(c => c != REQUEST_CLS && c != RESPONSE_CLS && c != CONNECTION_CLS)
 	}
 
 	private[dynamic] def createMethodArgs(m: Method, req: Request, res: Response, conn: Connection): MethodArgs = {
-		var dataRef: AnyRef = null
+		var dataRef: Any = null
 		val arr = m.getParameterTypes.map {
 			case REQUEST_CLS => req
 			case RESPONSE_CLS => res
@@ -180,10 +174,10 @@ object PageletInitializer {
 				dataRef = data
 				Logger.debug(data.toString)
 				data
-		}
+		}.asInstanceOf[Array[Any]]
 		new MethodArgs(arr, dataRef)
 	}
 
-	class MethodArgs(val array: Array[AnyRef], val data: AnyRef)
+	class MethodArgs(val array: Array[Any], val data: Any)
 
 }

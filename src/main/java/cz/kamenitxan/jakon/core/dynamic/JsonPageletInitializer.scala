@@ -2,15 +2,17 @@ package cz.kamenitxan.jakon.core.dynamic
 
 import java.io.{PrintWriter, StringWriter}
 import java.lang.reflect.Method
+import java.sql.Connection
 
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper
-import cz.kamenitxan.jakon.core.dynamic.PageletInitializer.createMethodArgs
-import cz.kamenitxan.jakon.core.dynamic.entity.{AbstractJsonResponse, JsonErrorResponse, ResponseStatus}
+import cz.kamenitxan.jakon.core.dynamic.PageletInitializer.{MethodArgs, createMethodArgs}
+import cz.kamenitxan.jakon.core.dynamic.entity.{AbstractJsonResponse, JsonErrorResponse, JsonFailResponse, ResponseStatus}
 import cz.kamenitxan.jakon.logging.Logger
+import cz.kamenitxan.jakon.utils.TypeReferences._
+import cz.kamenitxan.jakon.validation.EntityValidator
+import cz.kamenitxan.jakon.webui.entity.Message
 import spark.{Request, Response, Spark}
-
-import scala.collection.mutable
 
 /**
  * Created by TPa on 13.04.2020.
@@ -49,36 +51,92 @@ object JsonPageletInitializer {
 				val methodArgs = createMethodArgs(m, req, res, conn)
 				try {
 					val responseData = m.invoke(controller, methodArgs.array: _*)
-					responseData match {
-						case rd: AbstractJsonResponse => controller.gson.toJson(rd)
-						case rd =>
-							val jr = new AbstractJsonResponse(ResponseStatus.success, rd) {}
-							controller.gson.toJson(jr, classOf[AbstractJsonResponse])
-					}
-
+					createResponse(responseData, controller)
 				} catch {
 					case ex: Exception =>
 						Logger.error("Json pagelet get method threw exception", ex)
-						val msg = if (Settings.getDeployMode != DeployMode.PRODUCTION) {
-							val sw = new StringWriter
-							val pw = new PrintWriter(sw)
-							ex.printStackTrace(pw)
-							sw.toString
-						} else {
-							null
-						}
-						res.status(500)
-						val responseData = new JsonErrorResponse(null, 1, msg)
-						controller.gson.toJson(responseData)
+						createErrorResponse(ex, res, controller)
 				}
-
 			})
 		})
 	}
 
 	private def initPostAnnotation(post: Post, controllerAnn: JsonPagelet, m: Method, c: Class[_]): Unit = {
 		Spark.post(controllerAnn.path() + post.path(), (req: Request, res: Response) => {
-			""
+			res.raw().setContentType(JsonContentType)
+			val controller = c.getDeclaredConstructor().newInstance().asInstanceOf[AbstractJsonPagelet]
+				val methodArgs = parseJsonArgs(m, req, res, controller)
+				try {
+					val dataClass = PageletInitializer.getDataClass(m)
+					if (post.validate() && dataClass.isDefined) {
+						val formData = EntityValidator.createFormData(methodArgs._1.data)
+						EntityValidator.validate(dataClass.get.getSimpleName, formData) match {
+							case Left(result) =>
+								createFailResponse(res, controller, result)
+							case Right(_) =>
+								val responseData = m.invoke(controller, methodArgs._1.array: _*)
+								createResponse(responseData, controller)
+						}
+					} else {
+						val responseData = m.invoke(controller, methodArgs._1.array: _*)
+						createResponse(responseData, controller)
+					}
+				} catch {
+					case ex: Exception =>
+						Logger.error("Json pagelet get method threw exception", ex)
+						createErrorResponse(ex, res, controller)
+				} finally {
+					if (methodArgs._2.isDefined) {
+						methodArgs._2.get.close()
+					}
+				}
 		})
+	}
+
+	private def createResponse(responseData: AnyRef, controller: AbstractJsonPagelet): String = {
+		responseData match {
+			case rd: AbstractJsonResponse => controller.gson.toJson(rd)
+			case rd =>
+				val jr = new AbstractJsonResponse(ResponseStatus.success, rd) {}
+				controller.gson.toJson(jr, classOf[AbstractJsonResponse])
+		}
+	}
+
+	private def createFailResponse(res: Response, controller: AbstractJsonPagelet, messages: Seq[Message]): String = {
+		res.status(400)
+		val responseData = new JsonFailResponse(messages)
+		controller.gson.toJson(responseData)
+	}
+
+	private def createErrorResponse(ex: Exception, res: Response, controller: AbstractJsonPagelet): String = {
+		val msg = if (Settings.getDeployMode != DeployMode.PRODUCTION) {
+			val sw = new StringWriter
+			val pw = new PrintWriter(sw)
+			ex.printStackTrace(pw)
+			sw.toString
+		} else {
+			null
+		}
+		res.status(500)
+		val responseData = new JsonErrorResponse(null, 1, msg)
+		controller.gson.toJson(responseData)
+	}
+
+	private def parseJsonArgs(m: Method, req: Request, res: Response,controller: AbstractJsonPagelet): (PageletInitializer.MethodArgs, Option[Connection]) = {
+		var dataRef: Any = null
+		var conn: Connection = null
+		val arr = m.getParameterTypes.map {
+			case REQUEST_CLS => req
+			case RESPONSE_CLS => res
+			case CONNECTION_CLS =>
+				conn = DBHelper.getConnection
+				conn
+			case t =>
+				val data = controller.gson.fromJson(req.body(), t)
+				dataRef = data
+				Logger.debug(data.toString)
+				data
+		}
+		(new MethodArgs(arr, dataRef), Option.apply(conn))
 	}
 }

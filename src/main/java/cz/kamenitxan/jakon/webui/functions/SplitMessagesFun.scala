@@ -20,7 +20,6 @@ class SplitMessagesFun extends Function {
 	}
 
 	override def execute(args: util.Map[String, AnyRef], self: PebbleTemplate, context: EvaluationContext, lineNumber: Int): AnyRef = {
-		// TODO
 		val messages = args.get("messages").asInstanceOf[java.util.List[Message]].asScala
 		val map = new util.HashMap[String, util.ArrayList[Message]]()
 		messages.groupBy(m => m._severity).foreach(g => map.put(g._1.value, new util.ArrayList[Message](g._2.asJava)))
