@@ -1,9 +1,10 @@
-package cz.kamenitxan.jakon
+package jakon.pagelet
 
 import java.sql.Connection
 
+import cz.kamenitxan.jakon.core.dynamic.entity.{JsonErrorResponse, JsonFailResponse, ResponseStatus}
 import cz.kamenitxan.jakon.core.dynamic.{AbstractJsonPagelet, Get, JsonPagelet, Post}
-import cz.kamenitxan.jakon.logging.LoggingSetting
+import jakon.pagelet.entity.{GetResponse, TestJsonPageletData}
 import spark.{Request, Response}
 
 /**
@@ -15,6 +16,11 @@ class TestJsonPagelet extends AbstractJsonPagelet {
 	@Get(path = "/get")
 	def get(req: Request, res: Response): String = {
 		"string"
+	}
+
+	@Get(path = "/getResponse")
+	def getResponse(req: Request, res: Response): JsonFailResponse = {
+		new JsonFailResponse("some_message")
 	}
 
 	@Get(path = "/throw")
@@ -45,5 +51,10 @@ class TestJsonPagelet extends AbstractJsonPagelet {
 	@Post(path = "/postWithDataAndConnection")
 	def postWithDataAndConnection(req: Request, res: Response, data: TestJsonPageletData, conn: Connection): String = {
 		data.msg
+	}
+
+	@Post(path = "/postValidate")
+	def postValidate(req: Request, res: Response, data: TestJsonPageletData): String = {
+		"validation_ok"
 	}
 }

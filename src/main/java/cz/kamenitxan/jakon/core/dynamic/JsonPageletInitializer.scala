@@ -10,9 +10,12 @@ import cz.kamenitxan.jakon.core.dynamic.PageletInitializer.{MethodArgs, createMe
 import cz.kamenitxan.jakon.core.dynamic.entity.{AbstractJsonResponse, JsonErrorResponse, JsonFailResponse, ResponseStatus}
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.TypeReferences._
+import cz.kamenitxan.jakon.utils.i18nUtil
 import cz.kamenitxan.jakon.validation.EntityValidator
 import cz.kamenitxan.jakon.webui.entity.Message
 import spark.{Request, Response, Spark}
+
+import scala.jdk.CollectionConverters._
 
 /**
  * Created by TPa on 13.04.2020.
@@ -72,7 +75,16 @@ object JsonPageletInitializer {
 						val formData = EntityValidator.createFormData(methodArgs._1.data)
 						EntityValidator.validate(dataClass.get.getSimpleName, formData) match {
 							case Left(result) =>
-								createFailResponse(res, controller, result)
+								val translatedErrors = result.map(m => {
+									val ut = i18nUtil.getTranslation(Settings.getTemplateDir, "validations", m.text, Settings.getDefaultLocale)
+									val t = if (ut == m.text) {
+										i18nUtil.getTranslation("templates/admin", "validations", m.text, Settings.getDefaultLocale)
+									} else {
+										ut
+									}
+									new Message(m._severity, t, m.params, m.bundle)
+								})
+								createFailResponse(res, controller, translatedErrors)
 							case Right(_) =>
 								val responseData = m.invoke(controller, methodArgs._1.array: _*)
 								createResponse(responseData, controller)
@@ -104,7 +116,7 @@ object JsonPageletInitializer {
 
 	private def createFailResponse(res: Response, controller: AbstractJsonPagelet, messages: Seq[Message]): String = {
 		res.status(400)
-		val responseData = new JsonFailResponse(messages)
+		val responseData = new JsonFailResponse(messages.asJava)
 		controller.gson.toJson(responseData)
 	}
 

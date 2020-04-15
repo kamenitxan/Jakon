@@ -1,9 +1,8 @@
 package jakon.pagelet
 
 import com.google.gson.Gson
-import cz.kamenitxan.jakon.TestJsonPagelet
 import cz.kamenitxan.jakon.core.dynamic.JsonPageletInitializer
-import cz.kamenitxan.jakon.core.dynamic.entity.{JsonErrorResponse, ResponseStatus}
+import cz.kamenitxan.jakon.core.dynamic.entity.{JsonErrorResponse, JsonFailResponse, ResponseStatus}
 import jakon.pagelet.entity.GetResponse
 import okhttp3.{MediaType, OkHttpClient, Request, RequestBody}
 import test.JsonHelper._
@@ -29,6 +28,18 @@ class JsonPageletTest extends TestBase {
 
 		assert(resp.status == ResponseStatus.success)
 		assert(resp.data == "string")
+	}
+
+	test("example json pagelet - get response") { f =>
+		JsonPageletInitializer.initControllers(Seq(classOf[TestJsonPagelet]))
+
+		val url = host + s"${prefix}getResponse"
+		f.driver.get(url)
+
+		val resp = gson.fromJson(f.driver.getPageSource, classOf[JsonFailResponse])
+
+		assert(resp.status == ResponseStatus.fail)
+		assert(resp.data == "some_message")
 	}
 
 	test("example json pagelet - get throw") { f =>
@@ -118,6 +129,24 @@ class JsonPageletTest extends TestBase {
 
 		assert(resp.status == ResponseStatus.success)
 		assert(resp.data == s"${message}")
+	}
+
+	test("example json pagelet - post validate") { _ =>
+		JsonPageletInitializer.initControllers(Seq(classOf[TestJsonPagelet]))
+		val url = host + s"${prefix}postValidate"
+
+		val json = JSON("msg" -> "").toString
+		val body = RequestBody.create(JsonType, json)
+
+		val request = new Request.Builder()
+		  .url(url)
+		  .post(body)
+		  .build()
+
+		val resp = getResponse(request, classOf[JsonFailResponse])
+
+		assert(resp.status == ResponseStatus.fail)
+		assert(resp.data.toString.contains("test_json_pagelet"))
 	}
 
 
