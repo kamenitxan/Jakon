@@ -45,7 +45,7 @@ class JakonUserEmailExtension extends AbstractObjectExtension {
 		DBHelper.withDbConnection(implicit conn => {
 			val stmt = conn.prepareStatement("SELECT * FROM JakonUser WHERE id = ?")
 			stmt.setInt(1, objectId)
-			val users = DBHelper.selectDeep(stmt, classOf[JakonUser])
+			val users = DBHelper.selectDeep(stmt)(implicitly, classOf[JakonUser])
 			sendEmails(req, res, users)
 		})
 	}

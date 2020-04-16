@@ -16,7 +16,7 @@ object JakonInitializer {
 		try {
 			val masterAdminStmt = conn.prepareStatement("SELECT * FROM AclRule WHERE masterAdmin = ?")
 			masterAdminStmt.setBoolean(1, true)
-			val masterAdmin = DBHelper.selectSingleDeep(masterAdminStmt, classOf[AclRule])
+			val masterAdmin = DBHelper.selectSingleDeep(masterAdminStmt)(implicitly, classOf[AclRule])
 			var acl: AclRule = null
 			if (masterAdmin == null) {
 				acl = new AclRule()

@@ -187,48 +187,48 @@ object DBHelper {
 		res
 	}
 
-	def selectSingleDeep[T <: JakonObject](stmt: Statement, @Language("SQL") sql: String, cls: Class[T])(implicit conn: Connection): T = {
+	def selectSingleDeep[T <: JakonObject](stmt: Statement, @Language("SQL") sql: String)(implicit conn: Connection, cls: Class[T]): T = {
 		val res = selectSingle(stmt, sql, cls)
 		if (res.foreignIds != null && res.foreignIds.nonEmpty) {
 			res.foreignIds.values.foreach(fki => {
-				selectForeignEntity(cls, fki, res)
+				selectForeignEntity(fki, res)(implicitly, cls)
 			})
 		}
 		res.entity
 	}
 
-	def selectSingleDeep[T <: JakonObject](stmt: PreparedStatement, cls: Class[T])(implicit conn: Connection): T = {
+	def selectSingleDeep[T <: JakonObject](stmt: PreparedStatement)(implicit conn: Connection, cls: Class[T]): T = {
 		val res = selectSingle(stmt, cls)
 		if (res.foreignIds != null && res.foreignIds.nonEmpty) {
 			res.foreignIds.values.foreach(fki => {
 				if (res.entity.id == fki.id) {
 					fki.field.set(res.entity, res.entity)
 				} else {
-					selectForeignEntity(cls, fki, res)
+					selectForeignEntity(fki, res)(implicitly, cls)
 				}
 			})
 		}
 		res.entity
 	}
 
-	private def selectForeignEntity[T <: JakonObject](cls: Class[T], fki: ForeignKeyInfo, res: QueryResult[T])(implicit conn: Connection): Unit = {
+	private def selectForeignEntity[T <: JakonObject](fki: ForeignKeyInfo, res: QueryResult[T])(implicit conn: Connection, cls: Class[T]): Unit = {
 		val cls = fki.field.getType
 		val className = cls.getSimpleName
 		val sql = s"SELECT * FROM $className JOIN JakonObject ON $className.id = JakonObject.id WHERE $className.id = ?"
 		val stmt = conn.prepareStatement(sql)
 		stmt.setInt(1, fki.id)
-		val r = selectSingleDeep(stmt, cls.asInstanceOf[Class[JakonObject]])
+		val r = selectSingleDeep(stmt)(implicitly, cls.asInstanceOf[Class[JakonObject]])
 		stmt.close()
 		fki.field.set(res.entity, r)
 	}
 
-	def selectDeep[T <: JakonObject](stmt: Statement, @Language("SQL") sql: String, cls: Class[T])(implicit conn: Connection): List[T] = {
+	def selectDeep[T <: JakonObject](stmt: Statement, @Language("SQL") sql: String)(implicit conn: Connection, cls: Class[T]): List[T] = {
 		val res = select(stmt, sql, cls)
 		fetchForeignObjects(res)
 		res.map(r => r.entity)
 	}
 
-	def selectDeep[T <: JakonObject](stmt: PreparedStatement, cls: Class[T])(implicit conn: Connection): List[T] = {
+	def selectDeep[T <: JakonObject](stmt: PreparedStatement)(implicit conn: Connection, cls: Class[T]): List[T] = {
 		val res: List[QueryResult[T]] = select(stmt, cls)
 		fetchForeignObjects(res)
 		res.map(r => r.entity)
@@ -247,7 +247,7 @@ object DBHelper {
 						val sql = s"SELECT * FROM $className JOIN JakonObject ON $className.id = JakonObject.id WHERE $className.id = ? "
 						val stmt = conn.prepareStatement(sql)
 						stmt.setInt(1, fki._2.id)
-						val res = selectSingleDeep(stmt, objectClass)
+						val res = selectSingleDeep(stmt)(implicitly, objectClass)
 						field.set(r.entity, res)
 					}
 				})

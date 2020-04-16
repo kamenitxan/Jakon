@@ -52,7 +52,7 @@ object ObjectController {
 				val count = DBHelper.count(countSql)
 
 				// seznam objektu
-				val ocls: Class[JakonObject] = objectClass.get.asInstanceOf[Class[JakonObject]]
+				implicit val ocls: Class[JakonObject] = objectClass.get.asInstanceOf[Class[JakonObject]]
 				val first = (pageNumber - 1) * pageSize
 				val order = if (ocls.getInterfaces.contains(classOf[Ordered])) {
 					s"ORDER BY $objectName.objectOrder"
@@ -64,7 +64,7 @@ object ObjectController {
 				// language=SQL
 				val listSql = s"SELECT * FROM JakonObject $joinSql $filterSql $order LIMIT $pageSize OFFSET $first"
 				val stmt2 = conn.createStatement()
-				val resultList = DBHelper.selectDeep(stmt2, listSql, ocls)
+				val resultList = DBHelper.selectDeep(stmt2, listSql)
 				// TODO: nacist foreign key objekty
 				val pageItems: List[JakonObject] = if (ocls.getInterfaces.contains(classOf[Ordered])) {
 					Ordered.fetchVisibleOrder(resultList, ocls)
@@ -109,7 +109,7 @@ object ObjectController {
 	def getItem(req: Request, res: Response): Context = {
 		val objectName = req.params(":name")
 		val objectId = req.params(":id").toOptInt
-		val objectClass = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(objectName)).head
+		implicit val objectClass: Class[_ <: JakonObject] = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(objectName)).head
 
 		if (!isAuthorized(objectClass)) {
 			return new Context(Map[String, Any](
@@ -124,7 +124,7 @@ object ObjectController {
 				// language=SQL
 				val stmt = conn.prepareStatement(s"SELECT * FROM JakonObject $joinSql WHERE $objectName.id = ?")
 				stmt.setInt(1, objectId.get)
-				obj = Option(DBHelper.selectSingleDeep(stmt, objectClass)).getOrElse(objectClass.getDeclaredConstructor().newInstance())
+				obj = Option(DBHelper.selectSingleDeep(stmt)).getOrElse(objectClass.getDeclaredConstructor().newInstance())
 				if (obj.getClass.getInterfaces.contains(classOf[Ordered])) {
 					obj.asInstanceOf[Ordered].fetchVisibleOrder
 				}
@@ -250,7 +250,7 @@ object ObjectController {
 		val objectId = req.params(":id").toOptInt
 		val order = req.queryParams("currentOrder").toOptInt
 
-		val objectClass = DBHelper.getDaoClasses.filter(c => c.getSimpleName.equals(objectName)).head
+		implicit val objectClass: Class[_ <: JakonObject] = DBHelper.getDaoClasses.filter(c => c.getSimpleName.equals(objectName)).head
 		if (!objectClass.getInterfaces.contains(classOf[Ordered])) {
 			PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "OBJECT_NOT_ORDERED")
 			redirect(req, res, ObjectPath + objectName)
@@ -264,7 +264,7 @@ object ObjectController {
 
 			val ps = conn.prepareStatement("SELECT * FROM " + objectName + " WHERE id = ?")
 			ps.setInt(1, objectId.get)
-			val obj = DBHelper.selectSingleDeep(ps, objectClass).asInstanceOf[JakonObject with Ordered]
+			val obj = DBHelper.selectSingleDeep(ps).asInstanceOf[JakonObject with Ordered]
 			obj.updateOrder(newOrder)
 			obj.update()
 		} finally {

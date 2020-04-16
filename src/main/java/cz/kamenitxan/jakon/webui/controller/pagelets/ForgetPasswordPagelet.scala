@@ -58,7 +58,7 @@ class ForgetPasswordPagelet extends AbstractAdminPagelet {
 			val sql = "SELECT * FROM ResetPasswordEmailEntity where token = ?"
 			val stmt = conn.prepareStatement(sql)
 			stmt.setString(1, data.token.urlEncode)
-			val rpe = DBHelper.selectSingleDeep(stmt, classOf[ResetPasswordEmailEntity])
+			val rpe = DBHelper.selectSingleDeep(stmt)(implicitly, classOf[ResetPasswordEmailEntity])
 			if (rpe == null || rpe.expirationDate.before(new Date())) {
 				PageContext.getInstance().addMessage(MessageSeverity.ERROR, "PASSWORD_CHANGE_NOT_FOUND")
 				return redirect(req, res, "/")

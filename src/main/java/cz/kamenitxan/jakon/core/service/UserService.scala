@@ -16,11 +16,12 @@ import spark.Request
 import scala.util.Random
 
 object UserService {
+	implicit val cls: Class[JakonUser] = classOf[JakonUser]
 
 	def getMasterAdmin()(implicit conn: Connection): JakonUser = {
 		val sql = "SELECT * FROM JakonUser JOIN AclRule AR ON JakonUser.acl_id = AR.id WHERE AR.masterAdmin = 1 ORDER BY AR.id LIMIT 1;"
 		val stmt = conn.createStatement()
-		DBHelper.selectSingleDeep(stmt, sql, classOf[JakonUser])
+		DBHelper.selectSingleDeep(stmt, sql)
 	}
 
 	/**

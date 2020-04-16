@@ -30,7 +30,7 @@ class JakonUserExtension extends AbstractObjectExtension {
 		DBHelper.withDbConnection(implicit conn => {
 			val stmt = conn.prepareStatement("SELECT * FROM JakonUser WHERE id = ?")
 			stmt.setInt(1, objectId)
-			val user = DBHelper.selectSingleDeep(stmt, classOf[JakonUser])
+			val user = DBHelper.selectSingleDeep(stmt)(implicitly, classOf[JakonUser])
 			val result = UserService.sendForgetPasswordEmail(user, req, 168)
 			if (result) {
 				PageContext.getInstance().messages += new Message(MessageSeverity.SUCCESS, "ADMIN_PASSWORD_RESET_OK")
