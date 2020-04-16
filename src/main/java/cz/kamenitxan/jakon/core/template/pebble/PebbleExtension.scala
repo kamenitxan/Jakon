@@ -11,7 +11,7 @@ import cz.kamenitxan.jakon.webui.functions.LinkFun
 class PebbleExtension extends AbstractExtension {
 	override def getFunctions: util.Map[String, Function] = {
 		val extensions = new util.HashMap[String, Function]()
-		extensions.put("i18n", new i18nFun)
+		extensions.put("i18n", new I18nFun)
 		extensions.put("link", new LinkFun)
 		extensions.put("value", new ValueFun)
 		extensions

@@ -15,7 +15,7 @@ import logging.LoggingTest
 import org.scalatest.{BeforeAndAfterAll, Suite, Suites}
 import utils.entity.TestObject
 import utils.mail.EmailTest
-import utils.{SecurityTest, SqlGenTest, i18nUtilTest}
+import utils.{SecurityTest, SqlGenTest, I18NUtilTest}
 import webui._
 
 /**
@@ -35,7 +35,7 @@ class TestRunner extends Suites(
 	new SqlGenTest,
 	new ModelTest,
 	new SettingsTest,
-	new i18nUtilTest,
+	new I18NUtilTest,
 	new PageletTest,
 	new JsonPageletTest,
 	new DeployTest,

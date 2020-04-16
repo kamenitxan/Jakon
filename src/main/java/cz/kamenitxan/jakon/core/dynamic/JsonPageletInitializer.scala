@@ -10,7 +10,7 @@ import cz.kamenitxan.jakon.core.dynamic.PageletInitializer.{MethodArgs, createMe
 import cz.kamenitxan.jakon.core.dynamic.entity.{AbstractJsonResponse, JsonErrorResponse, JsonFailResponse, ResponseStatus}
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.TypeReferences._
-import cz.kamenitxan.jakon.utils.i18nUtil
+import cz.kamenitxan.jakon.utils.I18nUtil
 import cz.kamenitxan.jakon.validation.EntityValidator
 import cz.kamenitxan.jakon.webui.entity.Message
 import spark.{Request, Response, Spark}
@@ -76,9 +76,9 @@ object JsonPageletInitializer {
 						EntityValidator.validate(dataClass.get.getSimpleName, formData) match {
 							case Left(result) =>
 								val translatedErrors = result.map(m => {
-									val ut = i18nUtil.getTranslation(Settings.getTemplateDir, "validations", m.text, Settings.getDefaultLocale)
+									val ut = I18nUtil.getTranslation(Settings.getTemplateDir, "validations", m.text, Settings.getDefaultLocale)
 									val t = if (ut == m.text) {
-										i18nUtil.getTranslation("templates/admin", "validations", m.text, Settings.getDefaultLocale)
+										I18nUtil.getTranslation("templates/admin", "validations", m.text, Settings.getDefaultLocale)
 									} else {
 										ut
 									}

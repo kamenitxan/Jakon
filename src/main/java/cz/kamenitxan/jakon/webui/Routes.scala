@@ -18,6 +18,7 @@ import spark.{Filter, Request, Response, ResponseTransformer}
  * Created by TPa on 03.09.16.
  */
 object Routes {
+	private val AdminPrefix = "/admin"
 
 	def init(): Unit = {
 		val te = Settings.getAdminEngine
@@ -32,23 +33,23 @@ object Routes {
 				}
 			}
 		})
-		before("/admin", new Filter {
+		before(AdminPrefix, new Filter {
 			override def handle(request: Request, response: Response): Unit = {
 				val user: JakonUser = request.session.attribute("user")
 				if ((Settings.getDeployMode ne DeployMode.DEVEL)
 				  && request.session.attribute("user") != null
 				  && (user.acl.adminAllowed || user.acl.masterAdmin)) {
-					response.redirect("/admin/index", 302)
+					response.redirect(s"$AdminPrefix/index", 302)
 				}
 			}
 		})
 
-		before("/admin/*", new Filter {
+		before(s"$AdminPrefix/*", new Filter {
 			override def handle(req: Request, res: Response): Unit = {
-				if (req.pathInfo != "/admin/register"
-				  && req.pathInfo != "/admin/logout"
-				  && req.pathInfo != "/admin/login"
-				  && !req.pathInfo.startsWith("/admin/login/oauth")) {
+				if (req.pathInfo != s"$AdminPrefix/register"
+				  && req.pathInfo != s"$AdminPrefix/logout"
+				  && req.pathInfo != s"$AdminPrefix/login"
+				  && !req.pathInfo.startsWith(s"$AdminPrefix/login/oauth")) {
 					var user: JakonUser = req.session.attribute("user")
 					if ((Settings.getDeployMode eq DeployMode.DEVEL) && user == null) {
 						DBHelper.withDbConnection(implicit conn => {
@@ -57,29 +58,32 @@ object Routes {
 						})
 					}
 					if (user == null || !user.acl.adminAllowed && !user.acl.masterAdmin) {
-						res.redirect("/admin", 302)
+						res.redirect(AdminPrefix, 302)
 					}
 				}
 			}
 		})
 
 
-		get("/admin", (req: Request, _: Response) => Authentication.loginGet(req), te)
-		post("/admin", (req: Request, res: Response) => Authentication.loginPost(req, res), te)
-		get("/admin/index", (request: Request, response: Response) => AdminSettings.dashboardController.apply(request, response), te)
-		get("/admin/logout", (req: Request, res: Response) => Authentication.logoutPost(req, res), te)
-		get("/admin/profile", (req: Request, res: Response) => UserController.render(req, res), te)
-		post("/admin/profile", (req: Request, res: Response) => UserController.update(req, res), te)
-		get("/admin/object/:name", (req: Request, res: Response) => ObjectController.getList(req, res), te)
-		get("/admin/object/create/:name", (req: Request, res: Response) => ObjectController.getItem(req, res), te)
-		post("/admin/object/create/:name", (req: Request, res: Response) => ObjectController.updateItem(req, res), te)
-		get("/admin/object/delete/:name/:id", (req: Request, res: Response) => ObjectController.deleteItem(req, res), te)
-		get("/admin/object/moveUp/:name/:id", (req: Request, res: Response) => ObjectController.moveInList(req, res, up = true), te)
-		get("/admin/object/moveDown/:name/:id", (req: Request, res: Response) => ObjectController.moveInList(req, res, up = false), te)
-		get("/admin/object/:name/:id", (req: Request, res: Response) => ObjectController.getItem(req, res), te)
-		post("/admin/object/:name/:id", (req: Request, res: Response) => ObjectController.updateItem(req, res), te)
+		get(AdminPrefix, (req: Request, _: Response) => Authentication.loginGet(req), te)
+		post(AdminPrefix, (req: Request, res: Response) => Authentication.loginPost(req, res), te)
+
+		path(s"$AdminPrefix", () => {
+			get("/index", (request: Request, response: Response) => AdminSettings.dashboardController.apply(request, response), te)
+			get("/logout", (req: Request, res: Response) => Authentication.logoutPost(req, res), te)
+			get("/profile", (req: Request, res: Response) => UserController.render(req, res), te)
+			post("/profile", (req: Request, res: Response) => UserController.update(req, res), te)
+			get("/object/:name", (req: Request, res: Response) => ObjectController.getList(req, res), te)
+			get("/object/create/:name", (req: Request, res: Response) => ObjectController.getItem(req, res), te)
+			post("/object/create/:name", (req: Request, res: Response) => ObjectController.updateItem(req, res), te)
+			get("/object/delete/:name/:id", (req: Request, res: Response) => ObjectController.deleteItem(req, res), te)
+			get("/object/moveUp/:name/:id", (req: Request, res: Response) => ObjectController.moveInList(req, res, up = true), te)
+			get("/object/moveDown/:name/:id", (req: Request, res: Response) => ObjectController.moveInList(req, res, up = false), te)
+			get("/object/:name/:id", (req: Request, res: Response) => ObjectController.getItem(req, res), te)
+			post("/object/:name/:id", (req: Request, res: Response) => ObjectController.updateItem(req, res), te)
+		})
 		if (AdminSettings.enableFiles) {
-			path("/admin/files", () => {
+			path(s"$AdminPrefix/files", () => {
 				get("/", (req: Request, res: Response) => FileManagerController.getManager(req, res), te)
 				get("/frame", (req: Request, res: Response) => FileManagerController.getManagerFrame(req, res), te)
 				get("/:method", FileManagerController.executeGet)
@@ -87,13 +91,13 @@ object Routes {
 			})
 		}
 
-		path("/admin/api", () => {
+		path(s"$AdminPrefix/api", () => {
 			post("/search", (req: Request, res: Response) => Api.search(req, res), gsonTransformer)
 		})
 		AdminSettings.customControllersJava.forEach((c: Class[_ <: AbstractController]) => {
 			try {
 				val instance = c.newInstance
-				get("/admin/" + instance.path, (req: Request, res: Response) => instance.doRender(req, res), te)
+				get(s"$AdminPrefix/" + instance.path, (req: Request, res: Response) => instance.doRender(req, res), te)
 				val methods = c.getDeclaredMethods
 				for (m <- methods) {
 					val an = m.getAnnotation(classOf[ExecuteFun])
@@ -101,9 +105,9 @@ object Routes {
 						if (!m.isAccessible) m.setAccessible(true)
 						an.method match {
 							case HttpMethod.get =>
-								get("/admin/" + an.path, (req: Request, res: Response) => m.invoke(instance, req, res).asInstanceOf[Context], te)
+								get(s"$AdminPrefix/" + an.path, (req: Request, res: Response) => m.invoke(instance, req, res).asInstanceOf[Context], te)
 							case HttpMethod.post =>
-								post("/admin/" + an.path, (req: Request, _: Response) => m.invoke(instance, req, req).asInstanceOf[Context], te)
+								post(s"$AdminPrefix/" + an.path, (req: Request, _: Response) => m.invoke(instance, req, req).asInstanceOf[Context], te)
 						}
 					}
 				}
@@ -113,7 +117,7 @@ object Routes {
 					Logger.error("Failed to register custom controller", e)
 			}
 		})
-		get("/admin/*", (req: Request, res: Response) => {
+		get(s"$AdminPrefix/*", (req: Request, res: Response) => {
 			Logger.warn("Unknown page requested - " + req.url)
 			res.status(404)
 			new Context(null, "errors/404")

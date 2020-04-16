@@ -144,8 +144,6 @@ object DBHelper {
 		new QueryResult(obj, foreignIds)
 	}
 
-	//TODO: parametr cls muze byt implicit
-
 	def select[T <: JakonObject](stmt: PreparedStatement, cls: Class[T]): List[QueryResult[T]] = {
 		val rs = execute(stmt)
 		val res = Iterator.from(0).takeWhile(_ => rs.next()).map(_ => {

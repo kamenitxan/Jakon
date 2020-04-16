@@ -6,9 +6,9 @@ import java.util
 import com.mitchellbosecke.pebble.extension.i18n.i18nFunction
 import com.mitchellbosecke.pebble.template.{EvaluationContext, PebbleTemplate}
 import cz.kamenitxan.jakon.core.configuration.Settings
-import cz.kamenitxan.jakon.utils.i18nUtil
+import cz.kamenitxan.jakon.utils.I18nUtil
 
-class i18nFun extends i18nFunction {
+class I18nFun extends i18nFunction {
 	getArgumentNames.add("def")
 
 	val templateDir: String = Settings.getTemplateDir
@@ -22,7 +22,7 @@ class i18nFun extends i18nFunction {
 		val context = args.get("_context").asInstanceOf[EvaluationContext]
 		val locale = if (Settings.getDefaultLocale == null) context.getLocale else Settings.getDefaultLocale
 
-		val phraseObject = i18nUtil.getTranslation(templateDir, basename, key, locale, default)
+		val phraseObject = I18nUtil.getTranslation(templateDir, basename, key, locale, default)
 		if (phraseObject != null && params != null && params.nonEmpty) {
 			return MessageFormat.format(phraseObject, params.toArray:_*)
 		}

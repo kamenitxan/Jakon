@@ -8,7 +8,7 @@ import com.mitchellbosecke.pebble.extension.i18n.UTF8Control
 import cz.kamenitxan.jakon.logging.Logger
 import Utils._
 
-object i18nUtil {
+object I18nUtil {
 
 	def getTranslation(templateDir: String, basename: String, key: String, locale: Locale): String = {
 		getTranslation(templateDir, basename, key, locale, null)

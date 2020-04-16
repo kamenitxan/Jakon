@@ -12,7 +12,7 @@ class AdminPebbleExtension extends PebbleExtension {
 		val extensions = super.getFunctions
 		extensions.put("getAttr", new GetAttributeFun)
 		extensions.put("getAttrType", new GetAttributeTypeFun)
-		extensions.put("i18n", new i18nFun)
+		extensions.put("i18n", new I18nFun)
 		extensions.put("splitMessages", new SplitMessagesFun)
 		extensions.put("objectExtensions", new ObjectExtensionFun)
 		extensions
