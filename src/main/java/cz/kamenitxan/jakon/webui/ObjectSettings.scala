@@ -1,5 +1,7 @@
 package cz.kamenitxan.jakon.webui
 
+import cz.kamenitxan.jakon.webui.entity.SortDirection
+
 /**
   * Created by TPa on 08.09.16.
   */
@@ -9,5 +11,8 @@ class ObjectSettings(
 
                       /** if true field from parent objects are not shown in administration list view  */
                       val noParentFieldInList: Boolean = false,
+
+                      /** default sort in administration list view */
+                      val sortDirection: SortDirection = SortDirection.ASC
                     ) extends Serializable
 

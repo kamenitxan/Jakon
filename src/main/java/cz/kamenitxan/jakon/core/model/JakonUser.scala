@@ -10,8 +10,8 @@ import javax.persistence._
 
 
 /**
-  * Created by TPa on 31.08.16.
-  */
+ * Created by TPa on 31.08.16.
+ */
 class JakonUser extends JakonObject with Serializable {
 
 	@NotEmpty
@@ -34,6 +34,7 @@ class JakonUser extends JakonObject with Serializable {
 
 	override def createObject(jid: Int, conn: Connection): Int = {
 		this.password = Authentication.hashPassword(this.password)
+		// language=SQL
 		val sql = "INSERT INTO JakonUser (id, username, email, emailConfirmed, firstName, lastName, password, enabled, acl_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
 		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
 		stmt.setInt(1, jid)
@@ -62,6 +63,7 @@ class JakonUser extends JakonObject with Serializable {
 			this.password = Authentication.hashPassword(this.password)
 		}
 
+		// language=SQL
 		val sql = "UPDATE JakonUser SET username = ?, email = ?, emailConfirmed = ?, firstName = ?, lastName = ?, password = ?, enabled = ?, acl_id = ? WHERE id = ?"
 		val stmt = conn.prepareStatement(sql)
 		stmt.setString(1, username)

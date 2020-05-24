@@ -44,6 +44,7 @@ object ObjectController {
 					"objectName" -> objectName
 				), UNAUTHORIZED_TMPL)
 			}
+			val objectSettings = objectClass.get.getDeclaredConstructor().newInstance().objectSettings
 			implicit val conn: Connection = DBHelper.getConnection
 			try {
 				// pocet objektu
@@ -54,10 +55,11 @@ object ObjectController {
 				// seznam objektu
 				implicit val ocls: Class[JakonObject] = objectClass.get.asInstanceOf[Class[JakonObject]]
 				val first = (pageNumber - 1) * pageSize
+				val orderDirection = if (objectSettings != null) objectSettings.sortDirection else "ASC"
 				val order = if (ocls.getInterfaces.contains(classOf[Ordered])) {
-					s"ORDER BY $objectName.objectOrder"
+					s"ORDER BY $objectName.objectOrder $orderDirection"
 				} else {
-					""
+					s"ORDER BY id $orderDirection"
 				}
 				val filterSql = SqlGen.parseFilterParams(filterParams, objectClass.get)
 				val joinSql = createSqlJoin(objectClass.get)
@@ -74,7 +76,6 @@ object ObjectController {
 
 				import scala.language.existentials
 				val upperClass = {
-					val objectSettings = objectClass.get.getDeclaredConstructor().newInstance().objectSettings
 					if (objectSettings != null && objectSettings.noParentFieldInList) {
 						objectClass.get.getSuperclass
 					} else {
