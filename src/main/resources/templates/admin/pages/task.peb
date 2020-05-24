@@ -34,7 +34,11 @@
                         <tr>
                             <td>{{ task.name.value }}</td>
                             <td>{{ task.lastRun | date }}</td>
-                            <td>{{ task.lastExecutionTime }}ms</td>
+                            <td>{% if task.lastExecutionTime < 1000 %}
+                                {{ task.lastExecutionTime}} ms
+                                {% else %}
+                                    {{ task.lastExecutionTime / 1000}}.{{ (task.lastExecutionTime % 1000) }} s
+                                {% endif %}</td>
                             <td>{% include "includes/formaters/boolean" with {"value":task.lastRunSuccessful} %}</td>
                             <td><a href="/admin/task/run/{{ task.name.value }}"><i class="fa fa-play"></i></a></td>
                         </tr>

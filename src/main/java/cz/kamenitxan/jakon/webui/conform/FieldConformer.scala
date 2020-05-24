@@ -38,6 +38,7 @@ object FieldConformer {
 			t match {
 				case BOOLEAN => s toBoolean
 				case DOUBLE | DOUBLE_j => s toDouble
+				case FLOAT => s toFloat
 				case INTEGER | INTEGER_j => s toInt
 				case DATE =>
 					val formatter = DateTimeFormatter.ofPattern(DATE_FORMAT)

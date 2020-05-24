@@ -12,5 +12,6 @@ class RenderTask(period: Long, unit: TimeUnit) extends AbstractTask(period, unit
 
 	override def start(): Unit = {
 		Director.render()
+		Thread.sleep(2000)
 	}
 }

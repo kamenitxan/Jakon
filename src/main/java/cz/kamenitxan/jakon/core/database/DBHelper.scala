@@ -75,7 +75,7 @@ object DBHelper {
 
 	def createJakonObject[T <: JakonObject](rs: ResultSet, cls: Class[T]): QueryResult[T] = {
 		val rsmd = rs.getMetaData
-		val obj = cls.newInstance()
+		val obj = cls.getDeclaredConstructor().newInstance()
 		var foreignIds = Map[String, ForeignKeyInfo]()
 		val columnCount = rsmd.getColumnCount
 
@@ -112,6 +112,7 @@ object DBHelper {
 					case STRING => field.set(obj, rs.getString(columnName))
 					case BOOLEAN => field.set(obj, rs.getBoolean(columnName))
 					case INTEGER => field.set(obj, rs.getInt(columnName))
+					case FLOAT => field.set(obj, rs.getFloat(columnName))
 					case DOUBLE => field.set(obj, rs.getDouble(columnName))
 					case DATE_o => field.set(obj, rs.getDate(columnName))
 					case DATETIME => field.set(obj, LocalDateTime.parse(rs.getString(columnName), DateTimeFormatter.ISO_LOCAL_DATE_TIME))
@@ -130,7 +131,7 @@ object DBHelper {
 						} else if (jakonField != null) {
 							val converter = jakonField.converter()
 							if (converter.getName != classOf[AbstractConverter[_]].getName) {
-								field.set(obj, converter.newInstance().convertToEntityAttribute(rs.getString(columnName)))
+								field.set(obj, converter.getDeclaredConstructor().newInstance().convertToEntityAttribute(rs.getString(columnName)))
 							} else {
 								Logger.error(s"Converter not specified for data type on ${obj.getClass.getSimpleName}.${field.getName}")
 							}

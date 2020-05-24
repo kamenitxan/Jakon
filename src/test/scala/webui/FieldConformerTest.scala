@@ -14,7 +14,7 @@ import org.scalatest.funsuite.AnyFunSuite
 
 class FieldConformerTest extends AnyFunSuite {
 
-	private val fieldCount = 14
+	private val fieldCount = 15
 
 	class TestObject extends JakonObject {
 		//TODO oneToMany
@@ -48,6 +48,8 @@ class FieldConformerTest extends AnyFunSuite {
 		var seqI: Seq[Int] = _
 		@JakonField
 		var seqS: Seq[String] = _
+		@JakonField
+		var float: Float = _
 
 
 		override val objectSettings: ObjectSettings = null
@@ -130,6 +132,11 @@ class FieldConformerTest extends AnyFunSuite {
 		assert(conformed.asInstanceOf[Seq[String]].contains("1"))
 		assert(conformed.asInstanceOf[Seq[String]].contains("2"))
 		assert(conformed.asInstanceOf[Seq[String]].contains("3"))
+	}
+
+	test("conform float") {
+		val conformed = "1.1".conform(getField("float"))
+		assert(1.1f == conformed)
 	}
 
 	test("empty field infos") {
