@@ -7,11 +7,11 @@ import cz.kamenitxan.jakon.core.database.converters.ScalaMapConverter
 import cz.kamenitxan.jakon.core.model.{JakonObject, JakonUser}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.{JakonField, MessageSeverity}
-import javax.persistence.ManyToMany
+import javax.persistence.{Embedded, ManyToMany, ManyToOne, OneToMany}
 
 class TestObject extends JakonObject {
 	//TODO oneToMany
-	@ManyToMany
+	@ManyToOne
 	@JakonField
 	var user: JakonUser = _
 	@JakonField
@@ -30,7 +30,7 @@ class TestObject extends JakonObject {
 	var localDate: LocalDate = _
 	@JakonField
 	var localDateTime: LocalDateTime = _
-	@ManyToMany
+	@ManyToOne
 	@JakonField
 	var self: TestObject = _
 	@JakonField
@@ -39,6 +39,9 @@ class TestObject extends JakonObject {
 	var map: Map[String, String] = Map()
 	@JakonField
 	var mapNoConverter: Map[String, String] = Map()
+	@JakonField
+	@Embedded
+	var embedded: TestEmbeddedObject = _
 
 
 	override val objectSettings: ObjectSettings = null

@@ -10,7 +10,7 @@ import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.TypeReferences._
 import cz.kamenitxan.jakon.webui.entity.JakonField
-import javax.persistence.{ManyToOne, OneToOne, Transient}
+import javax.persistence.{Embedded, ManyToOne, OneToOne, Transient}
 
 import scala.collection.mutable
 
@@ -21,26 +21,36 @@ object SqlGen {
 	private val BoolTypes = classOf[Boolean] :: classOf[java.lang.Boolean] :: Nil
 
 	private def createSql(cls: Class[_ <: JakonObject], annotatedFields: List[Field]): String = {
-		val annotatedFields = getJakonFields(cls)
 		val sb = new StringBuilder
 		sb.append(s"INSERT INTO ${cls.getSimpleName} (id, ")
 		sb.append(if (annotatedFields.head.getType.getGenericSuperclass != null &&
-		  annotatedFields.head.getType.getGenericSuperclass.getTypeName == "cz.kamenitxan.jakon.core.model.JakonObject") {
+			annotatedFields.head.getType.getGenericSuperclass.getTypeName == "cz.kamenitxan.jakon.core.model.JakonObject") {
 			annotatedFields.head.getName + "_id"
 		} else {
 			annotatedFields.head.getName
 		})
 
+		var embeddedFieldCounter = 0
 		annotatedFields.tail.foreach(f => {
 			val fst = f.getType.getGenericSuperclass
 			if (fst != null && fst.getTypeName == "cz.kamenitxan.jakon.core.model.JakonObject") {
 				sb.append(", " + f.getName + "_id")
+			} else if (f.getAnnotation(classOf[Embedded]) != null) {
+				val embeddedFields = f.getType.getDeclaredFields.filter(_.getDeclaredAnnotation(classOf[JakonField]) != null)
+				embeddedFields.foreach(ef => {
+					embeddedFieldCounter += 1
+					sb.append(", " + f.getName + "_" + ef.getName)
+				})
 			} else {
 				sb.append(", " + f.getName)
 			}
 		})
 		sb.append(") VALUES (?, ?")
 		annotatedFields.tail.foreach(_ => sb.append(", ?"))
+		if (embeddedFieldCounter > 0) {
+			(0 to embeddedFieldCounter).foreach(sb.append(", ?"))
+		}
+
 		sb.append(");")
 		Logger.debug(s"generated sql: ${sb.toString()}")
 		sb.toString()
@@ -52,9 +62,7 @@ object SqlGen {
 		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
 
 		stmt.setInt(1, jid)
-		for ((field, i) <- annotatedFields.view.zip(Stream.from(2))) {
-			setValue(stmt, field, i, instance)
-		}
+		filterAndSetValues(instance, annotatedFields, stmt, 2)
 
 		stmt
 	}
@@ -64,16 +72,23 @@ object SqlGen {
 		sb.append(s"UPDATE ${cls.getSimpleName} SET ")
 
 		sb.append(if (annotatedFields.head.getType.getGenericSuperclass != null &&
-		  annotatedFields.head.getType.getGenericSuperclass.getTypeName == classOf[JakonObject].getName) {
+			annotatedFields.head.getType.getGenericSuperclass.getTypeName == classOf[JakonObject].getName) {
 			annotatedFields.head.getName + "_id" + " = ?"
 		} else {
 			annotatedFields.head.getName + " = ?"
 		})
 
+		var embeddedFieldCounter = 0
 		annotatedFields.tail.foreach(f => {
 			val fst = f.getType.getGenericSuperclass
 			if (fst != null && fst.getTypeName == classOf[JakonObject].getName) {
 				sb.append(", " + f.getName + "_id = ?")
+			} else if (f.getAnnotation(classOf[Embedded]) != null) {
+				val embeddedFields = f.getType.getDeclaredFields.filter(_.getDeclaredAnnotation(classOf[JakonField]) != null)
+				embeddedFields.foreach(ef => {
+					embeddedFieldCounter += 1
+					sb.append(", " + f.getName + "_" + ef.getName + " = ?")
+				})
 			} else {
 				sb.append(", " + f.getName + " = ?")
 			}
@@ -87,12 +102,32 @@ object SqlGen {
 		val sql = updateSql(instance.getClass, annotatedFields)
 		val stmt = conn.prepareStatement(sql)
 
-		for ((field, i) <- annotatedFields.view.zip(Stream.from(1))) {
-			setValue(stmt, field, i, instance)
-		}
+		filterAndSetValues(instance, annotatedFields, stmt, 1)
 		stmt.setInt(annotatedFields.length + 1, jid)
 
 		stmt
+	}
+
+	private def filterAndSetValues[T <: JakonObject](instance: T, annotatedFields: List[Field],  stmt: PreparedStatement, counterStart: Int): Unit = {
+		var counter = counterStart
+		for (field <- annotatedFields) {
+			if (field.getDeclaredAnnotation(classOf[Embedded]) != null) {
+				field.getType
+					.getDeclaredFields
+					.filter(_.getDeclaredAnnotation(classOf[JakonField]) != null)
+					.foreach(f => {
+						if (!field.isAccessible) field.setAccessible(true)
+						val value = field.get(instance)
+						println(s"$counter - ${field.getName}")
+						setValue(stmt, f, counter, value)
+						counter += 1
+					})
+			} else {
+				println(s"$counter - ${field.getName}")
+				setValue(stmt, field, counter, instance)
+				counter += 1
+			}
+		}
 	}
 
 
@@ -100,15 +135,19 @@ object SqlGen {
 		val allFields = Utils.getFieldsUpTo(cls, classOf[JakonObject])
 		allFields.filter(f =>
 			f.getAnnotations.exists(fa => fa.annotationType().getName == classOf[JakonField].getName)
-			  && f.getName != "id"
-			  && f.getAnnotation(classOf[Transient]) == null
+				&& f.getName != "id"
+				&& f.getAnnotation(classOf[Transient]) == null
 		)
 	}
 
-	private def setValue[T <: JakonObject](stmt: PreparedStatement, f: Field, i: Int, inst: T): Unit = {
+	private def setValue(stmt: PreparedStatement, f: Field, i: Int, inst: Any): Unit = {
 		if (!f.isAccessible) f.setAccessible(true)
 
-		val value = f.get(inst)
+		val value = if (inst != null) {
+			f.get(inst)
+		} else {
+			null
+		}
 		if (value == null) {
 			stmt.setNull(i, getSqlType(f))
 			return
@@ -137,9 +176,11 @@ object SqlGen {
 						stmt.setString(i, "")
 					} else {
 						Logger.error(s"Convertor not specified for data type on ${inst.getClass.getSimpleName}.${f.getName}")
+						stmt.setNull(i, getSqlType(f))
 					}
 				} else {
 					Logger.error(s"Uknown data type on ${inst.getClass.getSimpleName}.${f.getName}")
+					stmt.setNull(i, getSqlType(f))
 				}
 		}
 	}

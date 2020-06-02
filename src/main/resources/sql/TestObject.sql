@@ -6,14 +6,17 @@ CREATE TABLE TestObject
     `double`       DOUBLE,
     `float`        FLOAT,
     `integer`      INTEGER,
-    user_id        INTEGER NOT NULL REFERENCES JakonUser (id) ON DELETE CASCADE,
+    user_id        INTEGER REFERENCES JakonUser (id) ON DELETE CASCADE,
     date           DATETIME,
     localDate      DATETIME,
     localDateTime  DATETIME,
-    self_id        INTEGER NOT NULL REFERENCES AclRule (id) ON DELETE CASCADE,
+    self_id        INTEGER REFERENCES TestObject (id) ON DELETE CASCADE,
     enum           VARCHAR(255),
     map            TEXT,
     mapNoConverter TEXT,
+    embedded_string VARCHAR(255),
+    embedded_int    INTEGER,
+
     PRIMARY KEY (id)
 );
 

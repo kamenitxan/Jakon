@@ -1,18 +1,11 @@
 package cz.kamenitxan.jakon.core.database
 
 import java.sql._
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 import com.zaxxer.hikari.HikariDataSource
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
-import cz.kamenitxan.jakon.core.database.converters.AbstractConverter
 import cz.kamenitxan.jakon.core.model._
 import cz.kamenitxan.jakon.logging.Logger
-import cz.kamenitxan.jakon.utils.TypeReferences._
-import cz.kamenitxan.jakon.utils.Utils
-import cz.kamenitxan.jakon.webui.entity.JakonField
-import javax.persistence.{Column, ManyToOne}
 import org.intellij.lang.annotations.Language
 import org.sqlite.SQLiteConfig
 
@@ -72,83 +65,10 @@ object DBHelper {
 		stmt.executeQuery(sql)
 	}
 
-
-	def createJakonObject[T <: JakonObject](rs: ResultSet, cls: Class[T]): QueryResult[T] = {
-		val rsmd = rs.getMetaData
-		val obj = cls.getDeclaredConstructor().newInstance()
-		var foreignIds = Map[String, ForeignKeyInfo]()
-		val columnCount = rsmd.getColumnCount
-
-		Iterator.from(1).takeWhile(i => i <= columnCount).foreach(i => {
-			var columnName = rsmd.getColumnName(i)
-			val fieldName = if (columnName.endsWith("_id")) {
-				columnName.substring(0, columnName.length - 3)
-			} else {
-				columnName
-			}
-
-
-			val fieldRef = Utils.getFieldsUpTo(cls, classOf[Object]).find(f => {
-				val byName = f.getName.equalsIgnoreCase(fieldName)
-				lazy val byAnn = {
-					val ann = f.getDeclaredAnnotation(classOf[Column])
-					if (ann != null) {
-						fieldName == ann.name()
-					} else {
-						false
-					}
-				}
-				byName || byAnn
-			})
-
-			if (fieldRef.nonEmpty) {
-				val field = fieldRef.get
-				field.setAccessible(true)
-				val columnAnn = field.getAnnotation(classOf[Column])
-				if (columnAnn != null && columnAnn.name() != null && !columnAnn.name().isEmpty) {
-					columnName = columnAnn.name()
-				}
-				field.getType match {
-					case STRING => field.set(obj, rs.getString(columnName))
-					case BOOLEAN => field.set(obj, rs.getBoolean(columnName))
-					case INTEGER => field.set(obj, rs.getInt(columnName))
-					case FLOAT => field.set(obj, rs.getFloat(columnName))
-					case DOUBLE => field.set(obj, rs.getDouble(columnName))
-					case DATE_o => field.set(obj, rs.getDate(columnName))
-					case DATETIME => field.set(obj, LocalDateTime.parse(rs.getString(columnName), DateTimeFormatter.ISO_LOCAL_DATE_TIME))
-					case x if x.isEnum =>
-						val m = x.getMethod("valueOf", classOf[String])
-						val enumValue = m.invoke(null, rs.getString(columnName))
-						field.set(obj, enumValue)
-					case _ =>
-						val manyToOne = field.getAnnotation(classOf[ManyToOne])
-						lazy val jakonField = field.getAnnotation(classOf[JakonField])
-						if (manyToOne != null) {
-							val fv = rs.getInt(columnName)
-							if (fv > 0) {
-								foreignIds += (columnName -> new ForeignKeyInfo(rs.getInt(columnName), columnName, field))
-							}
-						} else if (jakonField != null) {
-							val converter = jakonField.converter()
-							if (converter.getName != classOf[AbstractConverter[_]].getName) {
-								field.set(obj, converter.getDeclaredConstructor().newInstance().convertToEntityAttribute(rs.getString(columnName)))
-							} else {
-								Logger.error(s"Converter not specified for data type on ${obj.getClass.getSimpleName}.${field.getName}")
-							}
-						} else {
-							Logger.warn("Unknown data type on " + cls.getSimpleName + s".$fieldName")
-						}
-				}
-
-			}
-		})
-		new QueryResult(obj, foreignIds)
-	}
-
 	def select[T <: JakonObject](stmt: PreparedStatement, cls: Class[T]): List[QueryResult[T]] = {
 		val rs = execute(stmt)
 		val res = Iterator.from(0).takeWhile(_ => rs.next()).map(_ => {
-			createJakonObject(rs, cls)
+			EntityMapper.createJakonObject(rs, cls)
 		}).toList
 		stmt.close()
 		res
@@ -157,7 +77,7 @@ object DBHelper {
 	def select[T <: JakonObject](stmt: Statement, @Language("SQL") sql: String, cls: Class[T]): List[QueryResult[T]] = {
 		val rs = execute(stmt, sql)
 		val res = Iterator.from(0).takeWhile(_ => rs.next()).map(_ => {
-			createJakonObject(rs, cls)
+			EntityMapper.createJakonObject(rs, cls)
 		}).toList
 		stmt.close()
 		res
@@ -167,7 +87,7 @@ object DBHelper {
 		val rs = execute(stmt)
 		var res: QueryResult[T] = null
 		if (rs.next()) {
-			res = createJakonObject(rs, cls)
+			res = EntityMapper.createJakonObject(rs, cls)
 		} else {
 			res = new QueryResult[T](null)
 		}
@@ -178,7 +98,7 @@ object DBHelper {
 	def selectSingle[T <: JakonObject](stmt: Statement, @Language("SQL") sql: String, cls: Class[T]): QueryResult[T] = {
 		val rs = execute(stmt, sql)
 		val res: QueryResult[T] = if (rs.next()) {
-			createJakonObject(rs, cls)
+			EntityMapper.createJakonObject(rs, cls)
 		} else {
 			new QueryResult[T](null)
 		}

@@ -2,6 +2,7 @@ package jakon
 
 import cz.kamenitxan.jakon.core.model._
 import test.TestBase
+import utils.entity.{TestEmbeddedObject, TestObject}
 
 import scala.util.Random
 
@@ -63,5 +64,14 @@ class ModelTest extends TestBase {
 		obj.create()
 		obj.update()
 		obj.toString
+	}
+
+	test("TestEmbeddedObject") { _ =>
+		val obj = new TestObject
+		val embedded = new TestEmbeddedObject
+		embedded.int = 42
+		embedded.string = "42"
+		obj.embedded = embedded
+		obj.create()
 	}
 }
