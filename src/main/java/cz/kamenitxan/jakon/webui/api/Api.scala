@@ -22,7 +22,7 @@ object Api {
 		val conn = DBHelper.getConnection
 		try {
 			if (jsonReq.query.isEmpty) {
-				val sql = s"SELECT * FROM ${objectClass.getSimpleName} LIMIT 10"
+				val sql = s"SELECT * FROM ${objectClass.getSimpleName}"
 				val stmt = conn.createStatement()
 				val res = DBHelper.select(stmt, sql, objectClass)
 				val objects = res.map(r => r.entity)

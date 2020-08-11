@@ -49,6 +49,7 @@ object Routes {
 				if (req.pathInfo != s"$AdminPrefix/register"
 				  && req.pathInfo != s"$AdminPrefix/logout"
 				  && req.pathInfo != s"$AdminPrefix/login"
+				  && req.pathInfo != s"$AdminPrefix/resetPassword"
 				  && !req.pathInfo.startsWith(s"$AdminPrefix/login/oauth")) {
 					var user: JakonUser = req.session.attribute("user")
 					if ((Settings.getDeployMode eq DeployMode.DEVEL) && user == null) {
