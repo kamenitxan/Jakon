@@ -46,9 +46,10 @@ object ObjectController {
 			implicit val conn: Connection = DBHelper.getConnection
 			try {
 				val filterSql = SqlGen.parseFilterParams(filterParams, objectClass.get)
+				val joinSql = createSqlJoin(objectClass.get)
 				// pocet objektu
 				// language=SQL
-				val countSql = s"SELECT count(*) FROM $objectName $filterSql"
+				val countSql = s"SELECT count(*) FROM JakonObject $joinSql $filterSql"
 				val count = DBHelper.count(countSql)
 
 				// seznam objektu
@@ -61,7 +62,6 @@ object ObjectController {
 					s"ORDER BY id $orderDirection"
 				}
 
-				val joinSql = createSqlJoin(objectClass.get)
 				// language=SQL
 				val listSql = s"SELECT * FROM JakonObject $joinSql $filterSql $order LIMIT $pageSize OFFSET $first"
 				val stmt2 = conn.createStatement()
@@ -141,7 +141,8 @@ object ObjectController {
 			"objectName" -> objectName,
 			"object" -> obj,
 			"id" -> obj.id,
-			"fields" -> f
+			"fields" -> f,
+			"page" -> req.queryParams("page")
 		), "objects/single")
 	}
 
@@ -209,7 +210,8 @@ object ObjectController {
 			PageContext.getInstance().addMessage(MessageSeverity.SUCCESS, "NEW_OBJ_CREATED")
 			redirect(req, res, "/admin/object/create/" + objectName)
 		} else {
-			redirect(req, res, ObjectPath + objectName)
+			val target = ObjectPath + objectName + s"?page=${req.queryParams("admin_page")}"
+			redirect(req, res, target)
 		}
 	}
 

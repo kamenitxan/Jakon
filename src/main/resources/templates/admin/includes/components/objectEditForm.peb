@@ -1,4 +1,5 @@
 {# @pebvariable name="id" type="java.lang.Integer" #}
+{# @pebvariable name="page" type="java.lang.Integer" #}
 {# @pebvariable name="withDelete" type="java.lang.Boolean" #}
 {# @pebvariable name="objectName" type="java.lang.String" #}
 {# @pebvariable name="postUrl" type="java.lang.String" #}
@@ -13,22 +14,23 @@
 
 {% for field in fields %}
     {% if field.an.shownInEdit %}
-        <div class="form-group">
-            <label for="{{ field.name }}"
-                   class="col-sm-2">{{ i18n(bundle="objects", key=field.field.getDeclaringClass.getSimpleName + "_" + field.name, def=field.name) }} {% if field.required %}
-                *{% endif %}</label>
-            <div class="col-sm-10">
+		<div class="form-group">
+			<label for="{{ field.name }}"
+				   class="col-sm-2">{{ i18n(bundle="objects", key=field.field.getDeclaringClass.getSimpleName + "_" + field.name, def=field.name) }} {% if field.required %}
+				*{% endif %}</label>
+			<div class="col-sm-10">
             {% include "includes/forms/" + field.template with {"fieldHash":field.hashCode, "objectName":objectName} %}
-            </div>
-    </div>
+			</div>
+		</div>
     {% endif %}
 {% endfor %}
-    <input type="hidden" name="save_and_new" value="false" id="save_and_new">
-    <input type="submit" class="btn btn-primary" value="{{ i18n("common","SAVE_BTN") }}">
-    <input type="submit" class="btn btn-primary" value="{{ i18n("common","SAVE_BTN_AND_NEW") }}"
-           onclick="document.querySelector('#save_and_new').value = 'true';">
+	<input type="hidden" name="admin_page" value="{{ page }}">
+	<input type="hidden" name="save_and_new" value="false" id="save_and_new">
+	<input type="submit" class="btn btn-primary" value="{{ i18n("common","SAVE_BTN") }}">
+	<input type="submit" class="btn btn-primary" value="{{ i18n("common","SAVE_BTN_AND_NEW") }}"
+		   onclick="document.querySelector('#save_and_new').value = 'true';">
 {% if withDelete %}
-    <a href="/admin/object/delete/{{ objectName }}/{{ id }}" class="btn btn-danger">{{ i18n("common","DELETE_BTN") }}</a>
+	<a href="/admin/object/delete/{{ objectName }}/{{ id }}" class="btn btn-danger">{{ i18n("common","DELETE_BTN") }}</a>
 {% endif %}
 
 </form>
