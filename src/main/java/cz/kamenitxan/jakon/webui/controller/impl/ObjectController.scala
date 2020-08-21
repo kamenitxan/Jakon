@@ -15,8 +15,8 @@ import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import spark.{ModelAndView, Request, Response}
 
 import scala.annotation.tailrec
-import scala.jdk.CollectionConverters._
 import scala.collection.mutable
+import scala.jdk.CollectionConverters._
 import scala.util.Try
 
 /**
@@ -24,8 +24,6 @@ import scala.util.Try
   */
 object ObjectController {
 	val excludedFields = List("url", "sectionName", "objectSettings", "childClass")
-	private val numberTypes = classOf[Int] :: classOf[Integer] :: classOf[Double] :: classOf[Float] :: Nil
-	private val boolTypes = classOf[Boolean] :: classOf[java.lang.Boolean] :: Nil
 	private val UNAUTHORIZED_TMPL = "pages/unauthorized"
 	private val ListTmpl = "objects/list"
 	private val ObjectPath = "/admin/object/"
@@ -47,9 +45,10 @@ object ObjectController {
 			val objectSettings = objectClass.get.getDeclaredConstructor().newInstance().objectSettings
 			implicit val conn: Connection = DBHelper.getConnection
 			try {
+				val filterSql = SqlGen.parseFilterParams(filterParams, objectClass.get)
 				// pocet objektu
 				// language=SQL
-				val countSql = s"SELECT count(*) FROM $objectName"
+				val countSql = s"SELECT count(*) FROM $objectName $filterSql"
 				val count = DBHelper.count(countSql)
 
 				// seznam objektu
@@ -61,7 +60,7 @@ object ObjectController {
 				} else {
 					s"ORDER BY id $orderDirection"
 				}
-				val filterSql = SqlGen.parseFilterParams(filterParams, objectClass.get)
+
 				val joinSql = createSqlJoin(objectClass.get)
 				// language=SQL
 				val listSql = s"SELECT * FROM JakonObject $joinSql $filterSql $order LIMIT $pageSize OFFSET $first"
@@ -173,7 +172,7 @@ object ObjectController {
 			case Left(result) =>
 				result.foreach(r => PageContext.getInstance().messages += r)
 				val redirectUrl = objectId match {
-					case Some(id) => s"/admin/object/$objectName/${id}"
+					case Some(id) => s"/admin/object/$objectName/$id"
 					case None => s"/admin/object/create/$objectName"
 				}
 				return redirect(req, res, redirectUrl)
