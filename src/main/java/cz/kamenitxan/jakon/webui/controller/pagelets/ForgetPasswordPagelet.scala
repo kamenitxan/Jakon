@@ -26,13 +26,13 @@ class ForgetPasswordPagelet extends AbstractAdminPagelet {
 	private val SQL_FIND_USER = "SELECT id, username, password, enabled, acl_id, email FROM JakonUser WHERE email = ?"
 
 	@Get(path = "/resetPassword", template = "pagelet/reset_password/resetPassword")
-	def get(req: Request, res: Response) = {
+	def get(req: Request, res: Response): Unit = {
 		// just render
 	}
 
 	//noinspection AccessorLikeMethodIsUnit
 	@Get(path = "/resetPasswordStep2", template = "pagelet/reset_password/resetPasswordStep2")
-	def getStep2(req: Request, res: Response) = {
+	def getStep2(req: Request, res: Response): Unit = {
 		// just render
 	}
 
@@ -52,7 +52,6 @@ class ForgetPasswordPagelet extends AbstractAdminPagelet {
 
 	@Post(path = "setPassword", template = "SetPassword")
 	def postStep2(req: Request, res: Response, data: SetPasswordData): mutable.Map[String, Any] = {
-		print(data)
 		DBHelper.withDbConnection(implicit conn => {
 			// language=SQL
 			val sql = "SELECT * FROM ResetPasswordEmailEntity where token = ?"

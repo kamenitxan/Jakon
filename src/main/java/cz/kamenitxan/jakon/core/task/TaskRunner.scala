@@ -14,12 +14,16 @@ object TaskRunner {
 	private val logger = LoggerFactory.getLogger(this.getClass)
 	private val scheduledExecutor = Executors.newScheduledThreadPool(1)
 	var taskList: mutable.ArrayDeque[AbstractTask] = mutable.ArrayDeque[AbstractTask]()
+	private val taskFutures: mutable.Map[String, ScheduledFuture[_]] = mutable.Map[String, ScheduledFuture[_]]()
 
-	def schedule(task: AbstractTask): ScheduledFuture[_] = {
-		scheduledExecutor.scheduleAtFixedRate(task, 0, task.period, task.unit)
+	def schedule(task: AbstractTask): Unit = {
+		if (!task.paused) {
+			val f: ScheduledFuture[_] = scheduledExecutor.scheduleAtFixedRate(task, 0, task.period, task.unit)
+			taskFutures += (task.name.value -> f)
+		}
 	}
 
-	def runSingle(task: AbstractTask): ScheduledFuture[_] = {
+	def runSingle(task: AbstractTask): Unit = {
 		scheduledExecutor.schedule(task, 0, TimeUnit.SECONDS)
 	}
 
@@ -30,5 +34,11 @@ object TaskRunner {
 
 	def startTaskRunner(): Unit = {
 		taskList.foreach(task => if (task.period > 0) schedule(task))
+	}
+
+	def stop(task: AbstractTask): Unit = {
+		val f = taskFutures(task.name.value)
+		f.cancel(false)
+		taskFutures -= task.name.value
 	}
 }

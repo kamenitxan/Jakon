@@ -13,7 +13,7 @@ import javax.persistence.Column
 
 class EmailEntity(u: Unit = ()) extends JakonObject {
 	@Column(name = "addressTo")
-	@JakonField
+	@JakonField(searched = true)
 	var to: String = ""
 	@JakonField
 	var subject: String = ""

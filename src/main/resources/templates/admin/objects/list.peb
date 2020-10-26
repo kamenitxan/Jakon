@@ -3,6 +3,7 @@
 {# @pebvariable name="objects" type="java.util.List" #}
 {# @pebvariable name="filterParams" type="java.util.Map" #}
 {# @pebvariable name="field" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
+{# @pebvariable name="pageNumber" type="java.lang.Integer" #}
 
 {% extends "core" %}
 
@@ -73,9 +74,9 @@
 									</td>
                                 {% endif %}
                             {% endfor %}
-								<td><a href="/admin/object/{{ objectName }}/{{ getAttr(object, "id") }}"
+								<td><a href="/admin/object/{{ objectName }}/{{ getAttr(object, "id") }}?page={{ pageNumber }}"
 									   class="btn btn-info">{{ i18n("common","EDIT_BTN") }}</a></td>
-                        </tr>
+						</tr>
                         {% endfor %}
                         {% if objects is empty %}
                                <tr>
