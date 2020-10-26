@@ -132,7 +132,7 @@ object SqlGen {
 
 
 	private def getJakonFields(cls: Class[_ <: JakonObject]): List[Field] = {
-		val allFields = Utils.getFieldsUpTo(cls, classOf[JakonObject])
+		val allFields = Utils.getFieldsUpTo(cls, cls.getSuperclass)
 		allFields.filter(f =>
 			f.getAnnotations.exists(fa => fa.annotationType().getName == classOf[JakonField].getName)
 				&& f.getName != "id"

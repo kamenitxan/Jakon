@@ -13,9 +13,9 @@ import jakon.pagelet.{JsonPageletTest, PageletTest}
 import jakon.{DeployTest, ModelTest, RenderTest, SettingsTest}
 import logging.LoggingTest
 import org.scalatest.{BeforeAndAfterAll, Suite, Suites}
-import utils.entity.TestObject
+import utils.entity.{TestExtUser, TestObject}
 import utils.mail.EmailTest
-import utils.{SecurityTest, SqlGenTest, I18NUtilTest}
+import utils.{I18NUtilTest, SecurityTest, SqlGenTest}
 import webui._
 
 /**
@@ -81,6 +81,7 @@ class TestJakonApp extends JakonInit {
 		DBHelper.addDao(classOf[Post])
 		DBHelper.addDao(classOf[Page])
 		DBHelper.addDao(classOf[TestObject])
+		DBHelper.addDao(classOf[TestExtUser])
 	}
 
 	Director.registerController(new PageController)
