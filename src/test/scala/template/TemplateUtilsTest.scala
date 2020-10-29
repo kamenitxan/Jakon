@@ -60,7 +60,7 @@ class TemplateUtilsTest extends AnyFunSuite {
 
 		val p = new Post
 		p.content = "{HelloFun()}"
-		assert(p.getContent == "<p>helloWorld</p>")
+		assert(p.getContent == "<p>helloWorld</p>\n")
 	}
 
 }
