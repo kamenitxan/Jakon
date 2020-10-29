@@ -55,14 +55,18 @@ object Utils {
 		}
 	}
 
-	def getFieldsUpTo(startClass: Class[_], exclusiveParent: Class[_]): List[Field] = {
-		var currentClassFields = startClass.getDeclaredFields toList
+	def getFieldsUpTo(startClass: Class[_], exclusiveParent: Class[_]): Seq[Field] = {
+		var currentClassFields = getFields(startClass)
 		val parentClass = startClass.getSuperclass
 		if (parentClass != null && (exclusiveParent == null || (parentClass != exclusiveParent))) {
-			val parentClassFields: List[Field] = getFieldsUpTo(parentClass, exclusiveParent)
-			currentClassFields = parentClassFields ::: currentClassFields
+			val parentClassFields: Seq[Field] = getFieldsUpTo(parentClass, exclusiveParent)
+			currentClassFields = parentClassFields ++ currentClassFields
 		}
 		currentClassFields
+	}
+
+	def getFields(cls: Class[_]): Seq[Field] = {
+		cls.getDeclaredFields
 	}
 
 	@tailrec

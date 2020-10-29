@@ -6,7 +6,7 @@ import java.sql._
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
 import cz.kamenitxan.jakon.core.database.{Crud, DBHelper}
 import cz.kamenitxan.jakon.logging.Logger
-import cz.kamenitxan.jakon.utils.SqlGen
+import cz.kamenitxan.jakon.utils.{SqlGen, Utils}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.json.Json
@@ -128,9 +128,11 @@ abstract class JakonObject(implicit s: sourcecode.FullName) extends Serializable
 	}
 
 	def updateObject(jid: Int, conn: Connection): Unit = {
-		Logger.warn(s"updateObject method is not overridden $childClass")
-		val stmt = SqlGen.updateStmt(this, conn, jid)
-		stmt.executeUpdate()
+		if (Utils.getFields(this.getClass).nonEmpty) {
+			Logger.warn(s"updateObject method is not overridden $childClass")
+			val stmt = SqlGen.updateStmt(this, conn, jid)
+			stmt.executeUpdate()
+		}
 	}
 
 	def afterUpdate(): Unit = {

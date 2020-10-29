@@ -303,6 +303,25 @@ class ValidationTest extends AnyFunSuite {
 		testTable(v, ann, data, field = f)
 	}
 
+	test("past string") {
+		val now = LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATETIME_FORMAT))
+		val data: TableFor2[String, Boolean] = Table(
+			("value", "expectedResult"),
+			("test", false),
+			(null, true),
+			("1999-02-20", false),
+			("2030-02-20", false),
+			(now, false),
+			("1999-02-20T01:30", false),
+			("2030-02-20T01:30", false)
+		)
+
+		val v = new PastValidator
+		val ann = AnnotationParser.annotationForMap(classOf[cz.kamenitxan.jakon.validation.validators.Past], null)
+		val (_, f) = Utils.getClassByFieldName(classOf[TestObject], "string")
+		testTable(v, ann, data, field = f)
+	}
+
 	test("future localDate") {
 		val now = LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT))
 		val data: TableFor2[String, Boolean] = Table(
@@ -336,6 +355,25 @@ class ValidationTest extends AnyFunSuite {
 		val v = new FutureValidator
 		val ann = AnnotationParser.annotationForMap(classOf[cz.kamenitxan.jakon.validation.validators.Future], null)
 		val (_, f) = Utils.getClassByFieldName(classOf[TestObject], "localDateTime")
+		testTable(v, ann, data, field = f)
+	}
+
+	test("future string") {
+		val now = LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATETIME_FORMAT))
+		val data: TableFor2[String, Boolean] = Table(
+			("value", "expectedResult"),
+			("test", false),
+			(null, true),
+			("1999-02-20", false),
+			("2030-02-20", false),
+			(now, false),
+			("1999-02-20T01:30", false),
+			("2030-02-20T01:30", false)
+		)
+
+		val v = new FutureValidator
+		val ann = AnnotationParser.annotationForMap(classOf[cz.kamenitxan.jakon.validation.validators.Future], null)
+		val (_, f) = Utils.getClassByFieldName(classOf[TestObject], "string")
 		testTable(v, ann, data, field = f)
 	}
 }

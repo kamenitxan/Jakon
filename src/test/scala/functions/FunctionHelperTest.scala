@@ -5,16 +5,13 @@ import java.util
 import cz.kamenitxan.jakon.core.function.{FunctionHelper, IFuncion}
 import cz.kamenitxan.jakon.core.template.pebble.ValueFun
 import org.scalatest.funsuite.AnyFunSuite
+import test.HelloFun
 
 class FunctionHelperTest extends AnyFunSuite {
 	test("function split params") {
 		val params = FunctionHelper.splitParams("param1=val1 param2=val2")
 		assert(params.containsKey("param1"))
 		assert(params.get("param2") == "val2")
-	}
-
-	class HelloFun extends IFuncion {
-		override def execute(params: util.Map[String, String]): String = "helloWorld"
 	}
 
 	test("function parse") {

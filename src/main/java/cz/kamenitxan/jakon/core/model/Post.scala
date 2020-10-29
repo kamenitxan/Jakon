@@ -29,11 +29,11 @@ class Post extends JakonObject {
 
 
 	def getContent: String = {
-		if (content == null) return null
+		if (content == null) return ""
 		val parsedHtml = TemplateUtils.parseMarkdown(content)
 		// TODO: parsovani funkci
 		// (\{)((?:[a-z][a-z]+)).*?(\})
-		val p = Pattern.compile("(\\{)((?:[a-z][a-z]+))(.*?)(\\})")
+		val p = Pattern.compile("\\{((?:\\w+))\\((.*?)\\)}")
 		val m = p.matcher(parsedHtml)
 		val result = new StringBuffer
 		while ( {

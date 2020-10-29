@@ -12,8 +12,8 @@ import functions.LinkTest
 import jakon.pagelet.{JsonPageletTest, PageletTest}
 import jakon.{DeployTest, ModelTest, RenderTest, SettingsTest}
 import logging.LoggingTest
-import org.scalatest.{BeforeAndAfterAll, Suite, Suites}
-import utils.entity.{TestExtUser, TestObject}
+import org.scalatest.{BeforeAndAfterAll, Suites}
+import utils.entity.{TestExtNoFields, TestExtUser, TestObject}
 import utils.mail.EmailTest
 import utils.{I18NUtilTest, SecurityTest, SqlGenTest}
 import webui._
@@ -76,12 +76,13 @@ class TestRunner extends Suites(
 
 class TestJakonApp extends JakonInit {
 
-	override def daoSetup() = {
+	override def daoSetup(): Unit = {
 		DBHelper.addDao(classOf[Category])
 		DBHelper.addDao(classOf[Post])
 		DBHelper.addDao(classOf[Page])
 		DBHelper.addDao(classOf[TestObject])
 		DBHelper.addDao(classOf[TestExtUser])
+		DBHelper.addDao(classOf[TestExtNoFields])
 	}
 
 	Director.registerController(new PageController)

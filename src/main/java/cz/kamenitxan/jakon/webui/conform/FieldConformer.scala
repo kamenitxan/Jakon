@@ -69,7 +69,7 @@ object FieldConformer {
 	}
 
 
-	def getFieldInfos(obj: JakonObject, fields: List[Field]): List[FieldInfo] = {
+	def getFieldInfos(obj: JakonObject, fields: Seq[Field]): List[FieldInfo] = {
 		var infos = List[FieldInfo]()
 		fields.foreach(f => {
 			val an = f.getAnnotation(classOf[JakonField])
@@ -121,7 +121,7 @@ object FieldConformer {
 		infos.sortBy(fi => fi.an.listOrder)
 	}
 
-	def getEmptyFieldInfos(fields: List[Field]): List[FieldInfo] = {
+	def getEmptyFieldInfos(fields: Seq[Field]): List[FieldInfo] = {
 		var infos = List[FieldInfo]()
 		fields.foreach(f => {
 			val an = f.getAnnotation(classOf[JakonField])
