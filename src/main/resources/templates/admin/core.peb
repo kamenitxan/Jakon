@@ -12,7 +12,10 @@
     <link href="/jakon/css/vendor.css" rel="stylesheet">
     <link href="/jakon/css/jakon.css" rel="stylesheet">
 
-    <!-- Bootstrap Core CSS -->
+	<link rel="icon" type="image/png" sizes="32x32" href="/jakon/img/favicon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/jakon/img/favicon/favicon-16x16.png">
+
+	<!-- Bootstrap Core CSS -->
     <link href="/jakon/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <!-- MetisMenu CSS -->
     <link href="/jakon/vendor/metisMenu/metisMenu.min.css" rel="stylesheet">

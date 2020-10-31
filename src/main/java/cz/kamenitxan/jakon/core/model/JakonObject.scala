@@ -37,7 +37,7 @@ abstract class JakonObject(implicit s: sourcecode.FullName) extends Serializable
 	def createUrl: String = url
 
 
-	def executeInsert(stmt: PreparedStatement): Int = {
+	final def executeInsert(stmt: PreparedStatement): Int = {
 		val affectedRows = stmt.executeUpdate
 		if (affectedRows == 0) {
 			throw new SQLException("Creating JakonObject failed, no rows affected.")

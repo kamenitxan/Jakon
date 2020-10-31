@@ -1,5 +1,6 @@
 package cz.kamenitxan.jakon.core.model
 
+import java.sql.{Connection, Statement, Types}
 import java.util.Date
 import java.util.regex.Pattern
 
@@ -45,6 +46,50 @@ class Post extends JakonObject {
 		}
 		m.appendTail(result)
 		result.toString
+	}
+
+
+	override def createObject(jid: Int, conn: Connection): Int = {
+		val sql = "INSERT INTO Post (id, date, perex, category_id, title, content, showComments) VALUES (?, ?, ?, ?, ?, ?, ?)"
+		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+		stmt.setInt(1, jid)
+		if (date != null) {
+			stmt.setDate(2, new java.sql.Date(date.getTime))
+		} else {
+			stmt.setNull(2, Types.DATE)
+		}
+		stmt.setString(3, perex)
+		if (category != null) {
+			stmt.setInt(4, category.id)
+		} else {
+			stmt.setNull(4, Types.INTEGER)
+		}
+		stmt.setString(5, title)
+		stmt.setString(6, content)
+		stmt.setBoolean(7, showComments)
+
+		executeInsert(stmt)
+	}
+
+	override def updateObject(jid: Int, conn: Connection): Unit = {
+		val sql = "UPDATE Post SET date = ?, perex = ?, category_id = ?, title = ?, content = ?, showComments = ? WHERE id = ?"
+		val stmt = conn.prepareStatement(sql)
+		if (date != null) {
+			stmt.setDate(1, new java.sql.Date(date.getTime))
+		} else {
+			stmt.setNull(1, Types.DATE)
+		}
+		stmt.setString(2, perex)
+		if (category != null) {
+			stmt.setInt(3, category.id)
+		} else {
+			stmt.setNull(3, Types.INTEGER)
+		}
+		stmt.setString(4, title)
+		stmt.setString(5, content)
+		stmt.setBoolean(6, showComments)
+		stmt.setInt(7, jid)
+		stmt.executeUpdate()
 	}
 
 	override val objectSettings: ObjectSettings = null
