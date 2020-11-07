@@ -1,8 +1,8 @@
 {
-  "name": "brunch-app",
-  "description": "Brunch.io application",
+  "name": "jakon-app",
+  "description": "Jakon application",
   "private": true,
-  "author": "Brunch",
+  "author": "Kamenitxan",
   "version": "0.0.1",
   "repository": "",
   "scripts": {
@@ -12,16 +12,17 @@
   "dependencies": {
     "awesomplete": "^1.1.2",
     "domador": "^2.4.4",
-    "jquery": "^3.3.1",
+    "jquery": "^3.5.1",
     "megamark": "^3.3.0",
-    "npm": "^6.5.0",
-    "woofmark": "^4.2.3"
+    "npm": "^6.14.8",
+    "punycode": "^2.1.1",
+    "woofmark": "^4.2.6"
   },
   "devDependencies": {
     "auto-reload-brunch": "^2",
     "babel-brunch": "~6.0",
     "babel-preset-latest": "^6",
-    "brunch": "^2",
+    "brunch": "^3",
     "clean-css-brunch": "^2",
     "less-brunch": "^2.10.0",
     "uglify-js-brunch": "^2"
