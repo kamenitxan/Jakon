@@ -94,6 +94,7 @@ object Routes {
 
 		path(s"$AdminPrefix/api", () => {
 			post("/search", (req: Request, res: Response) => Api.search(req, res), gsonTransformer)
+			post("/images", (req: Request, res: Response) => Api.getImages(req, res), gsonTransformer)
 		})
 		AdminSettings.customControllersJava.forEach((c: Class[_ <: AbstractController]) => {
 			try {

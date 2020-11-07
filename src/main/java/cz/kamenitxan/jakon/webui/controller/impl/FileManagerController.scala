@@ -638,10 +638,14 @@ object FileManagerController {
 
 	@throws[IOException]
 	private def getPermissions(path: Path) = {
-		val fileAttributeView = Files.getFileAttributeView(path, classOf[PosixFileAttributeView])
-		val readAttributes = fileAttributeView.readAttributes
-		val permissions = readAttributes.permissions
-		PosixFilePermissions.toString(permissions)
+		if (SystemUtils.IS_OS_WINDOWS) {
+			"rw-r--r--"
+		} else {
+			val fileAttributeView = Files.getFileAttributeView(path, classOf[PosixFileAttributeView])
+			val readAttributes = fileAttributeView.readAttributes
+			val permissions = readAttributes.permissions
+			PosixFilePermissions.toString(permissions)
+		}
 	}
 
 	/**

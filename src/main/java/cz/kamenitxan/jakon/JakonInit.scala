@@ -10,7 +10,7 @@ import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.dynamic.PageletInitializer
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.core.task.{FileManagerConsistencyTestTask, RenderTask, ResetPasswordRequestCleanerTask, TaskRunner}
-import cz.kamenitxan.jakon.devtools.{DevRender, StaticFilesController}
+import cz.kamenitxan.jakon.devtools.{DevRender, StaticFilesController, UploadFilesController}
 import cz.kamenitxan.jakon.logging.{LogCleanerTask, Logger}
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.utils.{LoggingExceptionHandler, PageContext}
@@ -89,6 +89,9 @@ class JakonInit {
 			})
 			enableDebugScreen()
 			exception(classOf[Exception], new LoggingExceptionHandler)
+
+			get("/dadada/*", (req: Request, res: Response) => "teet")
+			get("/upload/*", (req: Request, res: Response) => new UploadFilesController().doGet(req, res))
 
 			notFound((req: Request, res: Response) => new StaticFilesController().doGet(req, res))
 		}

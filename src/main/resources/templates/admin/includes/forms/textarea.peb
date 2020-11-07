@@ -3,6 +3,7 @@
 <div>
 	<textarea class="form-control" name="{{ field.name }}" cols="80" rows="5" id="editor-container{{ fieldHash }}">{{ field.value | raw }}</textarea>
 </div>
+<div id="image_selector" class="hidden"></div>
 
 <script>
 	const JTextarea = require("forms/j_textarea.js");

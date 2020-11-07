@@ -73,6 +73,18 @@ textarea {
 	width: 100%;
 }
 
+/** image selector */
+#image_selector {
+	width: 500px;
+	margin-left: -250px;
+	height: 500px;
+	background-color: rebeccapurple;
+	z-index: 42;
+	position: fixed;
+	top: 80px;
+	left: 50%;
+}
+
 /** object extensions */
 .extension_holder {
 	margin-bottom: 5px;
