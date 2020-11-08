@@ -1,5 +1,7 @@
 package cz.kamenitxan.jakon.webui.api
 
+import java.io.File
+
 import com.google.gson.Gson
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{JakonFile, JakonObject}
@@ -11,8 +13,8 @@ import scala.language.postfixOps
 
 
 /**
-  * Created by TPa on 29.04.18.
-  */
+ * Created by TPa on 29.04.18.
+ */
 object Api {
 	val gson = new Gson()
 
@@ -52,7 +54,10 @@ object Api {
 	def getImages(req: Request, res: Response): GetImagesResponse = {
 		val jsonReq = gson.fromJson(req.body(), classOf[GetImagesRequest])
 
-		val path = FileManagerController.REPOSITORY_BASE_PATH + "\\basePath"
+		val path = Option.apply(jsonReq.path)
+			.getOrElse(FileManagerController.REPOSITORY_BASE_PATH)
+			.patch(FileManagerController.REPOSITORY_BASE_PATH.length, "/basePath", 0)
+			.replace("/", File.separator)
 
 		val files = DBHelper.withDbConnection(implicit conn => {
 			val sql = "SELECT * FROM JakonFile WHERE (fileType = \"FOLDER\" OR fileType = \"IMAGE\") AND path = ?"
@@ -60,7 +65,11 @@ object Api {
 			stmt.setString(1, path)
 			DBHelper.select(stmt, classOf[JakonFile]).map(_.entity)
 		}).map(f => {
-			f.path = f.path.replace("basePath", "").replace("\\", "/")
+			// TODO: neni tady potreba File.separator, protoze se uklada do db dle systemu ?
+			f.path = f.path.replace("basePath", "").replace("\\\\", "/").replace("\\", "/")
+			if (!f.path.endsWith("/")) {
+				f.path += "/"
+			}
 			f
 		})
 		new GetImagesResponse(true, files)
