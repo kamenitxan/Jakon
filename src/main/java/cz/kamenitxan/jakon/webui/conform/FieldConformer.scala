@@ -80,7 +80,9 @@ object FieldConformer {
 					infos = new FieldInfo(an, HtmlType.CHECKBOX, f, fv, "ManyToOne") :: infos
 				} else if (f.getDeclaredAnnotation(classOf[OneToMany]) != null) {
 					val fv = f.get(obj)
-					infos = new FieldInfo(an, HtmlType.CHECKBOX, f, fv, "OneToMany") :: infos
+					val typeCls = f.getGenericType.asInstanceOf[ParameterizedType].getActualTypeArguments.head
+					val typeName = typeCls.getTypeName.substring(typeCls.getTypeName.lastIndexOf(".") + 1)
+					infos = new FieldInfo(an, HtmlType.CHECKBOX, f, fv, "OneToMany", typeName) :: infos
 				} else {
 					f.getType match {
 						case BOOLEAN =>

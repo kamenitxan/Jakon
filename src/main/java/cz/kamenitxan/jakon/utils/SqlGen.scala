@@ -167,12 +167,13 @@ object SqlGen {
 			case DATE => stmt.setDate(i, java.sql.Date.valueOf(value.asInstanceOf[LocalDate]))
 			case DATE_o => stmt.setDate(i, new java.sql.Date(value.asInstanceOf[Date].getTime))
 			case DATETIME => stmt.setObject(i, value)
+			case SEQ => stmt.setString(i, value.asInstanceOf[Seq[JakonObject]].map(_.id).mkString(";"))
 			case x if x.isEnum =>
 				val nameMethod = value.getClass.getMethod("name")
 				stmt.setString(i, nameMethod.invoke(value).toString)
 			case _ =>
 				lazy val jakonField = f.getAnnotation(classOf[JakonField])
-				if (f.getAnnotation(classOf[ManyToOne]) != null || f.getAnnotation(classOf[OneToOne]) != null) {
+				if (f.getAnnotation(classOf[ManyToOne]) != null) {
 					stmt.setInt(i, value.asInstanceOf[JakonObject].id)
 				} else if (jakonField != null) {
 					val converter = jakonField.converter()

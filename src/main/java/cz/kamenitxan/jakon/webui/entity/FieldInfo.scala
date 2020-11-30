@@ -34,6 +34,10 @@ class FieldInfo(val required: Boolean,
 		this(an.required(), an.disabled(), htmlType.typeName, an.htmlClass(), an.htmlMaxLength(), value, f.getName, f.getType.getSimpleName, an, template, f, FieldInfo.calculateFormatter(f))
 	}
 
+	def this(an: JakonField, htmlType: HtmlType, f: Field, value: Any, template: String, typeName: String) = {
+		this(an.required(), an.disabled(), htmlType.typeName, an.htmlClass(), an.htmlMaxLength(), value, f.getName, typeName, an, template, f, FieldInfo.calculateFormatter(f))
+	}
+
 	def this(an: JakonField, f: Field) = {
 		this(an.required(), an.disabled(), null, an.htmlClass(), an.htmlMaxLength(), null, f.getName, f.getType.getSimpleName, an, null, f, FieldInfo.calculateFormatter(f))
 	}
