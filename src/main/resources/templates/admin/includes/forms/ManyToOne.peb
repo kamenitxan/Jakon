@@ -1,12 +1,15 @@
 {# @pebvariable name="field" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
+{# @pebvariable name="fieldHash" type="java.lang.Integer" #}
 
 <div class="select_wrapper">
 	<input id="js_foreign_{{ fieldHash }}" class="hidden js_foreign" placeholder="Search...">
 	<select class="form-control" name="{{ field.name }}" id="{{ fieldHash }}" {% if field.disabled %}disabled{% endif %} data-selected_id="{{ field.value.id }}">
 	</select>
 	<script>
-		var ForeignObjectSelector = require("forms/j_foreign_object.js");
-		new ForeignObjectSelector("{{ field.objectName }}", "{{ fieldHash }}");
+		(() => {
+			var ForeignObjectSelector = require("forms/j_foreign_object.js");
+			new ForeignObjectSelector("{{ field.objectName }}", "{{ fieldHash }}", true);
+		}).apply();
 	</script>
 </div>
 

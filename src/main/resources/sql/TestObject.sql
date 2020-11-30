@@ -16,6 +16,7 @@ CREATE TABLE TestObject
     mapNoConverter TEXT,
     embedded_string VARCHAR(255),
     embedded_int    INTEGER,
+    oneToMany       TEXT,
 
     PRIMARY KEY (id)
 );

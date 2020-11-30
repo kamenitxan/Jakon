@@ -6,12 +6,10 @@ import cz.kamenitxan.jakon.core.database.converters.StringListConverter
 import cz.kamenitxan.jakon.validation.validators.NotEmpty
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.JakonField
-import javax.persistence._
 
 /**
   * Created by TPa on 30.04.18.
   */
-@Entity
 class AclRule extends JakonObject {
 	@NotEmpty
 	@JakonField(searched = true, listOrder = 0)
@@ -38,7 +36,6 @@ class AclRule extends JakonObject {
 		executeInsert(stmt)
 	}
 
-	@Transient
 	override val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-unlock-alt")
 
 	override def toString = s"AclRule($name)"

@@ -2,17 +2,16 @@ package cz.kamenitxan.jakon.core.database
 
 import java.lang.reflect.Field
 import java.sql.ResultSet
-import java.time.{LocalDate, LocalDateTime, ZoneId}
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 import cz.kamenitxan.jakon.core.database.converters.AbstractConverter
 import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.logging.Logger
-import cz.kamenitxan.jakon.utils.TypeReferences.{BOOLEAN, DATE, DATETIME, DATE_o, DOUBLE, FLOAT, INTEGER, STRING}
+import cz.kamenitxan.jakon.utils.TypeReferences._
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.entity.JakonField
-import javax.persistence.{Column, Embedded, ManyToOne}
-import javax.swing.text.DateFormatter
+import javax.persistence.{Column, Embedded, ManyToOne, OneToMany}
 
 /**
  * Created by TPa on 24.05.2020.
@@ -76,20 +75,28 @@ object EntityMapper {
 			case FLOAT => field.set(obj, rs.getFloat(columnName))
 			case DOUBLE => field.set(obj, rs.getDouble(columnName))
 			case DATE_o => field.set(obj, rs.getDate(columnName))
-			case DATE => field.set(obj, rs.getDate(columnName).toLocalDate)
-			case DATETIME => field.set(obj, LocalDateTime.parse(rs.getString(columnName), DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+			case DATE => field.set(obj, Option(rs.getDate(columnName)).map(_.toLocalDate).orNull)
+			case DATETIME =>
+				val v = Option(rs.getString(columnName)).map(dt => LocalDateTime.parse(dt, DateTimeFormatter.ISO_LOCAL_DATE_TIME)).orNull
+				field.set(obj, v)
 			case x if x.isEnum =>
 				val m = x.getMethod("valueOf", classOf[String])
 				val enumValue = m.invoke(null, rs.getString(columnName))
 				field.set(obj, enumValue)
 			case _ =>
 				val manyToOne = field.getAnnotation(classOf[ManyToOne])
+				lazy val oneToMany = field.getAnnotation(classOf[OneToMany])
 				lazy val jakonField = field.getAnnotation(classOf[JakonField])
 				lazy val embedded = field.getAnnotation(classOf[Embedded])
 				if (manyToOne != null) {
 					val fv = rs.getInt(columnName)
 					if (fv > 0) {
-						foreignIds = columnName -> new ForeignKeyInfo(rs.getInt(columnName), columnName, field)
+						foreignIds = columnName -> new ForeignKeyInfo(Seq(rs.getInt(columnName)), columnName, field)
+					}
+				} else if (oneToMany != null) {
+					val fv = rs.getString(columnName)
+					if (fv != null && fv.nonEmpty) {
+						foreignIds = columnName -> new ForeignKeyInfo(fv.split(";").map(id => id.toInt), columnName, field)
 					}
 				} else if (jakonField != null) {
 					val converter = jakonField.converter()

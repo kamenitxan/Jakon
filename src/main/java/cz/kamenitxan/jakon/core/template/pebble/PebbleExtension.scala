@@ -21,6 +21,7 @@ class PebbleExtension extends AbstractExtension {
 		val extensions = new util.HashMap[String, Filter]()
 		extensions.put("date", new JakonDateFilter)
 		extensions.put("md", new MarkdownFilter)
+		extensions.put("asJava", new AsJavaFilter)
 		extensions
 	}
 }

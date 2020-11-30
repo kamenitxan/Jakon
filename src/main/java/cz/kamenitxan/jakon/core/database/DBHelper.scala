@@ -1,11 +1,13 @@
 package cz.kamenitxan.jakon.core.database
 
+import java.lang.reflect.ParameterizedType
 import java.sql._
 
 import com.zaxxer.hikari.HikariDataSource
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
 import cz.kamenitxan.jakon.core.model._
 import cz.kamenitxan.jakon.logging.Logger
+import cz.kamenitxan.jakon.utils.TypeReferences.SEQ
 import org.intellij.lang.annotations.Language
 import org.sqlite.SQLiteConfig
 
@@ -120,10 +122,10 @@ object DBHelper {
 		val res = selectSingle(stmt, cls)
 		if (res.foreignIds != null && res.foreignIds.nonEmpty) {
 			res.foreignIds.values.foreach(fki => {
-				if (res.entity.id == fki.id) {
+				if (fki.ids.size == 1 && res.entity.id == fki.ids.head) {
 					fki.field.set(res.entity, res.entity)
 				} else {
-					selectForeignEntity(fki, res)(implicitly, cls)
+					fetchForeignObjects(Seq(res))
 				}
 			})
 		}
@@ -133,12 +135,18 @@ object DBHelper {
 	private def selectForeignEntity[T <: JakonObject](fki: ForeignKeyInfo, res: QueryResult[T])(implicit conn: Connection, cls: Class[T]): Unit = {
 		val cls = fki.field.getType
 		val className = cls.getSimpleName
-		val sql = s"SELECT * FROM $className JOIN JakonObject ON $className.id = JakonObject.id WHERE $className.id = ?"
+		val sql = s"SELECT * FROM $className c JOIN JakonObject ON c.id = JakonObject.id WHERE " + "c.id = ? OR " * (fki.ids.size - 1) + "c.id = ?"
 		val stmt = conn.prepareStatement(sql)
-		stmt.setInt(1, fki.id)
-		val r = selectSingleDeep(stmt)(implicitly, cls.asInstanceOf[Class[JakonObject]])
+		fki.ids.zipWithIndex.foreach(idi => {
+			stmt.setInt(idi._2 + 1, idi._1)
+		})
+		val r = selectDeep(stmt)(implicitly, cls.asInstanceOf[Class[JakonObject]])
 		stmt.close()
-		fki.field.set(res.entity, r)
+		if (fki.ids.size > 1) {
+			fki.field.set(res.entity, r)
+		} else {
+			fki.field.set(res.entity, r.head)
+		}
 	}
 
 	def selectDeep[T <: JakonObject](stmt: Statement, @Language("SQL") sql: String)(implicit conn: Connection, cls: Class[T]): List[T] = {
@@ -147,27 +155,46 @@ object DBHelper {
 		res.map(r => r.entity)
 	}
 
-	def selectDeep[T <: JakonObject](stmt: PreparedStatement)(implicit conn: Connection, cls: Class[T]): List[T] = {
-		val res: List[QueryResult[T]] = select(stmt, cls)
+	def selectDeep[T <: JakonObject](stmt: PreparedStatement)(implicit conn: Connection, cls: Class[T]): Seq[T] = {
+		val res = select(stmt, cls)
 		fetchForeignObjects(res)
 		res.map(r => r.entity)
 	}
 
-	def fetchForeignObjects[T <: JakonObject](resultList: List[QueryResult[T]])(implicit conn: Connection): List[QueryResult[T]] = {
+	def fetchForeignObjects[T <: JakonObject](resultList: Seq[QueryResult[T]])(implicit conn: Connection): Seq[QueryResult[T]] = {
 		resultList.foreach(r => {
 			if (r.foreignIds.nonEmpty) {
 				r.foreignIds.foreach(fki => {
 					val field = fki._2.field
-					if (r.entity.id == fki._2.id) {
+					if (fki._2.ids.size == 1 && r.entity.id == fki._2.ids.head) {
 						field.set(r.entity, r.entity)
 					} else {
-						val objectClass = field.getType.asInstanceOf[Class[JakonObject]]
-						val className = objectClass.getSimpleName
-						val sql = s"SELECT * FROM $className JOIN JakonObject ON $className.id = JakonObject.id WHERE $className.id = ? "
+						//val objectClass = field.getType.asInstanceOf[Class[JakonObject]]
+						val objectClass = field.getGenericType match {
+							case parameterizedType: ParameterizedType =>
+								Class.forName(parameterizedType.getActualTypeArguments.toList.head.getTypeName).asInstanceOf[Class[JakonObject]]
+							case _ =>
+								field.getType.asInstanceOf[Class[JakonObject]]
+						}
+						val className = field.getGenericType match {
+							case parameterizedType: ParameterizedType =>
+								val typeCls = parameterizedType.getActualTypeArguments.head
+								typeCls.getTypeName.substring(typeCls.getTypeName.lastIndexOf(".") + 1)
+							case _ =>
+								objectClass.getSimpleName
+						}
+
+						val sql = s"SELECT * FROM $className c JOIN JakonObject ON c.id = JakonObject.id WHERE " + "c.id = ? OR " * (fki._2.ids.size - 1) + "c.id = ?"
 						val stmt = conn.prepareStatement(sql)
-						stmt.setInt(1, fki._2.id)
-						val res = selectSingleDeep(stmt)(implicitly, objectClass)
-						field.set(r.entity, res)
+						fki._2.ids.zipWithIndex.foreach(idi => {
+							stmt.setInt(idi._2 + 1, idi._1)
+						})
+
+						val res = selectDeep(stmt)(implicitly, objectClass)
+						field.getType match {
+							case SEQ => field.set(r.entity, res)
+							case _ => field.set(r.entity, res.head)
+						}
 					}
 				})
 			}

@@ -1,14 +1,17 @@
 {# @pebvariable name="field" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
-
+{# @pebvariable name="fieldHash" type="java.lang.Integer" #}
 
 <input id="js_foreign_{{ fieldHash }}" class="hidden js_foreign">
-<select class="form-control" name="{{ field.name }}" id="{{ fieldHash }}" {% if field.disabled %}disabled{% endif %}>
-{% for o in field.value %}
+{% set objects = field.value | asJava %}
+<select class="form-control" name="{{ field.name }}" id="{{ fieldHash }}" {% if field.disabled %}disabled{% endif %} multiple="multiple"
+data-selected_id="{% for o in objects %}{{ o.id }}{% if not loop.last %},{% endif %}{% endfor %}">
+
+{% for o in objects %}
 	<option value="{{ o.id }}">{{ o }}</option>
-{% endfor %} %}
+{% endfor %}
 
 </select>
 <script>
 	const ForeignObjectSelector = require("forms/j_foreign_object.js");
-	new ForeignObjectSelector("{{ objectName }}", "{{ fieldHash }}");
+	new ForeignObjectSelector("{{ field.objectName }}", "{{ fieldHash }}", false);
 </script>

@@ -1,8 +1,9 @@
 class ForeignObjectSelector {
 
-    constructor(objectName, objectHash) {
+    constructor(objectName, objectHash, includeEmptyValue) {
         this.objectName = objectName;
         this.objectHash = objectHash;
+        this.includeEmptyValue = includeEmptyValue;
         this.endPoint = "/admin/api/search";
         this.selectbox = document.getElementById(this.objectHash);
         this.searchbox = document.getElementById("js_foreign_" + this.objectHash);
@@ -49,19 +50,22 @@ class ForeignObjectSelector {
 
     fillSelect(data) {
         const itemCount = this.selectbox.options.length;
-        const selectedId = parseInt(this.selectbox.dataset["selected_id"], 10);
-        for (let i = 0; i <= itemCount; i++) {
+        const selectedIds = this.selectbox.dataset["selected_id"].split(",").map(id => parseInt(id, 10))
+        for (let i = itemCount - 1; i >= 0; i--) {
             this.selectbox.remove(i);
         }
-        let opt = document.createElement("option");
-        opt.text = "---";
-        opt.value = "";
-        this.selectbox.add(opt);
+
+        if (this.includeEmptyValue) {
+            let opt = document.createElement("option");
+            opt.text = "---";
+            opt.value = "";
+            this.selectbox.add(opt);
+        }
         data.result.forEach(e => {
             let opt = document.createElement("option");
             opt.value = e.id;
             opt.text = `Id: ${e.id} - ${e.name}`;
-            if (e.id === selectedId) {
+            if (selectedIds.includes(e.id)) {
                 opt.selected = true
             }
             this.selectbox.add(opt);

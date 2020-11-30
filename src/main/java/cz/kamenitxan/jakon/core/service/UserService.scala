@@ -10,6 +10,7 @@ import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.utils.Utils.StringImprovements
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.utils.security.AesEncryptor
+import cz.kamenitxan.jakon.webui.controller.impl.Authentication
 import cz.kamenitxan.jakon.webui.entity.ResetPasswordEmailEntity
 import spark.Request
 
@@ -17,6 +18,18 @@ import scala.util.Random
 
 object UserService {
 	implicit val cls: Class[JakonUser] = classOf[JakonUser]
+
+	def getByEmail(email: String)(implicit conn: Connection): JakonUser = {
+		val stmt = conn.prepareStatement(Authentication.SQL_FIND_USER)
+		stmt.setString(1, email)
+		DBHelper.selectSingleDeep(stmt)
+	}
+
+	def getAllUsers()(implicit conn: Connection): List[JakonUser] = {
+		val sql = "SELECT * FROM JakonUser JOIN AclRule AR ON JakonUser.acl_id = AR.id ORDER BY AR.id;"
+		val stmt = conn.createStatement()
+		DBHelper.selectDeep(stmt, sql)
+	}
 
 	def getMasterAdmin()(implicit conn: Connection): JakonUser = {
 		val sql = "SELECT * FROM JakonUser JOIN AclRule AR ON JakonUser.acl_id = AR.id WHERE AR.masterAdmin = 1 ORDER BY AR.id LIMIT 1;"

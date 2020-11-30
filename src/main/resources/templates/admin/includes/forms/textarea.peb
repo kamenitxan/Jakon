@@ -6,6 +6,8 @@
 <div id="image_selector"></div>
 
 <script>
-	const JTextarea = require("forms/j_textarea.js");
-	new JTextarea().init({{ fieldHash }})
+	(() => {
+		const JTextarea = require("forms/j_textarea.js");
+		new JTextarea().init({{ fieldHash }})
+	}).apply();
 </script>

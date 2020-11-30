@@ -56,7 +56,7 @@ object Authentication {
 					Logger.debug("User " + user.username + " is not enabled")
 				} else if (checkPassword(password, user.password)) {
 					val stmt = conn.prepareStatement(SQL_FIND_ACL)
-					stmt.setInt(1, result.foreignIds.getOrElse("acl_id", null).id)
+					stmt.setInt(1, result.foreignIds.getOrElse("acl_id", null).ids.head)
 					val aclResult = DBHelper.selectSingle(stmt, classOf[AclRule])
 					user.acl = aclResult.entity
 
