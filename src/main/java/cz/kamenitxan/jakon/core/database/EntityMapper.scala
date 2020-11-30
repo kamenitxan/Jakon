@@ -2,16 +2,17 @@ package cz.kamenitxan.jakon.core.database
 
 import java.lang.reflect.Field
 import java.sql.ResultSet
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime, ZoneId}
 import java.time.format.DateTimeFormatter
 
 import cz.kamenitxan.jakon.core.database.converters.AbstractConverter
 import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.logging.Logger
-import cz.kamenitxan.jakon.utils.TypeReferences.{BOOLEAN, DATETIME, DATE_o, DOUBLE, FLOAT, INTEGER, STRING}
+import cz.kamenitxan.jakon.utils.TypeReferences.{BOOLEAN, DATE, DATETIME, DATE_o, DOUBLE, FLOAT, INTEGER, STRING}
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence.{Column, Embedded, ManyToOne}
+import javax.swing.text.DateFormatter
 
 /**
  * Created by TPa on 24.05.2020.
@@ -75,6 +76,7 @@ object EntityMapper {
 			case FLOAT => field.set(obj, rs.getFloat(columnName))
 			case DOUBLE => field.set(obj, rs.getDouble(columnName))
 			case DATE_o => field.set(obj, rs.getDate(columnName))
+			case DATE => field.set(obj, rs.getDate(columnName).toLocalDate)
 			case DATETIME => field.set(obj, LocalDateTime.parse(rs.getString(columnName), DateTimeFormatter.ISO_LOCAL_DATE_TIME))
 			case x if x.isEnum =>
 				val m = x.getMethod("valueOf", classOf[String])

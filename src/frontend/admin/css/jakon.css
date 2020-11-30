@@ -107,3 +107,7 @@
 .oauthBtn {
 	height: 46px;
 }
+
+.panel-body {
+	overflow-x: auto;
+}

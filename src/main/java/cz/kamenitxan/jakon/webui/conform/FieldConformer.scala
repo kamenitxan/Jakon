@@ -97,6 +97,14 @@ object FieldConformer {
 							} else {
 								infos = new FieldInfo(an, HtmlType.DATE, f, value = "") :: infos
 							}
+						case DATE =>
+							val sdf = DateTimeFormatter.ofPattern(DATE_FORMAT)
+							if (f.get(obj) != null) {
+								val value = f.get(obj).asInstanceOf[LocalDate].format(sdf)
+								infos = new FieldInfo(an, HtmlType.DATE, f, value) :: infos
+							} else {
+								infos = new FieldInfo(an, HtmlType.DATE, f, value = "") :: infos
+							}
 						case DATETIME =>
 							val sdf = DateTimeFormatter.ofPattern(DATETIME_FORMAT)
 							if (f.get(obj) != null) {

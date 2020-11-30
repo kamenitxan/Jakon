@@ -21,6 +21,7 @@ object TypeReferences {
 	val MAP = classOf[Map[Any, Any]]
 	val DATE = classOf[LocalDate]
 	val DATE_o = classOf[Date]
+	val SQL_DATE = classOf[java.sql.Date]
 	val DATETIME = classOf[LocalDateTime]
 	val SEQ = classOf[Seq[Any]]
 

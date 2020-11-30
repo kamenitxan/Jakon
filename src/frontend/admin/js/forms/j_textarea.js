@@ -20,6 +20,13 @@ class JTextarea {
 			new ImageSelector(chunks, wmi).init();
 		})
 
+		document.fillImage = (name, link) => {
+			document.wmi.runCommand((chunks, mode) => {
+				// TODO: rozdilne mody
+				chunks.before = chunks.before + "![" + name + "](" + link + ")";
+			});
+		}
+
 	}
 }
 module.exports = JTextarea;
@@ -114,7 +121,7 @@ class ImageSelector {
 				const select = target.querySelector("#fid" + f.id + " button");
 				select.addEventListener("click", e => {
 					e.preventDefault();
-					this.fillImage(f.name, "/" + f.path + f.name);
+					document.fillImage(f.name, "/" + f.path + f.name);
 				});
 			} else if (f.fileType === "FOLDER") {
 				const row = target.querySelector("#fid" + f.id);

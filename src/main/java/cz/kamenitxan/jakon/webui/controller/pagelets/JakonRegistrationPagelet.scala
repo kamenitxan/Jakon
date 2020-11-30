@@ -23,7 +23,6 @@ class JakonRegistrationPagelet extends AbstractAdminPagelet {
 
 	@Get(path = "",template = "pagelet/registration/register")
 	def registrationGet(response: Response): Unit = {
-		println("reg tuna")
 		// just render
 	}
 

@@ -28,6 +28,7 @@ class JakonInit {
 		// override to add custom DB entities
 	}
 
+	var websocketSetup: () => Unit = () => {}
 	var routesSetup: () => Unit = () => {}
 
 	def adminControllers(): Unit = {
@@ -81,7 +82,7 @@ class JakonInit {
 		adminControllers()
 		taskSetup()
 
-
+		websocketSetup()
 		afterAfter((_: Request, _: Response) => PageContext.destroy())
 		if (Settings.getDeployMode != DeployMode.PRODUCTION) {
 			before((request: Request, _: Response) => {

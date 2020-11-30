@@ -49,8 +49,7 @@ object FieldInfo {
 		} else {
 			field.getType.getSimpleName match {
 				case "boolean" => "boolean"
-				case "LocalDateTime" => "date"
-				case "Date" => "date"
+				case "LocalDateTime" | "LocalDate" | "Date" => "date"
 				case _ => "none"
 			}
 		}
