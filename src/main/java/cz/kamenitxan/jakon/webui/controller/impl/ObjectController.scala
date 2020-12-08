@@ -1,9 +1,11 @@
 package cz.kamenitxan.jakon.webui.controller.impl
 
+import java.lang.reflect.Field
 import java.sql.Connection
 
-import cz.kamenitxan.jakon.core.database.DBHelper
-import cz.kamenitxan.jakon.core.model.{JakonObject, Ordered}
+import cz.kamenitxan.jakon.core.configuration.Settings
+import cz.kamenitxan.jakon.core.database.{DBHelper, I18n}
+import cz.kamenitxan.jakon.core.model.{I18nData, JakonObject, Ordered}
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.Utils._
 import cz.kamenitxan.jakon.utils.{PageContext, SqlGen, Utils}
@@ -23,7 +25,7 @@ import scala.util.Try
   * Created by TPa on 08.09.16.
   */
 object ObjectController {
-	val excludedFields = List("url", "sectionName", "objectSettings", "childClass")
+	val excludedFields = Seq("url", "sectionName", "objectSettings", "childClass")
 	private val UNAUTHORIZED_TMPL = "pages/unauthorized"
 	private val ListTmpl = "objects/list"
 	private val ObjectPath = "/admin/object/"
@@ -181,9 +183,10 @@ object ObjectController {
 		}
 
 		var formOrder = 0
+		val fields = Utils.getFieldsUpTo(objectClass, classOf[Object])
 		for (p <- params.filter(p => !p.equals("id"))) {
 			//TODO optimalizovat
-			val fieldRefOpt = Utils.getFieldsUpTo(objectClass, classOf[Object]).find(f => f.getName.startsWith(p))
+			val fieldRefOpt = fields.find(f => f.getName.startsWith(p))
 			if (fieldRefOpt.isDefined) {
 				val fieldRef = fieldRefOpt.get
 				fieldRef.setAccessible(true)
@@ -198,6 +201,7 @@ object ObjectController {
 			}
 		}
 
+
 		if (objectId.nonEmpty) {
 			if (objectClass.getInterfaces.contains(classOf[Ordered])) {
 				obj = DBHelper.withDbConnection(implicit conn => obj.asInstanceOf[Ordered].updateOrder(formOrder))
@@ -206,6 +210,11 @@ object ObjectController {
 		} else {
 			obj.create()
 		}
+		val i18nFieldOpt = fields.find(_.getAnnotation(classOf[I18n]) != null)
+		if (i18nFieldOpt.nonEmpty) {
+			createI18nData(obj.id, i18nFieldOpt.get, req, params)
+		}
+
 		if (req.queryParams("save_and_new").toBoolOrFalse) {
 			PageContext.getInstance().addMessage(MessageSeverity.SUCCESS, "NEW_OBJ_CREATED")
 			redirect(req, res, "/admin/object/create/" + objectName)
@@ -292,5 +301,39 @@ object ObjectController {
 		} else {
 			sql
 		}
+	}
+
+	private def createI18nData(id: Integer, f: Field, req: Request, params: mutable.Set[String]): Any = {
+		implicit val cls: Class[_] = f.getCollectionGenericTypeClass
+		val fields = Utils.getFieldsUpTo(cls, classOf[Object])
+		Settings.getSupportedLocales.foreach(l => {
+			val isUpdate = DBHelper.withDbConnection(implicit conn => {
+				val sql = s"SELECT count(*) FROM ${cls.getSimpleName} WHERE id = ? AND locale = ?"
+				val stmt = conn.prepareStatement(sql)
+				stmt.setInt(1, id)
+				stmt.setString(2, l.toString)
+				DBHelper.count(stmt) > 0
+			})
+			val i18nData = cls.newInstance().asInstanceOf[I18nData]
+			i18nData.id = id
+			i18nData.locale = l
+			params.filter(_.endsWith(l.toString)).foreach(p => {
+				val fieldName = p.replace("-" + l.toString, "")
+				val fieldRefOpt = fields.find(f => f.getName == (fieldName))
+				if (fieldRefOpt.isDefined) {
+					val fieldRef = fieldRefOpt.get
+					fieldRef.setAccessible(true)
+					val value = req.queryParams(p).conform(fieldRef)
+					if (value != null) {
+						fieldRef.set(i18nData, value)
+					}
+				}
+			})
+			if (isUpdate) {
+				i18nData.update()
+			} else {
+				i18nData.create()
+			}
+		})
 	}
 }

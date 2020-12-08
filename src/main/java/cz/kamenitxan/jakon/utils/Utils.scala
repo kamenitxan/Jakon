@@ -1,7 +1,7 @@
 package cz.kamenitxan.jakon.utils
 
 import java.io.{BufferedReader, InputStreamReader}
-import java.lang.reflect.Field
+import java.lang.reflect.{Field, ParameterizedType, Type}
 import java.net.URLEncoder
 import java.util.Locale
 import java.util.stream.Collectors
@@ -53,6 +53,18 @@ object Utils {
 			}
 
 		}
+	}
+
+	implicit class FieldImprovements(f: Field) {
+
+		def getCollectionGenericType: Type = {
+			f.getGenericType.asInstanceOf[ParameterizedType].getActualTypeArguments.head
+		}
+
+		def getCollectionGenericTypeClass: Class[_] = {
+			Class.forName(getCollectionGenericType.getTypeName)
+		}
+
 	}
 
 	def getFieldsUpTo(startClass: Class[_], exclusiveParent: Class[_]): Seq[Field] = {

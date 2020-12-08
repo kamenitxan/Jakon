@@ -4,10 +4,10 @@ import java.sql.{Connection, Statement, Types}
 import java.util.Date
 import java.util.regex.Pattern
 
+import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.core.function.FunctionHelper
 import cz.kamenitxan.jakon.core.template.utils.TemplateUtils
 import cz.kamenitxan.jakon.webui.ObjectSettings
-import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence.ManyToOne
 
 /**

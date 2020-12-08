@@ -3,6 +3,7 @@ package cz.kamenitxan.jakon.webui.entity
 import java.lang.reflect.Field
 import java.util
 
+import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.utils.Utils
 
 class FieldInfo(val required: Boolean,

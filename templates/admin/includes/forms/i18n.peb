@@ -1,0 +1,27 @@
+{# @pebvariable name="field" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
+
+{% set locales = field.extraData["locales"] | asJava %}
+{% set fieldNames = field.extraData["fieldNames"] | asJava %}
+{% set i18nFields =  field.extraData["i18nFields"] | asJava %}
+
+<table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+    <thead>
+		<th></th>
+		{% for l in locales %}
+		<th>{{ l }}</th>
+		{% endfor %}
+    </thead>
+    <tbody>
+		{% for fn in fieldNames %}
+		<tr>
+			<td>{{ fn }}</td>
+			{% for l in locales %}
+				{% set lfn = fn + "_" + l.toString %}
+				{% set fi = i18nFields[lfn]  %}
+				{% set lng = "-" + l %}
+				<td>{% include "includes/forms/" + fi.template with {"fieldHash":fi.hashCode, "locale":lng, "field":fi} %}</td>
+			{% endfor %}
+		</tr>
+		{% endfor %}
+    </tbody>
+</table>

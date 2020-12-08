@@ -1,4 +1,0 @@
-{# @pebvariable name="field" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
-
-<input class="form-control" type="{{ field.htmlType }}" name="{{ field.name }}" id="{{ field.name }}"
-	   value="{{ getAttr(object, field.name) }}" {% if field.disabled %}disabled{% endif %} maxlength="{{ field.htmlMaxLength }}"/>

@@ -3,9 +3,9 @@ package cz.kamenitxan.jakon.core.model
 import java.io.StringWriter
 import java.sql.{Connection, Statement, Types}
 
+import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.core.template.pebble.MarkdownFilter
 import cz.kamenitxan.jakon.webui.ObjectSettings
-import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.json.Json
 import javax.persistence._
 

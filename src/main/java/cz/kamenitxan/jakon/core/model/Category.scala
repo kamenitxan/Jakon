@@ -1,7 +1,7 @@
 package cz.kamenitxan.jakon.core.model
 
+import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.webui.ObjectSettings
-import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence._
 
 /**

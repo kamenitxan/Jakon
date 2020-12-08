@@ -69,6 +69,9 @@ object Settings {
 	@ConfigurationValue(name = "defaultLocale", required = true, defaultValue = "en_US")
 	private var defaultLocale: Locale = _
 
+	@ConfigurationValue(name = "supportedLocales", required = false, defaultValue = "en_US")
+	private var supportedLocales: Seq[Locale] = _
+
 	@ConfigurationValue(name = "deployMode", required = true, defaultValue = "DEVEL")
 	private var deployMode: DeployMode = _
 
@@ -167,6 +170,12 @@ object Settings {
 	def getDefaultLocale: Locale = defaultLocale
 
 	def setDefaultLocale(locale: String): Unit = defaultLocale = Utils.stringToLocale(locale)
+
+	def getSupportedLocales: Seq[Locale] = supportedLocales
+
+	def setSupportedLocales(locales: String): Unit = {
+		supportedLocales = locales.split(",").map(_.trim).map(l => Utils.stringToLocale(l)).toSeq
+	}
 
 	def getDeployMode: DeployMode = deployMode
 

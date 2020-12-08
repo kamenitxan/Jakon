@@ -7,7 +7,7 @@
 {# @pebvariable name="field" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
 
 <form class="form-horizontal" method="post" id="edit-form-id"
-      action="{% if postUrl  is not empty%}{{ postUrl }}
+      action="{% if postUrl is not empty %}{{ postUrl }}
             {%else%}
                 /admin/object{% if id == 0 %}/create{% endif %}/{{ objectName }}{% if id != 0 %}/{{ id }}{% endif %}
             {% endif %}">

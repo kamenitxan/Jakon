@@ -9,7 +9,6 @@ import cz.kamenitxan.jakon.core.database.DBHelper.getConnection
 import cz.kamenitxan.jakon.core.model._
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.Utils
-import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence.{Column, ManyToOne, Transient}
 
 import scala.collection.mutable
@@ -74,13 +73,16 @@ object DBInitializer {
 				Logger.info(className + " not found in DB")
 				val resource = Utils.getResourceFromJar(s"/sql/$className.sql")
 				if (resource.nonEmpty) {
-					var sql = resource.get
-					if (Settings.getDatabaseType == DatabaseType.SQLITE) {
-						sql = sql.replaceAll("AUTO_INCREMENT", "")
-					}
-					val stmt = conn.createStatement()
-					stmt.execute(sql)
-					stmt.close()
+					val splitSql = resource.get.split(";")
+					splitSql.map(_.trim).filter(_.nonEmpty).foreach(s => {
+						var sql = s
+						if (Settings.getDatabaseType == DatabaseType.SQLITE) {
+							sql = sql.replaceAll("AUTO_INCREMENT", "")
+						}
+						val stmt = conn.createStatement()
+						stmt.execute(sql)
+						stmt.close()
+					})
 				} else {
 					Logger.error(s"Table definition for $className not found")
 				}

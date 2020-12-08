@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.webui.entity;
+package cz.kamenitxan.jakon.core.database;
 
 import cz.kamenitxan.jakon.core.database.converters.AbstractConverter;
 

@@ -8,6 +8,7 @@ import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
 import cz.kamenitxan.jakon.core.model._
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.TypeReferences.SEQ
+import cz.kamenitxan.jakon.utils.Utils._
 import org.intellij.lang.annotations.Language
 import org.sqlite.SQLiteConfig
 
@@ -67,7 +68,7 @@ object DBHelper {
 		stmt.executeQuery(sql)
 	}
 
-	def select[T <: JakonObject](stmt: PreparedStatement, cls: Class[T]): List[QueryResult[T]] = {
+	def select[T <: BaseEntity](stmt: PreparedStatement, cls: Class[T]): List[QueryResult[T]] = {
 		val rs = execute(stmt)
 		val res = Iterator.from(0).takeWhile(_ => rs.next()).map(_ => {
 			EntityMapper.createJakonObject(rs, cls)
@@ -76,7 +77,7 @@ object DBHelper {
 		res
 	}
 
-	def select[T <: JakonObject](stmt: Statement, @Language("SQL") sql: String, cls: Class[T]): List[QueryResult[T]] = {
+	def select[T <: BaseEntity](stmt: Statement, @Language("SQL") sql: String, cls: Class[T]): List[QueryResult[T]] = {
 		val rs = execute(stmt, sql)
 		val res = Iterator.from(0).takeWhile(_ => rs.next()).map(_ => {
 			EntityMapper.createJakonObject(rs, cls)
@@ -128,6 +129,19 @@ object DBHelper {
 					fetchForeignObjects(Seq(res))
 				}
 			})
+		}
+
+		if (res.i18nField.nonEmpty) {
+			val i18nF = res.i18nField.get
+			val cls = i18nF.getCollectionGenericTypeClass.asInstanceOf[Class[BaseEntity]]
+			val sql = s"SELECT * FROM ${cls.getSimpleName} WHERE id = ?"
+			val i18nStmt = conn.prepareStatement(sql)
+			i18nStmt.setInt(1, res.entity.id)
+			val i18nRes = select(i18nStmt, cls).map(_.entity)
+			if (!i18nF.isAccessible) {
+				i18nF.setAccessible(true)
+			}
+			i18nF.set(res.entity, i18nRes)
 		}
 		res.entity
 	}
@@ -203,12 +217,20 @@ object DBHelper {
 	}
 
 	def count(@Language("SQL") countSql: String)(implicit conn: Connection): Long = {
-		val usrStmt = conn.createStatement()
-		val rs = usrStmt.executeQuery(countSql)
+		val stmt = conn.createStatement()
+		val rs = stmt.executeQuery(countSql)
 		rs.next()
-		val userCount = rs.getInt(1)
-		usrStmt.close()
-		userCount
+		val count = rs.getInt(1)
+		stmt.close()
+		count
+	}
+
+	def count(stmt: PreparedStatement)(implicit conn: Connection): Long = {
+		val rs = stmt.executeQuery()
+		rs.next()
+		val count = rs.getInt(1)
+		stmt.close()
+		count
 	}
 
 	def withDbConnection[T](fun: Connection => T): T = {

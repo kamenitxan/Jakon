@@ -6,11 +6,10 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 import cz.kamenitxan.jakon.core.database.converters.AbstractConverter
-import cz.kamenitxan.jakon.core.model.JakonObject
+import cz.kamenitxan.jakon.core.model.{BaseEntity, JakonObject}
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.TypeReferences._
 import cz.kamenitxan.jakon.utils.Utils
-import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence.{Column, Embedded, ManyToOne, OneToMany}
 
 /**
@@ -18,11 +17,12 @@ import javax.persistence.{Column, Embedded, ManyToOne, OneToMany}
  */
 object EntityMapper {
 
-	def createJakonObject[T <: JakonObject](rs: ResultSet, cls: Class[T]): QueryResult[T] = {
+	def createJakonObject[T <: BaseEntity](rs: ResultSet, cls: Class[T]): QueryResult[T] = {
 		val rsmd = rs.getMetaData
 		val obj = cls.getDeclaredConstructor().newInstance()
 		var foreignIds: Map[String, ForeignKeyInfo] = Map[String, ForeignKeyInfo]()
 		val columnCount = rsmd.getColumnCount
+		val fields = Utils.getFieldsUpTo(cls, classOf[Object])
 
 
 		Iterator.from(1).takeWhile(i => i <= columnCount).foreach(i => {
@@ -34,7 +34,7 @@ object EntityMapper {
 			}
 
 
-			val fieldRef = Utils.getFieldsUpTo(cls, classOf[Object]).find(f => {
+			val fieldRef = fields.find(f => {
 				val byName = f.getName.equalsIgnoreCase(fieldName)
 				lazy val byAnn = {
 					val ann = f.getDeclaredAnnotation(classOf[Column])
@@ -60,10 +60,12 @@ object EntityMapper {
 				}
 			}
 		})
-		new QueryResult(obj, foreignIds)
+
+		val i18nField = Utils.getFieldsUpTo(cls, classOf[Object]).find(_.getDeclaredAnnotation(classOf[I18n]) != null)
+		new QueryResult(obj, foreignIds, i18nField)
 	}
 
-	private def setFieldValue[T <: JakonObject](obj: JakonObject, cls: Class[T],
+	private def setFieldValue[T <: BaseEntity](obj: BaseEntity, cls: Class[T],
 																							field: Field,
 																							columnName: String,
 																							rs: ResultSet): Option[(String,  ForeignKeyInfo)] = {
@@ -72,6 +74,7 @@ object EntityMapper {
 			case STRING => field.set(obj, rs.getString(columnName))
 			case BOOLEAN => field.set(obj, rs.getBoolean(columnName))
 			case INTEGER => field.set(obj, rs.getInt(columnName))
+			case INTEGER_j => field.set(obj, rs.getInt(columnName))
 			case FLOAT => field.set(obj, rs.getFloat(columnName))
 			case DOUBLE => field.set(obj, rs.getDouble(columnName))
 			case DATE_o => field.set(obj, rs.getDate(columnName))

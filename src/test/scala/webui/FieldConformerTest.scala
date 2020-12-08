@@ -4,11 +4,12 @@ import java.time.LocalDate
 import java.util
 import java.util.{Calendar, Date, GregorianCalendar}
 
+import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.core.model.{JakonObject, JakonUser}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
-import cz.kamenitxan.jakon.webui.entity.{JakonField, MessageSeverity}
+import cz.kamenitxan.jakon.webui.entity.MessageSeverity
 import javax.persistence.ManyToMany
 import org.scalatest.funsuite.AnyFunSuite
 

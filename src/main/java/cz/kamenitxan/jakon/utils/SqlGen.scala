@@ -5,11 +5,11 @@ import java.sql.{Connection, JDBCType, PreparedStatement, Statement}
 import java.time.LocalDate
 import java.util.Date
 
+import cz.kamenitxan.jakon.core.database.{I18n, JakonField}
 import cz.kamenitxan.jakon.core.database.converters.AbstractConverter
 import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.TypeReferences._
-import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence.{Embedded, ManyToOne, OneToOne, Transient}
 
 import scala.collection.mutable
@@ -142,6 +142,7 @@ object SqlGen {
 			f.getAnnotations.exists(fa => fa.annotationType().getName == classOf[JakonField].getName)
 				&& f.getName != "id"
 				&& f.getAnnotation(classOf[Transient]) == null
+			  && f.getAnnotation(classOf[I18n]) == null
 		)
 	}
 

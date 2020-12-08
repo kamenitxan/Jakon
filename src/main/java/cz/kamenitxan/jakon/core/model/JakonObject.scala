@@ -4,11 +4,10 @@ import java.io.StringWriter
 import java.sql._
 
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
-import cz.kamenitxan.jakon.core.database.{Crud, DBHelper}
+import cz.kamenitxan.jakon.core.database.{DBHelper, JakonField}
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.{SqlGen, Utils}
 import cz.kamenitxan.jakon.webui.ObjectSettings
-import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.json.Json
 import javax.persistence._
 
@@ -18,7 +17,7 @@ import scala.language.postfixOps
 /**
   * Created by TPa on 22.04.16.
   */
-abstract class JakonObject(implicit s: sourcecode.FullName) extends Serializable with Crud {
+abstract class JakonObject(implicit s: sourcecode.FullName) extends BaseEntity {
 
 	@Id
 	@JakonField(disabled = true, required = false, listOrder = -99, searched = true)

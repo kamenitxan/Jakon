@@ -20,4 +20,11 @@ CREATE TABLE TestObject
 
     PRIMARY KEY (id)
 );
+CREATE TABLE TestObjectI18n (
+    id INTEGER NOT NULL REFERENCES TestObject (id) ON DELETE CASCADE,
+    locale VARCHAR(10) NOT NULL,
+    name VARCHAR(50),
+    description VARCHAR(100),
 
+    PRIMARY KEY (id, locale)
+);

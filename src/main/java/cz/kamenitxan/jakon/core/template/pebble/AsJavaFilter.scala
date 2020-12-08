@@ -20,6 +20,8 @@ class AsJavaFilter extends Filter {
 		input match {
 			case value: Seq[Any] =>
 				value.asJava
+			case value: Map[Any, Any] =>
+				value.asJava
 			case _ =>
 				input
 		}

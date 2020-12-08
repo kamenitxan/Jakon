@@ -3,10 +3,11 @@ package utils.entity
 import java.time.{LocalDate, LocalDateTime}
 import java.util.Date
 
+import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.core.database.converters.ScalaMapConverter
 import cz.kamenitxan.jakon.core.model.{JakonObject, JakonUser}
 import cz.kamenitxan.jakon.webui.ObjectSettings
-import cz.kamenitxan.jakon.webui.entity.{JakonField, MessageSeverity}
+import cz.kamenitxan.jakon.webui.entity.MessageSeverity
 import javax.persistence.{Embedded, ManyToMany, ManyToOne, OneToMany}
 
 class TestObject extends JakonObject {

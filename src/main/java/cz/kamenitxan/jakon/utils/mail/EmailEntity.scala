@@ -4,10 +4,10 @@ import java.sql.{Connection, Statement}
 import java.util.Date
 
 import cz.kamenitxan.jakon.core.configuration.Settings
+import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.core.database.converters.ScalaMapConverter
 import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.webui.ObjectSettings
-import cz.kamenitxan.jakon.webui.entity.JakonField
 import javax.persistence.Column
 
 

@@ -2,9 +2,9 @@ package utils.entity
 
 import java.sql.Connection
 
+import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.utils.SqlGen
-import cz.kamenitxan.jakon.webui.entity.JakonField
 
 /**
  * Created by TPa on 02.03.2020.

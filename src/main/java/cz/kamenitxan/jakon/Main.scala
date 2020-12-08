@@ -20,6 +20,7 @@ object Main {
 			DBHelper.addDao(classOf[Category])
 			DBHelper.addDao(classOf[Post])
 			DBHelper.addDao(classOf[Page])
+			DBHelper.addDao(classOf[TestObject])
 		}
 
 		Director.registerController(new PageController)

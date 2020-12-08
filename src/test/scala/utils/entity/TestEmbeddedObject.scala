@@ -1,6 +1,6 @@
 package utils.entity
 
-import cz.kamenitxan.jakon.webui.entity.JakonField
+import cz.kamenitxan.jakon.core.database.JakonField
 
 /**
  * Created by TPa on 02.06.2020.
