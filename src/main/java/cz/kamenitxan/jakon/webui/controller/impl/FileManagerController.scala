@@ -297,6 +297,15 @@ object FileManagerController {
 							Logger.debug("write error")
 							throw new Exception("write error")
 						}
+						val jf = new JakonFile()
+						jf.fileType = FileManagerController.getFileType(path)
+						jf.name = path.getFileName.toString
+						jf.path = path.getParent.toString
+						jf.created = LocalDateTime.now()
+						jf.author = PageContext.getInstance().getLoggedUser.orNull
+						jf.create()
+						Logger.info(s"JakonFile(id=${jf.id}, name=${jf.name}) created in DB")
+						jf
 					})
 					var responseJsonObject: JSONObject = null
 					responseJsonObject = this.success()
@@ -399,6 +408,7 @@ object FileManagerController {
 		}
 	}*/
 
+	// TODO: presunout i v DB
 	private def move(params: JSONObject): JSONObject = try { //TODO: minidev json should be rewrited to gson
 		val paths = params.get("items").asInstanceOf[JSONArray]
 		val newpath = Paths.get(REPOSITORY_BASE_PATH, params.getAsString("newPath"))
@@ -420,6 +430,7 @@ object FileManagerController {
 			error(e.getMessage)
 	}
 
+	// TODO: prejmenovat i v DB
 	private def rename(params: JSONObject) = {
 		try {
 			val path = params.getAsString("item")
@@ -441,6 +452,7 @@ object FileManagerController {
 		}
 	}
 
+	// TODO: smazat i v DB
 	@throws[ServletException]
 	private def remove(params: JSONObject): JSONObject = {
 		val paths = params.get("items").asInstanceOf[JSONArray]
@@ -706,6 +718,20 @@ object FileManagerController {
 			out.flush()
 		} catch {
 			case ex: IOException => response.sendError(500, ex.getMessage)
+		}
+	}
+
+	private val IMG_SUFFIXES = Seq(".png", ".jpg")
+
+	def getFileType(file: Path) = {
+		if (Files.isDirectory(file)) {
+			FileType.FOLDER
+		} else {
+			val isImg = IMG_SUFFIXES.find(s => file.getFileName.toString.endsWith(s))
+			isImg match {
+				case Some(_) => FileType.IMAGE
+				case None => FileType.FILE
+			}
 		}
 	}
 }

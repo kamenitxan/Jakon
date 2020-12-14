@@ -1,26 +1,22 @@
 package cz.kamenitxan.jakon.core.task
 
 import java.io.{File, IOException}
-import java.nio.ByteBuffer
-import java.nio.charset.Charset
 import java.nio.file._
-import java.nio.file.attribute.{BasicFileAttributes, UserDefinedFileAttributeView}
+import java.nio.file.attribute.BasicFileAttributes
 import java.sql.Connection
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
 import cz.kamenitxan.jakon.core.database.DBHelper
-import cz.kamenitxan.jakon.core.model.{FileType, JakonFile}
+import cz.kamenitxan.jakon.core.model.JakonFile
 import cz.kamenitxan.jakon.core.service.{JakonFileService, UserService}
 import cz.kamenitxan.jakon.logging.Logger
-import cz.kamenitxan.jakon.utils.Utils._
+import cz.kamenitxan.jakon.webui.controller.impl.FileManagerController
 import cz.kamenitxan.jakon.webui.controller.impl.FileManagerController.REPOSITORY_BASE_PATH
 
 class FileManagerConsistencyTestTask extends AbstractTask(1, TimeUnit.HOURS) {
 
-	private val FILE_ATTR_NAME = "jakonFileId"
 	private val BASE_DIR = "/basePath"
-	private val IMG_SUFFIXES = Seq(".png", ".jpg")
 
 	override def start(): Unit = {
 		val osName = System.getProperty("os.name").toLowerCase
@@ -39,12 +35,12 @@ class FileManagerConsistencyTestTask extends AbstractTask(1, TimeUnit.HOURS) {
 
 			Files.walkFileTree(realPath, new SimpleFileVisitor[Path]() {
 				override def preVisitDirectory(dir: Path, attrs: BasicFileAttributes): FileVisitResult = {
-					visitFileOrDirectory(dir, realPath, files)
+					visitFileOrDirectory(dir, files)
 				}
 
 				@throws[IOException]
 				override def visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult = {
-					visitFileOrDirectory(file, realPath, files)
+					visitFileOrDirectory(file, files)
 				}
 			})
 			files.filter(f => !f.mappedToFs).foreach(f => {
@@ -67,73 +63,38 @@ class FileManagerConsistencyTestTask extends AbstractTask(1, TimeUnit.HOURS) {
 	}
 
 	@throws[IOException]
-	private def visitFileOrDirectory(file: Path, realPath: Path, files: List[JakonFile])(implicit conn: Connection) = {
+	private def visitFileOrDirectory(file: Path, files: List[JakonFile])(implicit conn: Connection) = {
 		Logger.debug(s"Visiting $file")
-		val fileName = file.toString.substring(realPath.toString.length)
-		val fileId = getIdFromAttrs(file)
-		if (fileId.isDefined) {
-			val jakonFile = files.find(f => f.id == fileId.get)
-			if (jakonFile.isDefined) {
-				val jf = jakonFile.get
-				jf.mappedToFs = true
-				val fileType = getFileType(file)
-				if (jf.fileType != fileType) {
-					jf.fileType = fileType
-					jf.update()
-				}
-			} else {
-				Logger.error(s"File with id=${fileId.get} found on FS and not in DB")
-				val jakonFile = createJakonFile(file)
-				writeIdToAttrs(file, jakonFile.id)
+		val path = file.getParent.toString
+		val fileName = file.getFileName.toString
+
+		val jakonFile = files.find(f => f.name == fileName && path == f.path)
+		if (jakonFile.isDefined) {
+			val jf = jakonFile.get
+			jf.mappedToFs = true
+			val fileType = FileManagerController.getFileType(file)
+			if (jf.fileType != fileType) {
+				jf.fileType = fileType
+				jf.update()
 			}
 		} else {
-			val jakonFile = files.find(f => f.path + f.name == fileName).getOrElse({
-				createJakonFile(file)
-			})
+			val jakonFile = createJakonFile(file)
 			jakonFile.mappedToFs = true
-			writeIdToAttrs(file, jakonFile.id)
 		}
+
 		FileVisitResult.CONTINUE
 	}
 
 	private def createJakonFile(file: Path)(implicit conn: Connection) = {
 		val jf = new JakonFile()
-		jf.fileType = getFileType(file)
+		jf.fileType = FileManagerController.getFileType(file)
 		jf.name = file.getFileName.toString
 		jf.path = file.getParent.toString
 		jf.created = LocalDateTime.now()
 		jf.author = UserService.getMasterAdmin()
 		jf.create()
+		Logger.error(s"JakonFile(id=${jf.id}, name=${jf.name}) created in DB")
 		jf
 	}
 
-	private def getFileType(file: Path) = {
-		if (Files.isDirectory(file)) {
-			FileType.FOLDER
-		} else {
-			val isImg = IMG_SUFFIXES.find(s => file.getFileName.toString.endsWith(s))
-			isImg match {
-				case Some(_) => FileType.IMAGE
-				case None => FileType.FILE
-			}
-		}
-	}
-
-	private def getIdFromAttrs(file: Path): Option[Int] = {
-		val userDefView = Files.getFileAttributeView(file, classOf[UserDefinedFileAttributeView])
-		if(!userDefView.list().contains(FILE_ATTR_NAME)) {
-			return Option.empty
-		}
-
-		val attrValue: ByteBuffer = ByteBuffer.allocate(10)
-		userDefView.read(FILE_ATTR_NAME, attrValue)
-		attrValue.flip
-		val id = Charset.defaultCharset.decode(attrValue).toString
-		id.toOptInt
-	}
-
-	private def writeIdToAttrs(file: Path, id: Int) = {
-		val userDefView = Files.getFileAttributeView(file, classOf[UserDefinedFileAttributeView])
-		userDefView.write(FILE_ATTR_NAME, Charset.defaultCharset.encode(id.toString))
-	}
 }

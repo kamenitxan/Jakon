@@ -24,5 +24,6 @@ class JakonFile extends JakonObject {
 
 	override val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-file")
 
-
+	// TODO: delete also file on FS
+	override def delete(): Unit = super.delete()
 }

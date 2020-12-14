@@ -5,12 +5,12 @@ import java.sql.{Connection, JDBCType, PreparedStatement, Statement}
 import java.time.LocalDate
 import java.util.Date
 
-import cz.kamenitxan.jakon.core.database.{I18n, JakonField}
 import cz.kamenitxan.jakon.core.database.converters.AbstractConverter
+import cz.kamenitxan.jakon.core.database.{I18n, JakonField}
 import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.TypeReferences._
-import javax.persistence.{Embedded, ManyToOne, OneToOne, Transient}
+import javax.persistence.{Embedded, ManyToOne, Transient}
 
 import scala.collection.mutable
 
@@ -123,12 +123,10 @@ object SqlGen {
 					.foreach(f => {
 						if (!field.isAccessible) field.setAccessible(true)
 						val value = field.get(instance)
-						println(s"$counter - ${field.getName}")
 						setValue(stmt, f, counter, value)
 						counter += 1
 					})
 			} else {
-				println(s"$counter - ${field.getName}")
 				setValue(stmt, field, counter, instance)
 				counter += 1
 			}

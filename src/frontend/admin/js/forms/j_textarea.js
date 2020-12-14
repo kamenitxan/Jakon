@@ -15,29 +15,21 @@ class JTextarea {
 		// removes default woofmark image button
 		Array.from(document.querySelectorAll(".wk-command")).filter(e => e.innerHTML === "Image")[0].remove()
 		// adds custom one
-		document.wmi = wmi;
-		wmi.addCommandButton("Image", (e, mode, chunks) => {
-			new ImageSelector(chunks, wmi).init();
-		})
-
-		document.fillImage = (name, link) => {
-			document.wmi.runCommand((chunks, mode) => {
-				// TODO: rozdilne mody
-				chunks.before = chunks.before + "![" + name + "](" + link + ")";
-			});
-		}
-
+		wmi.addCommandButton("Image", function insertImage(e, mode, chunks) {
+			const done = this.async();
+			new ImageSelector(chunks, done).init();
+		});
 	}
 }
 module.exports = JTextarea;
 
 class ImageSelector {
 
-	constructor(chunks, wmi) {
+	constructor(chunks, done) {
 		this.endPoint = "/admin/api/images";
 		this.holder = document.querySelector("#image_selector");
 		this.chunks = chunks;
-		this.wmi = wmi;
+		this.done = done;
 		this.Ajax = require("utils/Ajax.js");
 	}
 
@@ -121,7 +113,7 @@ class ImageSelector {
 				const select = target.querySelector("#fid" + f.id + " button");
 				select.addEventListener("click", e => {
 					e.preventDefault();
-					document.fillImage(f.name, "/" + f.path + f.name);
+					this.fillImage(f.name, "/" + f.path + f.name);
 				});
 			} else if (f.fileType === "FOLDER") {
 				const row = target.querySelector("#fid" + f.id);
@@ -137,15 +129,14 @@ class ImageSelector {
 
 
 	fillImage(name, link) {
-		this.wmi.runCommand((chunks, mode) => {
-			// TODO: rozdilne mody
-			chunks.before = chunks.before + "![" + name + "](" + link + ")";
-			this.close();
-		});
+		console.log(this.chunks)
+		this.chunks.before = this.chunks.before + "![" + name + "](" + link + ")";
+		this.close();
 	}
 
 	close() {
 		$('.bs-example-modal-lg').modal('hide');
 		this.holder.innerHTML = "";
+		this.done();
 	}
 }

@@ -57,7 +57,7 @@ object ConfigurationInitializer {
 				val obj = runtimeMirror.reflectModule(module).instance
 				val ann = f.getAnnotation(classOf[ConfigurationValue])
 				var confValue = conf.get(ann.name())
-				if (ann.required() && confValue.isEmpty) {
+				if (confValue.isEmpty) {
 					if (ann.defaultValue() != "") {
 						confValue = Option(ann.defaultValue())
 					} else if (ann.required()) {
