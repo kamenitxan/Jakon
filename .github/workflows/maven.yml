@@ -14,7 +14,15 @@ jobs:
         with:
           java-version: 1.8
       - name: Build with Maven
-        run: mvn package --file pom.xml
+        run: mvn compile
+      - name: Test
+        run: mvn test
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v1.0.15
+        with:
+          files: ./target/scoverage.xml,/target/cobertura.xml
+      - name: Prod config test
+        run: mvn -Pprod-test
       - name: Upload to Codecov
         uses: codecov/codecov-action@v1.0.15
         with:
