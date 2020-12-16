@@ -16,7 +16,7 @@ jobs:
       - name: Build with Maven
         run: mvn compile
       - name: Test
-        run: mvn mvn test
+        run: mvn scoverage:report
       - name: Upload to Codecov
         uses: codecov/codecov-action@v1.0.15
         with:
