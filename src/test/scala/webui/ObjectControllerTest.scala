@@ -16,7 +16,7 @@ class ObjectControllerTest extends TestBase {
 	}
 
 	test("resetPassword") { f =>
-		val url = host + "/admin/resetPassword"
+		val url = adminHost + "resetPassword"
 		f.driver.get(url)
 		//assert(checkPageLoad(f.driver))
 
@@ -31,7 +31,7 @@ class ObjectControllerTest extends TestBase {
 	}
 
 	test("user settings") { f =>
-		val url = host + "/admin/profile"
+		val url = adminHost + "profile"
 		f.driver.get(url)
 
 		assert(checkPageLoad(f.driver))
@@ -45,7 +45,7 @@ class ObjectControllerTest extends TestBase {
 	}
 
 	test("test list filter") { f =>
-		val url = host + "/admin/object/JakonUser?filter_id=2&filter_published=true&filter_enabled=&filter_lastName=Admin&filter_firstName=Adm*&filter_emailConfirmed=&filter_email=&filter_username="
+		val url = adminHost + "object/JakonUser?filter_id=2&filter_published=true&filter_enabled=&filter_lastName=Admin&filter_firstName=Adm*&filter_emailConfirmed=&filter_email=&filter_username="
 		f.driver.get(url)
 
 		assert(checkPageLoad(f.driver))
@@ -53,7 +53,7 @@ class ObjectControllerTest extends TestBase {
 
 	test("test move") { f =>
 	    implicit val driver: WebDriver = f.driver
-	    val p1 = new Page()
+		val p1 = new Page()
 		p1.title = "page1"
 		p1.create()
 		val p2 = new Page()
@@ -61,9 +61,9 @@ class ObjectControllerTest extends TestBase {
 		p2.create()
 		val p3 = new Page()
 		p3.title = "page3"
-	    p3.create()
+		p3.create()
 
-		val url = host + "/admin/object/Page"
+		val url = adminHost + "object/Page"
 		f.driver.get(url)
 
 		assert(checkPageLoad(f.driver))
@@ -75,7 +75,7 @@ class ObjectControllerTest extends TestBase {
 		val firstId = firstElements.head.getText
 
 
-		f.driver.get(host + s"/admin/object/moveDown/Page/$firstId?currentOrder=1")
+		f.driver.get(adminHost + s"object/moveDown/Page/$firstId?currentOrder=1")
 		f.driver.get(url)
 		assert(checkPageLoad(f.driver))
 
@@ -94,13 +94,13 @@ class ObjectControllerTest extends TestBase {
 
 	test("test move not ordered") { f =>
 		implicit val driver: WebDriver = f.driver
-		f.driver.get(host + "/admin/object/moveDown/JakonUser/4?currentOrder=1")
+		f.driver.get(adminHost + "object/moveDown/JakonUser/4?currentOrder=1")
 		checkSiteMessage("OBJECT_NOT_ORDERED")
 	}
 
 	test("delete item") { f =>
 		implicit val driver: WebDriver = f.driver
-		val url = host + "/admin/object/Page"
+		val url = adminHost + "object/Page"
 		f.driver.get(url)
 		assert(checkPageLoad(f.driver))
 
@@ -111,7 +111,7 @@ class ObjectControllerTest extends TestBase {
 		val firstId = firstElements.head.getText
 
 
-		f.driver.get(host + s"/admin/object/delete/Page/$firstId")
+		f.driver.get(adminHost + s"object/delete/Page/$firstId")
 		f.driver.get(url)
 		assert(checkPageLoad(f.driver))
 
@@ -126,11 +126,33 @@ class ObjectControllerTest extends TestBase {
 	}
 
 	test("test list non existent") { f =>
-		val url = host + "/admin/object/invalid"
+		val url = adminHost + "object/invalid"
 		f.driver.get(url)
 
 		assert(checkPageLoad(f.driver))
 		f.driver.getPageSource.contains("404")
+	}
+
+	test("TestObject List") { f =>
+		f.driver.get(adminHost + "object/TestObject")
+		assert(checkPageLoad(f.driver))
+	}
+
+	test("TestObject create") { f =>
+		implicit val driver: WebDriver = f.driver
+		f.driver.get(adminHost + "object/create/TestObject")
+		assert(checkPageLoad(f.driver))
+
+		val submits = findElements("form input[type=\"submit\"]")
+		assert(submits.nonEmpty)
+
+		submits.head.click()
+
+		assert(checkPageLoad(f.driver))
+		val id = findElements("tbody td").headOption
+		assert(id.nonEmpty)
+		assert(id.get.getText != "0")
+
 	}
 
 }

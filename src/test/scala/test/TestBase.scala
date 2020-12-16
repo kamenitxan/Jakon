@@ -12,12 +12,13 @@ import scala.jdk.CollectionConverters._
 
 class TestBase extends FixtureAnyFunSuite {
 	var host = ""
-	val admin = "/admin/"
+	var adminHost = "/admin/"
 
 	case class FixtureParam(driver: WebDriver)
 
 	def withFixture(test: OneArgTest): Outcome = {
 		host = "http://localhost:" + Settings.getPort
+		adminHost = host + "/admin/"
 		val driver = new HtmlUnitDriver()
 
 		val fixture = FixtureParam(driver)

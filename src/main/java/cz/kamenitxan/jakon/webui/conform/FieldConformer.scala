@@ -138,7 +138,7 @@ object FieldConformer {
 							val fi = new FieldInfo(an, HtmlType.TEXT, f, fv, "i18n")
 							fi.extraData.put("locales", Settings.getSupportedLocales)
 
-							val fields = Utils.getFieldsUpTo(f.getClass, classOf[Object]).filter(n => !i18nExcludedFields.contains(n.getName))
+							val fields = Utils.getFieldsUpTo(f.getCollectionGenericTypeClass, classOf[Object]).filter(n => !i18nExcludedFields.contains(n.getName))
 							fi.extraData.put("fieldNames", fields.map(_.getName))
 
 							// fn.name + "_" + l.toString

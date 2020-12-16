@@ -13,7 +13,7 @@ class MenuTest extends FixtureAnyFunSuite {
 	case class FixtureParam(driver: WebDriver)
 
 	def withFixture(test: OneArgTest): Outcome = {
-		host = "http://localhost:" + (Settings.getPort) + "/admin/"
+		host = "http://localhost:" + Settings.getPort + "/admin/"
 		val driver = new HtmlUnitDriver()
 
 		val fixture = FixtureParam(driver)

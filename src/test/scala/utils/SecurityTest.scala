@@ -46,7 +46,7 @@ class SecurityTest extends TestBase {
 
 	test("Google") { f =>
 		implicit val driver = f.driver
-		f.driver.get(host + admin + "login/oauth?provider=Google$")
+		f.driver.get(adminHost + "login/oauth?provider=Google$")
 		checkPageLoad(".panel-title")
 	}
 
