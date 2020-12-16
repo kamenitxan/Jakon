@@ -1,4 +1,4 @@
-package jakon
+package core
 
 import cz.kamenitxan.jakon.JakonInit
 import cz.kamenitxan.jakon.core.Director

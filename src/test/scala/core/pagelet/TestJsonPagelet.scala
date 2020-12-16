@@ -1,15 +1,15 @@
-package jakon.pagelet
+package core.pagelet
 
 import java.sql.Connection
 
-import cz.kamenitxan.jakon.core.dynamic.entity.{JsonErrorResponse, JsonFailResponse, ResponseStatus}
+import core.pagelet.entity.TestJsonPageletData
+import cz.kamenitxan.jakon.core.dynamic.entity.JsonFailResponse
 import cz.kamenitxan.jakon.core.dynamic.{AbstractJsonPagelet, Get, JsonPagelet, Post}
-import jakon.pagelet.entity.{GetResponse, TestJsonPageletData}
 import spark.{Request, Response}
 
 /**
- * Created by TPa on 13.04.2020.
- */
+  * Created by TPa on 13.04.2020.
+  */
 @JsonPagelet(path = "jsonPagelet")
 class TestJsonPagelet extends AbstractJsonPagelet {
 

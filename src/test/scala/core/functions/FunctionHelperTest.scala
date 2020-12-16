@@ -1,8 +1,8 @@
-package functions
+package core.functions
 
 import java.util
 
-import cz.kamenitxan.jakon.core.function.{FunctionHelper, IFuncion}
+import cz.kamenitxan.jakon.core.function.FunctionHelper
 import cz.kamenitxan.jakon.core.template.pebble.ValueFun
 import org.scalatest.funsuite.AnyFunSuite
 import test.HelloFun

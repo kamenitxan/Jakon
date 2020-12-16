@@ -1,11 +1,11 @@
-package cz.kamenitxan.jakon
+package utils.entity
 
 import cz.kamenitxan.jakon.core.database.{DBHelper, JakonField}
 import cz.kamenitxan.jakon.core.model.I18nData
 
 /**
- * Created by TPa on 06.12.2020.
- */
+  * Created by TPa on 06.12.2020.
+  */
 class TestObjectI18n extends I18nData {
 	@JakonField
 	var name: String = _

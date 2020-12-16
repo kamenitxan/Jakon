@@ -1,4 +1,4 @@
-package template
+package core.template
 
 import cz.kamenitxan.jakon.core.function.FunctionHelper
 import cz.kamenitxan.jakon.core.model.Post
@@ -7,8 +7,8 @@ import org.scalatest.funsuite.AnyFunSuite
 import test.HelloFun
 
 /**
- * Created by TPa on 04.04.2020.
- */
+  * Created by TPa on 04.04.2020.
+  */
 class TemplateUtilsTest extends AnyFunSuite {
 
 	test("parseMarkdown text") {

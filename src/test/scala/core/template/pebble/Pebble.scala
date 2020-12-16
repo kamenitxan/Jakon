@@ -1,4 +1,4 @@
-package template.pebble
+package core.template.pebble
 
 import cz.kamenitxan.jakon.core.template.pebble.MarkdownFilter
 import org.scalatest.funsuite.AnyFunSuite

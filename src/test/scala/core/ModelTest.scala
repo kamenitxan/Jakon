@@ -1,4 +1,6 @@
-package jakon
+package core
+
+import java.util.Date
 
 import cz.kamenitxan.jakon.core.model._
 import test.TestBase
@@ -73,5 +75,21 @@ class ModelTest extends TestBase {
 		embedded.string = "42"
 		obj.embedded = embedded
 		obj.create()
+	}
+
+	var post: Post = _
+	test("Post Create") { _ =>
+		val obj = new Post {
+			date = new Date()
+			perex = "perex"
+			title = "title"
+			content = "content"
+		}
+		post = obj
+	}
+
+	test("Post Update") { _ =>
+		post.title = "title2"
+		post.update()
 	}
 }

@@ -1,4 +1,4 @@
-package task
+package core.task
 
 import cz.kamenitxan.jakon.core.task.FulltextTask
 import test.TestBase

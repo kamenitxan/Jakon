@@ -1,4 +1,4 @@
-package jakon
+package core
 
 import cz.kamenitxan.jakon.core.deploy.LocalDeploy
 import cz.kamenitxan.jakon.core.deploy.entity.Server

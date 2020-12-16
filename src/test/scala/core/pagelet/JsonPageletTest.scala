@@ -1,9 +1,9 @@
-package jakon.pagelet
+package core.pagelet
 
 import com.google.gson.Gson
+import core.pagelet.entity.GetResponse
 import cz.kamenitxan.jakon.core.dynamic.JsonPageletInitializer
 import cz.kamenitxan.jakon.core.dynamic.entity.{JsonErrorResponse, JsonFailResponse, ResponseStatus}
-import jakon.pagelet.entity.GetResponse
 import okhttp3.{MediaType, OkHttpClient, Request, RequestBody}
 import test.JsonHelper._
 import test.TestBase

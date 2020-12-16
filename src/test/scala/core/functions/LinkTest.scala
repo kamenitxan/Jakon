@@ -1,8 +1,8 @@
-package functions
+package core.functions
 
-import cz.kamenitxan.jakon.core.function.FunctionHelper
 import java.util
 
+import cz.kamenitxan.jakon.core.function.FunctionHelper
 import cz.kamenitxan.jakon.core.model.Page
 import org.scalatest.funsuite.AnyFunSuite
 

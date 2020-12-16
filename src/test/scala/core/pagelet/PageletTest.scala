@@ -1,4 +1,4 @@
-package jakon.pagelet
+package core.pagelet
 
 import cz.kamenitxan.jakon.core.custom_pages.CustomPageInitializer
 import cz.kamenitxan.jakon.core.dynamic.PageletInitializer

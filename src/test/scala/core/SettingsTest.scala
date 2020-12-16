@@ -1,4 +1,4 @@
-package jakon
+package core
 
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.template.utils.FixedPebbleTemplateEngine

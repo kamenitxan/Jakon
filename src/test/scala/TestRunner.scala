@@ -1,5 +1,8 @@
 import java.io.{File, IOException}
 
+import core.functions.LinkTest
+import core.pagelet.{JsonPageletTest, PageletTest}
+import core.{DeployTest, ModelTest, RenderTest, SettingsTest}
 import cz.kamenitxan.jakon.JakonInit
 import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.configuration.Settings
@@ -8,9 +11,6 @@ import cz.kamenitxan.jakon.core.custom_pages.AbstractStaticPage
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{Category, Page, Post}
 import cz.kamenitxan.jakon.core.template.Pebble
-import functions.LinkTest
-import jakon.pagelet.{JsonPageletTest, PageletTest}
-import jakon.{DeployTest, ModelTest, RenderTest, SettingsTest}
 import logging.LoggingTest
 import org.scalatest.{BeforeAndAfterAll, Suites}
 import utils.entity.{TestExtNoFields, TestExtUser, TestObject}

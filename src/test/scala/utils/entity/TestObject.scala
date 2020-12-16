@@ -3,15 +3,14 @@ package utils.entity
 import java.time.{LocalDate, LocalDateTime}
 import java.util.Date
 
-import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.core.database.converters.ScalaMapConverter
+import cz.kamenitxan.jakon.core.database.{I18n, JakonField}
 import cz.kamenitxan.jakon.core.model.{JakonObject, JakonUser}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.MessageSeverity
-import javax.persistence.{Embedded, ManyToMany, ManyToOne, OneToMany}
+import javax.persistence.{Embedded, ManyToOne, OneToMany}
 
 class TestObject extends JakonObject {
-	//TODO oneToMany
 	@ManyToOne
 	@JakonField
 	var user: JakonUser = _
@@ -40,9 +39,14 @@ class TestObject extends JakonObject {
 	var map: Map[String, String] = Map()
 	@JakonField
 	var mapNoConverter: Map[String, String] = Map()
+	@OneToMany
 	@JakonField
+	var oneToMany: Seq[JakonUser] = _
 	@Embedded
 	var embedded: TestEmbeddedObject = _
+	@JakonField
+	@I18n
+	var i18n: Seq[TestObjectI18n] = _
 
 
 	override val objectSettings: ObjectSettings = null

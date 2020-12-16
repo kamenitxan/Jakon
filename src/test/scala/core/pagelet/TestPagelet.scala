@@ -1,4 +1,4 @@
-package jakon.pagelet
+package core.pagelet
 
 import cz.kamenitxan.jakon.core.dynamic.{AbstractPagelet, Get, Pagelet, Post}
 import spark.{Request, Response}

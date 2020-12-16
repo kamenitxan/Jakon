@@ -1,4 +1,4 @@
-package jakon
+package core
 
 import test.TestBase
 
