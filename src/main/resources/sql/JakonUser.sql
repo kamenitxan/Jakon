@@ -9,6 +9,7 @@ CREATE TABLE JakonUser
   username       varchar(255),
   id             integer NOT NULL REFERENCES JakonObject (id) ON DELETE CASCADE,
   acl_id         integer NULL REFERENCES AclRule (id),
+  locale         varchar(6) NOT NULL,
 
   primary key (id),
   CONSTRAINT uq_email UNIQUE (email)

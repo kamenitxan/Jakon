@@ -1,7 +1,6 @@
 package cz.kamenitxan.jakon.webui.api
 
 import java.io.File
-
 import com.google.gson.Gson
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{JakonFile, JakonObject}
@@ -9,6 +8,7 @@ import cz.kamenitxan.jakon.webui.api.objects.{GetImagesRequest, GetImagesRespons
 import cz.kamenitxan.jakon.webui.controller.impl.FileManagerController
 import spark.{Request, Response}
 
+import java.sql.Connection
 import scala.language.postfixOps
 
 
@@ -22,7 +22,7 @@ object Api {
 		val jsonReq = gson.fromJson(req.body(), classOf[SearchRequest])
 		val objectClass = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(jsonReq.objectName)).head
 
-		val conn = DBHelper.getConnection
+		implicit val conn: Connection = DBHelper.getConnection
 		try {
 			if (jsonReq.query.isEmpty) {
 				val sql = s"SELECT * FROM ${objectClass.getSimpleName}"

@@ -4,7 +4,6 @@ import java.lang.reflect.{Field, ParameterizedType, Type}
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, LocalDateTime}
-
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.{I18n, JakonField}
 import cz.kamenitxan.jakon.core.model.{I18nData, JakonObject}
@@ -13,8 +12,9 @@ import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.utils.Utils._
 import cz.kamenitxan.jakon.webui.controller.impl.ObjectController
 import cz.kamenitxan.jakon.webui.entity.{FieldInfo, HtmlType}
-import javax.persistence.{ManyToOne, OneToMany}
 
+import java.util.Locale
+import javax.persistence.{ManyToOne, OneToMany}
 import scala.jdk.CollectionConverters._
 import scala.language.postfixOps
 
@@ -59,6 +59,7 @@ object FieldConformer {
 					s.split("\r\n").map(line => line.trim.conform(Class.forName(genericType.getTypeName), null)).toList.asJava
 				case SEQ =>
 					s.split("\r\n").map(line => line.trim.conform(Class.forName(genericType.getTypeName), null)).toSeq
+				case LOCALE => Utils.stringToLocale(s)
 				case x if x.isEnum =>
 					val m = x.getMethod("valueOf", classOf[String])
 					m.invoke(t, s)
@@ -75,8 +76,8 @@ object FieldConformer {
 	}
 
 
-	def getFieldInfos(obj: Any, fields: Seq[Field]): List[FieldInfo] = {
-		var infos = List[FieldInfo]()
+	def getFieldInfos(obj: Any, fields: Seq[Field]): Seq[FieldInfo] = {
+		var infos = Seq[FieldInfo]()
 		fields.foreach(f => {
 			val an = f.getAnnotation(classOf[JakonField])
 			lazy val i18nAn = f.getAnnotation(classOf[I18n])
@@ -86,49 +87,54 @@ object FieldConformer {
 				f.setAccessible(true)
 				if (f.getDeclaredAnnotation(classOf[ManyToOne]) != null) {
 					val fv = f.get(obj)
-					infos = new FieldInfo(an, HtmlType.CHECKBOX, f, fv, "ManyToOne") :: infos
+					infos = infos :+ new FieldInfo(an, HtmlType.CHECKBOX, f, fv, "ManyToOne")
 				} else if (f.getDeclaredAnnotation(classOf[OneToMany]) != null) {
 					val fv = f.get(obj)
 					val typeCls = f.getCollectionGenericType
 					val typeName = typeCls.getTypeName.substring(typeCls.getTypeName.lastIndexOf(".") + 1)
-					infos = new FieldInfo(an, HtmlType.CHECKBOX, f, fv, "OneToMany", typeName) :: infos
+					infos = infos :+ new FieldInfo(an, HtmlType.CHECKBOX, f, fv, "OneToMany", typeName)
 				} else {
 					f.getType match {
 						case BOOLEAN =>
 							val fv = f.get(obj)
-							infos = new FieldInfo(an, HtmlType.CHECKBOX, f, if (fv != null) fv.toString else null) :: infos
+							infos = infos :+ new FieldInfo(an, HtmlType.CHECKBOX, f, if (fv != null) fv.toString else null)
 						case INTEGER | INTEGER_j =>
 							val fv = f.get(obj)
-							infos = new FieldInfo(an, HtmlType.NUMBER, f, fv) :: infos
+							infos = infos :+ new FieldInfo(an, HtmlType.NUMBER, f, fv)
 						case DATE_o =>
 							val sdf = new SimpleDateFormat(DATE_FORMAT)
 							if (f.get(obj) != null) {
 								val value = sdf.format(f.get(obj))
-								infos = new FieldInfo(an, HtmlType.DATE, f, value) :: infos
+								infos = infos :+ new FieldInfo(an, HtmlType.DATE, f, value)
 							} else {
-								infos = new FieldInfo(an, HtmlType.DATE, f, value = "") :: infos
+								infos = infos :+ new FieldInfo(an, HtmlType.DATE, f, value = "")
 							}
 						case DATE =>
 							val sdf = DateTimeFormatter.ofPattern(DATE_FORMAT)
 							if (f.get(obj) != null) {
 								val value = f.get(obj).asInstanceOf[LocalDate].format(sdf)
-								infos = new FieldInfo(an, HtmlType.DATE, f, value) :: infos
+								infos = infos :+ new FieldInfo(an, HtmlType.DATE, f, value)
 							} else {
-								infos = new FieldInfo(an, HtmlType.DATE, f, value = "") :: infos
+								infos = infos :+ new FieldInfo(an, HtmlType.DATE, f, value = "")
 							}
 						case DATETIME =>
 							val sdf = DateTimeFormatter.ofPattern(DATETIME_FORMAT)
 							if (f.get(obj) != null) {
 								val value = f.get(obj).asInstanceOf[LocalDateTime].format(sdf)
-								infos = new FieldInfo(an, HtmlType.DATETIME, f, value) :: infos
+								infos = infos :+ new FieldInfo(an, HtmlType.DATETIME, f, value)
 							} else {
-								infos = new FieldInfo(an, HtmlType.DATETIME, f, value = "") :: infos
+								infos = infos :+ new FieldInfo(an, HtmlType.DATETIME, f, value = "")
 							}
+						case LOCALE =>
+							val fv = f.get(obj)
+							val fi = new FieldInfo(an, HtmlType.SELECT, f, fv, template = "locale_select")
+							fi.extraData.put("supportedLocales", Settings.getSupportedLocales.asJava)
+							infos = infos :+ fi
 						case x if x.isEnum =>
 							val fv = f.get(obj)
 							val fi = new FieldInfo(an, HtmlType.SELECT, f, fv, "enum")
 							fi.extraData.put("enumValues", x.getEnumConstants)
-							infos = fi :: infos
+							infos = infos :+ fi
 						case _ if i18nAn != null =>
 							val fv: Seq[I18nData] = if (f.get(obj) == null) {
 								Seq.empty
@@ -145,7 +151,15 @@ object FieldConformer {
 
 							val fuu: Map[String, FieldInfo] = Settings.getSupportedLocales.flatMap(l => {
 								if (fv.nonEmpty) {
-									fields.map(f => f.getName + "_" + l.toString -> fv.find(_.locale == l).map(d => FieldConformer.getFieldInfos(d, fields).find(_.name == f.getName).get).get)
+
+									fields.map(f => {
+										val key = f.getName + "_" + l.toString
+										val value = fv.find(_.locale == l)
+																	.map(
+																		d => FieldConformer.getFieldInfos(d, fields).find(_.name == f.getName).get
+																	)
+										key -> value.get
+									})
 								} else {
 									fields.map(f => f.getName + "_" + l.toString -> {
 										val an = f.getAnnotation(classOf[JakonField])
@@ -156,10 +170,10 @@ object FieldConformer {
 
 							//val lfi = fv.map(d => d.locale.toString -> FieldConformer.getFieldInfos(d, fields)).toMap
 							fi.extraData.put("i18nFields", fuu)
-							infos = fi :: infos
+							infos = infos :+ fi
 						case _ =>
 							val fv = f.get(obj)
-							infos = new FieldInfo(an, HtmlType.TEXT, f, fv) :: infos
+							infos = infos :+ new FieldInfo(an, HtmlType.TEXT, f, fv)
 					}
 				}
 			}

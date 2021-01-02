@@ -5,7 +5,6 @@ import cz.kamenitxan.jakon.utils.{PageContext, Utils}
 import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
-import cz.kamenitxan.jakon.webui.controller.impl.ObjectController.excludedFields
 import spark.{ModelAndView, Request, Response}
 
 import scala.jdk.CollectionConverters._
@@ -15,6 +14,8 @@ import scala.language.postfixOps
   * Created by TPa on 01.05.18.
   */
 object UserController {
+
+	private val excludedFields = ObjectController.excludedFields ++ Seq("acl")
 
 	def render(req: Request, res: Response): ModelAndView = {
 		if (PageContext.getInstance().getLoggedUser.isEmpty) {
@@ -48,7 +49,6 @@ object UserController {
 				val fieldRef = fieldRefOpt.get
 				fieldRef.setAccessible(true)
 				val value = req.queryParams(p).conform(fieldRef)
-				// TODO: editace ACL
 				if (value != null) {
 					if (p.equals("password")) {
 						if (!value.asInstanceOf[String].startsWith("$2a$")) {

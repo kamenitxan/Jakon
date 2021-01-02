@@ -44,7 +44,7 @@ class SqlGenTest extends TestBase {
 	}
 
 	test("DBHelper select") { _ =>
-		DBHelper.withDbConnection(conn => {
+		DBHelper.withDbConnection(implicit conn => {
 			val stmt = conn.prepareStatement("SELECT * FROM JakonUser")
 			val users = DBHelper.select(stmt, classOf[JakonUser])
 			assert(users.nonEmpty)

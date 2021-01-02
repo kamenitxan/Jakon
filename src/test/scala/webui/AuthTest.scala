@@ -50,11 +50,12 @@ class AuthTest extends FixtureAnyFunSuite {
 
 	test("check password") { _ =>
 		val sql = "SELECT id, username, password, enabled, acl_id FROM JakonUser WHERE email = ?"
-		val stmt = DBHelper.getPreparedStatement(sql)
-		stmt.setString(1, email)
-		val result = DBHelper.selectSingle(stmt, classOf[JakonUser])
-		val user = result.entity
-
+		val user = DBHelper.withDbConnection(implicit conn => {
+			val stmt = conn.prepareStatement(sql)
+			stmt.setString(1, email)
+			val result = DBHelper.selectSingle(stmt, classOf[JakonUser])
+			result.entity
+		})
 
 		assert(Authentication.checkPassword(password, user.password))
 	}

@@ -1,12 +1,13 @@
 package cz.kamenitxan.jakon.core.controller
 
 import java.util
-
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.Page
 import cz.kamenitxan.jakon.core.template.TemplateEngine
 import cz.kamenitxan.jakon.core.template.utils.TemplateUtils
 import org.slf4j.{Logger, LoggerFactory}
+
+import java.sql.Connection
 
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 01.05.16.
@@ -20,7 +21,7 @@ class PageController extends IController {
 
 	def generate(): Unit = {
 		val e: TemplateEngine = TemplateUtils.getEngine
-		val conn = DBHelper.getConnection
+		implicit val conn: Connection = DBHelper.getConnection
 		try {
 			val stmt = conn.createStatement()
 			val pages = DBHelper.select(stmt, ALL_PAGES_SQL, classOf[Page]).map(qr => qr.entity)

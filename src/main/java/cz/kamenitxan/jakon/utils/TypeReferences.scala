@@ -2,8 +2,7 @@ package cz.kamenitxan.jakon.utils
 
 import java.sql.Connection
 import java.time.{LocalDate, LocalDateTime}
-import java.util.Date
-
+import java.util.{Date, Locale}
 import spark.{Request, Response}
 
 //noinspection TypeAnnotation
@@ -24,6 +23,7 @@ object TypeReferences {
 	val SQL_DATE = classOf[java.sql.Date]
 	val DATETIME = classOf[LocalDateTime]
 	val SEQ = classOf[Seq[Any]]
+	val LOCALE = classOf[Locale]
 
 	val REQUEST_CLS = classOf[Request]
 	val RESPONSE_CLS = classOf[Response]

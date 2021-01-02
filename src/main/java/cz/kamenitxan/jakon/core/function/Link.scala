@@ -1,14 +1,16 @@
 package cz.kamenitxan.jakon.core.function
 
 import java.util
-
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.BasicJakonObject
+
+import java.sql.Connection
 
 /**
   * Created by TPa on 25.05.16.
   */
 class Link extends IFuncion {
+
 	def execute(params: util.Map[String, String]): String = {
 		if (params == null) throw new IllegalArgumentException("Link parameters null")
 		val objectId = Integer.valueOf(params.getOrDefault("id", null))
@@ -18,7 +20,7 @@ class Link extends IFuncion {
 			throw new IllegalArgumentException("Invalid link parameters")
 		}
 
-		val conn = DBHelper.getConnection
+		implicit val conn: Connection = DBHelper.getConnection
 		try {
 			val stmt = conn.prepareStatement("SELECT id, url FROM JakonObject WHERE id = ?")
 			stmt.setInt(1, objectId)

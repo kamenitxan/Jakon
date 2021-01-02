@@ -50,7 +50,7 @@ object JakonInitializer {
 		}
 	}
 
-	def createDefaultEmailTemplates()(conn: Connection) = {
+	def createDefaultEmailTemplates()(implicit conn: Connection) = {
 		val stmt = conn.prepareStatement(SELECT_EMAIL_TMPL_SQL)
 		stmt.setString(1, "REGISTRATION")
 		val tmpl = DBHelper.selectSingle(stmt, classOf[EmailTemplateEntity]).entity

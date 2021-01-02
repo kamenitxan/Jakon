@@ -40,7 +40,7 @@ class ForgetPasswordPagelet extends AbstractAdminPagelet {
 	def post(req: Request, res: Response, conn: Connection, data: ForgetPasswordData): mutable.Map[String, Any] = {
 		val stmt = conn.prepareStatement(SQL_FIND_USER)
 		stmt.setString(1, data.email)
-		val result = DBHelper.selectSingle(stmt, classOf[JakonUser])
+		val result = DBHelper.selectSingle(stmt, classOf[JakonUser])(conn)
 		if (result.entity != null) {
 			val user = result.entity
 			UserService.sendForgetPasswordEmail(user, req)(conn)

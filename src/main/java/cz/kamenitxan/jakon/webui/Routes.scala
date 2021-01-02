@@ -37,7 +37,7 @@ object Routes {
 			override def handle(request: Request, response: Response): Unit = {
 				val user: JakonUser = request.session.attribute("user")
 				if ((Settings.getDeployMode ne DeployMode.DEVEL)
-				  && request.session.attribute("user") != null
+				  && user != null
 				  && (user.acl.adminAllowed || user.acl.masterAdmin)) {
 					response.redirect(s"$AdminPrefix/index", 302)
 				}

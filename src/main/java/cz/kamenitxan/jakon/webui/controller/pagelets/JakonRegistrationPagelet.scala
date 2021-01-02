@@ -1,7 +1,6 @@
 package cz.kamenitxan.jakon.webui.controller.pagelets
 
 import java.util.{Calendar, Date}
-
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.dynamic.{Get, Pagelet, Post}
@@ -13,6 +12,7 @@ import cz.kamenitxan.jakon.webui.controller.pagelets.data.JakonRegistrationData
 import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, Message, MessageSeverity}
 import spark.{Request, Response}
 
+import java.sql.Connection
 import scala.collection.mutable
 import scala.util.Random
 
@@ -55,7 +55,7 @@ class JakonRegistrationPagelet extends AbstractAdminPagelet {
 	def sendRegistrationEmail(user: JakonUser): Unit = {
 		if (!Settings.isEmailEnabled) return
 
-		val conn = DBHelper.getConnection
+		implicit val conn: Connection = DBHelper.getConnection
 		try {
 			val stmt = conn.createStatement()
 			val tmpl = DBHelper.selectSingle(stmt, SQL_SELECT_EMAIL_TMPL, classOf[EmailTemplateEntity]).entity

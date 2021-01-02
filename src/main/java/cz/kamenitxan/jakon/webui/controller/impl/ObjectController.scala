@@ -161,7 +161,7 @@ object ObjectController {
 		}
 		var obj: JakonObject = null
 		if (objectId.nonEmpty) {
-			val conn = DBHelper.getConnection
+			implicit val conn: Connection = DBHelper.getConnection
 			val stmt = conn.prepareStatement("SELECT id FROM JakonObject WHERE id = ?")
 			stmt.setInt(1, objectId.get)
 			obj = Option(DBHelper.selectSingle(stmt, objectClass).entity).getOrElse(objectClass.getDeclaredConstructor().newInstance())

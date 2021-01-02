@@ -5,7 +5,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cz.kamenitxan</groupId>
-	<artifactId>jakon</artifactId>
+	<artifactId>jakond</artifactId>
 	<version>0.3-SNAPSHOT</version>
 
 	<name>Jakon</name>

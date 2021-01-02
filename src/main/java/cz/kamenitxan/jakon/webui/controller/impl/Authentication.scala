@@ -11,6 +11,7 @@ import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import org.mindrot.jbcrypt.BCrypt
 import spark.{ModelAndView, Request, Response}
 
+import java.sql.Connection
 import scala.language.postfixOps
 
 /**
@@ -38,7 +39,7 @@ object Authentication {
 		val password = req.queryParams("password")
 		val redirectTo = req.queryParams("redirect_to")
 		if (email != null && password != null) {
-			val conn = DBHelper.getConnection
+			implicit val conn: Connection = DBHelper.getConnection
 			try {
 				val stmt = conn.prepareStatement(SQL_FIND_USER)
 				stmt.setString(1, email)

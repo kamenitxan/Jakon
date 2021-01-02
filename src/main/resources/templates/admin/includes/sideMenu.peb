@@ -38,7 +38,7 @@
                     {% for model in jakonModelClasses %}
                         <li>
                             <a href="/admin/object/{{ model }}"{% if objectName == model %} class="active"{% endif %}><i
-                                    class="fa {{ objectSettings[model].icon }}"></i> {{ model }}</a>
+                                    class="fa {{ objectSettings[model].icon }}"></i> {{ i18n("objects", model) }}</a>
                         </li>
                     {% endfor %}
 					</ul>
@@ -47,7 +47,7 @@
                     {% for model in modelClasses %}
                         <li>
                             <a href="/admin/object/{{ model }}"{% if objectName == model %} class="active"{% endif %}><i
-                                    class="fa {{ objectSettings[model].icon }}"></i> {{ model }}</a>
+                                    class="fa {{ objectSettings[model].icon }}"></i> {{ i18n("objects", model) }}</a>
                         </li>
                     {% endfor %}
                     </ul>

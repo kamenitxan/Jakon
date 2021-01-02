@@ -2,11 +2,12 @@ package cz.kamenitxan.jakon.utils.mail
 
 import java.util.concurrent.TimeUnit
 import java.util.{Date, Properties}
-
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.task.AbstractTask
 import cz.kamenitxan.jakon.logging.Logger
+
+import java.sql.Connection
 import javax.mail._
 import javax.mail.internet.{InternetAddress, MimeMessage}
 
@@ -20,7 +21,7 @@ object EmailSendTask {
 class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(period, unit) {
 
 	override def start(): Unit = {
-		val conn = DBHelper.getConnection
+		implicit val conn: Connection = DBHelper.getConnection
 		try {
 			val stmt = conn.createStatement()
 

@@ -1,11 +1,15 @@
 package cz.kamenitxan.jakon.core.model
 
-import java.sql.{Connection, Statement, Types}
+import cz.kamenitxan.jakon.core.configuration.Settings
 
+import java.sql.{Connection, Statement, Types}
 import cz.kamenitxan.jakon.core.database.JakonField
+import cz.kamenitxan.jakon.core.database.converters.LocaleConverter
 import cz.kamenitxan.jakon.validation.validators.{Email, NotEmpty}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.controller.impl.Authentication
+
+import java.util.Locale
 import javax.persistence._
 
 
@@ -15,19 +19,30 @@ import javax.persistence._
 class JakonUser extends JakonObject with Serializable {
 
 	@NotEmpty
-	@JakonField(searched = true) var username: String = ""
+	@JakonField(searched = true)
+	var username: String = ""
 	@NotEmpty
 	@Email
-	@JakonField(searched = true) var email: String = ""
-	@JakonField(searched = true) var emailConfirmed: Boolean = false
-	@JakonField(searched = true, required = false) var firstName: String = ""
-	@JakonField(searched = true, required = false) var lastName: String = ""
+	@JakonField(searched = true)
+	var email: String = ""
+	@JakonField(searched = true)
+	var emailConfirmed: Boolean = false
+	@JakonField(searched = true, required = false)
+	var firstName: String = ""
+	@JakonField(searched = true, required = false)
+	var lastName: String = ""
 	@NotEmpty
-	@JakonField(shownInList = false, searched = true) var password: String = ""
-	@JakonField(searched = true) var enabled: Boolean = false
+	@JakonField(shownInList = false, searched = true)
+	var password: String = ""
+	@JakonField(searched = true)
+	var enabled: Boolean = false
 	@NotEmpty
 	@ManyToOne
-	@JakonField(required = true) var acl: AclRule = _
+	@JakonField(required = true)
+	var acl: AclRule = _
+	@NotEmpty
+	@JakonField(converter = classOf[LocaleConverter])
+	var locale: Locale = _
 
 	@Transient
 	override val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-user")
@@ -35,7 +50,7 @@ class JakonUser extends JakonObject with Serializable {
 	override def createObject(jid: Int, conn: Connection): Int = {
 		this.password = Authentication.hashPassword(this.password)
 		// language=SQL
-		val sql = "INSERT INTO JakonUser (id, username, email, emailConfirmed, firstName, lastName, password, enabled, acl_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+		val sql = "INSERT INTO JakonUser (id, username, email, emailConfirmed, firstName, lastName, password, enabled, acl_id, locale) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
 		stmt.setInt(1, jid)
 		stmt.setString(2, username)
@@ -50,6 +65,10 @@ class JakonUser extends JakonObject with Serializable {
 		} else {
 			stmt.setNull(9, Types.INTEGER)
 		}
+		if (locale == null) {
+			locale = Settings.getDefaultLocale
+		}
+		stmt.setString(10, locale.toString)
 
 		executeInsert(stmt)
 	}
@@ -64,7 +83,7 @@ class JakonUser extends JakonObject with Serializable {
 		}
 
 		// language=SQL
-		val sql = "UPDATE JakonUser SET username = ?, email = ?, emailConfirmed = ?, firstName = ?, lastName = ?, password = ?, enabled = ?, acl_id = ? WHERE id = ?"
+		val sql = "UPDATE JakonUser SET username = ?, email = ?, emailConfirmed = ?, firstName = ?, lastName = ?, password = ?, enabled = ?, acl_id = ?, locale = ? WHERE id = ?"
 		val stmt = conn.prepareStatement(sql)
 		stmt.setString(1, username)
 		stmt.setString(2, email)
@@ -78,7 +97,8 @@ class JakonUser extends JakonObject with Serializable {
 		} else {
 			stmt.setNull(8, Types.INTEGER)
 		}
-		stmt.setInt(9, jid)
+		stmt.setString(9, locale.toString)
+		stmt.setInt(10, jid)
 		stmt.executeUpdate()
 	}
 }

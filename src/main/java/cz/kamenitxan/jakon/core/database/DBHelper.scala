@@ -55,11 +55,6 @@ object DBHelper {
 		conn
 	}
 
-	@Deprecated
-	def getPreparedStatement(sql: String): PreparedStatement = {
-		getConnection.prepareStatement(sql)
-	}
-
 	def execute(stmt: PreparedStatement): ResultSet = {
 		stmt.executeQuery()
 	}
@@ -68,25 +63,27 @@ object DBHelper {
 		stmt.executeQuery(sql)
 	}
 
-	def select[T <: BaseEntity](stmt: PreparedStatement, cls: Class[T]): List[QueryResult[T]] = {
+	def select[T <: BaseEntity](stmt: PreparedStatement, cls: Class[T])(implicit conn: Connection): List[QueryResult[T]] = {
 		val rs = execute(stmt)
 		val res = Iterator.from(0).takeWhile(_ => rs.next()).map(_ => {
 			EntityMapper.createJakonObject(rs, cls)
 		}).toList
 		stmt.close()
+		res.foreach(r => fetchI18nData(r))
 		res
 	}
 
-	def select[T <: BaseEntity](stmt: Statement, @Language("SQL") sql: String, cls: Class[T]): List[QueryResult[T]] = {
+	def select[T <: BaseEntity](stmt: Statement, @Language("SQL") sql: String, cls: Class[T])(implicit conn: Connection): List[QueryResult[T]] = {
 		val rs = execute(stmt, sql)
 		val res = Iterator.from(0).takeWhile(_ => rs.next()).map(_ => {
 			EntityMapper.createJakonObject(rs, cls)
 		}).toList
 		stmt.close()
+		res.foreach(r => fetchI18nData(r))
 		res
 	}
 
-	def selectSingle[T <: JakonObject](stmt: PreparedStatement, cls: Class[T]): QueryResult[T] = {
+	def selectSingle[T <: JakonObject](stmt: PreparedStatement, cls: Class[T])(implicit conn: Connection): QueryResult[T] = {
 		val rs = execute(stmt)
 		var res: QueryResult[T] = null
 		if (rs.next()) {
@@ -95,10 +92,11 @@ object DBHelper {
 			res = new QueryResult[T](null)
 		}
 		stmt.close()
+		fetchI18nData(res)
 		res
 	}
 
-	def selectSingle[T <: JakonObject](stmt: Statement, @Language("SQL") sql: String, cls: Class[T]): QueryResult[T] = {
+	def selectSingle[T <: JakonObject](stmt: Statement, @Language("SQL") sql: String, cls: Class[T])(implicit conn: Connection): QueryResult[T] = {
 		val rs = execute(stmt, sql)
 		val res: QueryResult[T] = if (rs.next()) {
 			EntityMapper.createJakonObject(rs, cls)
@@ -106,6 +104,7 @@ object DBHelper {
 			new QueryResult[T](null)
 		}
 		stmt.close()
+		fetchI18nData(res)
 		res
 	}
 
@@ -131,18 +130,7 @@ object DBHelper {
 			})
 		}
 
-		if (res.i18nField.nonEmpty) {
-			val i18nF = res.i18nField.get
-			val cls = i18nF.getCollectionGenericTypeClass.asInstanceOf[Class[BaseEntity]]
-			val sql = s"SELECT * FROM ${cls.getSimpleName} WHERE id = ?"
-			val i18nStmt = conn.prepareStatement(sql)
-			i18nStmt.setInt(1, res.entity.id)
-			val i18nRes = select(i18nStmt, cls).map(_.entity)
-			if (!i18nF.isAccessible) {
-				i18nF.setAccessible(true)
-			}
-			i18nF.set(res.entity, i18nRes)
-		}
+		fetchI18nData(res)
 		res.entity
 	}
 
@@ -214,6 +202,21 @@ object DBHelper {
 			}
 		})
 		resultList
+	}
+
+	private def fetchI18nData[T <: BaseEntity](res: QueryResult[T])(implicit conn: Connection): Unit =  {
+		if (res.i18nField.nonEmpty && res.entity.isInstanceOf[JakonObject]) {
+			val i18nF = res.i18nField.get
+			val cls = i18nF.getCollectionGenericTypeClass.asInstanceOf[Class[BaseEntity]]
+			val sql = s"SELECT * FROM ${cls.getSimpleName} WHERE id = ?"
+			val i18nStmt = conn.prepareStatement(sql)
+			i18nStmt.setInt(1, res.entity.asInstanceOf[JakonObject].id)
+			val i18nRes = select(i18nStmt, cls).map(_.entity)
+			if (!i18nF.isAccessible) {
+				i18nF.setAccessible(true)
+			}
+			i18nF.set(res.entity, i18nRes)
+		}
 	}
 
 	def count(@Language("SQL") countSql: String)(implicit conn: Connection): Long = {
