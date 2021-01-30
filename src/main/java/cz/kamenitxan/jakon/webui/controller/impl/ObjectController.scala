@@ -1,8 +1,7 @@
 package cz.kamenitxan.jakon.webui.controller.impl
 
 import java.lang.reflect.Field
-import java.sql.Connection
-
+import java.sql.{Connection, SQLException}
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.{DBHelper, I18n}
 import cz.kamenitxan.jakon.core.model.{I18nData, JakonObject, Ordered}
@@ -14,6 +13,7 @@ import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
+import org.sqlite.{SQLiteErrorCode, SQLiteException}
 import spark.{ModelAndView, Request, Response}
 
 import scala.annotation.tailrec
@@ -202,14 +202,27 @@ object ObjectController {
 		}
 
 
-		if (objectId.nonEmpty) {
-			if (objectClass.getInterfaces.contains(classOf[Ordered])) {
-				obj = DBHelper.withDbConnection(implicit conn => obj.asInstanceOf[Ordered].updateOrder(formOrder))
+		try {
+			if (objectId.nonEmpty) {
+				if (objectClass.getInterfaces.contains(classOf[Ordered])) {
+					obj = DBHelper.withDbConnection(implicit conn => obj.asInstanceOf[Ordered].updateOrder(formOrder))
+				}
+				obj.update()
+			} else {
+				obj.create()
 			}
-			obj.update()
-		} else {
-			obj.create()
+		} catch {
+			case ex: SQLiteException =>
+				if (ex.getResultCode == SQLiteErrorCode.SQLITE_CONSTRAINT && ex.getMessage.contains("UNIQUE")) {
+					// TODO: mysql
+					// TODO: better msg
+					PageContext.getInstance().addMessage(MessageSeverity.ERROR, "NEW_OBJ_UNIQUE_FAIL")
+					redirect(req, res, "/admin/object/create/" + objectName)
+				} else {
+					throw ex
+				}
 		}
+
 		val i18nFieldOpt = fields.find(_.getAnnotation(classOf[I18n]) != null)
 		if (i18nFieldOpt.nonEmpty) {
 			createI18nData(obj.id, i18nFieldOpt.get, req, params)

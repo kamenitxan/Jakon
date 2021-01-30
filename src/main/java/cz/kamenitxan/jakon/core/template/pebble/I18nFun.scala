@@ -19,8 +19,9 @@ class I18nFun extends i18nFunction {
 		val default = args.get("def").asInstanceOf[String]
 
 		val context = args.get("_context").asInstanceOf[EvaluationContext]
-		val locale = if (PageContext.getInstance().getLoggedUser.nonEmpty) {
-			PageContext.getInstance().getLoggedUser.get.locale
+		val lu = PageContext.getInstance().getLoggedUser
+		val locale = if (lu.nonEmpty && lu.get.locale != null) {
+			lu.get.locale
 		} else if (Settings.getDefaultLocale != null) {
 			Settings.getDefaultLocale
 		} else {
