@@ -14,10 +14,10 @@ class SizeValidator extends Validator {
 		if (value == null) {
 			return Option.empty
 		}
-		val lenght = value.length()
-		if (lenght < ann.min()) {
+		val length = value.length()
+		if (length < ann.min()) {
 			ValidationResult(small)
-		} else if (lenght > ann.max()) {
+		} else if (length > ann.max()) {
 			ValidationResult(large)
 		} else {
 			Option.empty

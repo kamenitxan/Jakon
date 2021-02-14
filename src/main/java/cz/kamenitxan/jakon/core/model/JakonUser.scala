@@ -5,7 +5,7 @@ import cz.kamenitxan.jakon.core.configuration.Settings
 import java.sql.{Connection, Statement, Types}
 import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.core.database.converters.LocaleConverter
-import cz.kamenitxan.jakon.validation.validators.{Email, NotEmpty}
+import cz.kamenitxan.jakon.validation.validators.{Email, NotEmpty, Unique}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.controller.impl.Authentication
 
@@ -22,6 +22,7 @@ class JakonUser extends JakonObject with Serializable {
 	@JakonField(searched = true)
 	var username: String = ""
 	@NotEmpty
+	@Unique
 	@Email
 	@JakonField(searched = true)
 	var email: String = ""

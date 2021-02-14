@@ -10,6 +10,6 @@ case class ValidationResult(error: String, severity: Option[MessageSeverity] = O
 	}
 }
 object ValidationResult {
-	def of(error: String, severity: MessageSeverity, params: Seq[String]) = ValidationResult(error, Option.apply(severity), params)
+	def of(error: String, severity: MessageSeverity, params: Seq[String]): ValidationResult = ValidationResult(error, Option.apply(severity), params)
 	def of(error: String, severity: MessageSeverity): ValidationResult = this(error, Option.apply(severity))
 }

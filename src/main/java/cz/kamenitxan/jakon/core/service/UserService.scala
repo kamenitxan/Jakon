@@ -19,6 +19,12 @@ import scala.util.Random
 object UserService {
 	implicit val cls: Class[JakonUser] = classOf[JakonUser]
 
+	def getById(id: Int)(implicit conn: Connection): JakonUser = {
+		val stmt = conn.prepareStatement("SELECT * FROM JakonUser WHERE id = ?")
+		stmt.setInt(1, id)
+		DBHelper.selectSingleDeep(stmt)
+	}
+
 	def getByEmail(email: String)(implicit conn: Connection): JakonUser = {
 		val stmt = conn.prepareStatement(Authentication.SQL_FIND_USER)
 		stmt.setString(1, email)

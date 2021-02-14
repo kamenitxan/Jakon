@@ -723,11 +723,11 @@ object FileManagerController {
 
 	private val IMG_SUFFIXES = Seq(".png", ".jpg")
 
-	def getFileType(file: Path) = {
+	def getFileType(file: Path): FileType = {
 		if (Files.isDirectory(file)) {
 			FileType.FOLDER
 		} else {
-			val isImg = IMG_SUFFIXES.find(s => file.getFileName.toString.endsWith(s))
+			val isImg = IMG_SUFFIXES.find(s => file.getFileName.toString.toLowerCase.endsWith(s))
 			isImg match {
 				case Some(_) => FileType.IMAGE
 				case None => FileType.FILE
