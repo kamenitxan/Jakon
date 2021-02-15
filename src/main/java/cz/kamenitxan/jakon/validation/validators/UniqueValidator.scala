@@ -19,7 +19,8 @@ class UniqueValidator extends Validator {
 		val className = field.getDeclaringClass.getSimpleName
 
 		DBHelper.withDbConnection(implicit conn => {
-			val sql = s"""SELECT count(*) FROM $className WHERE $fieldName = \"$value\""""
+			val idSql = data.find(_._1.getName == "id").map(_._2.toInt).map(id => s" AND id != $id").getOrElse("")
+			val sql = s"""SELECT count(*) FROM $className WHERE $fieldName = \"$value\" $idSql"""
 			val res = DBHelper.count(sql)
 			if (res > 0) {
 				ValidationResult(unique)

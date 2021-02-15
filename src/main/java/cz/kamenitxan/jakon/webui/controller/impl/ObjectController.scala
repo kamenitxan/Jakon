@@ -170,7 +170,11 @@ object ObjectController {
 			obj = objectClass.getDeclaredConstructor().newInstance()
 		}
 
-		val formData = EntityValidator.createFormData(req, objectClass)
+		val formData: Map[Field, String] = if (objectId.nonEmpty) {
+			EntityValidator.createFormData(req, objectClass) + (Utils.getFields(classOf[JakonObject]).find(_.getName == "id").get -> objectId.get.toString)
+		} else {
+			EntityValidator.createFormData(req, objectClass)
+		}
 		EntityValidator.validate(objectClass.getSimpleName, formData) match {
 			case Left(result) =>
 				result.foreach(r => PageContext.getInstance().messages += r)
