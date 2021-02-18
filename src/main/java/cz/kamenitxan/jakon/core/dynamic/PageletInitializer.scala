@@ -52,7 +52,7 @@ object PageletInitializer {
 				val inst = c.getDeclaredConstructor().newInstance().asInstanceOf[AbstractAdminPagelet]
 				val controllerAnn = c.getAnnotation(classOf[Pagelet])
 				val get = apa.get.getAnnotation(classOf[Get])
-				AdminSettings.customControllersInfo += new CustomControllerInfo(inst.name, inst.icon, controllerAnn.path() + get.path())
+				AdminSettings.customControllersInfo += new CustomControllerInfo(inst.name, inst.icon, controllerAnn.path() + get.path(), c)
 			}
 		})
 		Logger.info("Pagelet initialization complete")

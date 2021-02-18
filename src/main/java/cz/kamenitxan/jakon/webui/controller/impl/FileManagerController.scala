@@ -10,12 +10,14 @@ import java.time.LocalDateTime
 import java.util
 import java.util.Date
 import java.util.zip.{ZipEntry, ZipOutputStream}
-
 import cz.kamenitxan.jakon.core.model.{FileType, JakonFile}
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.webui.Context
+import cz.kamenitxan.jakon.webui.controller.AbstractController
+import cz.kamenitxan.jakon.webui.controller.impl.FileManagerController.getManager
 import cz.kamenitxan.jakon.webui.entity.FileManagerMode
+
 import javax.mail.internet.MimeUtility
 import javax.servlet.ServletException
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
@@ -59,6 +61,18 @@ import scala.jdk.CollectionConverters._
   * @author Paolo Biavati https://github.com/paolobiavati (java servlet version)
   * @author Kamenitxan this implementation
   */
+class FileManagerController extends AbstractController {
+	override val template: String = "objects/fileManager"
+
+	override def render(req: Request, res: Response): Context = getManager(req, res)
+
+	override def name(): String = "FILES"
+
+	override def path(): String = "files"
+
+	override val icon: String = "fa-files-o"
+}
+
 object FileManagerController {
 	val REPOSITORY_BASE_PATH = "upload"
 	private val DATE_FORMAT = "EEE, d MMM yyyy HH:mm:ss z" // (Wed, 4 Jul 2001 12:08:56)
@@ -734,4 +748,6 @@ object FileManagerController {
 			}
 		}
 	}
+
+
 }

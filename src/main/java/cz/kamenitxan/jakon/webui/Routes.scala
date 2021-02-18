@@ -6,12 +6,16 @@ import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.core.service.UserService
 import cz.kamenitxan.jakon.logging.Logger
+import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.webui.api.Api
 import cz.kamenitxan.jakon.webui.controller.{AbstractController, ExecuteFun}
 import cz.kamenitxan.jakon.webui.controller.impl.{Authentication, FileManagerController, ObjectController, UserController}
+import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import spark.Spark._
 import spark.route.HttpMethod
 import spark.{Filter, Request, Response, ResponseTransformer}
+
+import scala.collection.mutable
 
 
 /**

@@ -46,6 +46,8 @@ object Context {
 		  .filter(c => user.nonEmpty && (user.get.acl.masterAdmin || user.get.acl.allowedControllers.contains(c.getCanonicalName)))
 		  .groupBy(c => c.getPackage.getName.startsWith("cz.kamenitxan.jakon"))
   		.mapValues(cl => cl.map(c => c.getSimpleName).asJavaCollection)
+		val customControllers = AdminSettings.customControllersInfo
+			.filter(c => user.nonEmpty && (user.get.acl.masterAdmin || user.get.acl.allowedControllers.contains(c.cls.getCanonicalName)))
 
 		val context = Map[String, Any](
 			"user" -> user.orNull,
@@ -53,7 +55,7 @@ object Context {
 			"jakonModelClasses" -> allModelClasses.getOrElse(true, new java.util.ArrayList[String]()),
 			"objectSettings" -> DBHelper.getDaoClasses.map(o => (o.getSimpleName, o.newInstance().getObjectSettings)).toMap.asJava,
 			"enableFiles" -> AdminSettings.enableFiles,
-			"customControllers" -> AdminSettings.customControllersInfo.asJava,
+			"customControllers" -> customControllers.asJava,
 			"jakon_messages" -> PageContext.getInstance().messages.asJava
 		)
 		context

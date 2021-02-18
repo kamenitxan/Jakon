@@ -7,6 +7,7 @@ import cz.kamenitxan.jakon.webui.controller.objectextension.AbstractObjectExtens
 import cz.kamenitxan.jakon.webui.entity.CustomControllerInfo
 import spark.{Request, Response}
 
+import java.util
 import scala.jdk.CollectionConverters._
 import scala.collection.mutable
 
@@ -14,7 +15,7 @@ object AdminSettings {
 	var dashboardController: (Request, Response) => Context = (req: Request, res: Response) => Dashboard.getDashboard(req, res)
 	var enableFiles = true
 	val customControllers = new mutable.ListBuffer[Class[_ <: AbstractController]]
-	val customControllersJava = {
+	val customControllersJava: util.List[Class[_ <: AbstractController]] = {
 		customControllers.asJava
 	}
 	val customControllersInfo = new mutable.ListBuffer[CustomControllerInfo]
@@ -23,7 +24,7 @@ object AdminSettings {
 	def registerCustomController[T <: AbstractController](controller: Class[T]): Unit = {
 		val inst = controller.newInstance()
 		customControllers += controller
-		customControllersInfo += new CustomControllerInfo(inst.name(), inst.icon, "/admin/" + inst.path())
+		customControllersInfo += new CustomControllerInfo(inst.name(), inst.icon, "/admin/" + inst.path(), controller)
 	}
 
 	def setDashboardController(fun: (Request, Response) => Context): Unit = {

@@ -18,7 +18,7 @@ class AclRule extends JakonObject {
 	var masterAdmin: Boolean = false
 	@JakonField(listOrder = 2)
 	var adminAllowed: Boolean = false
-	@JakonField(converter = classOf[StringListConverter])
+	@JakonField(inputTemplate = "special/AclAllowedControllers", converter = classOf[StringListConverter])
 	var allowedControllers: java.util.List[String] = new java.util.ArrayList[String]()
 	@JakonField(converter = classOf[StringListConverter])
 	var allowedFrontendPrefixes: java.util.List[String] = new java.util.ArrayList[String]()

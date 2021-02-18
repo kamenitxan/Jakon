@@ -1,9 +1,5 @@
 package cz.kamenitxan.jakon
 
-import java.io.File
-import java.nio.file.{Files, Paths}
-import java.util.concurrent.TimeUnit
-
 import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.configuration.{AnnotationScanner, ConfigurationInitializer, DeployMode, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper
@@ -15,12 +11,15 @@ import cz.kamenitxan.jakon.logging.{LogCleanerTask, Logger}
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.utils.{LoggingExceptionHandler, PageContext}
 import cz.kamenitxan.jakon.webui.AdminSettings
-import cz.kamenitxan.jakon.webui.controller.impl.{DeployController, LogViewer, TaskController}
+import cz.kamenitxan.jakon.webui.controller.impl.{DeployController, LogViewer, TaskController, FileManagerController}
 import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, ResetPasswordEmailEntity}
 import spark.Spark._
 import spark.debug.DebugScreen.enableDebugScreen
-import spark.servlet.SparkFilter
-import spark.{Filter, Request, Response, Route, servlet}
+import spark.{Filter, Request, Response}
+
+import java.io.File
+import java.nio.file.{Files, Paths}
+import java.util.concurrent.TimeUnit
 
 
 class JakonInit {
@@ -37,6 +36,9 @@ class JakonInit {
 		}
 		AdminSettings.registerCustomController(classOf[TaskController])
 		AdminSettings.registerCustomController(classOf[LogViewer])
+		if (AdminSettings.enableFiles) {
+			AdminSettings.registerCustomController(classOf[FileManagerController])
+		}
 	}
 
 	def taskSetup(): Unit = {

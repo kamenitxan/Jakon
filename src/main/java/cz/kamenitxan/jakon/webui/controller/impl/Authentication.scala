@@ -68,10 +68,15 @@ object Authentication {
 
 					Logger.info("User " + user.username + " logged in")
 					req.session(true).attribute("user", user)
-					if (Utils.isEmpty(redirectTo)) {
-						res.redirect("/admin/index")
+
+					if (user.acl.adminAllowed) {
+						if (Utils.isEmpty(redirectTo)) {
+							res.redirect("/admin/index")
+						} else {
+							res.redirect(redirectTo)
+						}
 					} else {
-						res.redirect(redirectTo)
+						PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "ADMIN_NOT_ALLOWED")
 					}
 
 				} else {

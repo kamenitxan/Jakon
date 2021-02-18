@@ -1,0 +1,7 @@
+{# @pebvariable name="field" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
+
+<select multiple name="{{ field.name }}" class="form-control" size="15">
+	{% for c in getAdminControllers() %}
+	   	<option value="{{ c }}" {% if field.value contains c %}selected{% endif %}>{{ c }}</option>
+	{% endfor %}
+</select>

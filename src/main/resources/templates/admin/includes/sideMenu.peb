@@ -58,11 +58,6 @@
 						<a href="{{ c.path }}"><i class="fa {{ c.icon }} fa-fw"></i> {{ i18n("common", c.name) }}</a>
                     </li>
                 {% endfor %}
-                {% if enableFiles %}
-                    <li>
-						<a href="/admin/files/"><i class="fa fa-files-o fa-fw"></i> {{ i18n("common", "FILES") }}</a>
-                    </li>
-                {% endif %}
                 {#<li>
                     <a href="forms.html"><i class="fa fa-edit fa-fw"></i> Forms</a>
                 </li>
