@@ -9,6 +9,7 @@ import cz.kamenitxan.jakon.utils.{I18nUtil, PageContext}
 
 class I18nFun extends i18nFunction {
 	getArgumentNames.add("def")
+	getArgumentNames.add("s")
 
 	val templateDir: String = Settings.getTemplateDir
 
@@ -17,6 +18,8 @@ class I18nFun extends i18nFunction {
 		val key = args.get("key").asInstanceOf[String]
 		val params = args.get("params").asInstanceOf[Seq[String]]
 		val default = args.get("def").asInstanceOf[String]
+		val silentArg = args.get("s").asInstanceOf[String]
+		val silent = if (silentArg == null) false else true
 
 		val context = args.get("_context").asInstanceOf[EvaluationContext]
 		val lu = PageContext.getInstance().getLoggedUser
@@ -28,7 +31,7 @@ class I18nFun extends i18nFunction {
 			context.getLocale
 		}
 
-		val phraseObject = I18nUtil.getTranslation(templateDir, basename, key, locale, default)
+		val phraseObject = I18nUtil.getTranslation(templateDir, basename, key, locale, default, silent)
 		if (phraseObject != null && params != null && params.nonEmpty) {
 			return MessageFormat.format(phraseObject, params.toArray:_*)
 		}

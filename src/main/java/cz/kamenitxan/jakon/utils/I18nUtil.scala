@@ -14,11 +14,11 @@ object I18nUtil {
 		getTranslation(templateDir, basename, key, locale, null)
 	}
 
-	def getTranslation(templateDir: String, basename: String, key: String, locale: Locale, default: String): String = {
+	def getTranslation(templateDir: String, basename: String, key: String, locale: Locale, default: String, silent: Boolean = false): String = {
 		val bundles = getBundles(templateDir, basename, locale)
 		if (bundles.isEmpty) {
-			Logger.warn(s"Translation bundle not found. basename=$basename, locale=$locale")
-			return if (default.isNullOrEmpty) key else default
+			if(!silent) Logger.warn(s"Translation bundle not found. basename=$basename, locale=$locale")
+			return if (default == null) key else default
 		}
 
 		val result = bundles.view
@@ -29,8 +29,8 @@ object I18nUtil {
 		if (result.isDefined && result.get.nonEmpty) {
 			result.get
 		} else {
-			Logger.warn(s"Translation not found for key: $basename.$key")
-			if (default.isNullOrEmpty) key else default
+			if(!silent) Logger.warn(s"Translation not found for key: $basename.$key")
+			if (default == null) key else default
 		}
 	}
 
