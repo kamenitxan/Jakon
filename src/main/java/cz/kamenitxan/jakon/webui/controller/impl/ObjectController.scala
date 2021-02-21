@@ -47,7 +47,15 @@ object ObjectController {
 			val objectSettings = objectClass.get.getDeclaredConstructor().newInstance().objectSettings
 			implicit val conn: Connection = DBHelper.getConnection
 			try {
-				val filterSql = SqlGen.parseFilterParams(filterParams, objectClass.get)
+				val filterSql = {
+					val fp = SqlGen.parseFilterParams(filterParams, objectClass.get)
+					val of = if (objectSettings != null) objectSettings.customFilter else ""
+					if(fp.nonEmpty && of.nonEmpty) fp + " AND " + of
+					else if (fp.nonEmpty && of.isEmpty) fp
+					else if (fp.isEmpty && of.nonEmpty) "WHERE " + of
+					else ""
+
+				}
 				val joinSql = createSqlJoin(objectClass.get)
 				// pocet objektu
 				// language=SQL

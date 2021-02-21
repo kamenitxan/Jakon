@@ -38,7 +38,7 @@ class Context(var model: Map[String, Any], viewName: String) extends ModelAndVie
 }
 
 object Context {
-	lazy val objectSettings = DBHelper.getDaoClasses.map(o => (o.getSimpleName, o.newInstance().getObjectSettings)).toMap.asJava
+	lazy val objectSettings = DBHelper.getDaoClasses.map(o => (o.getSimpleName, o.newInstance().objectSettings)).toMap.asJava
 
 	def getAdminContext: Map[String, Any] = {
 		val user = PageContext.getInstance().getLoggedUser
@@ -53,7 +53,7 @@ object Context {
 			"user" -> user.orNull,
 			"modelClasses" -> allModelClasses.getOrElse(false, new java.util.ArrayList[String]()),
 			"jakonModelClasses" -> allModelClasses.getOrElse(true, new java.util.ArrayList[String]()),
-			"objectSettings" -> DBHelper.getDaoClasses.map(o => (o.getSimpleName, o.newInstance().getObjectSettings)).toMap.asJava,
+			"objectSettings" -> DBHelper.getDaoClasses.map(o => (o.getSimpleName, o.newInstance().objectSettings)).toMap.asJava,
 			"enableFiles" -> AdminSettings.enableFiles,
 			"customControllers" -> customControllers.asJava,
 			"jakon_messages" -> PageContext.getInstance().messages.asJava

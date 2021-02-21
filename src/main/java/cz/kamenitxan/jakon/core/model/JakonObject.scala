@@ -15,8 +15,8 @@ import scala.annotation.switch
 import scala.language.postfixOps
 
 /**
-  * Created by TPa on 22.04.16.
-  */
+ * Created by TPa on 22.04.16.
+ */
 abstract class JakonObject(implicit s: sourcecode.FullName) extends BaseEntity {
 
 	@Id
@@ -30,8 +30,6 @@ abstract class JakonObject(implicit s: sourcecode.FullName) extends BaseEntity {
 	var childClass: String = s.value
 
 	val objectSettings: ObjectSettings
-
-	def getObjectSettings: ObjectSettings = objectSettings
 
 	def createUrl: String = url
 
@@ -87,7 +85,7 @@ abstract class JakonObject(implicit s: sourcecode.FullName) extends BaseEntity {
 			conn.close()
 		}
 		if (this.getClass.getInterfaces.contains(classOf[Ordered])) {
-			val  thisOrdered = DBHelper.withDbConnection(conn2 => this.asInstanceOf[JakonObject with Ordered].updateNewObjectOrder(conn2))
+			val thisOrdered = DBHelper.withDbConnection(conn2 => this.asInstanceOf[JakonObject with Ordered].updateNewObjectOrder(conn2))
 			thisOrdered.update()
 		}
 		this.id

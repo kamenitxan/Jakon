@@ -46,7 +46,7 @@ class JakonUser extends JakonObject with Serializable {
 	var locale: Locale = _
 
 	@Transient
-	override val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-user")
+	override val objectSettings: ObjectSettings = JakonUser.objectSettings
 
 	override def createObject(jid: Int, conn: Connection): Int = {
 		this.password = Authentication.hashPassword(this.password)
@@ -102,4 +102,8 @@ class JakonUser extends JakonObject with Serializable {
 		stmt.setInt(10, jid)
 		stmt.executeUpdate()
 	}
+}
+
+object JakonUser {
+	val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-user")
 }

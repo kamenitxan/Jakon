@@ -66,7 +66,7 @@ object EntityValidator {
 				} else {
 					MessageSeverity.ERROR
 				}
-				val key = prefix + "_" + f.getName + "_" + result.get.error
+				val key = if (!validator.fullKeys) prefix + "_" + f.getName + "_" + result.get.error else result.get.error
 				return Seq(new Message(severity, key, bundle = "validations", params = result.get.params))
 			}
 		}

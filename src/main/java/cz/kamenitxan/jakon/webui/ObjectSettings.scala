@@ -13,6 +13,9 @@ class ObjectSettings(
                       val noParentFieldInList: Boolean = false,
 
                       /** default sort in administration list view */
-                      val sortDirection: SortDirection = SortDirection.ASC
+                      val sortDirection: SortDirection = SortDirection.ASC,
+
+                      /** sql filter used in administration, e.g.: JakonUser.enabled = true */
+                      val customFilter: String = ""
                     ) extends Serializable
 
