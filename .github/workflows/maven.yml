@@ -27,3 +27,5 @@ jobs:
         uses: codecov/codecov-action@v1.0.15
         with:
           files: ./target/scoverage.xml,/target/cobertura.xml
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v1.5
