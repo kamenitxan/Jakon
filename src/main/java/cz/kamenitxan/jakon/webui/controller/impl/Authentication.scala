@@ -91,9 +91,11 @@ object Authentication {
 	}
 
 	def logoutPost(req: Request, res: Response): ModelAndView = {
+		// pri vytvareni contextu se vytahuje uzivatel ze session, takze to musi byt pred invalidaci
+		val ctx = new Context(null, "login")
 		req.session().invalidate()
 		res.redirect("/admin")
-		new Context(null, "login")
+		ctx
 	}
 
 

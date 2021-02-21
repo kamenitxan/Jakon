@@ -1,13 +1,14 @@
 package cz.kamenitxan.jakon
 
 import java.sql.Connection
-
 import cz.kamenitxan.jakon.core.Director.SELECT_EMAIL_TMPL_SQL
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.utils.mail.EmailTemplateEntity
+
+import java.util.Locale
 
 object JakonInitializer {
 
@@ -38,6 +39,7 @@ object JakonInitializer {
 				user.enabled = true
 				user.emailConfirmed = true
 				user.acl = acl
+				user.locale = new Locale("en", "us")
 				user.create()
 			}
 

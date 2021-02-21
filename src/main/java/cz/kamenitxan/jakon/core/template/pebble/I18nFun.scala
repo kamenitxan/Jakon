@@ -22,8 +22,8 @@ class I18nFun extends i18nFunction {
 		val silent = if (silentArg == null) false else true
 
 		val context = args.get("_context").asInstanceOf[EvaluationContext]
-		val lu = PageContext.getInstance().getLoggedUser
-		val locale = if (lu.nonEmpty && lu.get.locale != null) {
+		val lu = if (PageContext.getInstance() != null) PageContext.getInstance().getLoggedUser else null
+		val locale = if (lu != null && lu.nonEmpty && lu.get.locale != null) {
 			lu.get.locale
 		} else if (Settings.getDefaultLocale != null) {
 			Settings.getDefaultLocale

@@ -22,7 +22,7 @@ object PageletInitializer {
 	private val METHOD_VALDIATE = "validate"
 	private val gson = new Gson
 
-	val protectedPrefixes = mutable.Buffer[String]()
+	val protectedPrefixes: mutable.Buffer[String] = mutable.Buffer[String]()
 
 	def initControllers(controllers: Seq[Class[_]]): Unit = {
 		Logger.info("Initializing pagelets")
@@ -77,7 +77,7 @@ object PageletInitializer {
 						controller.render(context, get.template(), req)
 					} catch {
 						case ex: Exception =>
-							Logger.error("Pagelet get method threw exception", ex)
+							Logger.error(s"${controller.getClass.getCanonicalName}.${m.getName}() threw exception", ex)
 							throw ex
 					}
 				} else {
@@ -128,10 +128,14 @@ object PageletInitializer {
 				case _ =>
 					try {
 						val context = m.invoke(controller, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
-						controller.render(context, post.template(), req)
+						if  (notRedirected(res)) {
+							controller.render(context, post.template(), req)
+						} else {
+							""
+						}
 					} catch {
 						case ex: Exception =>
-							Logger.error("Pagelet post method threw exception", ex)
+							Logger.error(s"${controller.getClass.getCanonicalName}.${m.getName}() threw exception", ex)
 							throw ex
 					}
 			}
@@ -172,7 +176,6 @@ object PageletInitializer {
 					}
 				})
 				dataRef = data
-				Logger.debug(data.toString)
 				data
 		}.asInstanceOf[Array[Any]]
 		new MethodArgs(arr, dataRef)

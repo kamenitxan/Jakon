@@ -11,7 +11,6 @@ import test.TestBase
  * Created by TPa on 04.04.2020.
  */
 class ObjectExtensionTest extends TestBase {
-	val cs = new Locale("cs", "CZ")
 	val templateDir = "templates/admin/"
 	val dictionary = "messages"
 
@@ -23,7 +22,7 @@ class ObjectExtensionTest extends TestBase {
 		val btn = driver.findElement(By.id("JakonUserEmailExtensionBtn"))
 		btn.click()
 
-		checkSiteMessage("Vyberte typ emailu k odeslání")
+		checkSiteMessage("Choose email type")
 	}
 
 	test("JakonUserEmailExtension single type not selected") { f =>
@@ -37,7 +36,7 @@ class ObjectExtensionTest extends TestBase {
 		val btn = driver.findElement(By.id("JakonUserEmailExtensionBtn"))
 		btn.click()
 
-		checkSiteMessage("Vyberte typ emailu k odeslání")
+		checkSiteMessage("Choose email type")
 	})
 
 	}

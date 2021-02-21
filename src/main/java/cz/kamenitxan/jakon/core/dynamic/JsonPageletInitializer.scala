@@ -21,7 +21,7 @@ import scala.jdk.CollectionConverters._
  * Created by TPa on 13.04.2020.
  */
 object JsonPageletInitializer {
-	private val JsonContentType = "application/json";
+	private val JsonContentType = "application/json"
 
 	def initControllers(controllers: Seq[Class[_]]): Unit = {
 		Logger.info("Initializing json pagelets")
@@ -57,7 +57,7 @@ object JsonPageletInitializer {
 					createResponse(responseData, controller)
 				} catch {
 					case ex: Exception =>
-						Logger.error("Json pagelet get method threw exception", ex)
+						Logger.error(s"${controller.getClass.getCanonicalName}.${m.getName}() threw exception", ex)
 						createErrorResponse(ex, res, controller)
 				}
 			})
@@ -95,7 +95,7 @@ object JsonPageletInitializer {
 					}
 				} catch {
 					case ex: Exception =>
-						Logger.error("Json pagelet get method threw exception", ex)
+						Logger.error(s"${controller.getClass.getCanonicalName}.${m.getName}() threw exception", ex)
 						createErrorResponse(ex, res, controller)
 				} finally {
 					if (methodArgs._2.isDefined) {

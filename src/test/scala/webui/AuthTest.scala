@@ -9,6 +9,7 @@ import org.openqa.selenium.{By, WebDriver}
 import org.scalatest.Outcome
 import org.scalatest.funsuite.FixtureAnyFunSuite
 
+import java.util.Locale
 import scala.util.Random
 
 /**
@@ -44,6 +45,7 @@ class AuthTest extends FixtureAnyFunSuite {
 		user.lastName = "lastName"
 		user.email = email
 		user.password = password
+		user.locale = new Locale("en", "US")
 
 		assert(user.create() > 0)
 	}

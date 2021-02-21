@@ -15,7 +15,7 @@ class TestPagelet extends AbstractPagelet {
 		)
 	}
 
-	@Post(path = "/post", template = "ExamplePagelet")
+	@Post(path = "/post", template = "pagelet/ExamplePagelet")
 	def post(req: Request, res: Response): mutable.Map[String, Any] = {
 		redirect(req, res, "/pagelet/get")
 	}
