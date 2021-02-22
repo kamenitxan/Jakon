@@ -1,9 +1,5 @@
 package cz.kamenitxan.jakon.webui.conform
 
-import java.lang.reflect.{Field, ParameterizedType, Type}
-import java.text.SimpleDateFormat
-import java.time.format.DateTimeFormatter
-import java.time.{LocalDate, LocalDateTime}
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.{I18n, JakonField}
 import cz.kamenitxan.jakon.core.model.{I18nData, JakonObject}
@@ -13,7 +9,10 @@ import cz.kamenitxan.jakon.utils.Utils._
 import cz.kamenitxan.jakon.webui.controller.impl.ObjectController
 import cz.kamenitxan.jakon.webui.entity.{FieldInfo, HtmlType}
 
-import java.util.Locale
+import java.lang.reflect.{Field, ParameterizedType, Type}
+import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
+import java.time.{LocalDate, LocalDateTime}
 import javax.persistence.{ManyToOne, OneToMany}
 import scala.jdk.CollectionConverters._
 import scala.language.postfixOps
@@ -82,7 +81,6 @@ object FieldConformer {
 			val an = f.getAnnotation(classOf[JakonField])
 			lazy val i18nAn = f.getAnnotation(classOf[I18n])
 			lazy val i18nTypeCls = f.getGenericType.asInstanceOf[ParameterizedType].getActualTypeArguments.head
-			lazy val i18nCls = Class.forName(i18nTypeCls.getTypeName)
 			if (an != null) {
 				f.setAccessible(true)
 				if (f.getDeclaredAnnotation(classOf[ManyToOne]) != null) {
@@ -147,7 +145,6 @@ object FieldConformer {
 							val fields = Utils.getFieldsUpTo(f.getCollectionGenericTypeClass, classOf[Object]).filter(n => !i18nExcludedFields.contains(n.getName))
 							fi.extraData.put("fieldNames", fields.map(_.getName))
 
-							// fn.name + "_" + l.toString
 
 							val fuu: Map[String, FieldInfo] = Settings.getSupportedLocales.flatMap(l => {
 								if (fv.nonEmpty) {
@@ -168,7 +165,6 @@ object FieldConformer {
 								}
 							}).toMap
 
-							//val lfi = fv.map(d => d.locale.toString -> FieldConformer.getFieldInfos(d, fields)).toMap
 							fi.extraData.put("i18nFields", fuu)
 							infos = infos :+ fi
 						case _ =>

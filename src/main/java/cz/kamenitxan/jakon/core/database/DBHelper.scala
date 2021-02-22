@@ -171,7 +171,6 @@ object DBHelper {
 					if (fki._2.ids.size == 1 && r.entity.id == fki._2.ids.head) {
 						field.set(r.entity, r.entity)
 					} else {
-						//val objectClass = field.getType.asInstanceOf[Class[JakonObject]]
 						val objectClass = field.getGenericType match {
 							case parameterizedType: ParameterizedType =>
 								Class.forName(parameterizedType.getActualTypeArguments.toList.head.getTypeName).asInstanceOf[Class[JakonObject]]

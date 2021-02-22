@@ -94,7 +94,7 @@ public class MatcherFilter implements Filter {
 		String rawAcceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER);
 		String acceptType = null;
 		if (rawAcceptType != null) {
-			acceptType = rawAcceptType.replaceAll("[\n|\r|\t]", "_");
+			acceptType = rawAcceptType.replaceAll("[\n|\r\t]", "_");
 		}
 
 		Body body = Body.create();

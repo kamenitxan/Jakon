@@ -19,7 +19,6 @@ class UploadFilesController  {
 		val file = new File(fileName)
 		if (file.exists()) {
 			res.status(200)
-			//res.`type`("image/" + fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length))
 			val os = res.raw().getOutputStream
 			val is = new FileInputStream(file)
 

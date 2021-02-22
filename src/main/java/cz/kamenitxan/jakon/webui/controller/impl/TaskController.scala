@@ -18,6 +18,7 @@ import scala.jdk.CollectionConverters._
 class TaskController extends AbstractController {
 	override val template: String = "pages/task"
 	override val icon: String = "fa-tasks"
+	private val redirectPath = "/admin/task"
 
 	override def name(): String = "TASKS"
 
@@ -34,7 +35,7 @@ class TaskController extends AbstractController {
 		val name = req.params(":name")
 		val task = TaskRunner.taskList.find(t => t.name.value.equals(name))
 		if (task.isDefined) TaskRunner.runSingle(task.get)
-		res.redirect("/admin/task")
+		res.redirect(redirectPath)
 		new Context(Map[String, Any](), template)
 	}
 
@@ -49,7 +50,7 @@ class TaskController extends AbstractController {
 			kve.create()
 			Logger.info(s"Task $name paused")
 		}
-		res.redirect("/admin/task")
+		res.redirect(redirectPath)
 		new Context(Map[String, Any](), template)
 	}
 
@@ -64,7 +65,7 @@ class TaskController extends AbstractController {
 				Logger.info(s"Task $name resumed")
 			})
 		}
-		res.redirect("/admin/task")
+		res.redirect(redirectPath)
 		new Context(Map[String, Any](), template)
 	}
 }
