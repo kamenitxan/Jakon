@@ -49,16 +49,16 @@ object JsonPageletInitializer {
 	private def initGetAnnotation(get: Get, controllerAnn: JsonPagelet, m: Method, c: Class[_]): Unit = {
 		Spark.get(controllerAnn.path() + get.path(), (req: Request, res: Response) => {
 			res.raw().setContentType(JsonContentType)
-			val controller = c.getDeclaredConstructor().newInstance().asInstanceOf[AbstractJsonPagelet]
+			val pagelet = c.getDeclaredConstructor().newInstance().asInstanceOf[AbstractJsonPagelet]
 			DBHelper.withDbConnection(implicit conn => {
-				val methodArgs = createMethodArgs(m, req, res, conn)
+				val methodArgs = createMethodArgs(m, req, res, conn, pagelet)
 				try {
-					val responseData = m.invoke(controller, methodArgs.array: _*)
-					createResponse(responseData, controller)
+					val responseData = m.invoke(pagelet, methodArgs.array: _*)
+					createResponse(responseData, pagelet)
 				} catch {
 					case ex: Exception =>
-						Logger.error(s"${controller.getClass.getCanonicalName}.${m.getName}() threw exception", ex)
-						createErrorResponse(ex, res, controller)
+						Logger.error(s"${pagelet.getClass.getCanonicalName}.${m.getName}() threw exception", ex)
+						createErrorResponse(ex, res, pagelet)
 				}
 			})
 		})

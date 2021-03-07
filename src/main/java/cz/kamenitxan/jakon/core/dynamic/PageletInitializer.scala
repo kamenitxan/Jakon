@@ -62,22 +62,22 @@ object PageletInitializer {
 	private def initGetAnnotation(get: Get, controllerAnn: Pagelet, m: Method, c: Class[_]): Unit = {
 		//TODO m.getReturnType.is
 		Spark.get(controllerAnn.path() + get.path(), (req: Request, res: Response) => {
-			val controller: IPagelet = c.getDeclaredConstructor().newInstance().asInstanceOf[IPagelet]
+			val pagelet: IPagelet = c.getDeclaredConstructor().newInstance().asInstanceOf[IPagelet]
 			DBHelper.withDbConnection(conn => {
-				val methodArgs = createMethodArgs(m, req, res, conn)
-				var context = m.invoke(controller, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
+				val methodArgs = createMethodArgs(m, req, res, conn, pagelet)
+				var context = m.invoke(pagelet, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
 				if (notRedirected(res)) {
-					if (controller.isInstanceOf[AbstractAdminPagelet]) {
+					if (pagelet.isInstanceOf[AbstractAdminPagelet]) {
 						if (context == null) {
 							context = mutable.Map[String, Any]()
 						}
 						context = context ++ Context.getAdminContext
 					}
 					try {
-						controller.render(context, get.template(), req)
+						pagelet.render(context, get.template(), req)
 					} catch {
 						case ex: Exception =>
-							Logger.error(s"${controller.getClass.getCanonicalName}.${m.getName}() threw exception", ex)
+							Logger.error(s"${pagelet.getClass.getCanonicalName}.${m.getName}() threw exception", ex)
 							throw ex
 					}
 				} else {
@@ -89,7 +89,7 @@ object PageletInitializer {
 
 	private def initPostAnnotation(post: Post, controllerAnn: Pagelet, m: Method, c: Class[_]): Unit = {
 		Spark.post(controllerAnn.path() + post.path(), (req: Request, res: Response) => {
-			val controller = c.getDeclaredConstructor().newInstance().asInstanceOf[IPagelet]
+			val pagelet = c.getDeclaredConstructor().newInstance().asInstanceOf[IPagelet]
 
 			DBHelper.withDbConnection(conn => {
 				val dataClass = getDataClass(m)
@@ -102,19 +102,19 @@ object PageletInitializer {
 							} else {
 								result.foreach(r => PageContext.getInstance().messages += r)
 								val rp = formData.map(kv => (kv._1.getName, kv._2))
-								controller.redirect(req, res, controllerAnn.path() + post.path(), rp)
+								pagelet.redirect(req, res, controllerAnn.path() + post.path(), rp)
 							}
 						case Right(_) =>
 							if ("true".equals(req.queryParams(METHOD_VALDIATE))) {
 								gson.toJson(true)
 							} else {
-								val methodArgs = createMethodArgs(m, req, res, conn)
-								invokePost(req, res, controller, m, post, methodArgs)
+								val methodArgs = createMethodArgs(m, req, res, conn, pagelet)
+								invokePost(req, res, pagelet, m, post, methodArgs)
 							}
 					}
 				} else {
-					val methodArgs = createMethodArgs(m, req, res, conn)
-					invokePost(req, res, controller, m, post, methodArgs)
+					val methodArgs = createMethodArgs(m, req, res, conn, pagelet)
+					invokePost(req, res, pagelet, m, post, methodArgs)
 				}
 			})
 		})
@@ -157,20 +157,24 @@ object PageletInitializer {
 		m.getParameterTypes.find(c => c != REQUEST_CLS && c != RESPONSE_CLS && c != CONNECTION_CLS)
 	}
 
-	private[dynamic] def createMethodArgs(m: Method, req: Request, res: Response, conn: Connection): MethodArgs = {
+	private[dynamic] def createMethodArgs(m: Method, req: Request, res: Response, conn: Connection, pagelet: AnyRef): MethodArgs = {
 		var dataRef: Any = null
 		val arr = m.getParameterTypes.map {
 			case REQUEST_CLS => req
 			case RESPONSE_CLS => res
 			case CONNECTION_CLS => conn
 			case t =>
-				val data = t.getDeclaredConstructor().newInstance().asInstanceOf[AnyRef]
+				val enclosingCls = t.getEnclosingClass
+				val constructor = if (enclosingCls != null) t.getDeclaredConstructor(enclosingCls) else t.getDeclaredConstructor()
+				val data = (if (enclosingCls != null) constructor.newInstance(pagelet) else constructor.newInstance()).asInstanceOf[AnyRef]
 				Logger.debug(s"Creating pagelet data: {${t.getSimpleName}}")
 				t.getDeclaredFields.foreach(f => {
 					try {
-						val value = req.queryMap(f.getName).values().mkString("\r\n")
-						f.setAccessible(true)
-						f.set(data, value.conform(f))
+						if (req.queryMap(f.getName).hasValue) {
+							val value = req.queryMap(f.getName).values().mkString("\r\n")
+							f.setAccessible(true)
+							f.set(data, value.conform(f))
+						}
 					} catch {
 						case ex: Exception => Logger.error("Exception when setting pagelet data value", ex)
 					}
