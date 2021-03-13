@@ -22,7 +22,7 @@ import scala.collection.mutable
  * Created by TPa on 03.09.16.
  */
 object Routes {
-	private val AdminPrefix = "/admin"
+	val AdminPrefix = "/admin"
 
 	def init(): Unit = {
 		val te = Settings.getAdminEngine

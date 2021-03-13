@@ -10,8 +10,8 @@ import cz.kamenitxan.jakon.devtools.{DevRender, StaticFilesController, UploadFil
 import cz.kamenitxan.jakon.logging.{LogCleanerTask, Logger}
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.utils.{LoggingExceptionHandler, PageContext}
-import cz.kamenitxan.jakon.webui.AdminSettings
-import cz.kamenitxan.jakon.webui.controller.impl.{DeployController, LogViewer, TaskController, FileManagerController}
+import cz.kamenitxan.jakon.webui.{AdminSettings, Routes}
+import cz.kamenitxan.jakon.webui.controller.impl.{DeployController, FileManagerController, LogViewer, TaskController}
 import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, ResetPasswordEmailEntity}
 import spark.Spark._
 import spark.debug.DebugScreen.enableDebugScreen
@@ -93,7 +93,6 @@ class JakonInit {
 			enableDebugScreen()
 			exception(classOf[Exception], new LoggingExceptionHandler)
 
-			get("/dadada/*", (req: Request, res: Response) => "teet")
 			get("/upload/*", (req: Request, res: Response) => new UploadFilesController().doGet(req, res))
 
 			notFound((req: Request, res: Response) => new StaticFilesController().doGet(req, res))
@@ -101,13 +100,17 @@ class JakonInit {
 		routesSetup()
 		annotationScanner.load()
 		if (Settings.getDeployMode !=  DeployMode.DEVEL) {
-			PageletInitializer.protectedPrefixes.foreach(pp => {
+			PageletInitializer.protectedPrefixes.filter(_ != Routes.AdminPrefix).foreach(pp => {
 				before(pp + "/*", new Filter {
 					override def handle(req: Request, res: Response): Unit = {
 						val user: JakonUser = req.session.attribute("user")
 						if (user == null || (!user.acl.adminAllowed && !user.acl.allowedFrontendPrefixes.contains(pp))) {
 							Logger.debug(s"Used $user denied access to '$pp/*'")
-							res.redirect(Settings.getLoginPath + s"?redirectTo=${req.pathInfo()}", 302)
+							if (req.pathInfo().startsWith(Routes.AdminPrefix)) {
+								res.redirect(Routes.AdminPrefix + s"?redirectTo=${req.pathInfo()}", 302)
+							} else {
+								res.redirect(Settings.getLoginPath + s"?redirectTo=${req.pathInfo()}", 302)
+							}
 						}
 					}
 				} )

@@ -6,6 +6,9 @@ import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.controller.objectextension.{ObjectExtension, ObjectExtensionInitializer}
 import io.github.classgraph.{ClassGraph, ClassInfoList, ScanResult}
 
+import java.io.File
+import java.nio.file.{Files, Path, StandardCopyOption}
+import java.util.regex.Pattern
 import scala.jdk.CollectionConverters._
 
 
@@ -13,6 +16,7 @@ class AnnotationScanner {
 
 	private val scanResult = {
 		val cg = new ClassGraph().enableAllInfo()
+		cg.whitelistPaths("/static")
 		Settings.getPackage.foreach(p => cg.whitelistPackages(p))
 
 		val result = Utils.measured(elapsedTime => "Annotations scanned in " + elapsedTime + " ms") {
@@ -31,9 +35,21 @@ class AnnotationScanner {
 			loadControllers(scanResult)
 			loadCustomPages(scanResult)
 			loadObjectExtensions(scanResult)
+			copyResources()
 		} finally {
 			scanResult.close()
 		}
+	}
+
+	/** copy static resources to static folder, so they can be server by nginx */
+	private def copyResources(): Unit = {
+		val resourceList = scanResult.getResourcesMatchingPattern(Pattern.compile(".*static.*"))
+		resourceList.forEach(r => {
+			val targetFile = new File(Settings.getStaticDir + "/" + r.getPath.replace("static/", ""))
+			targetFile.getParentFile.mkdirs()
+			targetFile.exists()
+			Files.copy(r.open(), targetFile.toPath, StandardCopyOption.REPLACE_EXISTING)
+		})
 	}
 
 	private def loadControllers(scanResult: ScanResult): Unit = {

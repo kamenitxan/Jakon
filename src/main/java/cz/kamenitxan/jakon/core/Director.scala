@@ -1,7 +1,6 @@
 package cz.kamenitxan.jakon.core
 
 import java.nio.charset.Charset
-
 import cz.kamenitxan.jakon.JakonInitializer
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.controller.IController

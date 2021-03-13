@@ -1,11 +1,10 @@
 package cz.kamenitxan.jakon.utils
 
-import java.io.{BufferedReader, InputStreamReader}
+import java.io.{BufferedReader, InputStream, InputStreamReader}
 import java.lang.reflect.{Field, ParameterizedType, Type}
 import java.net.URLEncoder
 import java.util.Locale
 import java.util.stream.Collectors
-
 import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.logging.Logger
 
@@ -131,13 +130,11 @@ object Utils {
 		result
 	}
 
+	def getInputStreamFromJar(name: String): Option[InputStream] = {
+		Option.apply(this.getClass.getResourceAsStream(name))
+	}
+
 	def getResourceFromJar(name: String): Option[String] = {
-		val resource = this.getClass.getResourceAsStream(name)
-		if (resource != null) {
-			val res = new BufferedReader(new InputStreamReader(resource)).lines().collect(Collectors.joining("\n"))
-			Option.apply(res)
-		} else {
-			Option.empty
-		}
+		getInputStreamFromJar(name).map(resource => new BufferedReader(new InputStreamReader(resource)).lines().collect(Collectors.joining("\n")))
 	}
 }

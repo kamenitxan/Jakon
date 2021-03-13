@@ -1,15 +1,15 @@
 package cz.kamenitxan.jakon.core.template.utils
 
-import java.io.{BufferedWriter, File, FileWriter, IOException}
-import java.nio.file.{FileVisitOption, Files, Path, Paths}
-import java.util
-import java.util.Objects
-
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.template.TemplateEngine
 import cz.kamenitxan.jakon.logging.Logger
 import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
+
+import java.io.{BufferedWriter, File, FileWriter, IOException}
+import java.nio.file.{FileVisitOption, Files, Path, Paths}
+import java.util
+import java.util.Objects
 
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 20.12.15.
