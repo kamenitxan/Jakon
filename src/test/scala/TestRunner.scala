@@ -1,5 +1,4 @@
 import java.io.{File, IOException}
-
 import core.functions.LinkTest
 import core.pagelet.{JsonPageletTest, PageletTest}
 import core.{DeployTest, ModelTest, RenderTest, SettingsTest}
@@ -11,6 +10,7 @@ import cz.kamenitxan.jakon.core.custom_pages.AbstractStaticPage
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{Category, Page, Post}
 import cz.kamenitxan.jakon.core.template.Pebble
+import devtools.DevtoolsTest
 import logging.LoggingTest
 import org.scalatest.{BeforeAndAfterAll, Suites}
 import utils.entity.{TestExtNoFields, TestExtUser, TestObject}
@@ -40,7 +40,8 @@ class TestRunner extends Suites(
 	new JsonPageletTest,
 	new DeployTest,
 	new LoggingTest,
-	new ObjectExtensionTest
+	new ObjectExtensionTest,
+	new DevtoolsTest
 ) with BeforeAndAfterAll {
 
 	val config = "jakonConfig=jakon_config_test_dev.properties"

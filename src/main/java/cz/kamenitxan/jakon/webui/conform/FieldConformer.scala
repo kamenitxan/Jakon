@@ -187,7 +187,7 @@ object FieldConformer {
 			}
 
 		})
-		infos.sortBy(fi => fi.an.listOrder)
+		infos.reverse.sortBy(fi => fi.an.listOrder)
 	}
 
 	def getEmptyFieldInfos(fields: Seq[Field]): List[FieldInfo] = {
@@ -198,7 +198,7 @@ object FieldConformer {
 				infos = new FieldInfo(an, f) :: infos
 			}
 		})
-		infos.sortBy(fi => fi.an.listOrder)
+		infos.reverse.sortBy(fi => fi.an.listOrder)
 	}
 
 }
