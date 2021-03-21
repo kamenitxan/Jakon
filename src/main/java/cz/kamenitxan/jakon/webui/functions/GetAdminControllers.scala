@@ -10,16 +10,15 @@ import java.util
 
 
 /**
-  * Created by TPa on 18.02.21.
-  */
+ * Created by TPa on 18.02.21.
+ */
 class GetAdminControllers extends Function {
 	def getArgumentNames: util.List[String] = null
 
 	override def execute(args: util.Map[String, AnyRef], self: PebbleTemplate, context: EvaluationContext, lineNumber: Int): AnyRef = {
-		val controllers =DBHelper.getDaoClasses.map(_.getCanonicalName) ++ AdminSettings.customControllers.map(_.getCanonicalName)
+		val controllers = DBHelper.getDaoClasses.map(_.getCanonicalName) ++ AdminSettings.customControllersInfo.map(_.cls.getCanonicalName)
 		controllers.asJava
 	}
-
 
 
 }

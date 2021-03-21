@@ -100,7 +100,7 @@ object Routes {
 			post("/search", (req: Request, res: Response) => Api.search(req, res), gsonTransformer)
 			post("/images", (req: Request, res: Response) => Api.getImages(req, res), gsonTransformer)
 		})
-		AdminSettings.customControllersJava.forEach((c: Class[_ <: AbstractController]) => {
+		AdminSettings.customControllers.foreach((c: Class[_ <: AbstractController]) => {
 			try {
 				val instance = c.newInstance
 				get(s"$AdminPrefix/" + instance.path, (req: Request, res: Response) => instance.doRender(req, res), te)
