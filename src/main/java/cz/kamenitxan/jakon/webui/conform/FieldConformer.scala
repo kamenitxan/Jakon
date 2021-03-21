@@ -12,13 +12,14 @@ import cz.kamenitxan.jakon.webui.entity.{FieldInfo, HtmlType}
 import java.lang.reflect.{Field, ParameterizedType, Type}
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
-import java.time.{LocalDate, LocalDateTime}
+import java.time.{LocalDate, LocalDateTime, LocalTime}
 import javax.persistence.{ManyToOne, OneToMany}
 import scala.jdk.CollectionConverters._
 import scala.language.postfixOps
 
 object FieldConformer {
 
+	val TIME_FORMAT = "HH:mm"
 	val DATE_FORMAT = "yyyy-MM-dd"
 	val DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm"
 	val i18nExcludedFields = ObjectController.excludedFields ++ Seq("locale", "id", "className")
@@ -51,6 +52,9 @@ object FieldConformer {
 				case DATE_o =>
 					val sdf = new SimpleDateFormat(DATE_FORMAT)
 					sdf.parse(s)
+				case TIME =>
+					val formatter = DateTimeFormatter.ISO_TIME
+					LocalTime.parse(s, formatter)
 				case DATETIME =>
 					val formatter = DateTimeFormatter.ofPattern(DATETIME_FORMAT)
 					LocalDateTime.parse(s, formatter)
@@ -106,6 +110,14 @@ object FieldConformer {
 								infos = infos :+ new FieldInfo(an, HtmlType.DATE, f, value)
 							} else {
 								infos = infos :+ new FieldInfo(an, HtmlType.DATE, f, value = "")
+							}
+						case TIME =>
+							val sdf = DateTimeFormatter.ofPattern(TIME_FORMAT)
+							if (f.get(obj) != null) {
+								val value = sdf.format(f.get(obj).asInstanceOf[LocalTime])
+								infos = infos :+ new FieldInfo(an, HtmlType.TIME, f, value)
+							} else {
+								infos = infos :+ new FieldInfo(an, HtmlType.TIME, f, value = "")
 							}
 						case DATE =>
 							val sdf = DateTimeFormatter.ofPattern(DATE_FORMAT)

@@ -12,6 +12,8 @@ data-selected_id="{% for o in objects %}{{ o.id }}{% if not loop.last %},{% endi
 
 </select>
 <script>
-	const ForeignObjectSelector = require("forms/j_foreign_object.js");
-	new ForeignObjectSelector("{{ field.objectName }}", "{{ fieldHash }}", false);
+	(() => {
+		const ForeignObjectSelector = require("forms/j_foreign_object.js");
+		new ForeignObjectSelector("{{ field.objectName }}", "{{ fieldHash }}", false);
+	}).apply();
 </script>

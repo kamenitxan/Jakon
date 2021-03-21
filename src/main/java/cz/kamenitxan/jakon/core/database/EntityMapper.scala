@@ -2,14 +2,15 @@ package cz.kamenitxan.jakon.core.database
 
 import java.lang.reflect.Field
 import java.sql.ResultSet
-import java.time.LocalDateTime
+import java.time.{LocalDateTime, LocalTime}
 import java.time.format.DateTimeFormatter
-
 import cz.kamenitxan.jakon.core.database.converters.AbstractConverter
 import cz.kamenitxan.jakon.core.model.{BaseEntity, JakonObject}
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.TypeReferences._
 import cz.kamenitxan.jakon.utils.Utils
+import cz.kamenitxan.jakon.webui.conform.FieldConformer
+
 import javax.persistence.{Column, Embedded, ManyToOne, OneToMany}
 
 /**
@@ -79,6 +80,10 @@ object EntityMapper {
 			case DOUBLE => field.set(obj, rs.getDouble(columnName))
 			case DATE_o => field.set(obj, rs.getDate(columnName))
 			case DATE => field.set(obj, Option(rs.getDate(columnName)).map(_.toLocalDate).orNull)
+			case TIME =>
+				val formatter = DateTimeFormatter.ofPattern(FieldConformer.TIME_FORMAT)
+				val v = Option(rs.getString(columnName)).map(dt => LocalTime.parse(dt, formatter)).orNull
+				field.set(obj, v)
 			case DATETIME =>
 				val v = Option(rs.getString(columnName)).map(dt => LocalDateTime.parse(dt, DateTimeFormatter.ISO_LOCAL_DATE_TIME)).orNull
 				field.set(obj, v)

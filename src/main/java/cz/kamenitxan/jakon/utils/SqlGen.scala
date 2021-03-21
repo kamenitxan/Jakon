@@ -2,16 +2,19 @@ package cz.kamenitxan.jakon.utils
 
 import java.lang.reflect.Field
 import java.sql.{Connection, JDBCType, PreparedStatement, Statement}
-import java.time.LocalDate
+import java.time.{LocalDate, LocalTime}
 import java.util.Date
-
 import cz.kamenitxan.jakon.core.database.converters.AbstractConverter
 import cz.kamenitxan.jakon.core.database.{I18n, JakonField}
 import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.TypeReferences._
-import javax.persistence.{Embedded, ManyToOne, Transient}
+import cz.kamenitxan.jakon.webui.conform.FieldConformer
+import cz.kamenitxan.jakon.webui.conform.FieldConformer.TIME_FORMAT
 
+import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
+import javax.persistence.{Embedded, ManyToOne, Transient}
 import scala.collection.mutable
 
 
@@ -163,6 +166,7 @@ object SqlGen {
 			case INTEGER => stmt.setInt(i, value.asInstanceOf[Int])
 			case FLOAT => stmt.setFloat(i, value.asInstanceOf[Float])
 			case DOUBLE => stmt.setDouble(i, value.asInstanceOf[Double])
+			case TIME => stmt.setString(i, value.asInstanceOf[LocalTime].format(DateTimeFormatter.ofPattern(FieldConformer.TIME_FORMAT)))
 			case DATE => stmt.setDate(i, java.sql.Date.valueOf(value.asInstanceOf[LocalDate]))
 			case DATE_o => stmt.setDate(i, new java.sql.Date(value.asInstanceOf[Date].getTime))
 			case DATETIME => stmt.setObject(i, value)
@@ -193,7 +197,7 @@ object SqlGen {
 	def getSqlType(f: Field): Int = {
 		f.getType match {
 			case x if x.isEnum => JDBCType.VARCHAR.getVendorTypeNumber
-			case STRING => JDBCType.VARCHAR.getVendorTypeNumber
+			case STRING | TIME => JDBCType.VARCHAR.getVendorTypeNumber
 			case BOOLEAN => JDBCType.BOOLEAN.getVendorTypeNumber
 			case _ if f.getDeclaredAnnotation(classOf[ManyToOne]) != null => JDBCType.INTEGER.getVendorTypeNumber
 			case INTEGER => JDBCType.INTEGER.getVendorTypeNumber

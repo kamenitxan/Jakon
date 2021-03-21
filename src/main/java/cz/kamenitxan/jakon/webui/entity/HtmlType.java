@@ -6,6 +6,7 @@ package cz.kamenitxan.jakon.webui.entity;
 public enum HtmlType {
 	TEXT("test"),
 	DATE("date"),
+	TIME("time"),
 	DATETIME("datetime-local"),
 	SELECT("select"),
 	NUMBER("number"),

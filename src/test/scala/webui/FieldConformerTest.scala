@@ -1,21 +1,21 @@
 package webui
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalTime}
 import java.util
 import java.util.{Calendar, Date, GregorianCalendar}
-
 import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.core.model.{JakonObject, JakonUser}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
 import cz.kamenitxan.jakon.webui.entity.MessageSeverity
+
 import javax.persistence.ManyToMany
 import org.scalatest.funsuite.AnyFunSuite
 
 class FieldConformerTest extends AnyFunSuite {
 
-	private val fieldCount = 15
+	private val fieldCount = 16
 
 	class TestObject extends JakonObject {
 		//TODO oneToMany
@@ -30,6 +30,8 @@ class FieldConformerTest extends AnyFunSuite {
 		var integer: Integer = 2
 		@JakonField
 		var user: JakonUser = _
+		@JakonField
+		var time: LocalTime = _
 		@JakonField
 		var date: Date = new Date()
 		@JakonField
@@ -138,6 +140,12 @@ class FieldConformerTest extends AnyFunSuite {
 	test("conform float") {
 		val conformed = "1.1".conform(getField("float"))
 		assert(1.1f == conformed)
+	}
+
+	test("conform time") {
+		val conformed = "10:19".conform(getField("time"))
+		val t = LocalTime.of(10, 19)
+		assert(t == conformed)
 	}
 
 	test("empty field infos") {

@@ -8,6 +8,7 @@ CREATE TABLE TestObject
     `integer`      INTEGER,
     user_id        INTEGER REFERENCES JakonUser (id) ON DELETE CASCADE,
     date           DATETIME,
+    time           VARCHAR(8),
     localDate      DATETIME,
     localDateTime  DATETIME,
     self_id        INTEGER REFERENCES TestObject (id) ON DELETE CASCADE,

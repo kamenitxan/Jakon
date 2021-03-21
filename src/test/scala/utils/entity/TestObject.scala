@@ -1,13 +1,13 @@
 package utils.entity
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.{LocalDate, LocalDateTime, LocalTime}
 import java.util.Date
-
 import cz.kamenitxan.jakon.core.database.converters.ScalaMapConverter
 import cz.kamenitxan.jakon.core.database.{I18n, JakonField}
 import cz.kamenitxan.jakon.core.model.{JakonObject, JakonUser}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.MessageSeverity
+
 import javax.persistence.{Embedded, ManyToOne, OneToMany}
 
 class TestObject extends JakonObject {
@@ -24,6 +24,8 @@ class TestObject extends JakonObject {
 	var float: Float = 1f
 	@JakonField
 	var integer: Int = 2
+	@JakonField
+	var time: LocalTime = _
 	@JakonField
 	var date: Date = _
 	@JakonField
