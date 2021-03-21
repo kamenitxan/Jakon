@@ -16,7 +16,7 @@ class DevtoolsTest extends TestBase {
 
 	test("UploadFilesController test") { f =>
 		val content = "test"
-		val file = new File(FileManagerController.REPOSITORY_BASE_PATH + "/basePath/test.txt")
+		val file = new File(FileManagerController.REPOSITORY_BASE_PATH + "/basePath/ufctest.txt")
 		file.createNewFile()
 
 		val fw = new FileWriter(file.getAbsoluteFile)
@@ -26,7 +26,7 @@ class DevtoolsTest extends TestBase {
 		fw.close()
 
 		implicit val driver: WebDriver = f.driver
-		driver.get(host + "/upload/test.txt")
+		driver.get(host + "/upload/ufctest.txt")
 		assert(driver.getPageSource.contains(content))
 	}
 
