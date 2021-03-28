@@ -223,9 +223,15 @@ object SqlGen {
 				sb.append(" AND ")
 			}
 			val clr = Utils.getClassByFieldName(objectClass, fieldName)
+
+
 			sb.append(clr._1.getSimpleName)
 			sb.append(".")
 			sb.append(fieldName)
+			if (classOf[JakonObject].isAssignableFrom(clr._2.getType)) {
+				sb.append("_id")
+			}
+
 			val value = v.trim.toLowerCase
 			value match {
 				case param if param.contains("*") =>

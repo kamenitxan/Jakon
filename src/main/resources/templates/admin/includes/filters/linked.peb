@@ -1,0 +1,21 @@
+<!--suppress HtmlFormInputWithoutLabel -->
+
+{# @pebvariable name="field" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
+{# @pebvariable name="filterParams" type="java.util.Map" #}
+{# @pebvariable name="fieldHash" type="java.lang.Integer" #}
+
+{% set fieldHash = "filter_" + field.name %}
+<input id="js_foreign_{{ fieldHash }}" class="hidden js_foreign">
+<select class="form-control"
+		name="filter_{{ field.name }}"
+		id="{{ fieldHash }}" {% if field.disabled %}disabled{% endif %}
+		data-selected_id="{{ filterParams[field.name] }}"
+		onchange="this.form.submit()">
+
+</select>
+<script>
+	(() => {
+		const ForeignObjectSelector = require("forms/j_foreign_object.js");
+		new ForeignObjectSelector("{{ field.objectName }}", "{{ fieldHash }}", true);
+	}).apply();
+</script>

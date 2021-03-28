@@ -1,0 +1,56 @@
+{# @pebvariable name="field" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
+{# @pebvariable name="filterParams" type="java.util.Map" #}
+
+<!--suppress HtmlFormInputWithoutLabel -->
+<input id="filter_boolean_{{ field.name }}"
+	   class="hidden"
+	   name="filter_{{ field.name }}">
+<input type="checkbox"
+	   id="filter_{{ field.name }}"
+	   data-value="{{ filterParams[field.name] }}"
+	   class="list_filter form-control">
+<script>
+	(() => {
+		const cb = document.querySelector("#filter_{{ field.name }}");
+		const input = document.querySelector("#filter_boolean_{{ field.name }}");
+
+		if (cb.dataset.value === "true") {
+			cb.dataset.value = "1";
+			cb.checked = true;
+			input.value = "true";
+		} else if (cb.dataset.value === "false") {
+			cb.dataset.value = "2";
+			input.value = "false";
+		} else {
+			cb.dataset.value = "0";
+			cb.indeterminate = true;
+		}
+
+		cb.addEventListener("change", (e) => {
+			switch (cb.dataset.value) {
+				// indeterminate, going checked
+				case "0":
+					cb.dataset.value = "1";
+					cb.checked = true;
+					cb.indeterminate = false;
+					input.value = "true";
+					break;
+				// checked, going unchecked
+				case "1":
+					cb.dataset.value = "2";
+					cb.checked = false;
+					cb.indeterminate = false;
+					input.value = "false";
+					break;
+				// unchecked, going indeterminate
+				case "2":
+					cb.dataset.value = "0";
+					cb.checked = false;
+					cb.indeterminate = true;
+					input.value = "";
+					break;
+			}
+			cb.closest("form").submit();
+		})
+	}).apply();
+</script>

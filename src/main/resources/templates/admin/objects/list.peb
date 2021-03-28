@@ -45,8 +45,7 @@
                                 {% if field.an.shownInList %}
 								<th>
                                     {% if field.an.searched %}
-										<!--suppress HtmlFormInputWithoutLabel -->
-										<input type="text" name="filter_{{ field.name }}" value="{{ filterParams[field.name] }}" class="list_filter form-control">
+										{% include "includes/filters/" + field.formatter with { "field":field } %}
                                     {% endif %}
 								</th>
                                 {% endif %}

@@ -39,7 +39,7 @@ class JakonUser extends JakonObject with Serializable {
 	var enabled: Boolean = false
 	@NotEmpty
 	@ManyToOne
-	@JakonField(required = true)
+	@JakonField(required = true, searched = true)
 	var acl: AclRule = _
 	@NotEmpty
 	@JakonField(converter = classOf[LocaleConverter])
