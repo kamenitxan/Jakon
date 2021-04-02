@@ -75,39 +75,43 @@ object SqlGen {
 		stmt
 	}
 
-	private def updateSql(cls: Class[_ <: JakonObject], annotatedFields: Seq[Field]): String = {
+	private def updateSql(cls: Class[_ <: JakonObject], annotatedFields: Seq[Field], jid: Int): String = {
 		val sb = new StringBuilder
 		sb.append(s"UPDATE ${cls.getSimpleName} SET ")
 
-		sb.append(if (annotatedFields.head.getType.getGenericSuperclass != null &&
-			annotatedFields.head.getType.getGenericSuperclass.getTypeName == classOf[JakonObject].getName) {
-			annotatedFields.head.getName + "_id" + " = ?"
-		} else {
-			annotatedFields.head.getName + " = ?"
-		})
-
-		var embeddedFieldCounter = 0
-		annotatedFields.tail.foreach(f => {
-			val fst = f.getType.getGenericSuperclass
-			if (fst != null && fst.getTypeName == classOf[JakonObject].getName) {
-				sb.append(", " + f.getName + "_id = ?")
-			} else if (f.getAnnotation(classOf[Embedded]) != null) {
-				val embeddedFields = f.getType.getDeclaredFields.filter(_.getDeclaredAnnotation(classOf[JakonField]) != null)
-				embeddedFields.foreach(ef => {
-					embeddedFieldCounter += 1
-					sb.append(", " + f.getName + "_" + ef.getName + " = ?")
-				})
+		if (annotatedFields.nonEmpty) {
+			sb.append(if (annotatedFields.head.getType.getGenericSuperclass != null &&
+				annotatedFields.head.getType.getGenericSuperclass.getTypeName == classOf[JakonObject].getName) {
+				annotatedFields.head.getName + "_id" + " = ?"
 			} else {
-				sb.append(", " + f.getName + " = ?")
-			}
-		})
+				annotatedFields.head.getName + " = ?"
+			})
+
+			var embeddedFieldCounter = 0
+			annotatedFields.tail.foreach(f => {
+				val fst = f.getType.getGenericSuperclass
+				if (fst != null && fst.getTypeName == classOf[JakonObject].getName) {
+					sb.append(", " + f.getName + "_id = ?")
+				} else if (f.getAnnotation(classOf[Embedded]) != null) {
+					val embeddedFields = f.getType.getDeclaredFields.filter(_.getDeclaredAnnotation(classOf[JakonField]) != null)
+					embeddedFields.foreach(ef => {
+						embeddedFieldCounter += 1
+						sb.append(", " + f.getName + "_" + ef.getName + " = ?")
+					})
+				} else {
+					sb.append(", " + f.getName + " = ?")
+				}
+			})
+		} else {
+			sb.append("id = " + jid)
+		}
 		sb.append(" WHERE id = ?;")
 		sb.toString()
 	}
 
 	def updateStmt[T <: JakonObject](instance: T, conn: Connection, jid: Int): PreparedStatement = {
 		val annotatedFields = getJakonFields(instance.getClass)
-		val sql = updateSql(instance.getClass, annotatedFields)
+		val sql = updateSql(instance.getClass, annotatedFields, jid)
 		val stmt = conn.prepareStatement(sql)
 
 		filterAndSetValues(instance, annotatedFields, stmt, 1)
