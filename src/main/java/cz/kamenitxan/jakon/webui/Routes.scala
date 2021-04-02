@@ -6,11 +6,12 @@ import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.core.service.UserService
 import cz.kamenitxan.jakon.logging.Logger
-import cz.kamenitxan.jakon.utils.PageContext
+import cz.kamenitxan.jakon.utils.{LoggingExceptionHandler, PageContext}
 import cz.kamenitxan.jakon.webui.api.Api
 import cz.kamenitxan.jakon.webui.controller.{AbstractController, ExecuteFun}
 import cz.kamenitxan.jakon.webui.controller.impl.{Authentication, FileManagerController, ObjectController, UserController}
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
+import cz.kamenitxan.jakon.webui.util.AdminExceptionHandler
 import spark.Spark._
 import spark.route.HttpMethod
 import spark.{Filter, Request, Response, ResponseTransformer}
@@ -74,6 +75,10 @@ object Routes {
 		post(AdminPrefix, (req: Request, res: Response) => Authentication.loginPost(req, res), te)
 
 		path(s"$AdminPrefix", () => {
+			if (Settings.getDeployMode == DeployMode.PRODUCTION) {
+				exception(classOf[Exception], new AdminExceptionHandler)
+			}
+
 			get("/index", (request: Request, response: Response) => AdminSettings.dashboardController.apply(request, response), te)
 			get("/logout", (req: Request, res: Response) => Authentication.logoutPost(req, res), te)
 			get("/profile", (req: Request, res: Response) => UserController.render(req, res), te)
