@@ -1,9 +1,17 @@
+.hidden {
+	display: none;
+}
+
 .cl {
 	color: rebeccapurple;
 }
 
 .navbar-header {
 	width: 100%;
+}
+
+.navbar {
+	padding: 0 !important;
 }
 
 .navbar-brand {
