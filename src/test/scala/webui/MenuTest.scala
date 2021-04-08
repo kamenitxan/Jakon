@@ -55,6 +55,14 @@ class MenuTest extends FixtureAnyFunSuite {
 		submit.click()
 	}
 
+	test("acl page") { f =>
+		f.driver.get(host + "object/AclRule")
+		assert(checkPageLoad(f.driver))
+		f.driver.get(host + "object/create/AclRule")
+
+		assert(checkPageLoad(f.driver))
+	}
+
 	test("page page") { f =>
 		f.driver.get(host + "object/Page")
 		assert(checkPageLoad(f.driver))

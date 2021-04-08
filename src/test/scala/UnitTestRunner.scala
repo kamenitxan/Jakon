@@ -5,7 +5,7 @@ import core.template.pebble.Pebble
 import org.scalatest.{BeforeAndAfterAll, Suites}
 import utils.UtilsTest
 import validation.ValidationTest
-import webui.FieldConformerTest
+import webui.{AdminSettingsTest, FieldConformerTest}
 
 /**
   * Created by TPa on 27.08.16.
@@ -17,7 +17,8 @@ class UnitTestRunner extends Suites(
 	new FunctionHelperTest,
 	new Pebble,
 	new TemplateUtilsTest,
-	new ConvertersTest
+	new ConvertersTest,
+	new AdminSettingsTest
 ) with BeforeAndAfterAll {
 
 }

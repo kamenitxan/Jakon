@@ -20,7 +20,7 @@ class Context(var model: Map[String, Any], viewName: String) extends ModelAndVie
 		Context.getAdminContext
 	}
 
-	override def getModel: AnyRef = {
+	override def getModel: java.util.HashMap[String, Any] = {
 		val map = new java.util.HashMap[String, Any]
 		if (model != null) {
 			model.foreach { p => {

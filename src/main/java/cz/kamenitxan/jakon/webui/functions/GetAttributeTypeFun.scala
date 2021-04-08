@@ -25,12 +25,10 @@ class GetAttributeTypeFun extends Function {
 		val field = getField(obj.getClass, attrName)
 		field.setAccessible(true)
 
-		val S = classOf[String]
 		val B = classOf[Boolean]
 		val DATE = classOf[Date]
 
 		field.getType match {
-			case S => "text"
 			case B => "checkbox"
 			case DATE => "date"
 			case _ => "text"
@@ -41,7 +39,7 @@ class GetAttributeTypeFun extends Function {
 		try {
 			obj.getDeclaredField(attrName)
 		} catch {
-			case e: NoSuchFieldException => getField(obj.getSuperclass, attrName)
+			case _: NoSuchFieldException => getField(obj.getSuperclass, attrName)
 		}
 	}
 
