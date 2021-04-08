@@ -4,7 +4,7 @@ import core.template.TemplateUtilsTest
 import core.template.pebble.Pebble
 import org.scalatest.{BeforeAndAfterAll, Suites}
 import utils.UtilsTest
-import validation.ValidationTest
+import validation.ValidationUnitTest
 import webui.{AdminSettingsTest, FieldConformerTest}
 
 /**
@@ -13,7 +13,7 @@ import webui.{AdminSettingsTest, FieldConformerTest}
 class UnitTestRunner extends Suites(
 	new UtilsTest,
 	new FieldConformerTest,
-	new ValidationTest,
+	new ValidationUnitTest,
 	new FunctionHelperTest,
 	new Pebble,
 	new TemplateUtilsTest,

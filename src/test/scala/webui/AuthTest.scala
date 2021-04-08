@@ -64,7 +64,6 @@ class AuthTest extends FixtureAnyFunSuite {
 
 	test("login ok") { f =>
 		val url = "http://localhost:"  + Settings.getPort + "/admin"
-
 		f.driver.get(url)
 
 		val emailInput = f.driver.findElement(By.cssSelector("input[type=email]"))
@@ -79,7 +78,6 @@ class AuthTest extends FixtureAnyFunSuite {
 
 	test("login bad user") { f =>
 		val url = "http://localhost:"  + Settings.getPort + "/admin"
-
 		f.driver.get(url)
 
 		val emailInput = f.driver.findElement(By.cssSelector("input[type=email]"))
@@ -94,7 +92,6 @@ class AuthTest extends FixtureAnyFunSuite {
 
 	test("login wrong pass") { f =>
 		val url = "http://localhost:"  + Settings.getPort + "/admin"
-
 		f.driver.get(url)
 
 		val emailInput = f.driver.findElement(By.cssSelector("input[type=email]"))
@@ -121,7 +118,6 @@ class AuthTest extends FixtureAnyFunSuite {
 
 	test ("register post ok") { f =>
 		val url = "http://localhost:"  + Settings.getPort + "/admin/register"
-
 		f.driver.get(url)
 
 		val firstNameInput = f.driver.findElement(By.cssSelector("#firstname"))
@@ -142,7 +138,6 @@ class AuthTest extends FixtureAnyFunSuite {
 
 	test ("register post nok") { f =>
 		val url = "http://localhost:"  + Settings.getPort + "/admin/register"
-
 		f.driver.get(url)
 
 		val firstNameInput = f.driver.findElement(By.cssSelector("#firstname"))
@@ -159,5 +154,10 @@ class AuthTest extends FixtureAnyFunSuite {
 		submit.click()
 
 		assert(checkPageLoad(f.driver, "#jakon_messages"))
+	}
+
+	test("resetPasswordStep2 get") { f =>
+		val url = "http://localhost:" + Settings.getPort + "/admin/resetPasswordStep2"
+		f.driver.get(url)
 	}
 }

@@ -93,6 +93,16 @@ class MenuTest extends FixtureAnyFunSuite {
 		assert(checkPageLoad(f.driver))
 	}
 
+	test("task page - pause") { f =>
+		f.driver.get(host + "task/pause/RenderTask")
+		assert(checkPageLoad(f.driver))
+	}
+
+	test("task page - resume") { f =>
+		f.driver.get(host + "task/resume/RenderTask")
+		assert(checkPageLoad(f.driver))
+	}
+
 	test("files page") { f =>
 		f.driver.get(host + "files/")
 		assert(checkPageLoad(f.driver))

@@ -17,6 +17,7 @@ import org.scalatest.{BeforeAndAfterAll, Suites}
 import utils.entity.{TestExtNoFields, TestExtUser, TestObject}
 import utils.mail.EmailTest
 import utils.{I18NUtilTest, SecurityTest, SqlGenTest}
+import validation.ValidationTest
 import webui._
 
 /**
@@ -43,7 +44,8 @@ class TestRunner extends Suites(
 	new LoggingTest,
 	new ObjectExtensionTest,
 	new DevtoolsTest,
-	new ServiceTest
+	new ServiceTest,
+	new ValidationTest
 ) with BeforeAndAfterAll {
 
 	val config = "jakonConfig=jakon_config_test_dev.properties"
