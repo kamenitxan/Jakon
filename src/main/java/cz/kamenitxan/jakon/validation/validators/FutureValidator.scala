@@ -28,7 +28,7 @@ class FutureValidator extends Validator {
 					throw new UnsupportedOperationException
 			}
 		} catch {
-			case _: DateTimeParseException | ParseException =>
+			case _: DateTimeParseException | _: ParseException =>
 				Logger.debug(s"Could not conform date. Cannot parse '$value'")
 				false
 			case _: UnsupportedOperationException =>
