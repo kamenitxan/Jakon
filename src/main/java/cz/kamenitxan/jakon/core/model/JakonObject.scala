@@ -1,14 +1,13 @@
 package cz.kamenitxan.jakon.core.model
 
-import java.io.StringWriter
 import java.sql._
 
+import com.google.gson.Gson
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
 import cz.kamenitxan.jakon.core.database.{DBHelper, JakonField}
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.{SqlGen, Utils}
 import cz.kamenitxan.jakon.webui.ObjectSettings
-import javax.json.Json
 import javax.persistence._
 
 import scala.annotation.switch
@@ -161,10 +160,7 @@ abstract class JakonObject(implicit s: sourcecode.FullName) extends BaseEntity {
 	}
 
 	def toJson: String = {
-		val writer = new StringWriter
-		val generator = Json.createGenerator(writer)
-		generator.writeStartObject.write(id).write(url).writeEnd
-		generator.close()
-		writer.toString
+		val gson = new Gson()
+		gson.toJson(this)
 	}
 }

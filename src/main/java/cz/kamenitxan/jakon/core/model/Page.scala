@@ -1,12 +1,9 @@
 package cz.kamenitxan.jakon.core.model
 
-import java.io.StringWriter
 import java.sql.{Connection, Statement, Types}
 
 import cz.kamenitxan.jakon.core.database.JakonField
-import cz.kamenitxan.jakon.core.template.pebble.MarkdownFilter
 import cz.kamenitxan.jakon.webui.ObjectSettings
-import javax.json.Json
 import javax.persistence._
 
 /**
@@ -61,14 +58,6 @@ class Page extends JakonObject with Ordered {
 		stmt.setString(5, content)
 		stmt.setInt(6, id)
 		stmt.executeUpdate()
-	}
-
-	override def toJson: String = {
-		val writer = new StringWriter
-		val generator = Json.createGenerator(writer)
-		generator.writeStartObject.write(id).write(title).write(MarkdownFilter.parseString(content)).write(parent.id).writeEnd
-		generator.close()
-		writer.toString
 	}
 
 	@Transient

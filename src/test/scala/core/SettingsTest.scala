@@ -1,6 +1,6 @@
 package core
 
-import cz.kamenitxan.jakon.core.configuration.Settings
+import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.template.utils.FixedPebbleTemplateEngine
 import cz.kamenitxan.jakon.webui.util.JakonFileLoader
 import test.{TestBase, TestEmailTypeHandler}
@@ -28,5 +28,11 @@ class SettingsTest extends TestBase {
 		assertNotEmpty(Settings.getLoginPath)
 	}
 
+	test("unknown deploy mode") { _ =>
+		val current = Settings.getDeployMode
+		Settings.setDeployMode("XXXXX")
+		assert(DeployMode.PRODUCTION == Settings.getDeployMode)
+		Settings.setDeployMode(current)
+	}
 
 }

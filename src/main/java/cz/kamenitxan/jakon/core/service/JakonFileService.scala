@@ -18,7 +18,7 @@ object JakonFileService {
 		DBHelper.selectDeep(stmt, sql)
 	}
 
-	def getImages(path: String)(implicit conn: Connection): List[JakonFile] = {
+	def getImages()(implicit conn: Connection): List[JakonFile] = {
 		val stmt = conn.createStatement()
 		DBHelper.select(stmt, GET_IMAGES, classOf[JakonFile]).map(qr => qr.entity)
 	}

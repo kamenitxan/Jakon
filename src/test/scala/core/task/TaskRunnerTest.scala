@@ -1,9 +1,9 @@
 package core.task
 
-import cz.kamenitxan.jakon.core.task.FulltextTask
+import cz.kamenitxan.jakon.core.task.{FulltextTask, TaskRunner}
 import test.TestBase
 
-class FulltextTaskTest extends TestBase {
+class TaskRunnerTest extends TestBase {
 
 	test("fulltext task") { _ =>
 		val task = new FulltextTask

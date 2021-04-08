@@ -1,7 +1,8 @@
 import java.io.{File, IOException}
+
 import core.functions.LinkTest
 import core.pagelet.{JsonPageletTest, PageletTest}
-import core.{DeployTest, ModelTest, RenderTest, SettingsTest}
+import core.{DeployTest, ModelTest, RenderTest, ServiceTest, SettingsTest}
 import cz.kamenitxan.jakon.JakonInit
 import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.configuration.Settings
@@ -41,7 +42,8 @@ class TestRunner extends Suites(
 	new DeployTest,
 	new LoggingTest,
 	new ObjectExtensionTest,
-	new DevtoolsTest
+	new DevtoolsTest,
+	new ServiceTest
 ) with BeforeAndAfterAll {
 
 	val config = "jakonConfig=jakon_config_test_dev.properties"

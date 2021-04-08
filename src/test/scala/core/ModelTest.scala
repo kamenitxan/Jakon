@@ -50,6 +50,14 @@ class ModelTest extends TestBase {
 		obj.update()
 	}
 
+	test("JakonObject toJson") { _ =>
+		val obj = new BasicJakonObject
+		obj.id = 42
+		val json = obj.toJson
+		assertNotEmpty(json)
+		assert(json.contains("42"))
+	}
+
 	test("AclRule") { _ =>
 		val obj = new AclRule()
 		obj.name = "test"
@@ -86,6 +94,7 @@ class ModelTest extends TestBase {
 			content = "content"
 		}
 		post = obj
+		post.create()
 	}
 
 	test("Post Update") { _ =>
