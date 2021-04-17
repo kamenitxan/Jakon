@@ -1,8 +1,14 @@
 {# @pebvariable name="icon" type="java.lang.String" #}
+{# @pebvariable name="color" type="java.lang.String" #}
+{# @pebvariable name="count" type="java.lang.String" #}
+{# @pebvariable name="countText" type="java.lang.String" #}
+{# @pebvariable name="url" type="java.lang.String" #}
+{# @pebvariable name="text" type="java.lang.String" #}
 {#
  Parameters:
  - icon : font awesome icons
-
+ - color : css style for card color. See https://getbootstrap.com/docs/4.0/components/card/#card-styles
+ - url : card target url
  #}
 
 <div class="col-lg-3 col-md-6">
@@ -18,7 +24,7 @@
 				</div>
 			</div>
 		</div>
-		<a href="#">
+		<a href="{{ url }}">
 			<div class="card-footer">
 				<span class="float-left">{{ text }}</span>
 				<span class="float-right"><i class="fa fa-arrow-circle-right"></i></span>
