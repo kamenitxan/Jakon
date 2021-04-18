@@ -5,6 +5,7 @@ import java.util
 
 import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.utils.Utils
+import cz.kamenitxan.jakon.utils.TypeReferences._
 
 class FieldInfo(val required: Boolean,
                 val disabled: Boolean,
@@ -49,14 +50,12 @@ class FieldInfo(val required: Boolean,
 
 object FieldInfo {
 	def calculateFormatter(field: Field): String = {
-		if (Utils.isJakonObject(field.getType)) {
-			"linked"
-		} else {
-			field.getType.getSimpleName match {
-				case "boolean" => "boolean"
-				case "LocalDateTime" | "LocalDate" | "Date" => "date"
-				case _ => "none"
-			}
+		field.getType match {
+			case t if Utils.isJakonObject(t) => "linked"
+			case BOOLEAN => "boolean"
+			case DATETIME | DATE | DATE_o => "date"
+			case SEQ | LIST_j => "list"
+			case _ => "none"
 		}
 	}
 }

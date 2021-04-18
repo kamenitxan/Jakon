@@ -1,0 +1,7 @@
+{# @pebvariable name="object" type="cz.kamenitxan.jakon.core.model.JakonObject" #}
+{# @pebvariable name="i" type="cz.kamenitxan.jakon.core.model.JakonObject" #}
+{# @pebvariable name="fi" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
+
+{% for i in getAttr(object, fi.name) | asJava %}
+{{ i }},<br>
+{% endfor %}
