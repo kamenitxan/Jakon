@@ -36,7 +36,7 @@ class MenuTest extends FixtureAnyFunSuite {
 
 	test("Forgotten password items") { f =>
 		f.driver.get(host + "resetPassword")
-		assert(f.driver.findElements(By.cssSelector(".panel-title")).get(0) != null)
+		assert(f.driver.findElements(By.cssSelector(".card-title")).get(0) != null)
 	}
 
 	test("menu items") { f =>

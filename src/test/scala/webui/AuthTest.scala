@@ -113,7 +113,7 @@ class AuthTest extends FixtureAnyFunSuite {
 	test ("register get") { f =>
 		val url = "http://localhost:"  + Settings.getPort + "/admin/register"
 		f.driver.get(url)
-		assert(checkPageLoad(f.driver, ".panel-heading"))
+		assert(checkPageLoad(f.driver, ".card-header"))
 	}
 
 	test ("register post ok") { f =>
