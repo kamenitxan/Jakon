@@ -12,6 +12,7 @@
 
 .navbar {
 	padding: 0 !important;
+	border-bottom: 1px solid #e7e7e7;
 }
 
 .navbar-brand {
@@ -39,6 +40,7 @@
 	position: relative;
 	padding-top: 8px;
 	padding-right: 8px;
+	z-index: 10;
 }
 
 .navbar-user-holder {
@@ -77,6 +79,11 @@
 
 .navbar-user-tooltip a, .navbar-user-tooltip span {
 	margin-left: 5px;
+}
+
+.nav > li > a:focus, .nav > li > a:hover {
+	text-decoration: none;
+	background-color: #eee;
 }
 
 #jakon_messages {

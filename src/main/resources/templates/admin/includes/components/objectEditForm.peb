@@ -14,7 +14,7 @@
 
 {% for field in fields %}
     {% if field.an.shownInEdit %}
-		<div class="form-group">
+		<div class="form-group row">
 			<label for="{{ field.name }}"
 				   class="col-sm-2"
 				   title="{{i18n(bundle="objects", key=field.field.getDeclaringClass.getSimpleName + "_" + field.name + "_description", def="", s="true") }}">

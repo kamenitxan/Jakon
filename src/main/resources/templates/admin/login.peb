@@ -9,24 +9,24 @@
 
 
 {% block content %}
-    <div class="row">
-        <div class="col-md-4 col-md-offset-4">
-            <br />
-            {% include "includes/components/messagesList" %}
-            <div class="login-panel panel panel-default">
+<div class="row">
+	<div class="col-md-4 offset-md-4">
+		<br/>
+        {% include "includes/components/messagesList" %}
+		<div class="login-panel card">
 
-                <div class="panel-heading">
-                    <h3 class="panel-title">{{ i18n("common","LOG_IN_TITLE") }}</h3>
-                </div>
-                <div class="panel-body">
-                    <form action="/admin" method="post">
-                        <fieldset>
-                            <div class="form-group">
-                                <input class="form-control" placeholder="{{ i18n("common","EMAIL") }}" name="email" type="email" autofocus>
-                            </div>
-                            <div class="form-group">
-                                <input class="form-control" placeholder="{{ i18n("common","PASSWORD") }}" name="password" type="password" value="">
-                            </div>
+			<div class="card-header">
+				<h3 class="card-title">{{ i18n("common","LOG_IN_TITLE") }}</h3>
+			</div>
+			<div class="card-body">
+				<form action="/admin" method="post">
+					<fieldset>
+						<div class="form-group">
+							<input class="form-control" placeholder="{{ i18n("common","EMAIL") }}" name="email" type="email" autofocus>
+						</div>
+						<div class="form-group">
+							<input class="form-control" placeholder="{{ i18n("common","PASSWORD") }}" name="password" type="password" value="">
+						</div>
                             <div class="checkbox">
                                 <label>
                                     <input name="remember" type="checkbox" value="Remember Me">{{ i18n("common","REMEMBER_ME") }}
