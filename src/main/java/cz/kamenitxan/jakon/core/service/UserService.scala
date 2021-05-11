@@ -31,7 +31,7 @@ object UserService {
 		DBHelper.selectSingleDeep(stmt)
 	}
 
-	def getAllUsers()(implicit conn: Connection): List[JakonUser] = {
+	def getAllUsers()(implicit conn: Connection): Seq[JakonUser] = {
 		val sql = "SELECT * FROM JakonUser JOIN AclRule AR ON JakonUser.acl_id = AR.id ORDER BY AR.id;"
 		val stmt = conn.createStatement()
 		DBHelper.selectDeep(stmt, sql)
