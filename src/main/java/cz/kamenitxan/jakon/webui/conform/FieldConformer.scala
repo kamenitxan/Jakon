@@ -187,18 +187,18 @@ object FieldConformer {
 			}
 
 		})
-		infos.reverse.sortBy(fi => fi.an.listOrder)
+		infos.sortBy(fi => fi.an.listOrder)
 	}
 
-	def getEmptyFieldInfos(fields: Seq[Field]): List[FieldInfo] = {
-		var infos = List[FieldInfo]()
+	def getEmptyFieldInfos(fields: Seq[Field]): Seq[FieldInfo] = {
+		var infos = Seq[FieldInfo]()
 		fields.foreach(f => {
 			val an = f.getAnnotation(classOf[JakonField])
 			if (an != null) {
-				infos = new FieldInfo(an, f) :: infos
+				infos = infos :+ new FieldInfo(an, f)
 			}
 		})
-		infos.reverse.sortBy(fi => fi.an.listOrder)
+		infos.sortBy(fi => fi.an.listOrder)
 	}
 
 }

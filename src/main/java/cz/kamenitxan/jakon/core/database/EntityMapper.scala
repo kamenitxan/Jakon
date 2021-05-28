@@ -89,7 +89,8 @@ object EntityMapper {
 				field.set(obj, v)
 			case x if x.isEnum =>
 				val m = x.getMethod("valueOf", classOf[String])
-				val enumValue = m.invoke(null, rs.getString(columnName))
+				val value = rs.getString(columnName)
+				val enumValue = if (value != null) m.invoke(null, value) else null
 				field.set(obj, enumValue)
 			case _ =>
 				val manyToOne = field.getAnnotation(classOf[ManyToOne])
