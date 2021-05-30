@@ -32,6 +32,9 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(period, u
 			prop.put("mail.smtp.auth", Settings.getEmailAuth)
 			if (Settings.getEmailTls) {
 				prop.put("mail.smtp.starttls.enable", "true")
+			} else if (Settings.getEmailSSL) {
+				prop.put("mail.smtp.socketFactory.port", Settings.getEmailPort)
+				prop.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory")
 			}
 			prop.put("mail.smtp.host", Settings.getEmailHost)
 			prop.put("mail.smtp.port", Settings.getEmailPort)
