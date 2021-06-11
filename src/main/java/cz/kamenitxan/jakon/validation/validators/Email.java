@@ -18,4 +18,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @ValidatedBy(EmailValidator.class)
 public @interface Email {
 	MessageSeverity severity() default MessageSeverity.ERROR;
+	/** Validator will emit warnings for possible typos and will provide suggested correction (e.g.: @gnail.com -> @gmail.com) */
+	boolean suggestions() default true;
 }

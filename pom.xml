@@ -5,7 +5,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cz.kamenitxan</groupId>
-	<artifactId>jakond</artifactId>
+	<artifactId>jakon</artifactId>
 	<version>0.3-SNAPSHOT</version>
 
 	<name>Jakon</name>
@@ -19,7 +19,7 @@
 		<scala.version>2.13.1</scala.version>
 		<spark.version>2.9.3</spark.version>
 		<lucene.version>7.5.0</lucene.version>
-		<log4j.version>2.14.0</log4j.version>
+		<log4j.version>2.14.1</log4j.version>
 		<scoverage.plugin.version>1.4.1</scoverage.plugin.version>
 		<sonar.projectKey>kamenitxan_Jakon</sonar.projectKey>
 		<sonar.organization>kamenitxan</sonar.organization>

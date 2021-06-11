@@ -15,9 +15,10 @@ class EmailValidator extends Validator {
 		if (value == null) {
 			return Option.empty
 		}
-		val validatedEmail = EmailValidator.validator.validate(value.asInstanceOf[String])
+		val validatedEmail = EmailValidator.validator.validate(value)
 		if (validatedEmail.isValid) {
-			if(!validatedEmail.email.getWarnings.isEmpty) {
+			val ann = a.asInstanceOf[Email]
+			if(!validatedEmail.email.getWarnings.isEmpty && ann.suggestions()) {
 				val suggestion = validatedEmail.email.getSuggestion
 				Option.apply(ValidationResult.of(prefix + validatedEmail.email.getWarnings.get(0).name(), MessageSeverity.WARNING, Seq(suggestion)))
 			} else {

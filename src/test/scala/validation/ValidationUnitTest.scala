@@ -262,9 +262,15 @@ class ValidationUnitTest extends AnyFunSuite {
 			("bob@10mail.com", false)
 		)
 
+		class TestData {
+			@Email
+			var email: String = _
+		}
+		val obj = new TestData()
+		val f = classOf[TestData].getDeclaredField("email")
+		val ann = f.getDeclaredAnnotationsByType(classOf[Email]).head
 		val v = new EmailValidator
-		val ann = AnnotationParser.annotationForMap(classOf[cz.kamenitxan.jakon.validation.validators.Email], null)
-		testTable(v, ann, data)
+		testTable(v, ann, data, objectToMap(obj))
 	}
 
 	test("past localDate") {
