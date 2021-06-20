@@ -1,19 +1,17 @@
 package cz.kamenitxan.jakon.core.service
 
-import java.sql.Connection
-import java.util.{Calendar, Date}
-
-import cz.kamenitxan.jakon.core.Director.SELECT_EMAIL_TMPL_SQL
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.utils.Utils.StringImprovements
-import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
+import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask}
 import cz.kamenitxan.jakon.utils.security.AesEncryptor
 import cz.kamenitxan.jakon.webui.controller.impl.Authentication
 import cz.kamenitxan.jakon.webui.entity.ResetPasswordEmailEntity
 import spark.Request
 
+import java.sql.Connection
+import java.util.{Calendar, Date}
 import scala.util.Random
 
 object UserService {
@@ -55,9 +53,7 @@ object UserService {
 	def sendForgetPasswordEmail(user: JakonUser, req: Request, expireIn: Int = 1)(implicit conn: Connection): Boolean = {
 		if (!Settings.isEmailEnabled) return false
 
-		val stmt = conn.prepareStatement(SELECT_EMAIL_TMPL_SQL)
-		stmt.setString(1, "FORGET_PASSWORD")
-		val tmpl = DBHelper.selectSingle(stmt, classOf[EmailTemplateEntity]).entity
+		val tmpl = EmailTemplateService.getByName("FORGET_PASSWORD")
 
 		val resetEmailEntity = new ResetPasswordEmailEntity()
 		resetEmailEntity.user = user

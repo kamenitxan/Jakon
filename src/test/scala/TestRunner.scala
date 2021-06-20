@@ -1,5 +1,4 @@
 import java.io.{File, IOException}
-
 import core.functions.LinkTest
 import core.pagelet.{JsonPageletTest, PageletTest}
 import core.{DeployTest, ModelTest, RenderTest, ServiceTest, SettingsTest}
@@ -16,7 +15,7 @@ import logging.LoggingTest
 import org.scalatest.{BeforeAndAfterAll, Suites}
 import utils.entity.{TestExtNoFields, TestExtUser, TestObject}
 import utils.mail.EmailTest
-import utils.{I18NUtilTest, SecurityTest, SqlGenTest}
+import utils.{I18NUtilTest, SecurityTest, SqlGenTest, UtilsTest}
 import validation.ValidationTest
 import webui._
 
@@ -45,7 +44,8 @@ class TestRunner extends Suites(
 	new ObjectExtensionTest,
 	new DevtoolsTest,
 	new ServiceTest,
-	new ValidationTest
+	new ValidationTest,
+	new UtilsTest
 ) with BeforeAndAfterAll {
 
 	val config = "jakonConfig=jakon_config_test_dev.properties"

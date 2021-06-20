@@ -23,8 +23,6 @@ object Director {
 	var customPages: List[IController] = List[IController]()
 	var controllers: List[IController] = List[IController]()
 
-	val SELECT_EMAIL_TMPL_SQL = "SELECT addressFrom, template, subject FROM EmailTemplateEntity WHERE name = ?"
-
 	def init(): Unit = {
 		Settings.setTemplateDir("templates/bacon/")
 		Settings.setTemplateEngine(new Pebble)

@@ -1,12 +1,11 @@
 package cz.kamenitxan.jakon.webui.controller.objectextension
 
 import java.sql.Connection
-
-import cz.kamenitxan.jakon.core.Director.SELECT_EMAIL_TMPL_SQL
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.dynamic.{Get, Pagelet}
 import cz.kamenitxan.jakon.core.model.JakonUser
+import cz.kamenitxan.jakon.core.service.EmailTemplateService
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.utils.{PageContext, SqlGen}
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
@@ -30,7 +29,7 @@ class JakonUserEmailExtension extends AbstractObjectExtension {
 			})
 			context += "emailTemplates" -> templates.asJava
 			context += "filterParams" -> req.queryMap().toMap.asScala
-			  .filter(kv => kv._1.startsWith("filter_") && !kv._2.head.isEmpty)
+			  .filter(kv => kv._1.startsWith("filter_") && kv._2.head.nonEmpty)
 			  .mapValues(v => new String(v.flatten))
 			  .asJava
 			super.render(context, templatePath, req)
@@ -52,7 +51,7 @@ class JakonUserEmailExtension extends AbstractObjectExtension {
 
 	@Get(path = "/admin/object/JakonUser/sendEmail", template = "")
 	def list(req: Request, res: Response): Unit = {
-		val filterParams = req.queryMap().toMap.asScala.filter(kv => kv._1.startsWith("filter_") && !kv._2.head.isEmpty).map(kv => kv._1.substring(7) -> kv._2.head)
+		val filterParams = req.queryMap().toMap.asScala.filter(kv => kv._1.startsWith("filter_") && kv._2.head.nonEmpty).map(kv => kv._1.substring(7) -> kv._2.head)
 		DBHelper.withDbConnection(implicit conn => {
 			val filterSql = SqlGen.parseFilterParams(filterParams, classOf[JakonUser])
 			val sql = s"SELECT * FROM JakonUser $filterSql"
@@ -67,9 +66,7 @@ class JakonUserEmailExtension extends AbstractObjectExtension {
 		if (emailType == "---") {
 			PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "JUEE_CHOOSE_TYPE")
 		} else {
-			val stmt = conn.prepareStatement(SELECT_EMAIL_TMPL_SQL)
-			stmt.setString(1, emailType)
-			val tmpl = DBHelper.selectSingle(stmt, classOf[EmailTemplateEntity]).entity
+			val tmpl = EmailTemplateService.getByName(emailType)
 
 			users.foreach(user => {
 				val email = new EmailEntity(emailType, user.email, tmpl.subject, Map[String, String](

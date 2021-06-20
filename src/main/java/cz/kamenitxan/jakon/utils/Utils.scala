@@ -1,14 +1,19 @@
 package cz.kamenitxan.jakon.utils
 
+import cz.kamenitxan.jakon.core.database.DBHelper
+
 import java.io.{BufferedReader, InputStream, InputStreamReader}
 import java.lang.reflect.{Field, ParameterizedType, Type}
 import java.net.URLEncoder
 import java.util.Locale
 import java.util.stream.Collectors
 import cz.kamenitxan.jakon.core.model.JakonObject
+import cz.kamenitxan.jakon.core.service.EmailTemplateService
 import cz.kamenitxan.jakon.logging.Logger
+import cz.kamenitxan.jakon.utils.mail.EmailTemplateEntity
 
 import scala.annotation.tailrec
+import scala.io.Source
 import scala.language.postfixOps
 import scala.util.Try
 
@@ -136,5 +141,27 @@ object Utils {
 
 	def getResourceFromJar(name: String): Option[String] = {
 		getInputStreamFromJar(name).map(resource => new BufferedReader(new InputStreamReader(resource)).lines().collect(Collectors.joining("\n")))
+	}
+
+	def loadEmailTemplate(name: String, from: String, subject: String, path: String): EmailTemplateEntity = {
+		DBHelper.withDbConnection(implicit conn => {
+			val currentTmpl = EmailTemplateService.getByName(name)
+
+			val bufferedSource = Source.fromFile(path)
+			val template = bufferedSource.getLines.mkString("\n")
+			bufferedSource.close
+
+			val tmpl = if (currentTmpl == null) new EmailTemplateEntity else currentTmpl
+			tmpl.name = name
+			tmpl.template = template
+			tmpl.from = from
+			tmpl.subject = subject
+			if (currentTmpl == null) {
+				tmpl.create()
+			} else {
+				tmpl.update()
+			}
+			tmpl
+		})
 	}
 }
