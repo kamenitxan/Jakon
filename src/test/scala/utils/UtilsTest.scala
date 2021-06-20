@@ -9,7 +9,7 @@ import test.TestBase
 class UtilsTest extends TestBase {
 
 	test("loadEmailTemplate") { _ =>
-		val tmpl = Utils.loadEmailTemplate("TEST", "FROM", "SUBJ", "jakon_config.properties")
+		val tmpl = Utils.loadEmailTemplate("TEST", "FROM", "SUBJ", "jakon_config_test_dev.properties")
 		assert(tmpl.id > 0)
 		assert(tmpl.name == "TEST")
 		assert(tmpl.from == "FROM")
