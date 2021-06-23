@@ -27,16 +27,13 @@ abstract class AbstractPagelet extends IPagelet {
 		builder.tagCache(null)
 		builder.cacheActive(false)
 	}
-	private val builded = builder.build()
-	val engine: TemplateEngine = new PebbleTemplateEngine(builded)
+	val engine: TemplateEngine = new PebbleTemplateEngine(builder.build())
 
 
 
 	def render(context: mutable.Map[String, Any], templatePath: String, req: Request): String = {
-		var ctx: mutable.Map[String, Any] = mutable.Map[String, Any]()
-		if (context != null) {
-			ctx = context
-		}
+		val ctx = if (context != null) context else mutable.Map[String, Any]()
+
 		ctx += "jakon_messages" -> PageContext.getInstance().messages.asJava
 		ctx += AbstractPagelet.REQUEST_PARAMS -> req.session().attribute(AbstractPagelet.REQUEST_PARAMS)
 		engine.render(new ModelAndView(ctx.asJava, templatePath))

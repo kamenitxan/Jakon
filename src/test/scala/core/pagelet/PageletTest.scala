@@ -59,5 +59,12 @@ class PageletTest extends TestBase {
 		}
 	}
 
+	test("HealthCheckPagelet get") { f =>
+		val url = host + "/jakon/health"
+		f.driver.get(url)
+
+		assert(f.driver.getPageSource.contains("JAKON_OK"))
+	}
+
 
 }
