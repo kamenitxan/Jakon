@@ -1,15 +1,16 @@
 package cz.kamenitxan.jakon.utils.mail
 
-import java.util.concurrent.TimeUnit
-import java.util.{Date, Properties}
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.task.AbstractTask
 import cz.kamenitxan.jakon.logging.Logger
 
+import java.io.File
 import java.sql.Connection
+import java.util.concurrent.TimeUnit
+import java.util.{Date, Properties}
 import javax.mail._
-import javax.mail.internet.{InternetAddress, MimeMessage}
+import javax.mail.internet.{InternetAddress, MimeBodyPart, MimeMessage, MimeMultipart}
 
 object EmailSendTask {
 	val TMPL_LANG = "tmplLanguage"
@@ -70,9 +71,21 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(period, u
 						}
 
 
+						val multipart = new MimeMultipart
 						val te = Settings.getTemplateEngine
 						val renderedMessage = te.renderTemplate(tmpl.template, e.params)
-						message.setContent(renderedMessage, "text/html; charset=UTF-8")
+						val messageBodyPart = new MimeBodyPart
+						messageBodyPart.setText(renderedMessage)
+						multipart.addBodyPart(messageBodyPart)
+
+						e.attachments.foreach(a => {
+							val attachmentPart = new MimeBodyPart
+							attachmentPart.attachFile(new File(a.path + "/" + a.name))
+							attachmentPart.setFileName(a.name)
+							multipart.addBodyPart(attachmentPart)
+						})
+
+						message.setContent(multipart, "text/html; charset=UTF-8")
 					}
 
 					if (e.emailType != null) {

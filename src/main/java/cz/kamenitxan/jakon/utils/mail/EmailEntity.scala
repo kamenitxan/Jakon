@@ -1,14 +1,14 @@
 package cz.kamenitxan.jakon.utils.mail
 
-import java.sql.{Connection, Statement}
-import java.util.Date
-
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.core.database.converters.ScalaMapConverter
-import cz.kamenitxan.jakon.core.model.JakonObject
+import cz.kamenitxan.jakon.core.model.{JakonFile, JakonObject}
 import cz.kamenitxan.jakon.webui.ObjectSettings
-import javax.persistence.Column
+
+import java.sql.{Connection, Statement}
+import java.util.Date
+import javax.persistence.{Column, OneToMany}
 
 
 class EmailEntity(u: Unit = ()) extends JakonObject {
@@ -29,6 +29,9 @@ class EmailEntity(u: Unit = ()) extends JakonObject {
 	var emailType: String = _
 	@JakonField(shownInList = false, converter = classOf[ScalaMapConverter])
 	var params: Map[String, String] = _
+	@OneToMany
+	@JakonField(shownInList = false)
+	var attachments: Seq[JakonFile] = _
 
 	def this() = this(u = ())
 
@@ -54,7 +57,8 @@ class EmailEntity(u: Unit = ()) extends JakonObject {
 	override val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-envelope")
 
 	override def createObject(jid: Int, conn: Connection): Int = {
-		val sql = "INSERT INTO EmailEntity (id, addressTo, subject, template, lang, emailType, params) VALUES (?, ?, ?, ?, ?, ?, ?)"
+		// language=SQL
+		val sql = "INSERT INTO EmailEntity (id, addressTo, subject, template, lang, emailType, params, attachments) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
 		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
 		stmt.setInt(1, jid)
 		stmt.setString(2, to)
@@ -63,14 +67,17 @@ class EmailEntity(u: Unit = ()) extends JakonObject {
 		stmt.setString(5, lang)
 		stmt.setString(6, emailType)
 		stmt.setString(7, new ScalaMapConverter().convertToDatabaseColumn(params))
+		stmt.setString(8, attachments.mkString(";"))
 		executeInsert(stmt)
 	}
 
 	override def updateObject(jid: Int, conn: Connection): Unit = {
+		// language=SQL
+		val sqlbase = "UPDATE EmailEntity SET addressTo = ?, subject = ?, template = ?, lang = ?, emailType = ?, params = ?, sent = ?, attachments = ?"
 		val sql = if (sentDate != null) {
-			"UPDATE EmailEntity SET addressTo = ?, subject = ?, template = ?, lang = ?, emailType = ?, params = ?, sent = ?, sentDate = ? WHERE id = ?"
+			sqlbase + ", sentDate = ? WHERE id = ?"
 		} else {
-			"UPDATE EmailEntity SET addressTo = ?, subject = ?, template = ?, lang = ?, emailType = ?, params = ?, sent = ? WHERE id = ?"
+			sqlbase + " WHERE id = ?"
 		}
 		val stmt = conn.prepareStatement(sql)
 		stmt.setString(1, to)
@@ -80,11 +87,12 @@ class EmailEntity(u: Unit = ()) extends JakonObject {
 		stmt.setString(5, emailType)
 		stmt.setString(6, new ScalaMapConverter().convertToDatabaseColumn(params))
 		stmt.setBoolean(7, sent)
+		stmt.setString(8, attachments.mkString(";"))
 		if (sentDate != null) {
-			stmt.setDate(8, new java.sql.Date(sentDate.getTime))
-			stmt.setInt(9, jid)
+			stmt.setDate(9, new java.sql.Date(sentDate.getTime))
+			stmt.setInt(10, jid)
 		} else {
-			stmt.setInt(8, jid)
+			stmt.setInt(9, jid)
 		}
 		stmt.executeUpdate()
 	}
