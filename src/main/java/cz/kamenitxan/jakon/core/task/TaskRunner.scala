@@ -1,9 +1,8 @@
 package cz.kamenitxan.jakon.core.task
 
+import cz.kamenitxan.jakon.logging.Logger
+
 import java.util.concurrent.{Executors, ScheduledFuture, TimeUnit}
-
-import org.slf4j.LoggerFactory
-
 import scala.collection.mutable
 
 
@@ -11,7 +10,6 @@ import scala.collection.mutable
   * Created by TPa on 27.05.18.
   */
 object TaskRunner {
-	private val logger = LoggerFactory.getLogger(this.getClass)
 	private val scheduledExecutor = Executors.newScheduledThreadPool(1)
 	var taskList: mutable.ArrayDeque[AbstractTask] = mutable.ArrayDeque[AbstractTask]()
 	private val taskFutures: mutable.Map[String, ScheduledFuture[_]] = mutable.Map[String, ScheduledFuture[_]]()
@@ -29,7 +27,7 @@ object TaskRunner {
 
 	def registerTask(task: AbstractTask): Unit = {
 		taskList += task
-		logger.info("Task " + task.name.value + " was registered")
+		Logger.info("Task " + task.name.value + " was registered")
 	}
 
 	def startTaskRunner(): Unit = {

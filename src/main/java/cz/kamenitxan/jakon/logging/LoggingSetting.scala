@@ -8,7 +8,7 @@ import cz.kamenitxan.jakon.core.configuration.{Configuration, ConfigurationValue
 @Configuration
 object LoggingSetting {
 
-	@ConfigurationValue(name = "LOGGING.maxlimg", required = true, defaultValue = "100000")
+	@ConfigurationValue(name = "LOGGING.maxLimit", required = true, defaultValue = "100000")
 	private var maxLimit: Int = _
 	@ConfigurationValue(name = "LOGGING.softLimit", required = true, defaultValue = "50000")
 	private var softLimit: Int = _

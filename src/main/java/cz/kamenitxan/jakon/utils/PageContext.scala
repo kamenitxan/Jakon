@@ -10,7 +10,6 @@ import scala.collection.mutable
   * Created by TPa on 30.04.18.
   */
 object PageContext {
-	//private val logger = LoggerFactory.getLogger(this.getClass)
 	val MESSAGES_KEY = "messages_session_key"
 	val context: ThreadLocal[PageContext] = new ThreadLocal[PageContext]
 
