@@ -1,18 +1,18 @@
 package cz.kamenitxan.jakon.utils
 
 import cz.kamenitxan.jakon.core.database.DBHelper
+import cz.kamenitxan.jakon.core.model.JakonObject
+import cz.kamenitxan.jakon.core.service.EmailTemplateService
+import cz.kamenitxan.jakon.logging.Logger
+import cz.kamenitxan.jakon.utils.mail.EmailTemplateEntity
 
 import java.io.{BufferedReader, InputStream, InputStreamReader}
 import java.lang.reflect.{Field, ParameterizedType, Type}
 import java.net.URLEncoder
 import java.util.Locale
 import java.util.stream.Collectors
-import cz.kamenitxan.jakon.core.model.JakonObject
-import cz.kamenitxan.jakon.core.service.EmailTemplateService
-import cz.kamenitxan.jakon.logging.Logger
-import cz.kamenitxan.jakon.utils.mail.EmailTemplateEntity
-
 import scala.annotation.tailrec
+import scala.collection.immutable.ArraySeq
 import scala.io.Source
 import scala.language.postfixOps
 import scala.util.Try
@@ -82,7 +82,7 @@ object Utils {
 	}
 
 	def getFields(cls: Class[_]): Seq[Field] = {
-		cls.getDeclaredFields
+		ArraySeq.unsafeWrapArray(cls.getDeclaredFields)
 	}
 
 	@tailrec

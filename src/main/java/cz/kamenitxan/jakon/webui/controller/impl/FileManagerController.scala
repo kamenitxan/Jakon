@@ -1,5 +1,20 @@
 package cz.kamenitxan.jakon.webui.controller.impl
 
+import cz.kamenitxan.jakon.core.model.{FileType, JakonFile}
+import cz.kamenitxan.jakon.logging.Logger
+import cz.kamenitxan.jakon.utils.PageContext
+import cz.kamenitxan.jakon.webui.Context
+import cz.kamenitxan.jakon.webui.controller.AbstractController
+import cz.kamenitxan.jakon.webui.controller.impl.FileManagerController.getManager
+import cz.kamenitxan.jakon.webui.entity.FileManagerMode
+import net.minidev.json.{JSONArray, JSONObject, JSONValue}
+import org.apache.commons.fileupload.FileUploadException
+import org.apache.commons.fileupload.disk.DiskFileItemFactory
+import org.apache.commons.fileupload.servlet.ServletFileUpload
+import org.apache.commons.io.FileUtils
+import org.apache.commons.lang3.SystemUtils
+import spark.{Request, Response}
+
 import java.io._
 import java.net.URI
 import java.nio.ByteBuffer
@@ -10,35 +25,19 @@ import java.time.LocalDateTime
 import java.util
 import java.util.Date
 import java.util.zip.{ZipEntry, ZipOutputStream}
-import cz.kamenitxan.jakon.core.model.{FileType, JakonFile}
-import cz.kamenitxan.jakon.logging.Logger
-import cz.kamenitxan.jakon.utils.PageContext
-import cz.kamenitxan.jakon.webui.Context
-import cz.kamenitxan.jakon.webui.controller.AbstractController
-import cz.kamenitxan.jakon.webui.controller.impl.FileManagerController.getManager
-import cz.kamenitxan.jakon.webui.entity.FileManagerMode
-
 import javax.mail.internet.MimeUtility
 import javax.servlet.ServletException
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
-import net.minidev.json.{JSONArray, JSONObject, JSONValue}
-import org.apache.commons.fileupload.FileUploadException
-import org.apache.commons.fileupload.disk.DiskFileItemFactory
-import org.apache.commons.fileupload.servlet.ServletFileUpload
-import org.apache.commons.io.FileUtils
-import org.apache.commons.lang3.SystemUtils
-import spark.{Request, Response}
-
 import scala.annotation.switch
 import scala.jdk.CollectionConverters._
 
 /**
-  * This controller serve angular-filemanager call<br>
-  *
-  * that catch all request to path /fm&#47;*<br>
-  * in angular-filemanager-master/index.html uncomment links to js files<br>
-  * in my assest/config.js I have :
-  *
+ * This controller serve angular-filemanager call<br>
+ *
+ * that catch all request to path /fm&#47;*<br>
+ * in angular-filemanager-master/index.html uncomment links to js files<br>
+ * in my assest/config.js I have :
+ *
   * <pre>
   * listUrl : "/fm/listUrl",
   * uploadUrl : "/fm/uploadUrl",
@@ -319,7 +318,6 @@ object FileManagerController {
 						jf.author = PageContext.getInstance().getLoggedUser.orNull
 						jf.create()
 						Logger.info(s"JakonFile(id=${jf.id}, name=${jf.name}) created in DB")
-						jf
 					})
 					var responseJsonObject: JSONObject = null
 					responseJsonObject = this.success()

@@ -6,17 +6,13 @@ import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.core.service.UserService
 import cz.kamenitxan.jakon.logging.Logger
-import cz.kamenitxan.jakon.utils.{LoggingExceptionHandler, PageContext}
 import cz.kamenitxan.jakon.webui.api.Api
-import cz.kamenitxan.jakon.webui.controller.{AbstractController, ExecuteFun}
 import cz.kamenitxan.jakon.webui.controller.impl.{Authentication, FileManagerController, ObjectController, UserController}
-import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
+import cz.kamenitxan.jakon.webui.controller.{AbstractController, ExecuteFun}
 import cz.kamenitxan.jakon.webui.util.AdminExceptionHandler
 import spark.Spark._
 import spark.route.HttpMethod
 import spark.{Filter, Request, Response, ResponseTransformer}
-
-import scala.collection.mutable
 
 
 /**
@@ -119,6 +115,7 @@ object Routes {
 								get(s"$AdminPrefix/" + an.path, (req: Request, res: Response) => m.invoke(instance, req, res).asInstanceOf[Context], te)
 							case HttpMethod.post =>
 								post(s"$AdminPrefix/" + an.path, (req: Request, _: Response) => m.invoke(instance, req, req).asInstanceOf[Context], te)
+							case default => throw new UnsupportedOperationException(default + " is not supported")
 						}
 					}
 				}

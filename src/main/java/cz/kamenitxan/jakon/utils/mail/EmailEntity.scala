@@ -6,7 +6,7 @@ import cz.kamenitxan.jakon.core.database.converters.ScalaMapConverter
 import cz.kamenitxan.jakon.core.model.{JakonFile, JakonObject}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 
-import java.sql.{Connection, Statement}
+import java.sql.{Connection, JDBCType, Statement}
 import java.util.Date
 import javax.persistence.{Column, OneToMany}
 
@@ -67,18 +67,19 @@ class EmailEntity(u: Unit = ()) extends JakonObject {
 		stmt.setString(5, lang)
 		stmt.setString(6, emailType)
 		stmt.setString(7, new ScalaMapConverter().convertToDatabaseColumn(params))
-		stmt.setString(8, attachments.mkString(";"))
+		if (attachments != null) {
+			stmt.setString(8, attachments.mkString(";"))
+		} else {
+			stmt.setNull(8, JDBCType.VARCHAR.getVendorTypeNumber)
+		}
 		executeInsert(stmt)
 	}
 
 	override def updateObject(jid: Int, conn: Connection): Unit = {
-		// language=SQL
-		val sqlbase = "UPDATE EmailEntity SET addressTo = ?, subject = ?, template = ?, lang = ?, emailType = ?, params = ?, sent = ?, attachments = ?"
-		val sql = if (sentDate != null) {
-			sqlbase + ", sentDate = ? WHERE id = ?"
-		} else {
-			sqlbase + " WHERE id = ?"
-		}
+		val sentDateFragment = if (sentDate != null) ", sentDate = ?" else ""
+		val attachmentsFragment = if (attachments != null) ", attachments = ?" else ""
+		val sql = s"UPDATE EmailEntity SET addressTo = ?, subject = ?, template = ?, lang = ?, emailType = ?, params = ?, sent = ? $sentDateFragment $attachmentsFragment WHERE id = ?"
+
 		val stmt = conn.prepareStatement(sql)
 		stmt.setString(1, to)
 		stmt.setString(2, subject)
@@ -87,13 +88,16 @@ class EmailEntity(u: Unit = ()) extends JakonObject {
 		stmt.setString(5, emailType)
 		stmt.setString(6, new ScalaMapConverter().convertToDatabaseColumn(params))
 		stmt.setBoolean(7, sent)
-		stmt.setString(8, attachments.mkString(";"))
+		var i = 8
 		if (sentDate != null) {
-			stmt.setDate(9, new java.sql.Date(sentDate.getTime))
-			stmt.setInt(10, jid)
-		} else {
-			stmt.setInt(9, jid)
+			stmt.setDate(i, new java.sql.Date(sentDate.getTime))
+			i += 1
 		}
+		if (attachments != null) {
+			stmt.setString(i, attachments.mkString(";"))
+			i += 1
+		}
+		stmt.setInt(i, jid)
 		stmt.executeUpdate()
 	}
 }
