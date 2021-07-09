@@ -5,7 +5,7 @@ import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.Page
 import cz.kamenitxan.jakon.core.template.TemplateEngine
 import cz.kamenitxan.jakon.core.template.utils.TemplateUtils
-import org.slf4j.{Logger, LoggerFactory}
+import cz.kamenitxan.jakon.logging.Logger
 
 import java.sql.Connection
 
@@ -13,7 +13,6 @@ import java.sql.Connection
   * Created by Kamenitxan (kamenitxan@me.com) on 01.05.16.
   */
 class PageController extends IController {
-	private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
 	val template = "page"
 
@@ -31,7 +30,7 @@ class PageController extends IController {
 				e.render(template, p.url, context)
 			})
 		} catch {
-			case ex: Exception => logger.error("Exception occurred while generation of Pages", ex)
+			case ex: Exception => Logger.error("Exception occurred while generation of Pages", ex)
 		} finally {
 			conn.close()
 		}
