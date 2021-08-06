@@ -2,6 +2,7 @@ package cz.kamenitxan.jakon.core.dynamic
 
 import java.lang.reflect.Method
 import java.sql.Connection
+import javax.servlet.MultipartConfigElement
 
 import com.google.gson.Gson
 import cz.kamenitxan.jakon.core.database.DBHelper
@@ -63,6 +64,7 @@ object PageletInitializer {
 		//TODO m.getReturnType.is
 		Spark.get(controllerAnn.path() + get.path(), (req: Request, res: Response) => {
 			val pagelet: IPagelet = c.getDeclaredConstructor().newInstance().asInstanceOf[IPagelet]
+			// TODO: vytvoreni conn pouze pokud je potreba
 			DBHelper.withDbConnection(conn => {
 				val methodArgs = createMethodArgs(m, req, res, conn, pagelet)
 				var context = m.invoke(pagelet, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
@@ -91,9 +93,13 @@ object PageletInitializer {
 		Spark.post(controllerAnn.path() + post.path(), (req: Request, res: Response) => {
 			val pagelet = c.getDeclaredConstructor().newInstance().asInstanceOf[IPagelet]
 
+			// TODO: vytvoreni conn pouze pokud je potreba
 			DBHelper.withDbConnection(conn => {
 				val dataClass = getDataClass(m)
 				if (post.validate() && dataClass.isDefined) {
+					if (req.raw().getContentType.startsWith("multipart/form-data")) {
+						req.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"))
+					}
 					val formData = EntityValidator.createFormData(req, dataClass.get)
 					EntityValidator.validate(dataClass.get.getSimpleName, formData) match {
 						case Left(result) =>

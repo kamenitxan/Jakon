@@ -1,10 +1,11 @@
 package cz.kamenitxan.jakon.validation
 
 import java.lang.reflect.Field
-
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import spark.Request
+
+import scala.io.Source
 
 
 object EntityValidator {
@@ -22,12 +23,21 @@ object EntityValidator {
 		}
 	}
 
+	// TODO: tohle tu byt nema, neni to cast validatoru
 	def createFormData(req: Request, dataClass: Class[_]): Map[Field, String] = {
 		dataClass.getDeclaredFields.map(f => {
 			var res: (Field, String) = null
 			try {
 				f.setAccessible(true)
-				res = (f, req.queryParams(f.getName))
+
+				val value = if (req.raw().getContentType.startsWith("multipart/form-data")) {
+					val is = req.raw().getPart(f.getName).getInputStream
+					Source.fromInputStream(is).mkString
+				} else {
+					req.queryParams(f.getName)
+				}
+
+				res = (f, value)
 			} catch {
 				case ex: Exception => Logger.error("Exception when setting pagelet form data value", ex)
 			}
@@ -35,6 +45,7 @@ object EntityValidator {
 		}).filter(t => t != null).toMap
 	}
 
+	// TODO: tohle tu byt nema, neni to cast validatoru
 	def createFormData(data: Any): Map[Field, String] = {
 		data.getClass.getDeclaredFields.map(f => {
 			var res: (Field, String) = null
