@@ -4,7 +4,7 @@ import java.time.{LocalDate, LocalDateTime, LocalTime}
 import java.util.Date
 import cz.kamenitxan.jakon.core.database.converters.ScalaMapConverter
 import cz.kamenitxan.jakon.core.database.{I18n, JakonField}
-import cz.kamenitxan.jakon.core.model.{JakonObject, JakonUser}
+import cz.kamenitxan.jakon.core.model.{JakonFile, JakonObject, JakonUser}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.MessageSeverity
 
@@ -49,6 +49,8 @@ class TestObject extends JakonObject {
 	@JakonField
 	@I18n
 	var i18n: Seq[TestObjectI18n] = _
+	@JakonField
+	var jakonFile: JakonFile = _
 
 
 	override val objectSettings: ObjectSettings = null

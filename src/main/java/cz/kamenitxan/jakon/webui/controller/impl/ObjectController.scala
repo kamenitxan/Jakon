@@ -119,7 +119,12 @@ object ObjectController {
 	def getItem(req: Request, res: Response): Context = {
 		val objectName = req.params(":name")
 		val objectId = req.params(":id").toOptInt
-		implicit val objectClass: Class[_ <: JakonObject] = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(objectName)).head
+		val filteredClasses = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(objectName))
+		if (filteredClasses.isEmpty) {
+			res.status(404)
+			return new Context(Map[String, Any](), "errors/404")
+		}
+		implicit val objectClass: Class[_ <: JakonObject] = filteredClasses.head
 
 		if (!isAuthorized(objectClass)) {
 			return new Context(Map[String, Any](

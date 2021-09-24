@@ -14,8 +14,7 @@ import cz.kamenitxan.jakon.webui.{AdminSettings, Routes}
 import cz.kamenitxan.jakon.webui.controller.impl.{DeployController, FileManagerController, LogViewer, TaskController}
 import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, ResetPasswordEmailEntity}
 import spark.Spark._
-import spark.debug.DebugScreen.enableDebugScreen
-import spark.{Filter, Request, Response}
+import spark.{Filter, Request, Response, Spark}
 
 import java.io.File
 import java.nio.file.{Files, Paths}
@@ -90,7 +89,6 @@ class JakonInit {
 			before((request: Request, _: Response) => {
 				DevRender.rerender(request.pathInfo())
 			})
-			enableDebugScreen()
 			exception(classOf[Exception], new LoggingExceptionHandler)
 
 			get("/upload/*", (req: Request, res: Response) => new UploadFilesController().doGet(req, res))

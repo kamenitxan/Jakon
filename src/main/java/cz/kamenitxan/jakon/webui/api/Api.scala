@@ -3,8 +3,8 @@ package cz.kamenitxan.jakon.webui.api
 import java.io.File
 import com.google.gson.Gson
 import cz.kamenitxan.jakon.core.database.DBHelper
-import cz.kamenitxan.jakon.core.model.{JakonFile, JakonObject}
-import cz.kamenitxan.jakon.webui.api.objects.{GetImagesRequest, GetImagesResponse, SearchRequest, SearchResponse}
+import cz.kamenitxan.jakon.core.model.{FileType, JakonFile, JakonObject}
+import cz.kamenitxan.jakon.webui.api.objects.{GetFilesRequest, GetFilesResponse, SearchRequest, SearchResponse}
 import cz.kamenitxan.jakon.webui.controller.impl.FileManagerController
 import spark.{Request, Response}
 
@@ -51,8 +51,9 @@ object Api {
 		new SearchResponse(false, List[JakonObject]())
 	}
 
-	def getImages(req: Request, res: Response): GetImagesResponse = {
-		val jsonReq = gson.fromJson(req.body(), classOf[GetImagesRequest])
+
+	def getFiles(req: Request, fileType: Option[FileType]): GetFilesResponse = {
+		val jsonReq = gson.fromJson(req.body(), classOf[GetFilesRequest])
 
 		val path = Option.apply(jsonReq.path)
 			.getOrElse(FileManagerController.REPOSITORY_BASE_PATH)
@@ -60,7 +61,8 @@ object Api {
 			.replace("/", File.separator)
 
 		val files = DBHelper.withDbConnection(implicit conn => {
-			val sql = "SELECT * FROM JakonFile WHERE (fileType = \"FOLDER\" OR fileType = \"IMAGE\") AND path = ?"
+			val iType = if (fileType.isDefined) s"OR fileType = \"${fileType.get.toString}\"" else ""
+			val sql = s"SELECT * FROM JakonFile WHERE (fileType = \"FOLDER\" $iType) AND path = ?"
 			val stmt = conn.prepareStatement(sql)
 			stmt.setString(1, path)
 			DBHelper.select(stmt, classOf[JakonFile]).map(_.entity)
@@ -72,6 +74,10 @@ object Api {
 			}
 			f
 		})
-		new GetImagesResponse(true, files)
+		new GetFilesResponse(true, files)
+	}
+
+	def getImages(req: Request, res: Response): GetFilesResponse = {
+		getFiles(req, Option.apply(FileType.IMAGE))
 	}
 }

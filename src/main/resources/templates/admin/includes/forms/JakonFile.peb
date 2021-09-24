@@ -1,0 +1,15 @@
+{# @pebvariable name="field" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
+
+<div id="file_selector_{{ fieldHash }}">
+	<input class="form-control" type="text" name="{{ field.name }}" id="{{ field.name }}"
+		   value="{% if field.value is empty %}{{ getAttr(object, field.name) }}{% else %}{{ field.value }}{% endif %}"
+		   {% if field.disabled %}disabled{% endif %} maxlength="{{ field.htmlMaxLength }}"/>
+	<button type="button" class="btn btn-light">Light</button>
+
+	<script>
+		(() => {
+			const FileSelector = require("forms/j_file_select.js");
+			new FileSelector({{ fieldHash }}).init()
+		}).apply();
+	</script>
+</div>

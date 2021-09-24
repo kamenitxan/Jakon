@@ -18,6 +18,7 @@ CREATE TABLE TestObject
     embedded_string VARCHAR(255),
     embedded_int    INTEGER,
     oneToMany       TEXT,
+    jakonFile_id    INTEGER REFERENCES JakonFile(id) ON DELETE SET NULL,
 
     PRIMARY KEY (id)
 );

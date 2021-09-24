@@ -9,12 +9,10 @@ import scala.jdk.CollectionConverters._
 /**
   * Created by TPa on 29.04.18.
   */
-class GetImagesRequest(val path: String)
+class GetFilesRequest(val path: String)
 
 
-
-
-class GetImagesResponse private(val result: java.util.List[JakonFile], success: Boolean) extends AbstractResponse(success) {
+class GetFilesResponse private(val result: java.util.List[JakonFile], success: Boolean) extends AbstractResponse(success) {
 
 	def this(success: Boolean, files: Seq[JakonFile]) = {
 		this(files.asJava, success)

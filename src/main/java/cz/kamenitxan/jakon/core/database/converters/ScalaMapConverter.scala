@@ -1,7 +1,6 @@
 package cz.kamenitxan.jakon.core.database.converters
 
 import java.util
-
 import cz.kamenitxan.jakon.logging.Logger
 import org.apache.commons.lang3.StringUtils
 

@@ -1,7 +1,5 @@
 package cz.kamenitxan.jakon.webui.entity;
 
-import org.openqa.selenium.InvalidArgumentException;
-
 import java.util.Arrays;
 
 /**
@@ -33,6 +31,6 @@ enum FileManagerMode {
 				.stream(FileManagerMode.values())
 				.filter(fm -> fm.action.equals(action))
 				.findAny()
-				.orElseThrow(() -> new InvalidArgumentException("Unknown FileManagerMode"));
+				.orElseThrow(() -> new IllegalArgumentException("Unknown FileManagerMode"));
 	}
 }

@@ -733,7 +733,7 @@ object FileManagerController {
 		}
 	}
 
-	private val IMG_SUFFIXES = Seq(".png", ".jpg", ".jpeg", ".gif", "")
+	private val IMG_SUFFIXES = Seq(".png", ".jpg", ".jpeg", ".gif")
 
 	def getFileType(file: Path): FileType = {
 		if (Files.isDirectory(file)) {
