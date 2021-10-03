@@ -10,11 +10,11 @@ import cz.kamenitxan.jakon.devtools.{DevRender, StaticFilesController, UploadFil
 import cz.kamenitxan.jakon.logging.{LogCleanerTask, Logger}
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.utils.{LoggingExceptionHandler, PageContext}
-import cz.kamenitxan.jakon.webui.{AdminSettings, Routes}
 import cz.kamenitxan.jakon.webui.controller.impl.{DeployController, FileManagerController, LogViewer, TaskController}
 import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, ResetPasswordEmailEntity}
+import cz.kamenitxan.jakon.webui.{AdminSettings, Routes}
 import spark.Spark._
-import spark.{Filter, Request, Response, Spark}
+import spark.{Filter, Request, Response}
 
 import java.io.File
 import java.nio.file.{Files, Paths}
@@ -84,6 +84,9 @@ class JakonInit {
 		taskSetup()
 
 		websocketSetup()
+		before((req: Request, res: Response) => {
+			PageContext.init(req, res)
+		})
 		afterAfter((_: Request, _: Response) => PageContext.destroy())
 		if (Settings.getDeployMode != DeployMode.PRODUCTION) {
 			before((request: Request, _: Response) => {
