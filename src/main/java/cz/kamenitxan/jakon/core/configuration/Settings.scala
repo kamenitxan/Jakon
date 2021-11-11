@@ -117,6 +117,12 @@ object Settings {
 	@ConfigurationValue(name = "emailValidator.checkDns", required = false, defaultValue = "true")
 	private var emailValidatorCheckDns: Boolean = _
 
+	@ConfigurationValue(name = "HCAPTCHA.secret", required = false)
+	private var hCaptchaSecret: String = _
+
+	@ConfigurationValue(name = "HCAPTCHA.siteKey", required = false)
+	private var hCaptchaSiteKey: String = _
+
 	def getTemplateDir: String = templateDir
 
 	def setTemplateDir(templateDir: String): Unit = this.templateDir = templateDir
@@ -225,4 +231,8 @@ object Settings {
 	def getLoginPath: String = loginPath
 
 	def getEmailValidatorCheckDns: Boolean = emailValidatorCheckDns
+
+	def getHCaptchaSecret: String = hCaptchaSecret
+
+	def getHCaptchaSiteKey: String = hCaptchaSiteKey
 }

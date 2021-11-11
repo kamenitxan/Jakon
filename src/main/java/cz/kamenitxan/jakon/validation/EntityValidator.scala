@@ -34,7 +34,8 @@ object EntityValidator {
 					val is = req.raw().getPart(f.getName).getInputStream
 					Source.fromInputStream(is).mkString
 				} else {
-					req.queryParams(f.getName)
+					val paramName = Option.apply(f.getDeclaredAnnotation(classOf[Name])).map(_.name()).getOrElse(f.getName)
+					req.queryParams(paramName)
 				}
 
 				res = (f, value)
