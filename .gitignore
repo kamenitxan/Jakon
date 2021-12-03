@@ -35,3 +35,9 @@ jakon_config.properties
 /upload/
 /localDeploy/
 /static/jakon/
+/project/target/
+/modules/backend/target/
+/modules/frontend/target/
+/modules/shared/.js/target/
+/modules/shared/.jvm/target/
+/project/project/target/
