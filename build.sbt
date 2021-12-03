@@ -35,6 +35,7 @@ val Dependencies = new {
 		libraryDependencies ++=
 			Seq(
 				"com.sparkjava" % "spark-core" % V.spark,
+				"org.scala-lang" % "scala-reflect" % V.Scala,
 				"com.sparkjava" % "spark-template-pebble" % "2.7.1-jakon.1",
 				"org.slf4j" % "slf4j-api" % "1.7.32",
 				"org.apache.logging.log4j" % "log4j-api" % V.log4j,
