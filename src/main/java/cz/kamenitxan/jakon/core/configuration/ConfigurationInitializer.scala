@@ -4,6 +4,7 @@ import java.io.{File, FileInputStream, IOException}
 import java.util.Properties
 
 import cz.kamenitxan.jakon.utils.Utils
+import cz.kamenitxan.jakon.utils.TypeReferences._
 import org.slf4j.LoggerFactory
 
 import scala.collection.mutable
@@ -18,13 +19,13 @@ object ConfigurationInitializer {
 
 	@throws[IOException]
 	def init(configFile: File): Unit = {
-		Utils.measured(runtime => s"Configuration scaned in $runtime ms") {
+		Utils.measured(runtime => s"Configuration scanned in $runtime ms") {
 			if (configFile == null) {
 				try {
 					init(new File("jakon_config.properties"))
 				} catch {
 					case e: Exception =>
-						logger.error("Config loading failed. Shuting down!", e)
+						logger.error("Config loading failed. Shutting down!", e)
 						System.exit(-1)
 				}
 			} else {
@@ -45,9 +46,6 @@ object ConfigurationInitializer {
 
 	def getConf: mutable.Map[String, String] = conf
 
-	private val B = classOf[Boolean]
-	private val D = classOf[Double]
-	private val I = classOf[Int]
 
 	def initConfiguration(configClasses: Seq[Class[_]]): Unit = {
 		configClasses.foreach(c => {
@@ -77,9 +75,9 @@ object ConfigurationInitializer {
 				} else if (confValue.nonEmpty) {
 					f.setAccessible(true)
 					f.getType match {
-						case B => f.setBoolean(obj, confValue.get toBoolean)
-						case D => f.setDouble(obj, confValue.get toDouble)
-						case I => f.setInt(obj, confValue.get toInt)
+						case BOOLEAN => f.setBoolean(obj, confValue.get toBoolean)
+						case DOUBLE => f.setDouble(obj, confValue.get toDouble)
+						case INTEGER => f.setInt(obj, confValue.get toInt)
 						case _ => f.set(obj, confValue.get)
 					}
 				}
