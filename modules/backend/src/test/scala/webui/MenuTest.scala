@@ -3,9 +3,10 @@ package webui
 import cz.kamenitxan.jakon.core.configuration.Settings
 import org.openqa.selenium.htmlunit.HtmlUnitDriver
 import org.openqa.selenium.{By, WebDriver}
-import org.scalatest.Outcome
+import org.scalatest.{DoNotDiscover, Outcome}
 import org.scalatest.funsuite.FixtureAnyFunSuite
 
+@DoNotDiscover
 class MenuTest extends FixtureAnyFunSuite {
 	var host = ""
 

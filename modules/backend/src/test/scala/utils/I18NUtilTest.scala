@@ -1,10 +1,11 @@
 package utils
 
 import java.util.Locale
-
 import cz.kamenitxan.jakon.utils.I18nUtil
+import org.scalatest.DoNotDiscover
 import test.TestBase
 
+@DoNotDiscover
 class I18NUtilTest extends TestBase {
 	val en = new Locale("en", "US")
 	val cs = new Locale("cs", "CZ")

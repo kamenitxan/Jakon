@@ -5,8 +5,10 @@ import cz.kamenitxan.jakon.core.model.BasicJakonObject
 import cz.kamenitxan.jakon.core.service.UserService
 import cz.kamenitxan.jakon.webui.api.AbstractRequest
 import cz.kamenitxan.jakon.webui.functions.{AdminPebbleExtension, GetAttributeTypeFun, LinkFun}
+import org.scalatest.DoNotDiscover
 import test.TestBase
 
+@DoNotDiscover
 class WebUi extends TestBase {
 
 	test("AdminPebbleExtension") { _ =>

@@ -2,12 +2,13 @@ package webui
 
 import java.io.DataOutputStream
 import java.net.{HttpURLConnection, URL}
-
 import org.apache.commons.lang3.SystemUtils
+import org.scalatest.DoNotDiscover
 import test.TestBase
 
 import scala.io.Source
 
+@DoNotDiscover
 class FileManagerTest extends TestBase {
 	val prefix = "/admin/files/"
 

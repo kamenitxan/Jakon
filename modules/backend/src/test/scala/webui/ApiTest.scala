@@ -2,12 +2,13 @@ package webui
 
 import java.io.DataOutputStream
 import java.net.{HttpURLConnection, URL}
-
 import cz.kamenitxan.jakon.core.configuration.Settings
+import org.scalatest.DoNotDiscover
 import org.scalatest.funsuite.AnyFunSuite
 
 import scala.io.Source
 
+@DoNotDiscover
 class ApiTest extends AnyFunSuite {
 
 	var host = ""

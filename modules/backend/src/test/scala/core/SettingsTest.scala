@@ -3,8 +3,10 @@ package core
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.template.utils.FixedPebbleTemplateEngine
 import cz.kamenitxan.jakon.webui.util.JakonFileLoader
+import org.scalatest.DoNotDiscover
 import test.{TestBase, TestEmailTypeHandler}
 
+@DoNotDiscover
 class SettingsTest extends TestBase {
 
 	test("setters") { _ =>

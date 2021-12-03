@@ -3,11 +3,13 @@ package utils
 import cz.kamenitxan.jakon.core.database.{DBHelper, DBInitializer}
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.utils.SqlGen
+import org.scalatest.DoNotDiscover
 import test.TestBase
 import utils.entity.TestObject
 
 import scala.collection.mutable
 
+@DoNotDiscover
 class SqlGenTest extends TestBase {
 
 	test("insertStmt") { _ =>

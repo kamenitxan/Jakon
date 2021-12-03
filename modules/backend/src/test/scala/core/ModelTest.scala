@@ -1,13 +1,14 @@
 package core
 
 import java.util.Date
-
 import cz.kamenitxan.jakon.core.model._
+import org.scalatest.DoNotDiscover
 import test.TestBase
 import utils.entity.{TestEmbeddedObject, TestObject}
 
 import scala.util.Random
 
+@DoNotDiscover
 class ModelTest extends TestBase {
 
 	test("Page") { _ =>

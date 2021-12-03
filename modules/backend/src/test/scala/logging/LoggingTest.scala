@@ -1,8 +1,10 @@
 package logging
 
 import cz.kamenitxan.jakon.logging._
+import org.scalatest.DoNotDiscover
 import test.TestBase
 
+@DoNotDiscover
 class LoggingTest extends TestBase {
 
 	test("logDebug") { _ =>

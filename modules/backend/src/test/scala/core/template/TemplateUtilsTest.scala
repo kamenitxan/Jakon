@@ -3,12 +3,14 @@ package core.template
 import cz.kamenitxan.jakon.core.function.FunctionHelper
 import cz.kamenitxan.jakon.core.model.Post
 import cz.kamenitxan.jakon.core.template.utils.TemplateUtils
+import org.scalatest.DoNotDiscover
 import org.scalatest.funsuite.AnyFunSuite
 import test.HelloFun
 
 /**
   * Created by TPa on 04.04.2020.
   */
+@DoNotDiscover
 class TemplateUtilsTest extends AnyFunSuite {
 
 	test("parseMarkdown text") {

@@ -1,11 +1,13 @@
 package utils
 
 import cz.kamenitxan.jakon.utils.Utils
+import org.scalatest.DoNotDiscover
 import test.TestBase
 
 /**
  * Created by TPa on 20.06.2021.
  */
+@DoNotDiscover
 class UtilsTest extends TestBase {
 
 	test("loadEmailTemplate") { _ =>

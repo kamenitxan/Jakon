@@ -4,17 +4,18 @@ import java.lang.annotation.Annotation
 import java.lang.reflect.Field
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, LocalDateTime}
-
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.validation.Validator
 import cz.kamenitxan.jakon.validation.validators._
 import cz.kamenitxan.jakon.webui.conform.FieldConformer.{DATETIME_FORMAT, DATE_FORMAT}
+import org.scalatest.DoNotDiscover
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.prop.TableDrivenPropertyChecks.{forAll, _}
 import org.scalatest.prop.TableFor2
 import sun.reflect.annotation.AnnotationParser
 import utils.entity.TestObject
 
+@DoNotDiscover
 class ValidationUnitTest extends AnyFunSuite {
 
 	private def testTable(v: Validator, ann: Annotation, data: TableFor2[String, Boolean], obj: Map[Field, String] = null, field: Field = null): Any = {

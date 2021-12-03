@@ -1,11 +1,12 @@
 package core.database
 
 import java.util
-
 import cz.kamenitxan.jakon.core.database.converters.{LocaleConverter, StringListConverter}
 import cz.kamenitxan.jakon.utils.Utils
+import org.scalatest.DoNotDiscover
 import org.scalatest.funsuite.AnyFunSuite
 
+@DoNotDiscover
 class ConvertersTest extends AnyFunSuite {
 
 	test("LocalConverter") {

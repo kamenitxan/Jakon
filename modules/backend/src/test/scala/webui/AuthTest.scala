@@ -6,7 +6,7 @@ import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.webui.controller.impl.Authentication
 import org.openqa.selenium.htmlunit.HtmlUnitDriver
 import org.openqa.selenium.{By, WebDriver}
-import org.scalatest.Outcome
+import org.scalatest.{DoNotDiscover, Outcome}
 import org.scalatest.funsuite.FixtureAnyFunSuite
 
 import java.util.Locale
@@ -15,6 +15,7 @@ import scala.util.Random
 /**
   * Created by TPa on 03.09.16.
   */
+@DoNotDiscover
 class AuthTest extends FixtureAnyFunSuite {
 	private val email = "test@gmail.com" + Random.nextInt()
 	private val password = "paßßw0rd"

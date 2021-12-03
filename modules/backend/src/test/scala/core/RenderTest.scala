@@ -1,5 +1,6 @@
 package core
 
+import org.scalatest.DoNotDiscover
 import test.TestBase
 
 import scala.io.Source
@@ -7,6 +8,7 @@ import scala.io.Source
 /**
   * Created by TPa on 27.08.16.
   */
+@DoNotDiscover
 class RenderTest extends TestBase {
 
 	test("render static test") { _ =>

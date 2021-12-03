@@ -4,11 +4,13 @@ import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.service.UserService
 import org.openqa.selenium.{By, WebDriver}
+import org.scalatest.DoNotDiscover
 import test.{ReflectionUtils, TestBase}
 
 /**
   * Created by TPa on 04.04.2020.
   */
+@DoNotDiscover
 class ObjectExtensionTest extends TestBase {
 	val templateDir = "templates/admin/"
 	val dictionary = "messages"

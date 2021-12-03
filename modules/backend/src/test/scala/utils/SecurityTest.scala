@@ -1,17 +1,19 @@
 package utils
 
 import java.sql.Connection
-
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.utils.security.AesEncryptor
 import cz.kamenitxan.jakon.utils.security.oauth.Google.createAuthUrl
 import cz.kamenitxan.jakon.utils.security.oauth.{OauthInfo, OauthProvider}
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
+import org.scalatest.DoNotDiscover
+
 import javax.servlet.http.HttpServletRequest
 import spark.Request
 import test.{TestBase, TestHttpServletRequest}
 
+@DoNotDiscover
 class SecurityTest extends TestBase {
 
 	class TestOauthProvider(email: String) extends OauthProvider {

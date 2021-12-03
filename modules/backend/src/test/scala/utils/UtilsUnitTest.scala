@@ -4,9 +4,11 @@ import cz.kamenitxan.jakon.Main
 import cz.kamenitxan.jakon.core.model.{JakonObject, JakonUser}
 import cz.kamenitxan.jakon.utils.Utils._
 import cz.kamenitxan.jakon.utils.{TypeReferences, Utils}
+import org.scalatest.DoNotDiscover
 import org.scalatest.funsuite.AnyFunSuite
 
 
+@DoNotDiscover
 class UtilsUnitTest extends AnyFunSuite {
 
 	test("getClassByFieldName") {

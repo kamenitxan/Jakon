@@ -1,8 +1,10 @@
 package core.template.pebble
 
 import cz.kamenitxan.jakon.core.template.pebble.MarkdownFilter
+import org.scalatest.DoNotDiscover
 import org.scalatest.funsuite.AnyFunSuite
 
+@DoNotDiscover
 class Pebble extends AnyFunSuite {
 
 	val testContent = "```\nclass ExampleTask(period: Long, unit: TimeUnit) extends AbstractTask(classOf[ExampleTask].getSimpleName, period, unit) {  " +

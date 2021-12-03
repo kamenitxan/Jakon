@@ -2,16 +2,17 @@ package utils.mail
 
 import java.util.Date
 import java.util.concurrent.TimeUnit
-
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.webui.controller.pagelets.JakonRegistrationPagelet
+import org.scalatest.DoNotDiscover
 import org.scalatest.funsuite.AnyFunSuite
 import test.TestEmailTypeHandler
 
 import scala.util.Random
 
+@DoNotDiscover
 class EmailTest extends AnyFunSuite {
 
 	test("registrationEmailTest") {

@@ -3,8 +3,10 @@ package core.pagelet
 import cz.kamenitxan.jakon.core.custom_pages.CustomPageInitializer
 import cz.kamenitxan.jakon.core.dynamic.PageletInitializer
 import org.openqa.selenium.By
+import org.scalatest.DoNotDiscover
 import test.TestBase
 
+@DoNotDiscover
 class PageletTest extends TestBase {
 
 	test("example pagelet get") { f =>

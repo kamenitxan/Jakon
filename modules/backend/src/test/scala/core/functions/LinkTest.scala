@@ -1,14 +1,15 @@
 package core.functions
 
 import java.util
-
 import cz.kamenitxan.jakon.core.function.FunctionHelper
 import cz.kamenitxan.jakon.core.model.Page
+import org.scalatest.DoNotDiscover
 import org.scalatest.funsuite.AnyFunSuite
 
 /**
   * Created by TPa on 01.09.16.
   */
+@DoNotDiscover
 class LinkTest extends AnyFunSuite{
 	test("link test") {
 		val page = new Page()

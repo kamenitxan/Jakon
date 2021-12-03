@@ -26,7 +26,6 @@ ThisBuild / resolvers += "Artifactory" at "https://kamenitxans-maven-repository.
 
 val Dependencies = new {
 
-
 	lazy val frontend = Seq(
 
 	)
@@ -90,7 +89,7 @@ lazy val frontend = (project in file("modules/frontend"))
 	)
 	.settings(
 		commonBuildSettings,
-		name := "fluvii-fe"
+		name := "jakon-fe"
 	)
 
 lazy val backend = (project in file("modules/backend"))
@@ -101,7 +100,7 @@ lazy val backend = (project in file("modules/backend"))
 	.enablePlugins(JavaAppPackaging)
 	.enablePlugins(DockerPlugin)
 	.settings(
-		name := "fluvii",
+		name := "jakon",
 		Test / fork := true,
 		Universal / mappings += {
 			val appJs = (frontend / Compile / fullOptJS).value.data
@@ -122,12 +121,14 @@ lazy val shared = crossProject(JSPlatform, JVMPlatform)
 	.jsSettings(commonBuildSettings)
 	.jvmSettings(commonBuildSettings)
 	.settings(
-		name := "fluvii-shared"
+		name := "jakon-shared"
 	)
 
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 ThisBuild / semanticdbEnabled := false
 ThisBuild / scalacOptions += "-deprecation"
+
+parallelExecution in Test := false
 
 lazy val fastOptCompileCopy = taskKey[Unit]("")
 

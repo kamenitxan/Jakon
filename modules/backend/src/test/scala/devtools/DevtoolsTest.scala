@@ -2,6 +2,7 @@ package devtools
 
 import cz.kamenitxan.jakon.webui.controller.impl.FileManagerController
 import org.openqa.selenium.WebDriver
+import org.scalatest.DoNotDiscover
 import test.TestBase
 
 import java.io.File
@@ -11,6 +12,7 @@ import java.io.FileWriter
 /**
  * Created by TPa on 04.04.2020.
  */
+@DoNotDiscover
 class DevtoolsTest extends TestBase {
 
 

@@ -5,12 +5,14 @@ import core.pagelet.entity.GetResponse
 import cz.kamenitxan.jakon.core.dynamic.JsonPageletInitializer
 import cz.kamenitxan.jakon.core.dynamic.entity.{JsonErrorResponse, JsonFailResponse, ResponseStatus}
 import okhttp3.{MediaType, OkHttpClient, Request, RequestBody}
+import org.scalatest.DoNotDiscover
 import test.JsonHelper._
 import test.TestBase
 
 /**
  * Created by TPa on 13.04.2020.
  */
+@DoNotDiscover
 class JsonPageletTest extends TestBase {
 
 	private val gson = new Gson()

@@ -2,8 +2,10 @@ package core
 
 import cz.kamenitxan.jakon.core.deploy.LocalDeploy
 import cz.kamenitxan.jakon.core.deploy.entity.Server
+import org.scalatest.DoNotDiscover
 import test.TestBase
 
+@DoNotDiscover
 class DeployTest extends TestBase {
 
 	test("LocalDeployTest") { _ =>

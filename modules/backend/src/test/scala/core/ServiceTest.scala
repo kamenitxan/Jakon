@@ -3,11 +3,13 @@ package core
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.core.service.{JakonFileService, UserService}
+import org.scalatest.DoNotDiscover
 import test.TestBase
 
 /**
   * Created by TPa on 08/04/2021.
   */
+@DoNotDiscover
 class ServiceTest extends TestBase {
 
 	var user: JakonUser = _

@@ -2,6 +2,7 @@ package webui
 
 import cz.kamenitxan.jakon.core.model.Page
 import org.openqa.selenium.{By, WebDriver}
+import org.scalatest.DoNotDiscover
 import test.TestBase
 
 import scala.jdk.CollectionConverters._
@@ -9,6 +10,7 @@ import scala.jdk.CollectionConverters._
 /**
   * Created by TPa on 2019-03-19.
   */
+@DoNotDiscover
 class ObjectControllerTest extends TestBase {
 
 	private def checkPageLoad(driver: WebDriver) = {

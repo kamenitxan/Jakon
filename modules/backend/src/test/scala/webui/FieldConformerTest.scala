@@ -9,10 +9,12 @@ import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
 import cz.kamenitxan.jakon.webui.entity.MessageSeverity
+import org.scalatest.DoNotDiscover
 
 import javax.persistence.ManyToMany
 import org.scalatest.funsuite.AnyFunSuite
 
+@DoNotDiscover
 class FieldConformerTest extends AnyFunSuite {
 
 	private val fieldCount = 16
