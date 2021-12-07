@@ -1,19 +1,18 @@
 package cz.kamenitxan.jakon.utils
 
-import java.lang.reflect.Field
-import java.sql.{Connection, JDBCType, PreparedStatement, Statement}
-import java.time.{LocalDate, LocalTime}
-import java.util.Date
-import cz.kamenitxan.jakon.core.database.converters.AbstractConverter
+import com.google.gson.reflect.TypeToken
+import cz.kamenitxan.jakon.core.database.converters.{AbstractConverter, NoOpConverter}
 import cz.kamenitxan.jakon.core.database.{I18n, JakonField}
 import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.TypeReferences._
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
-import cz.kamenitxan.jakon.webui.conform.FieldConformer.TIME_FORMAT
 
-import java.text.SimpleDateFormat
+import java.lang.reflect.Field
+import java.sql.{Connection, JDBCType, PreparedStatement, Statement}
 import java.time.format.DateTimeFormatter
+import java.time.{LocalDate, LocalTime}
+import java.util.Date
 import javax.persistence.{Embedded, ManyToOne, Transient}
 import scala.collection.mutable
 
@@ -38,7 +37,7 @@ object SqlGen {
 			var embeddedFieldCounter = 0
 			annotatedFields.tail.foreach(f => {
 				val fst = f.getType.getGenericSuperclass
-				if (fst != null && fst.getTypeName == "cz.kamenitxan.jakon.core.model.JakonObject") {
+				if (fst != null && Utils.isJakonObject(TypeToken.get(fst).getRawType)) {
 					sb.append(", " + f.getName + "_id")
 				} else if (f.getAnnotation(classOf[Embedded]) != null) {
 					val embeddedFields = f.getType.getDeclaredFields.filter(_.getDeclaredAnnotation(classOf[JakonField]) != null)
@@ -90,7 +89,7 @@ object SqlGen {
 			var embeddedFieldCounter = 0
 			annotatedFields.tail.foreach(f => {
 				val fst = f.getType.getGenericSuperclass
-				if (fst != null && fst.getTypeName == classOf[JakonObject].getName) {
+				if (fst != null && Utils.isJakonObject(TypeToken.get(fst).getRawType)) {
 					sb.append(", " + f.getName + "_id = ?")
 				} else if (f.getAnnotation(classOf[Embedded]) != null) {
 					val embeddedFields = f.getType.getDeclaredFields.filter(_.getDeclaredAnnotation(classOf[JakonField]) != null)
@@ -184,12 +183,18 @@ object SqlGen {
 					stmt.setInt(i, value.asInstanceOf[JakonObject].id)
 				} else if (jakonField != null) {
 					val converter = jakonField.converter()
-					if (converter.getName != classOf[AbstractConverter[_]].getName) {
+					if (!Utils.isClassOrChild(converter, classOf[AbstractConverter[_]])) {
 						Logger.error(s"Converters are unsupported on ${inst.getClass.getSimpleName}.${f.getName}")
 						stmt.setString(i, "")
-					} else {
+					} else if (converter == classOf[NoOpConverter]) {
 						Logger.error(s"Convertor not specified for data type on ${inst.getClass.getSimpleName}.${f.getName}")
 						stmt.setNull(i, getSqlType(f))
+					} else {
+						val c = converter.getDeclaredConstructor().newInstance()
+						val methodOpt = converter.getMethods.find(m => m.getName == "convertToDatabaseColumn")
+						if (methodOpt.isDefined) {
+							stmt.setString(i, methodOpt.get.invoke(c, value).toString)
+						}
 					}
 				} else {
 					Logger.error(s"Uknown data type on ${inst.getClass.getSimpleName}.${f.getName}")
@@ -209,6 +214,7 @@ object SqlGen {
 			case DOUBLE => JDBCType.DOUBLE.getVendorTypeNumber
 			case DATE_o | DATE => JDBCType.DATE.getVendorTypeNumber
 			case DATETIME => JDBCType.TIMESTAMP.getVendorTypeNumber
+			case MAP => JDBCType.VARCHAR.getVendorTypeNumber
 			case _ =>
 				Logger.error(s"Unknown sql type ${f.getType} on field ${f.getName}")
 				0
