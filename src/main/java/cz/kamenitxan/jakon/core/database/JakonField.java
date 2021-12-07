@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.core.database;
 
 import cz.kamenitxan.jakon.core.database.converters.AbstractConverter;
+import cz.kamenitxan.jakon.core.database.converters.NoOpConverter;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -36,7 +37,7 @@ public @interface JakonField {
 
 	String inputTemplate() default "";
 
-	Class<? extends AbstractConverter> converter() default AbstractConverter.class;
+	Class<? extends AbstractConverter> converter() default NoOpConverter.class;
 
 	/**
 	 * property is searchable in admin, including in select search box

@@ -85,14 +85,18 @@ object Utils {
 		ArraySeq.unsafeWrapArray(cls.getDeclaredFields)
 	}
 
-	@tailrec
 	def isJakonObject(cls: Class[_]): Boolean = {
-		if (cls == classOf[JakonObject]) {
+		isClassOrChild(cls, classOf[JakonObject])
+	}
+
+	@tailrec
+	def isClassOrChild(cls: Class[_], parrent: Class[_]): Boolean = {
+		if (cls == parrent) {
 			true
 		} else if (cls == classOf[Object] || cls.getSuperclass == null) {
 			false
 		} else {
-			isJakonObject(cls.getSuperclass)
+			isClassOrChild(cls.getSuperclass, parrent)
 		}
 	}
 
