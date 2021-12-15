@@ -1,10 +1,10 @@
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val V = new {
-	val Scala = "2.13.6"
+	val Scala = "2.13.7"
   val jakon = "0.4-SNAPSHOT"
 	val spark = "2.9.4-JAKON"
-	val log4j = "2.14.1"
+	val log4j = "2.16.0"
 	val circe = "0.14.1"
 	val lucene = "7.5.0"
 }
@@ -31,11 +31,11 @@ val Dependencies = new {
 				"com.sparkjava" % "spark-core" % V.spark,
 				"org.scala-lang" % "scala-reflect" % V.Scala,
 				"com.sparkjava" % "spark-template-pebble" % "2.7.1-jakon.1",
-				"org.slf4j" % "slf4j-api" % "1.7.32",
+				"org.slf4j" % "slf4j-api" % "1.8.0-beta4",
 				"org.apache.logging.log4j" % "log4j-api" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-core" % V.log4j,
-				"org.apache.logging.log4j" % "log4j-slf4j-impl" % V.log4j,
-				"org.xerial" % "sqlite-jdbc" % "3.36.0.1",
+				"org.apache.logging.log4j" % "log4j-slf4j18-impl" % V.log4j,
+				"org.xerial" % "sqlite-jdbc" % "3.36.0.2",
 				"mysql" % "mysql-connector-java" % "8.0.25",
 				"com.google.guava" % "guava" % "29.0-jre",
 				"javax.persistence" % "javax.persistence-api" % "2.2",
@@ -46,12 +46,12 @@ val Dependencies = new {
 				"net.minidev" % "json-smart" % "2.4.7",
 				"com.sun.mail" % "javax.mail" % "1.6.2",
 				"com.atlassian.commonmark" % "commonmark" % "0.11.0",
-				"com.google.code.gson" % "gson" % "2.8.7",
+				"com.google.code.gson" % "gson" % "2.8.9",
 				"org.apache.lucene" % "lucene-core" % V.lucene,
 				"org.apache.lucene" % "lucene-queryparser" % V.lucene,
-				"io.github.classgraph" % "classgraph" % "4.8.114",
+				"io.github.classgraph" % "classgraph" % "4.8.137",
 				"commons-codec" % "commons-codec" % "1.11",
-				"com.zaxxer" % "HikariCP" % "3.1.0",
+				"com.zaxxer" % "HikariCP" % "5.0.0",
 				"com.github.scribejava" % "scribejava-apis" % "6.5.1",
 				"cz.etn" % "email-validator" % "1.1.2" excludeAll(
 					ExclusionRule(organization = "com.sun.mail", name = "smtp"),
@@ -59,8 +59,8 @@ val Dependencies = new {
 				),
 				"org.jetbrains" % "annotations" % "22.0.0",
 				"com.lihaoyi" %% "sourcecode" % "0.2.7",
-				"org.scalatest" %% "scalatest" % "3.1.1" % "test",
-				"org.seleniumhq.selenium" % "htmlunit-driver" % "2.52.0" % "test"
+				"org.scalatest" %% "scalatest" % "3.2.9" % "test",
+				"org.seleniumhq.selenium" % "htmlunit-driver" % "2.55.0" % "test"
 			)
 	)
 
