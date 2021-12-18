@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/kamenitxan/Jakon.svg?branch=master)](https://travis-ci.org/kamenitxan/Jakon)
+[![Java CI](https://github.com/kamenitxan/Jakon/actions/workflows/sbt.yml/badge.svg)](https://github.com/kamenitxan/Jakon/actions/workflows/sbt.yml)
 [![codecov](https://codecov.io/gh/kamenitxan/Jakon/branch/master/graph/badge.svg)](https://codecov.io/gh/kamenitxan/Jakon)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=kamenitxan_Jakon&metric=alert_status)](https://sonarcloud.io/dashboard?id=kamenitxan_Jakon)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=kamenitxan_Jakon&metric=bugs)](https://sonarcloud.io/dashboard?id=kamenitxan_Jakon)
