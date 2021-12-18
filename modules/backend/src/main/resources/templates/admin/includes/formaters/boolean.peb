@@ -1,5 +1,4 @@
-{# @pebvariable name="object" type="cz.kamenitxan.jakon.core.model.JakonObject" #}
-{# @pebvariable name="fi" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
+{# @pebvariable name="value" type="java.lang.Boolean" #}
 {% if value %}
     <i class="fa fa-check-circle" aria-hidden="true"></i>
 {% else %}

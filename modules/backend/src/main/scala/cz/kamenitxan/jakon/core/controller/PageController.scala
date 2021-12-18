@@ -25,9 +25,9 @@ class PageController extends IController {
 			val stmt = conn.createStatement()
 			val pages = DBHelper.select(stmt, ALL_PAGES_SQL, classOf[Page]).map(qr => qr.entity)
 			pages.foreach(p => {
-				val context = new util.HashMap[String, AnyRef]
-				context.put("page", p)
-				e.render(template, p.url, context)
+				e.render(template, p.url, Map(
+					"page" -> p
+				))
 			})
 		} catch {
 			case ex: Exception => Logger.error("Exception occurred while generation of Pages", ex)

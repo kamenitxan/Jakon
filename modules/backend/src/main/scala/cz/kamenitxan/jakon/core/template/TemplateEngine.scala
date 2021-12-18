@@ -10,11 +10,8 @@ import scala.jdk.CollectionConverters._
   * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
   */
 trait TemplateEngine {
-	def render(templateName: String, path: String, context: util.Map[String, AnyRef])(implicit caller: IController): Unit
 
-	def render(templateName: String, path: String, context: Map[String, AnyRef])(implicit caller: IController): Unit = {
-		render(templateName, path, context.asJava)
-	}
+	def render(templateName: String, path: String, context: Map[String, AnyRef])(implicit caller: IController): Unit
 
 	/**
 	  * Renders template with provided name

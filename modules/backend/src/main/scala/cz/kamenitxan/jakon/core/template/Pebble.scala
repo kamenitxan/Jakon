@@ -1,8 +1,5 @@
 package cz.kamenitxan.jakon.core.template
 
-import java.io.StringWriter
-import java.util
-
 import com.mitchellbosecke.pebble.PebbleEngine
 import com.mitchellbosecke.pebble.error.PebbleException
 import com.mitchellbosecke.pebble.loader.StringLoader
@@ -14,6 +11,7 @@ import cz.kamenitxan.jakon.core.template.utils.TemplateUtils
 import cz.kamenitxan.jakon.devtools.DevRender
 import cz.kamenitxan.jakon.webui.util.JakonFileLoader
 
+import java.io.StringWriter
 import scala.jdk.CollectionConverters._
 
 
@@ -35,7 +33,7 @@ class Pebble extends TemplateEngine {
 	private val engine = builder.build()
 	private val stringEngine = builder.loader(new StringLoader()).build()
 
-	def render(templateName: String, path: String, context: util.Map[String, AnyRef])(implicit caller: IController): Unit = {
+	def render(templateName: String, path: String, context: Map[String, AnyRef])(implicit caller: IController): Unit = {
 
 		val output = renderString(templateName, context)
 		TemplateUtils.saveRenderedPage(output, path)
@@ -45,10 +43,10 @@ class Pebble extends TemplateEngine {
 	}
 
 	override def renderToString(templateName: String, context: Map[String, AnyRef]): String = {
-		renderString(templateName, context.asJava)
+		renderString(templateName, context)
 	}
 
-	private def renderString(templateName: String, context: util.Map[String, AnyRef]): String = {
+	private def renderString(templateName: String, context: Map[String, AnyRef]): String = {
 		var compiledTemplate: PebbleTemplate = null
 		try {
 			compiledTemplate = engine.getTemplate(templateName)
@@ -58,7 +56,7 @@ class Pebble extends TemplateEngine {
 		val writer = new StringWriter
 		try {
 			if (compiledTemplate != null) {
-				compiledTemplate.evaluate(writer, context)
+				compiledTemplate.evaluate(writer, context.asJava)
 			}
 		} catch {
 			case e: Any => e.printStackTrace()

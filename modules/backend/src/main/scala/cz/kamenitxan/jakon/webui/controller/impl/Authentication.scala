@@ -41,6 +41,7 @@ object Authentication {
 		if (email != null && password != null) {
 			implicit val conn: Connection = DBHelper.getConnection
 			try {
+				// TODO: Use UserService
 				val stmt = conn.prepareStatement(SQL_FIND_USER)
 				stmt.setString(1, email)
 

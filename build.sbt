@@ -1,4 +1,5 @@
 import sbtassembly.AssemblyPlugin.autoImport.assembly
+import Tests._
 
 val V = new {
 	val Scala = "2.13.7"
@@ -82,8 +83,8 @@ lazy val frontend = (project in file("modules/frontend"))
 	.settings(scalaJSUseMainModuleInitializer := true)
 	.settings(
 		Dependencies.frontend,
-		Dependencies.tests,
-		Test / jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()
+		Dependencies.tests//,
+		//Test / jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()
 	)
 	.settings(
 		commonBuildSettings,
@@ -132,9 +133,9 @@ ThisBuild / assembly / assemblyMergeStrategy := {
 		val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
 		oldStrategy(x)
 }
-
-parallelExecution in Test := false
-logBuffered in Test := false
+Test / fork := true
+Test / testForkedParallel := false
+Test / logBuffered := false
 
 lazy val fastOptCompileCopy = taskKey[Unit]("")
 

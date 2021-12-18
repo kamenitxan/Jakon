@@ -18,7 +18,7 @@ object TemplateUtils {
 
 	def getEngine: TemplateEngine = Settings.getTemplateEngine
 
-	private val suffixes = List(".xml", ".html", ".json")
+	private val suffixes = List(".xml", ".html", ".json", ".css", ".txt")
 	private val parser = Parser.builder.build
 	private val renderer = HtmlRenderer.builder.build
 

@@ -81,6 +81,8 @@ class TestRunner extends Suites(
 
 class TestJakonApp extends JakonInit {
 
+	spark.Spark.stop()
+
 	override def daoSetup(): Unit = {
 		DBHelper.addDao(classOf[Category])
 		DBHelper.addDao(classOf[Post])
