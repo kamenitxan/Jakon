@@ -54,10 +54,7 @@ val Dependencies = new {
 				"commons-codec" % "commons-codec" % "1.11",
 				"com.zaxxer" % "HikariCP" % "5.0.0",
 				"com.github.scribejava" % "scribejava-apis" % "6.5.1",
-				"cz.etn" % "email-validator" % "1.1.2" excludeAll(
-					ExclusionRule(organization = "com.sun.mail", name = "smtp"),
-					ExclusionRule(organization = "javax.mail", name = "javax.mail-api")
-				),
+				"cz.etn" % "email-validator" % "1.3.0",
 				"org.jetbrains" % "annotations" % "22.0.0",
 				"com.lihaoyi" %% "sourcecode" % "0.2.7",
 				"org.scalatest" %% "scalatest" % "3.2.9" % "test",
