@@ -31,17 +31,13 @@ jobs:
       - name: Build with Sbt
         run: sbt compile
       - name: Test
-        run: sbt test
-#      - name: Upload to Codecov
-#        uses: codecov/codecov-action@v1.0.15
-#        with:
-#          files: ./target/scoverage.xml,/target/cobertura.xml
-#      - name: Prod config test
-#        run: mvn -Pprod-test scoverage:report
-#      - name: Upload to Codecov
-#        uses: codecov/codecov-action@v1.0.15
-#        with:
-#          files: ./target/scoverage.xml,/target/cobertura.xml
+        run: sbt coverage test
+      - name: Coverage Report
+        run: sbt coverageReport
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v1.0.15
+        with:
+          fail_ci_if_error: true
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
