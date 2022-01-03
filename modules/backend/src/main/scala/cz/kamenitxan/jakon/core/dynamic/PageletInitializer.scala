@@ -3,7 +3,6 @@ package cz.kamenitxan.jakon.core.dynamic
 import java.lang.reflect.Method
 import java.sql.Connection
 import javax.servlet.MultipartConfigElement
-
 import com.google.gson.Gson
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.logging.Logger
@@ -16,7 +15,9 @@ import cz.kamenitxan.jakon.webui.entity.CustomControllerInfo
 import cz.kamenitxan.jakon.webui.{AdminSettings, Context}
 import spark.{Request, Response, Spark}
 
+import scala.annotation.tailrec
 import scala.collection.mutable
+import scala.jdk.CollectionConverters._
 
 
 object PageletInitializer {
@@ -35,17 +36,17 @@ object PageletInitializer {
 			}
 
 			c.getDeclaredMethods
-			  .filter(m => m.getAnnotation(classOf[Get]) != null || m.getAnnotation(classOf[Post]) != null)
-			  .foreach(m => {
-				  val get = m.getAnnotation(classOf[Get])
-				  val post = m.getAnnotation(classOf[Post])
-				  if (get != null) {
-					  initGetAnnotation(get, controllerAnn, m, c)
-				  }
-				  if (post != null) {
-					  initPostAnnotation(post, controllerAnn, m, c)
-				  }
-			  })
+				.filter(m => m.getAnnotation(classOf[Get]) != null || m.getAnnotation(classOf[Post]) != null)
+				.foreach(m => {
+					val get = m.getAnnotation(classOf[Get])
+					val post = m.getAnnotation(classOf[Post])
+					if (get != null) {
+						initGetAnnotation(get, controllerAnn, m, c)
+					}
+					if (post != null) {
+						initPostAnnotation(post, controllerAnn, m, c)
+					}
+				})
 		})
 		controllers.filter(c => classOf[AbstractAdminPagelet].isAssignableFrom(c) && c.getAnnotation(classOf[Pagelet]).showInAdmin()).foreach(c => {
 			val apa = c.getDeclaredMethods.find(m => m.getAnnotation(classOf[Get]) != null)
@@ -108,7 +109,9 @@ object PageletInitializer {
 							} else {
 								result.foreach(r => PageContext.getInstance().messages += r)
 								val rp = formData.map(kv => (kv._1.getName, kv._2))
-								pagelet.redirect(req, res, controllerAnn.path() + post.path(), rp)
+
+								val path = replacePathParams(controllerAnn.path() + post.path(), req.params.asScala)
+								pagelet.redirect(req, res, path, rp)
 							}
 						case Right(_) =>
 							if ("true".equals(req.queryParams(METHOD_VALDIATE))) {
@@ -126,6 +129,17 @@ object PageletInitializer {
 		})
 	}
 
+	@tailrec
+	private def replacePathParams(path: String, params: mutable.Map[String, String]): String = {
+		if (params.isEmpty) {
+			path
+		} else {
+			val head = params.head
+			val replaced = path.replace(head._1, head._2)
+			replacePathParams(replaced, params.tail)
+		}
+	}
+
 	private def invokePost(req: Request, res: Response, controller: IPagelet, m: Method, post: Post, methodArgs: MethodArgs) = {
 		if (notRedirected(res)) {
 			m.getReturnType match {
@@ -134,7 +148,7 @@ object PageletInitializer {
 				case _ =>
 					try {
 						val context = m.invoke(controller, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
-						if  (notRedirected(res)) {
+						if (notRedirected(res)) {
 							controller.render(context, post.template(), req)
 						} else {
 							""

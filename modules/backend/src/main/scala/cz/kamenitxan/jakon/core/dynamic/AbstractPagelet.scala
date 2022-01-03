@@ -35,7 +35,13 @@ abstract class AbstractPagelet extends IPagelet {
 		val ctx = if (context != null) context else mutable.Map[String, Any]()
 
 		ctx += "jakon_messages" -> PageContext.getInstance().messages.asJava
-		ctx += AbstractPagelet.REQUEST_PARAMS -> req.session().attribute(AbstractPagelet.REQUEST_PARAMS)
+		val rp:java.util.Map[String, Any] = req.queryMap().toMap.asInstanceOf[java.util.Map[String, Any]]
+		val srp = req.session().attribute(AbstractPagelet.REQUEST_PARAMS).asInstanceOf[java.util.Map[String, Any]]
+		if (srp != null) {
+			rp.putAll(srp)
+		}
+
+		ctx += AbstractPagelet.REQUEST_PARAMS -> rp
 		engine.render(new ModelAndView(ctx.asJava, templatePath))
 	}
 
