@@ -50,7 +50,7 @@ object FieldConformer {
 					val formatter = DateTimeFormatter.ofPattern(DATE_FORMAT)
 					LocalDate.parse(s, formatter)
 				case DATE_o =>
-					val sdf = new SimpleDateFormat(DATE_FORMAT)
+					val sdf = new SimpleDateFormat(DATETIME_FORMAT)
 					sdf.parse(s)
 				case TIME =>
 					val formatter = DateTimeFormatter.ISO_TIME
@@ -104,12 +104,12 @@ object FieldConformer {
 							val fv = f.get(obj)
 							infos = infos :+ new FieldInfo(an, HtmlType.NUMBER, f, fv)
 						case DATE_o =>
-							val sdf = new SimpleDateFormat(DATE_FORMAT)
+							val sdf = new SimpleDateFormat(DATETIME_FORMAT)
 							if (f.get(obj) != null) {
 								val value = sdf.format(f.get(obj))
-								infos = infos :+ new FieldInfo(an, HtmlType.DATE, f, value)
+								infos = infos :+ new FieldInfo(an, HtmlType.DATETIME, f, value)
 							} else {
-								infos = infos :+ new FieldInfo(an, HtmlType.DATE, f, value = "")
+								infos = infos :+ new FieldInfo(an, HtmlType.DATETIME, f, value = "")
 							}
 						case TIME =>
 							val sdf = DateTimeFormatter.ofPattern(TIME_FORMAT)

@@ -94,8 +94,8 @@ class FieldConformerTest extends AnyFunSuite {
 	}
 
 	test("conform date") {
-		val conformed = "1999-02-20".conform(getField("date"))
-		val d = new GregorianCalendar(1999, Calendar.FEBRUARY, 20).getTime
+		val conformed = "1999-02-20T20:20".conform(getField("date"))
+		val d = new GregorianCalendar(1999, Calendar.FEBRUARY, 20, 20, 20).getTime
 		assert(d == conformed)
 	}
 
