@@ -102,11 +102,12 @@ class JakonInit {
 		annotationScanner.load()
 		if (Settings.getDeployMode !=  DeployMode.DEVEL) {
 			PageletInitializer.protectedPrefixes.filter(_ != Routes.AdminPrefix).foreach(pp => {
-				before(pp + "/*", new Filter {
+				before(pp + "*", new Filter {
+					Logger.debug(s"Adding protected prefix '$pp*'")
 					override def handle(req: Request, res: Response): Unit = {
 						val user: JakonUser = req.session.attribute("user")
 						if (user == null || (!user.acl.adminAllowed && !user.acl.allowedFrontendPrefixes.contains(pp))) {
-							Logger.debug(s"Used $user denied access to '$pp/*'")
+							Logger.debug(s"User $user denied access to '$pp*'")
 							if (req.pathInfo().startsWith(Routes.AdminPrefix)) {
 								res.redirect(Routes.AdminPrefix + s"?redirectTo=${req.pathInfo()}", 302)
 							} else {

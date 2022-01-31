@@ -5,7 +5,7 @@ val V = new {
 	val Scala = "2.13.7"
   val jakon = "0.4-SNAPSHOT"
 	val spark = "2.9.4-JAKON"
-	val log4j = "2.16.0"
+	val log4j = "2.17.0"
 	val circe = "0.14.1"
 	val lucene = "7.5.0"
 }
