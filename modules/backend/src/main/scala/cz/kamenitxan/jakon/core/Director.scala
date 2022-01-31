@@ -36,11 +36,8 @@ object Director {
 		}
 
 		DBInitializer.registerCoreObjects()
-		if (Settings.getDeployMode != DeployMode.PRODUCTION) {
-			DBInitializer.createTables()
-		} else {
-			DBInitializer.dbExists()
-		}
+		DBInitializer.createTables()
+		DBInitializer.dbExists()
 		Future {
 			DBInitializer.checkDbConsistency()
 		}
