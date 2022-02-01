@@ -1,8 +1,7 @@
 package cz.kamenitxan.jakon.core
 
-import java.nio.charset.Charset
 import cz.kamenitxan.jakon.JakonInitializer
-import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
+import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.controller.IController
 import cz.kamenitxan.jakon.core.custom_pages.AbstractCustomPage
 import cz.kamenitxan.jakon.core.database.DBInitializer
@@ -12,6 +11,7 @@ import cz.kamenitxan.jakon.core.template.utils.TemplateUtils
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.webui.Routes
 
+import java.nio.charset.Charset
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -46,9 +46,7 @@ object Director {
 		Routes.init()
 		Logger.info("Jakon started")
 
-		if (Settings.getDeployMode != DeployMode.PRODUCTION) {
-			JakonInitializer.init()
-		}
+		JakonInitializer.init()
 
 		Logger.info("Jakon default init complete")
 	}

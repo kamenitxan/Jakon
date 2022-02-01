@@ -55,7 +55,7 @@ object Routes {
 					var user: JakonUser = req.session.attribute("user")
 					if ((Settings.getDeployMode eq DeployMode.DEVEL) && user == null) {
 						DBHelper.withDbConnection(implicit conn => {
-							user = UserService.getMasterAdmin
+							user = UserService.getMasterAdmin()
 							req.session(true).attribute("user", user)
 						})
 					}
@@ -105,7 +105,7 @@ object Routes {
 		AdminSettings.customControllers.foreach((c: Class[_ <: AbstractController]) => {
 			try {
 				val instance = c.newInstance
-				get(s"$AdminPrefix/" + instance.path, (req: Request, res: Response) => instance.doRender(req, res), te)
+				get(s"$AdminPrefix/" + instance.path(), (req: Request, res: Response) => instance.doRender(req, res), te)
 				val methods = c.getDeclaredMethods
 				for (m <- methods) {
 					val an = m.getAnnotation(classOf[ExecuteFun])

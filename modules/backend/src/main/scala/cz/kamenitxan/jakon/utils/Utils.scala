@@ -152,7 +152,7 @@ object Utils {
 			val currentTmpl = EmailTemplateService.getByName(name)
 
 			val bufferedSource = Source.fromFile(path)
-			val template = bufferedSource.getLines.mkString("\n")
+			val template = bufferedSource.getLines().mkString("\n")
 			bufferedSource.close
 
 			val tmpl = if (currentTmpl == null) new EmailTemplateEntity else currentTmpl
