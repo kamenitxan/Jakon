@@ -5,30 +5,33 @@ import org.scalatest.DoNotDiscover
 import test.TestBase
 
 @DoNotDiscover
-class LoggingTest extends TestBase {
+class LoggingTest extends TestBase{
+
+	test("log things") { _ =>
+		Logger.debug("debug")
+		Logger.info("info")
+		Logger.warn("warn")
+		Logger.error("error")
+		Logger.critical("critical")
+	}
 
 	test("logDebug") { _ =>
-		Logger.debug("debug")
 		assert(getLogByValue("debug"))
 	}
 
 	test("logInfo") { _ =>
-		Logger.info("info")
 		assert(getLogByValue("info"))
 	}
 
 	test("logWarn") { _ =>
-		Logger.warn("warn")
 		assert(getLogByValue("warn"))
 	}
 
 	test("logError") { _ =>
-		Logger.error("error")
 		assert(getLogByValue("error"))
 	}
 
 	test("logCritical") { _ =>
-		Logger.critical("critical")
 		assert(getLogByValue("critical"))
 	}
 
@@ -73,7 +76,12 @@ class LoggingTest extends TestBase {
 		assert(rep.getLogs.isEmpty)
 	}
 
+	private var slept = false
 	private def getLogByValue(msg: String): Boolean = {
+		if (!slept) {
+			Thread.sleep(20_000)
+			slept = true
+		}
 		val s = LogService.getLogs
 		val log = s.find(_.message == msg)
 		log.nonEmpty

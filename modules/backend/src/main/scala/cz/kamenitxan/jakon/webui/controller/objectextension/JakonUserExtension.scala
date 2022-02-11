@@ -11,6 +11,9 @@ import spark.{Request, Response}
 
 import scala.collection.mutable
 
+/**
+ * Extenion of object in administration. Extension template should be in templates/admin/objects/extension/NameOfExtensionClass.peb
+ * */
 @ObjectExtension(value = classOf[JakonUser], extensionType = ExtensionType.SINGLE)
 @Pagelet
 class JakonUserExtension extends AbstractObjectExtension {

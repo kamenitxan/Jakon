@@ -13,6 +13,7 @@ object TaskRunner {
 	private val scheduledExecutor = Executors.newScheduledThreadPool(1)
 	var taskList: mutable.ArrayDeque[AbstractTask] = mutable.ArrayDeque[AbstractTask]()
 	private val taskFutures: mutable.Map[String, ScheduledFuture[_]] = mutable.Map[String, ScheduledFuture[_]]()
+	private val singleRunFutures: mutable.Map[String, ScheduledFuture[_]] = mutable.Map[String, ScheduledFuture[_]]()
 
 	def schedule(task: AbstractTask): Unit = {
 		if (!task.paused) {
@@ -22,7 +23,16 @@ object TaskRunner {
 	}
 
 	def runSingle(task: AbstractTask): Unit = {
-		scheduledExecutor.schedule(task, 0, TimeUnit.SECONDS)
+		val ef = singleRunFutures.get(task.name.value)
+		if (ef.isEmpty || ef.get.isDone) {
+			val f = scheduledExecutor.schedule(task, 0, TimeUnit.SECONDS)
+			if (ef.isEmpty) {
+				singleRunFutures += (task.name.value -> f)
+			} else {
+				singleRunFutures(task.name.value) = f
+			}
+
+		}
 	}
 
 	def registerTask(task: AbstractTask): Unit = {
