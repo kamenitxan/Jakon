@@ -52,7 +52,7 @@ object EntityMapper {
 				val field = fieldRef.get
 				field.setAccessible(true)
 				val columnAnn = field.getAnnotation(classOf[Column])
-				if (columnAnn != null && columnAnn.name() != null && !columnAnn.name().isEmpty) {
+				if (columnAnn != null && columnAnn.name() != null && columnAnn.name().nonEmpty) {
 					columnName = columnAnn.name()
 				}
 				val optFKI = setFieldValue(obj, cls, field, columnName, rs)

@@ -1,11 +1,11 @@
 package core
 
-import java.util.Date
 import cz.kamenitxan.jakon.core.model._
 import org.scalatest.DoNotDiscover
 import test.TestBase
 import utils.entity.{TestEmbeddedObject, TestObject}
 
+import java.util.Date
 import scala.util.Random
 
 @DoNotDiscover
@@ -77,14 +77,28 @@ class ModelTest extends TestBase {
 		obj.toString
 	}
 
-	test("TestEmbeddedObject") { _ =>
+	var eoid = 0;
+	test("Create TestEmbeddedObject") { _ =>
 		val obj = new TestObject
 		val embedded = new TestEmbeddedObject
-		embedded.int = 42
+		embedded.int = eoid
 		embedded.string = "42"
 		obj.embedded = embedded
-		obj.create()
+		eoid = obj.create()
 	}
+/*
+// TODO
+	test("Fetch TestEmbeddedObject") { _ =>
+		DBHelper.withDbConnection(implicit conn => {
+			val sql = "SELECT * From TestObject WHERE id = ?"
+			val stmt = conn.prepareStatement(sql)
+			stmt.setInt(1, eoid)
+			val entity = DBHelper.selectSingleDeep(stmt)(conn, classOf[TestObject])
+			assert(entity.embedded != null)
+		})
+	}
+*/
+
 
 	var post: Post = _
 	test("Post Create") { _ =>
