@@ -45,8 +45,9 @@ object TaskRunner {
 	}
 
 	def stop(task: AbstractTask): Unit = {
-		val f = taskFutures(task.name.value)
-		f.cancel(false)
-		taskFutures -= task.name.value
+		taskFutures.get(task.name.value).foreach(f => {
+			f.cancel(false)
+			taskFutures -= task.name.value
+		})
 	}
 }

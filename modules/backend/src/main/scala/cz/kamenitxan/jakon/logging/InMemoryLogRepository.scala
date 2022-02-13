@@ -29,9 +29,6 @@ class InMemoryLogRepository extends LogRepository {
 	}, 0, 10, TimeUnit.SECONDS)
 
 	def addLog(log: Log): Unit = {
-		if (log == null) {
-			throw new IllegalArgumentException
-		}
 		if (LoggingSetting.getMaxLimit != 0 && logs.size >= LoggingSetting.getMaxLimit) {
 			TaskRunner.runSingle(new LogCleanerTask)
 		}

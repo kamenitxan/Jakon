@@ -1,8 +1,5 @@
 package webui
 
-import java.time.{LocalDate, LocalTime}
-import java.util
-import java.util.{Calendar, Date, GregorianCalendar}
 import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.core.model.{JakonObject, JakonUser}
 import cz.kamenitxan.jakon.webui.ObjectSettings
@@ -10,14 +7,17 @@ import cz.kamenitxan.jakon.webui.conform.FieldConformer
 import cz.kamenitxan.jakon.webui.conform.FieldConformer._
 import cz.kamenitxan.jakon.webui.entity.MessageSeverity
 import org.scalatest.DoNotDiscover
-
-import javax.persistence.ManyToMany
 import org.scalatest.funsuite.AnyFunSuite
+
+import java.time.{LocalDate, LocalDateTime, LocalTime}
+import java.util
+import java.util.{Calendar, Date, GregorianCalendar}
+import javax.persistence.ManyToMany
 
 @DoNotDiscover
 class FieldConformerTest extends AnyFunSuite {
 
-	private val fieldCount = 16
+	private val fieldCount = 17
 
 	class TestObject extends JakonObject {
 		//TODO oneToMany
@@ -40,6 +40,8 @@ class FieldConformerTest extends AnyFunSuite {
 		var date2: Date = _
 		@JakonField
 		var localDate: LocalDate = _
+		@JakonField
+		var localDateTime: LocalDateTime = _
 		@ManyToMany
 		@JakonField
 		var self: TestObject = _
@@ -150,6 +152,12 @@ class FieldConformerTest extends AnyFunSuite {
 		assert(t == conformed)
 	}
 
+	test("conform enum") {
+		val conformed = "ERROR".conform(getField("enum"))
+		val t = MessageSeverity.ERROR
+		assert(t == conformed)
+	}
+
 	test("empty field infos") {
 		val fi = FieldConformer.getEmptyFieldInfos(getFields)
 		assert(fi.length == fieldCount)
@@ -157,6 +165,15 @@ class FieldConformerTest extends AnyFunSuite {
 
 	test("field infos") {
 		val fi = FieldConformer.getFieldInfos(new TestObject, getFields)
+		assert(fi.length == fieldCount)
+	}
+
+	test("field infos with data") {
+		val o = new TestObject
+		o.time = LocalTime.now()
+		o.localDate = LocalDate.now()
+		o.localDateTime = LocalDateTime.now()
+		val fi = FieldConformer.getFieldInfos(o, getFields)
 		assert(fi.length == fieldCount)
 	}
 

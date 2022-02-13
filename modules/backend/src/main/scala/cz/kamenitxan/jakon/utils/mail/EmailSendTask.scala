@@ -75,15 +75,17 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(period, u
 						val te = Settings.getTemplateEngine
 						val renderedMessage = te.renderTemplate(tmpl.template, e.params)
 						val messageBodyPart = new MimeBodyPart
-						messageBodyPart.setText(renderedMessage)
+						messageBodyPart.setContent(renderedMessage, "text/html; charset=UTF-8")
 						multipart.addBodyPart(messageBodyPart)
 
-						e.attachments.foreach(a => {
-							val attachmentPart = new MimeBodyPart
-							attachmentPart.attachFile(new File(a.path + "/" + a.name))
-							attachmentPart.setFileName(a.name)
-							multipart.addBodyPart(attachmentPart)
-						})
+						if (e.attachments != null) {
+							e.attachments.foreach(a => {
+								val attachmentPart = new MimeBodyPart
+								attachmentPart.attachFile(new File(a.path + "/" + a.name))
+								attachmentPart.setFileName(a.name)
+								multipart.addBodyPart(attachmentPart)
+							})
+						}
 
 						message.setContent(multipart, "text/html; charset=UTF-8")
 					}

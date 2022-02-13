@@ -76,6 +76,16 @@ class LoggingTest extends TestBase{
 		assert(rep.getLogs.isEmpty)
 	}
 
+	test("LoggingSetting getAges") { _ =>
+		assert(LoggingSetting.getMaxLimit > 0)
+		assert(LoggingSetting.getSoftLimit > 0)
+		assert(LoggingSetting.getMaxCriticalAge > 0)
+		assert(LoggingSetting.getMaxErrorAge > 0)
+		assert(LoggingSetting.getMaxWarningAge > 0)
+		assert(LoggingSetting.getMaxInfoAge > 0)
+		assert(LoggingSetting.getMaxDebugAge > 0)
+	}
+
 	private var slept = false
 	private def getLogByValue(msg: String): Boolean = {
 		if (!slept) {

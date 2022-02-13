@@ -1,10 +1,9 @@
 package cz.kamenitxan.jakon.core.task
 
 import java.util.concurrent.TimeUnit
-
 import scala.language.postfixOps
 
-class FulltextTask() extends AbstractTask(0, TimeUnit.MINUTES) {
+class FulltextTask() extends AbstractTask(60, TimeUnit.MINUTES) {
 
 	override def start(): Unit = {
 		/*val classes = DBHelper.objects

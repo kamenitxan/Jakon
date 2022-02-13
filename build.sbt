@@ -1,5 +1,4 @@
 import sbtassembly.AssemblyPlugin.autoImport.assembly
-import Tests._
 
 val V = new {
 	val Scala = "2.13.7"
@@ -47,16 +46,16 @@ val Dependencies = new {
 				"net.minidev" % "json-smart" % "2.4.7",
 				"com.sun.mail" % "javax.mail" % "1.6.2",
 				"com.atlassian.commonmark" % "commonmark" % "0.11.0",
-				"com.google.code.gson" % "gson" % "2.8.9",
+				"com.google.code.gson" % "gson" % "2.9.0",
 				"org.apache.lucene" % "lucene-core" % V.lucene,
 				"org.apache.lucene" % "lucene-queryparser" % V.lucene,
-				"io.github.classgraph" % "classgraph" % "4.8.137",
-				"commons-codec" % "commons-codec" % "1.11",
+				"io.github.classgraph" % "classgraph" % "4.8.138",
+				"commons-codec" % "commons-codec" % "1.15",
 				"com.zaxxer" % "HikariCP" % "5.0.0",
 				"com.github.scribejava" % "scribejava-apis" % "6.5.1",
 				"cz.etn" % "email-validator" % "1.3.0",
 				"org.jetbrains" % "annotations" % "22.0.0",
-				"com.lihaoyi" %% "sourcecode" % "0.2.7",
+				"com.lihaoyi" %% "sourcecode" % "0.2.8",
 				"org.scalatest" %% "scalatest" % "3.2.9" % "test",
 				"org.seleniumhq.selenium" % "htmlunit-driver" % "2.55.0" % "test"
 			)

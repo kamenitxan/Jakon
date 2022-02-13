@@ -1,7 +1,7 @@
-import java.io.{File, IOException}
 import core.functions.LinkTest
 import core.pagelet.{JsonPageletTest, PageletTest}
-import core.{DeployTest, ModelTest, RenderTest, ServiceTest, SettingsTest}
+import core.task.TaskRunnerTest
+import core._
 import cz.kamenitxan.jakon.JakonInit
 import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.configuration.Settings
@@ -18,6 +18,8 @@ import utils.mail.EmailTest
 import utils.{I18NUtilTest, SecurityTest, SqlGenTest, UtilsTest}
 import validation.ValidationTest
 import webui._
+
+import java.io.{File, IOException}
 
 /**
  * Created by TPa on 27.08.16.
@@ -45,7 +47,8 @@ class TestRunner extends Suites(
 	new DevtoolsTest,
 	new ServiceTest,
 	new ValidationTest,
-	new UtilsTest
+	new UtilsTest,
+	new TaskRunnerTest
 ) with BeforeAndAfterAll {
 
 	val config = "jakonConfig=jakon_config_test_dev.properties"
@@ -61,7 +64,7 @@ class TestRunner extends Suites(
 			app.run(Array[String](config))
 		} catch {
 			case _: IOException =>
-				app.run(Array[String](config, s"port=${(Settings.getPort + 1).toString}"))
+				app.run(Array[String](config, s"port=${(Settings.getPort + 1).toString} test_param"))
 		}
 
 		val staticPage = new AbstractStaticPage("staticPage", "static") {}
@@ -84,6 +87,7 @@ class TestJakonApp extends JakonInit {
 	spark.Spark.stop()
 
 	override def daoSetup(): Unit = {
+		super.daoSetup()
 		DBHelper.addDao(classOf[Category])
 		DBHelper.addDao(classOf[Post])
 		DBHelper.addDao(classOf[Page])
