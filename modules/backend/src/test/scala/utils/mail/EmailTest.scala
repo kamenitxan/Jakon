@@ -1,7 +1,5 @@
 package utils.mail
 
-import java.util.Date
-import java.util.concurrent.TimeUnit
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
@@ -10,6 +8,8 @@ import org.scalatest.DoNotDiscover
 import org.scalatest.funsuite.AnyFunSuite
 import test.TestEmailTypeHandler
 
+import java.util.Date
+import java.util.concurrent.TimeUnit
 import scala.util.Random
 
 @DoNotDiscover
@@ -50,6 +50,7 @@ class EmailTest extends AnyFunSuite {
 			"param" -> "test"
 		)
 		val e = new EmailEntity("tmpl", "to", "subject", params, "TYPE")
+		e.attachments = Seq.empty
 		e.create()
 
 		// smtp does not work in travis

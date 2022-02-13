@@ -28,6 +28,8 @@ class SettingsTest extends TestBase {
 		assertNotEmpty(Settings.getEmailPassword)
 		assertNotEmpty(Settings.getEmailForceBcc)
 		assertNotEmpty(Settings.getLoginPath)
+		assert(Settings.getHCaptchaSiteKey == null)
+		assertNotEmpty(Settings.getDeployType)
 	}
 
 	test("unknown deploy mode") { _ =>
@@ -35,6 +37,16 @@ class SettingsTest extends TestBase {
 		Settings.setDeployMode("XXXXX")
 		assert(DeployMode.PRODUCTION == Settings.getDeployMode)
 		Settings.setDeployMode(current)
+	}
+
+	test("default emailTypeHandler") { _ =>
+		val h = Settings.getEmailTypeHandler
+		try {
+			h.handle("")
+			h.afterSend("")
+		} catch {
+			case _: Exception => assert(false)
+		}
 	}
 
 }

@@ -1,116 +1,104 @@
 package webui
 
-import cz.kamenitxan.jakon.core.configuration.Settings
-import org.openqa.selenium.htmlunit.HtmlUnitDriver
-import org.openqa.selenium.{By, WebDriver}
-import org.scalatest.{DoNotDiscover, Outcome}
-import org.scalatest.funsuite.FixtureAnyFunSuite
+import org.openqa.selenium.By
+import org.scalatest.DoNotDiscover
+import test.TestBase
 
 @DoNotDiscover
-class MenuTest extends FixtureAnyFunSuite {
-	var host = ""
+class MenuTest extends TestBase {
 
-
-	case class FixtureParam(driver: WebDriver)
-
-	def withFixture(test: OneArgTest): Outcome = {
-		host = "http://localhost:" + Settings.getPort + "/admin/"
-		val driver = new HtmlUnitDriver()
-
-		val fixture = FixtureParam(driver)
-		try {
-			withFixture(test.toNoArgTest(fixture)) // "loan" the fixture to the test
-		} finally {
-			driver.close()
-		}
-	}
-
-	private def checkPageLoad(driver: WebDriver) = {
-		val navbar = driver.findElements(By.cssSelector(".navbar-brand"))
-		if (navbar.isEmpty) {
-			println(driver.getPageSource)
-			false
-		} else {
-			navbar.get(0) != null
-		}
-	}
 
 	test("Forgotten password items") { f =>
-		f.driver.get(host + "resetPassword")
+		f.driver.get(adminHost + "resetPassword")
 		assert(f.driver.findElements(By.cssSelector(".card-title")).get(0) != null)
 	}
 
 	test("menu items") { f =>
-		f.driver.get(host + "index")
+		f.driver.get(adminHost + "index")
 		//val menuElements = f.driver.findElements(By.cssSelector("#side-menu li a"))
-		assert(checkPageLoad(f.driver))
+		assert(checkPageLoad()(f.driver))
 	}
 
 	test("user page") { f =>
-		f.driver.get(host + "object/JakonUser")
-		assert(checkPageLoad(f.driver))
-		f.driver.get(host + "object/JakonUser/6")
+		f.driver.get(adminHost + "object/JakonUser")
+		assert(checkPageLoad()(f.driver))
+		f.driver.get(adminHost + "object/JakonUser/6")
 
-		assert(checkPageLoad(f.driver))
+		assert(checkPageLoad()(f.driver))
 		val submit = f.driver.findElement(By.cssSelector("input.btn.btn-primary"))
 		submit.click()
 	}
 
 	test("acl page") { f =>
-		f.driver.get(host + "object/AclRule")
-		assert(checkPageLoad(f.driver))
-		f.driver.get(host + "object/create/AclRule")
+		f.driver.get(adminHost + "object/AclRule")
+		assert(checkPageLoad()(f.driver))
+		f.driver.get(adminHost + "object/create/AclRule")
 
-		assert(checkPageLoad(f.driver))
+		assert(checkPageLoad()(f.driver))
 	}
 
 	test("page page") { f =>
-		f.driver.get(host + "object/Page")
-		assert(checkPageLoad(f.driver))
+		f.driver.get(adminHost + "object/Page")
+		assert(checkPageLoad()(f.driver))
 	}
 
 	test("deploy page") { f =>
-		f.driver.get(host + "deploy")
-		assert(checkPageLoad(f.driver))
+		f.driver.get(adminHost + "deploy")
+		assert(checkPageLoad()(f.driver))
 	}
 
 	test("deploy page - start") { f =>
-		f.driver.get(host + "deploy/start")
-		assert(checkPageLoad(f.driver))
+		f.driver.get(adminHost + "deploy/start")
+		assert(checkPageLoad()(f.driver))
 	}
 
 	test("deploy page - generate") { f =>
-		f.driver.get(host + "deploy/generate")
-		assert(checkPageLoad(f.driver))
+		f.driver.get(adminHost + "deploy/generate")
+		assert(checkPageLoad()(f.driver))
 	}
 
 	test("task page") { f =>
-		f.driver.get(host + "task")
-		assert(checkPageLoad(f.driver))
+		f.driver.get(adminHost + "task")
+		assert(checkPageLoad()(f.driver))
 	}
 
 	test("task page - run") { f =>
-		f.driver.get(host + "task/run/RenderTask")
-		assert(checkPageLoad(f.driver))
+		f.driver.get(adminHost + "task/run/RenderTask")
+		assert(checkPageLoad()(f.driver))
 	}
 
 	test("task page - pause") { f =>
-		f.driver.get(host + "task/pause/RenderTask")
-		assert(checkPageLoad(f.driver))
+		f.driver.get(adminHost + "task/pause/RenderTask")
+		assert(checkPageLoad()(f.driver))
 	}
 
 	test("task page - resume") { f =>
-		f.driver.get(host + "task/resume/RenderTask")
-		assert(checkPageLoad(f.driver))
+		f.driver.get(adminHost + "task/resume/RenderTask")
+		assert(checkPageLoad()(f.driver))
 	}
 
 	test("files page") { f =>
-		f.driver.get(host + "files/")
-		assert(checkPageLoad(f.driver))
+		f.driver.get(adminHost + "files/")
+		assert(checkPageLoad()(f.driver))
 	}
 
 	test("logs page") { f =>
-		f.driver.get(host + "logs")
-		assert(checkPageLoad(f.driver))
+		f.driver.get(adminHost + "logs")
+		assert(checkPageLoad()(f.driver))
+	}
+
+	test("dbconsole page") { f =>
+		f.driver.get(adminHost + "dbconsole")
+		assert(checkPageLoad()(f.driver))
+	}
+
+	test("dbconsole select 1") { implicit f =>
+		f.driver.get(adminHost + "dbconsole")
+		val sql = f.driver.findElement(By.cssSelector("textarea"))
+		sql.sendKeys("SELECT 1;")
+		val submit = f.driver.findElement(By.cssSelector(".btn.btn-lg.btn-success"))
+		submit.click()
+
+		assert(checkPageLoad("#jakon_messages")(f.driver))
 	}
 }

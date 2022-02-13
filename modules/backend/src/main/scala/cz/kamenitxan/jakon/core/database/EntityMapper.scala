@@ -1,9 +1,5 @@
 package cz.kamenitxan.jakon.core.database
 
-import java.lang.reflect.Field
-import java.sql.ResultSet
-import java.time.{LocalDateTime, LocalTime}
-import java.time.format.DateTimeFormatter
 import cz.kamenitxan.jakon.core.database.converters.AbstractConverter
 import cz.kamenitxan.jakon.core.model.{BaseEntity, JakonObject}
 import cz.kamenitxan.jakon.logging.Logger
@@ -11,6 +7,10 @@ import cz.kamenitxan.jakon.utils.TypeReferences._
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
 
+import java.lang.reflect.Field
+import java.sql.ResultSet
+import java.time.format.DateTimeFormatter
+import java.time.{LocalDateTime, LocalTime}
 import javax.persistence.{Column, Embedded, ManyToOne, OneToMany}
 
 /**
@@ -67,9 +67,9 @@ object EntityMapper {
 	}
 
 	private def setFieldValue[T <: BaseEntity](obj: BaseEntity, cls: Class[T],
-																							field: Field,
-																							columnName: String,
-																							rs: ResultSet): Option[(String,  ForeignKeyInfo)] = {
+																						 field: Field,
+																						 columnName: String,
+																						 rs: ResultSet): Option[(String, ForeignKeyInfo)] = {
 		var foreignIds: (String, ForeignKeyInfo) = null
 		field.getType match {
 			case STRING => field.set(obj, rs.getString(columnName))
