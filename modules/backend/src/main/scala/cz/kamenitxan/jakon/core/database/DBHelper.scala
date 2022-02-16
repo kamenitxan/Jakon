@@ -1,8 +1,5 @@
 package cz.kamenitxan.jakon.core.database
 
-import java.lang.reflect.ParameterizedType
-import java.sql._
-
 import com.zaxxer.hikari.HikariDataSource
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
 import cz.kamenitxan.jakon.core.model._
@@ -12,6 +9,8 @@ import cz.kamenitxan.jakon.utils.Utils._
 import org.intellij.lang.annotations.Language
 import org.sqlite.SQLiteConfig
 
+import java.lang.reflect.ParameterizedType
+import java.sql._
 import scala.collection.mutable
 
 /**
@@ -177,15 +176,20 @@ object DBHelper {
 							case _ =>
 								field.getType.asInstanceOf[Class[JakonObject]]
 						}
-						val className = field.getGenericType match {
+						val (className, superClass) = field.getGenericType match {
 							case parameterizedType: ParameterizedType =>
 								val typeCls = parameterizedType.getActualTypeArguments.head
-								typeCls.getTypeName.substring(typeCls.getTypeName.lastIndexOf(".") + 1)
+								(typeCls.getTypeName.substring(typeCls.getTypeName.lastIndexOf(".") + 1), typeCls.getClass.getSuperclass)
 							case _ =>
-								objectClass.getSimpleName
+								(objectClass.getSimpleName, objectClass.getSuperclass)
+						}
+						val joinSql = if (objectClass.getSuperclass != classOf[JakonObject]) {
+							s"JOIN ${superClass.getSimpleName} s ON s.id = JakonObject.id"
+						} else {
+							""
 						}
 
-						val sql = s"SELECT * FROM $className c JOIN JakonObject ON c.id = JakonObject.id WHERE " + "c.id = ? OR " * (fki._2.ids.size - 1) + "c.id = ?"
+						val sql = s"SELECT * FROM $className c JOIN JakonObject ON c.id = JakonObject.id $joinSql WHERE " + "c.id = ? OR " * (fki._2.ids.size - 1) + "c.id = ?"
 						val stmt = conn.prepareStatement(sql)
 						fki._2.ids.zipWithIndex.foreach(idi => {
 							stmt.setInt(idi._2 + 1, idi._1)

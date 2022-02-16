@@ -101,4 +101,14 @@ class MenuTest extends TestBase {
 
 		assert(checkPageLoad("#jakon_messages")(f.driver))
 	}
+
+	test("dbconsole select error") { implicit f =>
+		f.driver.get(adminHost + "dbconsole")
+		val sql = f.driver.findElement(By.cssSelector("textarea"))
+		sql.sendKeys("SSS;")
+		val submit = f.driver.findElement(By.cssSelector(".btn.btn-lg.btn-success"))
+		submit.click()
+
+		assert(checkPageLoad("#jakon_messages")(f.driver))
+	}
 }
