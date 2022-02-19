@@ -5,8 +5,6 @@ val V = new {
   val jakon = "0.4-SNAPSHOT"
 	val spark = "2.9.4-JAKON"
 	val log4j = "2.17.0"
-	val circe = "0.14.1"
-	val lucene = "7.5.0"
 }
 
 scalaVersion := V.Scala
@@ -25,6 +23,7 @@ val Dependencies = new {
 
 	)
 
+	//noinspection SpellCheckingInspection
 	lazy val backend = Seq(
 		libraryDependencies ++=
 			Seq(
@@ -43,27 +42,26 @@ val Dependencies = new {
 				"org.apache.commons" % "commons-lang3" % "3.12.0",
 				"de.svenkubiak" % "jBCrypt" % "0.4.3",
 				"commons-fileupload" % "commons-fileupload" % "1.4",
-				"net.minidev" % "json-smart" % "2.4.7",
+				"net.minidev" % "json-smart" % "2.4.8",
 				"com.sun.mail" % "javax.mail" % "1.6.2",
 				"com.atlassian.commonmark" % "commonmark" % "0.11.0",
 				"com.google.code.gson" % "gson" % "2.9.0",
-				"org.apache.lucene" % "lucene-core" % V.lucene,
-				"org.apache.lucene" % "lucene-queryparser" % V.lucene,
-				"io.github.classgraph" % "classgraph" % "4.8.138",
+				//"org.apache.lucene" % "lucene-core" % "7.5.0",
+				//"org.apache.lucene" % "lucene-queryparser" % "7.5.0",
+				"io.github.classgraph" % "classgraph" % "4.8.139",
 				"commons-codec" % "commons-codec" % "1.15",
-				"com.zaxxer" % "HikariCP" % "5.0.0",
-				"com.github.scribejava" % "scribejava-apis" % "6.5.1",
+				"com.zaxxer" % "HikariCP" % "5.0.1",
+				"com.github.scribejava" % "scribejava-apis" % "8.3.1",
 				"cz.etn" % "email-validator" % "1.3.0",
 				"org.jetbrains" % "annotations" % "22.0.0",
 				"com.lihaoyi" %% "sourcecode" % "0.2.8",
 				"org.scalatest" %% "scalatest" % "3.2.9" % "test",
-				"org.seleniumhq.selenium" % "htmlunit-driver" % "2.55.0" % "test"
+				"org.seleniumhq.selenium" % "htmlunit-driver" % "2.58.0" % "test"
 			)
 	)
 
 	lazy val shared = Def.settings(
-		libraryDependencies += "io.circe" %%% "circe-core" % V.circe,
-		libraryDependencies += "io.circe" %%% "circe-generic" % V.circe
+
 	)
 
 	lazy val tests = Def.settings(
