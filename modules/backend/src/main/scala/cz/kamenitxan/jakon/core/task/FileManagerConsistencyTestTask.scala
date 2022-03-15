@@ -1,18 +1,18 @@
 package cz.kamenitxan.jakon.core.task
 
-import java.io.{File, IOException}
-import java.nio.file._
-import java.nio.file.attribute.BasicFileAttributes
-import java.sql.Connection
-import java.time.LocalDateTime
-import java.util.concurrent.TimeUnit
-
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonFile
 import cz.kamenitxan.jakon.core.service.{JakonFileService, UserService}
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.webui.controller.impl.FileManagerController
 import cz.kamenitxan.jakon.webui.controller.impl.FileManagerController.REPOSITORY_BASE_PATH
+
+import java.io.{File, IOException}
+import java.nio.file._
+import java.nio.file.attribute.BasicFileAttributes
+import java.sql.Connection
+import java.time.LocalDateTime
+import java.util.concurrent.TimeUnit
 
 class FileManagerConsistencyTestTask extends AbstractTask(1, TimeUnit.HOURS) {
 
@@ -63,7 +63,7 @@ class FileManagerConsistencyTestTask extends AbstractTask(1, TimeUnit.HOURS) {
 	}
 
 	@throws[IOException]
-	private def visitFileOrDirectory(file: Path, files: List[JakonFile])(implicit conn: Connection) = {
+	private def visitFileOrDirectory(file: Path, files: Seq[JakonFile])(implicit conn: Connection) = {
 		Logger.debug(s"Visiting $file")
 		val path = file.getParent.toString
 		val fileName = file.getFileName.toString

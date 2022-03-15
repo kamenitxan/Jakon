@@ -6,6 +6,7 @@ import cz.kamenitxan.jakon.webui.Context
 import spark.{Request, Response}
 
 
+@Deprecated
 abstract class AbstractController extends CustomController {
 	val template: String
 	val icon: String = "fa-cog"

@@ -4,6 +4,7 @@ import spark.route.HttpMethod;
 
 import java.lang.annotation.*;
 
+@Deprecated
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

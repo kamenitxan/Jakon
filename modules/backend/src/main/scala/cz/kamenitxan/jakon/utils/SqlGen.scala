@@ -215,6 +215,7 @@ object SqlGen {
 			case DATE_o | DATE => JDBCType.DATE.getVendorTypeNumber
 			case DATETIME => JDBCType.TIMESTAMP.getVendorTypeNumber
 			case MAP => JDBCType.VARCHAR.getVendorTypeNumber
+			case SEQ => JDBCType.VARCHAR.getVendorTypeNumber
 			case _ =>
 				Logger.error(s"Unknown sql type ${f.getType} on field ${f.getName}")
 				0
