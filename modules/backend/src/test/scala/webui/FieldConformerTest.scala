@@ -1,6 +1,7 @@
 package webui
 
 import cz.kamenitxan.jakon.core.database.JakonField
+import cz.kamenitxan.jakon.core.database.annotation.ManyToMany
 import cz.kamenitxan.jakon.core.model.{JakonObject, JakonUser}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
@@ -12,7 +13,6 @@ import org.scalatest.funsuite.AnyFunSuite
 import java.time.{LocalDate, LocalDateTime, LocalTime}
 import java.util
 import java.util.{Calendar, Date, GregorianCalendar}
-import javax.persistence.ManyToMany
 
 @DoNotDiscover
 class FieldConformerTest extends AnyFunSuite {

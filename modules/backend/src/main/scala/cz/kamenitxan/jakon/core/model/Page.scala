@@ -1,10 +1,9 @@
 package cz.kamenitxan.jakon.core.model
 
 import java.sql.{Connection, Statement, Types}
-
 import cz.kamenitxan.jakon.core.database.JakonField
+import cz.kamenitxan.jakon.core.database.annotation.{ManyToOne, Transient}
 import cz.kamenitxan.jakon.webui.ObjectSettings
-import javax.persistence._
 
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.

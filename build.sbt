@@ -37,7 +37,6 @@ val Dependencies = new {
 				"org.xerial" % "sqlite-jdbc" % "3.36.0.2",
 				"mysql" % "mysql-connector-java" % "8.0.25",
 				"com.google.guava" % "guava" % "29.0-jre",
-				"javax.persistence" % "javax.persistence-api" % "2.2",
 				"commons-io" % "commons-io" % "2.11.0",
 				"org.apache.commons" % "commons-lang3" % "3.12.0",
 				"de.svenkubiak" % "jBCrypt" % "0.4.3",

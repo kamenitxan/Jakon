@@ -2,13 +2,13 @@ package cz.kamenitxan.jakon.utils.mail
 
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.JakonField
+import cz.kamenitxan.jakon.core.database.annotation.{Column, OneToMany}
 import cz.kamenitxan.jakon.core.database.converters.ScalaMapConverter
 import cz.kamenitxan.jakon.core.model.{JakonFile, JakonObject}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 
 import java.sql.{Connection, JDBCType, Statement}
 import java.util.Date
-import javax.persistence.{Column, OneToMany}
 
 
 class EmailEntity(u: Unit = ()) extends JakonObject {

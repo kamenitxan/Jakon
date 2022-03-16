@@ -2,14 +2,13 @@ package cz.kamenitxan.jakon.core.database
 
 import java.io.File
 import java.sql.{Connection, SQLException}
-
 import com.zaxxer.hikari.HikariConfig
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper.getConnection
+import cz.kamenitxan.jakon.core.database.annotation.{Column, ManyToOne, Transient}
 import cz.kamenitxan.jakon.core.model._
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.Utils
-import javax.persistence.{Column, ManyToOne, Transient}
 
 import scala.collection.mutable
 

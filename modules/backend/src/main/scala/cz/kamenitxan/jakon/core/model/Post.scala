@@ -1,19 +1,18 @@
 package cz.kamenitxan.jakon.core.model
 
+import cz.kamenitxan.jakon.core.database.JakonField
+import cz.kamenitxan.jakon.core.database.annotation.ManyToOne
+import cz.kamenitxan.jakon.core.function.FunctionHelper
+import cz.kamenitxan.jakon.core.template.utils.TemplateUtils
+import cz.kamenitxan.jakon.webui.ObjectSettings
+
 import java.sql.{Connection, Statement, Types}
 import java.util.Date
 import java.util.regex.Pattern
-import cz.kamenitxan.jakon.core.database.JakonField
-import cz.kamenitxan.jakon.core.function.FunctionHelper
-import cz.kamenitxan.jakon.core.template.utils.TemplateUtils
-import cz.kamenitxan.jakon.utils.PageContext
-import cz.kamenitxan.jakon.webui.ObjectSettings
-
-import javax.persistence.ManyToOne
 
 /**
- * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
- */
+  * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
+  */
 class Post extends JakonObject {
 	@JakonField(listOrder = 4)
 	var date: Date = _

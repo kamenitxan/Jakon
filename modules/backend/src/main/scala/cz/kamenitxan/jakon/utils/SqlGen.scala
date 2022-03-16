@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.utils
 
 import com.google.gson.reflect.TypeToken
+import cz.kamenitxan.jakon.core.database.annotation.{Embedded, ManyToOne, Transient}
 import cz.kamenitxan.jakon.core.database.converters.{AbstractConverter, NoOpConverter}
 import cz.kamenitxan.jakon.core.database.{I18n, JakonField}
 import cz.kamenitxan.jakon.core.model.JakonObject
@@ -13,7 +14,6 @@ import java.sql.{Connection, JDBCType, PreparedStatement, Statement}
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, LocalTime}
 import java.util.Date
-import javax.persistence.{Embedded, ManyToOne, Transient}
 import scala.collection.mutable
 
 

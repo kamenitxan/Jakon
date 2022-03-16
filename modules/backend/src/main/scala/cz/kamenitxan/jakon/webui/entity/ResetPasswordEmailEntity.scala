@@ -2,11 +2,10 @@ package cz.kamenitxan.jakon.webui.entity
 
 import java.sql.{Connection, Statement}
 import java.util.Date
-
 import cz.kamenitxan.jakon.core.database.JakonField
+import cz.kamenitxan.jakon.core.database.annotation.ManyToOne
 import cz.kamenitxan.jakon.core.model.{JakonObject, JakonUser}
 import cz.kamenitxan.jakon.webui.ObjectSettings
-import javax.persistence.ManyToOne
 
 class ResetPasswordEmailEntity extends JakonObject {
 

@@ -1,8 +1,8 @@
 package cz.kamenitxan.jakon.core.model
 
 import cz.kamenitxan.jakon.core.database.JakonField
+import cz.kamenitxan.jakon.core.database.annotation.Transient
 import cz.kamenitxan.jakon.webui.ObjectSettings
-import javax.persistence._
 
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
@@ -18,7 +18,6 @@ class Category extends JakonObject with Ordered {
 	@JakonField(listOrder = -96)
 	override var visibleOrder: Int = _
 
-	@Transient
 	override val objectSettings: ObjectSettings = null
 
 	override def toString: String = "Category{" + "id='" + id + '\'' + ", name='" + name + '\'' + "} "

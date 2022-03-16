@@ -8,7 +8,6 @@ import cz.kamenitxan.jakon.core.database.{DBHelper, JakonField}
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.{SqlGen, Utils}
 import cz.kamenitxan.jakon.webui.ObjectSettings
-import javax.persistence._
 
 import scala.annotation.switch
 import scala.language.postfixOps
@@ -18,7 +17,6 @@ import scala.language.postfixOps
  */
 abstract class JakonObject(implicit s: sourcecode.FullName) extends BaseEntity {
 
-	@Id
 	@JakonField(disabled = true, required = false, listOrder = -99, searched = true)
 	var id: Int = 0
 	@JakonField

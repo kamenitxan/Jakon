@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.webui.conform
 
 import cz.kamenitxan.jakon.core.configuration.Settings
+import cz.kamenitxan.jakon.core.database.annotation.{ManyToOne, OneToMany}
 import cz.kamenitxan.jakon.core.database.{I18n, JakonField}
 import cz.kamenitxan.jakon.core.model.{I18nData, JakonObject}
 import cz.kamenitxan.jakon.utils.TypeReferences._
@@ -13,7 +14,6 @@ import java.lang.reflect.{Field, ParameterizedType, Type}
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, LocalDateTime, LocalTime}
-import javax.persistence.{ManyToOne, OneToMany}
 import scala.jdk.CollectionConverters._
 import scala.language.postfixOps
 

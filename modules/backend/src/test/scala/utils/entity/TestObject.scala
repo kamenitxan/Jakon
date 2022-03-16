@@ -1,5 +1,7 @@
 package utils.entity
 
+import cz.kamenitxan.jakon.core.database.annotation.{Embedded, ManyToOne, OneToMany}
+
 import java.time.{LocalDate, LocalDateTime, LocalTime}
 import java.util.Date
 import cz.kamenitxan.jakon.core.database.converters.ScalaMapConverter
@@ -8,7 +10,6 @@ import cz.kamenitxan.jakon.core.model.{JakonFile, JakonObject, JakonUser}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.MessageSeverity
 
-import javax.persistence.{Embedded, ManyToOne, OneToMany}
 
 class TestObject extends JakonObject {
 	@ManyToOne

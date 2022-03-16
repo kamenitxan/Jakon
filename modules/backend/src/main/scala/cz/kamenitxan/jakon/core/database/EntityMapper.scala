@@ -1,5 +1,6 @@
 package cz.kamenitxan.jakon.core.database
 
+import cz.kamenitxan.jakon.core.database.annotation.{Column, Embedded, ManyToOne, OneToMany}
 import cz.kamenitxan.jakon.core.database.converters.AbstractConverter
 import cz.kamenitxan.jakon.core.model.{BaseEntity, JakonObject}
 import cz.kamenitxan.jakon.logging.Logger
@@ -11,7 +12,6 @@ import java.lang.reflect.Field
 import java.sql.ResultSet
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDateTime, LocalTime}
-import javax.persistence.{Column, Embedded, ManyToOne, OneToMany}
 
 /**
  * Created by TPa on 24.05.2020.

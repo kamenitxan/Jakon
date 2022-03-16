@@ -4,7 +4,6 @@ import java.sql.{Connection, Statement}
 
 import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.webui.ObjectSettings
-import javax.persistence.Transient
 
 /**
   * Created by TPa on 2019-07-03.
@@ -25,7 +24,6 @@ class KeyValueEntity extends JakonObject {
 		executeInsert(stmt)
 	}
 
-	@Transient
 	override val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-unlock-alt")
 
 	override def toString = s"KeyValueEntity($name)"

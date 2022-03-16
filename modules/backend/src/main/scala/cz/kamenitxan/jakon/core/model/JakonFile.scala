@@ -1,9 +1,8 @@
 package cz.kamenitxan.jakon.core.model
 import java.time.LocalDateTime
-
 import cz.kamenitxan.jakon.core.database.JakonField
+import cz.kamenitxan.jakon.core.database.annotation.ManyToOne
 import cz.kamenitxan.jakon.webui.ObjectSettings
-import javax.persistence.ManyToOne
 
 class JakonFile extends JakonObject {
 

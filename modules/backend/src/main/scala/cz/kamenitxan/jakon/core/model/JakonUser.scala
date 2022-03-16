@@ -4,13 +4,13 @@ import cz.kamenitxan.jakon.core.configuration.Settings
 
 import java.sql.{Connection, Statement, Types}
 import cz.kamenitxan.jakon.core.database.JakonField
+import cz.kamenitxan.jakon.core.database.annotation.ManyToOne
 import cz.kamenitxan.jakon.core.database.converters.LocaleConverter
 import cz.kamenitxan.jakon.validation.validators.{Email, NotEmpty, Unique}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.controller.impl.Authentication
 
 import java.util.Locale
-import javax.persistence._
 
 
 /**
@@ -45,7 +45,6 @@ class JakonUser extends JakonObject with Serializable {
 	@JakonField(converter = classOf[LocaleConverter])
 	var locale: Locale = _
 
-	@Transient
 	override val objectSettings: ObjectSettings = JakonUser.objectSettings
 
 	override def createObject(jid: Int, conn: Connection): Int = {

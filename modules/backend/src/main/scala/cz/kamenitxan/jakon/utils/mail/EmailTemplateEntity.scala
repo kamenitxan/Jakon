@@ -1,11 +1,10 @@
 package cz.kamenitxan.jakon.utils.mail
 
 import java.sql.{Connection, Statement}
-
 import cz.kamenitxan.jakon.core.database.JakonField
+import cz.kamenitxan.jakon.core.database.annotation.Column
 import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.webui.ObjectSettings
-import javax.persistence.Column
 
 class EmailTemplateEntity extends JakonObject {
 	@JakonField(searched = true)
