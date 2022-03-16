@@ -13,7 +13,7 @@ class HealthCheckPagelet extends AbstractPagelet {
 
 	@Get(path = "/health", template = "ExamplePagelet")
 	def get(req: Request, res: Response): Unit = {
-
+		// just render
 	}
 
 	override def render(context: mutable.Map[String, Any], templatePath: String, req: Request): String = {
