@@ -1,15 +1,15 @@
-import java.io.IOException
 import core.pagelet.{JsonPageletTest, PageletTest}
 import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.custom_pages.AbstractStaticPage
 import cz.kamenitxan.jakon.core.model.Page
 import cz.kamenitxan.jakon.core.template.Pebble
-import devtools.DevtoolsTest
 import org.scalatest.{BeforeAndAfterAll, Suites}
 import utils.SecurityTest
 import utils.mail.EmailTest
 import webui._
+
+import java.io.{File, IOException}
 
 /**
   * Created by TPa on 27.08.16.
@@ -32,6 +32,7 @@ class ProdTestRunner extends Suites(
 
 	override def beforeAll(): Unit = {
 		println("Before!")
+		new File("jakonUnitTest.sqlite").delete()
 		Director.init()
 		Settings.setTemplateEngine(new Pebble)
 
