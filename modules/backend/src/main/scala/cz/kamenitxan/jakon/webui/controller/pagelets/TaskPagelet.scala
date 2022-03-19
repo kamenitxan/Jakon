@@ -1,46 +1,45 @@
-package cz.kamenitxan.jakon.webui.controller.impl
+package cz.kamenitxan.jakon.webui.controller.pagelets
 
 import cz.kamenitxan.jakon.core.database.DBHelper
+import cz.kamenitxan.jakon.core.dynamic.{Get, Pagelet}
 import cz.kamenitxan.jakon.core.model.KeyValueEntity
 import cz.kamenitxan.jakon.core.service.KeyValueService
 import cz.kamenitxan.jakon.core.task.TaskRunner
 import cz.kamenitxan.jakon.logging.Logger
-import cz.kamenitxan.jakon.webui.Context
-import cz.kamenitxan.jakon.webui.controller.{AbstractController, ExecuteFun}
-import spark.route.HttpMethod
 import spark.{Request, Response}
 
+import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
 /**
-  * Created by TPa on 27.05.18.
-  */
-class TaskController extends AbstractController {
-	override val template: String = "pages/task"
+ * Created by TPa on 19.03.2022.
+ */
+@Pagelet(path = "/admin/task", showInAdmin = true)
+class TaskPagelet extends AbstractAdminPagelet {
+
+	override val name: String = this.getClass.getSimpleName
+
 	override val icon: String = "fa-tasks"
+
 	private val redirectPath = "/admin/task"
 
-	override def name(): String = "TASKS"
-
-	override def path(): String = "task"
-
-	override def render(req: Request, res: Response): Context = {
-		new Context(Map[String, Any](
+	@Get(path = "", template = "pagelet/task")
+	def render(req: Request, res: Response): mutable.Map[String, Any] = {
+		mutable.Map[String, Any](
 			"tasks" -> TaskRunner.taskList.asJava
-		), template)
+		)
 	}
 
-	@ExecuteFun(path = "task/run/:name", method = HttpMethod.get)
-	def runSingle(req: Request, res: Response): Context = {
+	@Get(path = "/run/:name", template = "pagelet/task")
+	def runSingle(req: Request, res: Response): Unit = {
 		val name = req.params(":name")
 		val task = TaskRunner.taskList.find(t => t.name.value.equals(name))
 		if (task.isDefined) TaskRunner.runSingle(task.get)
 		res.redirect(redirectPath)
-		new Context(Map[String, Any](), template)
 	}
 
-	@ExecuteFun(path = "task/pause/:name", method = HttpMethod.get)
-	def pause(req: Request, res: Response): Context = {
+	@Get(path = "/pause/:name", template = "pagelet/task")
+	def pause(req: Request, res: Response): Unit = {
 		val name = req.params(":name")
 		val task = TaskRunner.taskList.find(t => t.name.value.equals(name))
 		if (task.isDefined) {
@@ -51,11 +50,10 @@ class TaskController extends AbstractController {
 			Logger.info(s"Task $name paused")
 		}
 		res.redirect(redirectPath)
-		new Context(Map[String, Any](), template)
 	}
 
-	@ExecuteFun(path = "task/resume/:name", method = HttpMethod.get)
-	def resume(req: Request, res: Response): Context = {
+	@Get(path = "/resume/:name", template = "pagelet/task")
+	def resume(req: Request, res: Response): Unit = {
 		val name = req.params(":name")
 		val task = TaskRunner.taskList.find(t => t.name.value.equals(name))
 		if (task.isDefined) {
@@ -66,6 +64,6 @@ class TaskController extends AbstractController {
 			})
 		}
 		res.redirect(redirectPath)
-		new Context(Map[String, Any](), template)
 	}
+
 }

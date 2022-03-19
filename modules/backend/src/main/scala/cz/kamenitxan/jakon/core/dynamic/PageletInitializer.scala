@@ -1,8 +1,5 @@
 package cz.kamenitxan.jakon.core.dynamic
 
-import java.lang.reflect.Method
-import java.sql.Connection
-import javax.servlet.MultipartConfigElement
 import com.google.gson.Gson
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.logging.Logger
@@ -15,6 +12,9 @@ import cz.kamenitxan.jakon.webui.entity.CustomControllerInfo
 import cz.kamenitxan.jakon.webui.{AdminSettings, Context}
 import spark.{Request, Response, Spark}
 
+import java.lang.reflect.Method
+import java.sql.Connection
+import javax.servlet.MultipartConfigElement
 import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
@@ -49,11 +49,13 @@ object PageletInitializer {
 				})
 		})
 		controllers.filter(c => classOf[AbstractAdminPagelet].isAssignableFrom(c) && c.getAnnotation(classOf[Pagelet]).showInAdmin()).foreach(c => {
-			val apa = c.getDeclaredMethods.find(m => m.getAnnotation(classOf[Get]) != null)
+			val apa = c.getDeclaredMethods.filter(m => m.getAnnotation(classOf[Get]) != null)
+				.map(_.getAnnotation(classOf[Get]))
+				.sortBy(_.path()).headOption
 			if (apa.nonEmpty) {
 				val inst = c.getDeclaredConstructor().newInstance().asInstanceOf[AbstractAdminPagelet]
 				val controllerAnn = c.getAnnotation(classOf[Pagelet])
-				val get = apa.get.getAnnotation(classOf[Get])
+				val get = apa.get
 				AdminSettings.customControllersInfo += new CustomControllerInfo(inst.name, inst.icon, controllerAnn.path() + get.path(), c)
 			}
 		})
