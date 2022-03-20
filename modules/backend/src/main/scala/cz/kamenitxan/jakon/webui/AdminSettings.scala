@@ -7,8 +7,6 @@ import cz.kamenitxan.jakon.webui.controller.objectextension.AbstractObjectExtens
 import cz.kamenitxan.jakon.webui.entity.CustomControllerInfo
 import spark.{Request, Response}
 
-import java.util
-import scala.jdk.CollectionConverters._
 import scala.collection.mutable
 
 object AdminSettings {
@@ -19,6 +17,7 @@ object AdminSettings {
 	val customControllersInfo = new mutable.ListBuffer[CustomControllerInfo]
 	val objectExtensions = new mutable.HashMap[Class[_ <: JakonObject], mutable.Set[Class[_ <: AbstractObjectExtension]]]() with mutable.MultiMap[Class[_ <: JakonObject], Class[_ <: AbstractObjectExtension]]
 
+	@Deprecated
 	def registerCustomController[T <: AbstractController](controller: Class[T]): Unit = {
 		val inst = controller.newInstance()
 		customControllers += controller
