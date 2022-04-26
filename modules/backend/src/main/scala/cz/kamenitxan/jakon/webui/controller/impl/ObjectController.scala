@@ -1,7 +1,5 @@
 package cz.kamenitxan.jakon.webui.controller.impl
 
-import java.lang.reflect.Field
-import java.sql.{Connection, SQLException}
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.{DBHelper, I18n}
 import cz.kamenitxan.jakon.core.model.{I18nData, JakonObject, Ordered}
@@ -16,6 +14,8 @@ import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import org.sqlite.{SQLiteErrorCode, SQLiteException}
 import spark.{ModelAndView, Request, Response}
 
+import java.lang.reflect.Field
+import java.sql.Connection
 import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
@@ -36,7 +36,7 @@ object ObjectController {
 		val objectName = req.params(":name")
 		val page = req.queryParams("page")
 		val pageNumber = Try(Integer.parseInt(page)).getOrElse(1)
-		val filterParams = req.queryMap().toMap.asScala.filter(kv => kv._1.startsWith("filter_") && !kv._2.head.isEmpty).map(kv => kv._1.substring(7) -> kv._2.head)
+		val filterParams = req.queryMap().toMap.asScala.filter(kv => kv._1.startsWith("filter_") && kv._2.head.nonEmpty).map(kv => kv._1.substring(7) -> kv._2.head)
 		val objectClass = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(objectName))
 		if (objectClass.isDefined) {
 			if (!isAuthorized(objectClass.get)) {
@@ -344,12 +344,12 @@ object ObjectController {
 				stmt.setString(2, l.toString)
 				DBHelper.count(stmt) > 0
 			})
-			val i18nData = cls.newInstance().asInstanceOf[I18nData]
+			val i18nData = cls.getDeclaredConstructor().newInstance().asInstanceOf[I18nData]
 			i18nData.id = id
 			i18nData.locale = l
 			params.filter(_.endsWith(l.toString)).foreach(p => {
 				val fieldName = p.replace("-" + l.toString, "")
-				val fieldRefOpt = fields.find(f => f.getName == (fieldName))
+				val fieldRefOpt = fields.find(f => f.getName == fieldName)
 				if (fieldRefOpt.isDefined) {
 					val fieldRef = fieldRefOpt.get
 					fieldRef.setAccessible(true)

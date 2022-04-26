@@ -1,20 +1,19 @@
 package cz.kamenitxan.jakon.core.dynamic
 
-import java.io.{PrintWriter, StringWriter}
-import java.lang.reflect.Method
-import java.sql.Connection
-
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.dynamic.PageletInitializer.{MethodArgs, createMethodArgs}
 import cz.kamenitxan.jakon.core.dynamic.entity.{AbstractJsonResponse, JsonErrorResponse, JsonFailResponse, ResponseStatus}
 import cz.kamenitxan.jakon.logging.Logger
-import cz.kamenitxan.jakon.utils.TypeReferences._
 import cz.kamenitxan.jakon.utils.I18nUtil
+import cz.kamenitxan.jakon.utils.TypeReferences._
 import cz.kamenitxan.jakon.validation.EntityValidator
 import cz.kamenitxan.jakon.webui.entity.Message
 import spark.{Request, Response, Spark}
 
+import java.io.{PrintWriter, StringWriter}
+import java.lang.reflect.Method
+import java.sql.Connection
 import scala.jdk.CollectionConverters._
 
 /**
@@ -106,11 +105,25 @@ object JsonPageletInitializer {
 	}
 
 	private def createResponse(responseData: AnyRef, controller: AbstractJsonPagelet): String = {
+		if (responseData == null) {
+			return ""
+		}
+		val wrap = (data: AnyRef) => {
+			val jr = new AbstractJsonResponse(ResponseStatus.success, data) {}
+			controller.gson.toJson(jr, classOf[AbstractJsonResponse])
+		}
 		responseData match {
 			case rd: AbstractJsonResponse => controller.gson.toJson(rd)
-			case rd =>
-				val jr = new AbstractJsonResponse(ResponseStatus.success, rd) {}
-				controller.gson.toJson(jr, classOf[AbstractJsonResponse])
+			case rd: String => if (controller.wrapResponse) {
+				wrap(rd)
+			} else {
+				rd
+			}
+			case rd => if (controller.wrapResponse) {
+				wrap(rd)
+				} else {
+				controller.gson.toJson(rd)
+				}
 		}
 	}
 

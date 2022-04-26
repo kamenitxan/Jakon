@@ -9,4 +9,9 @@ abstract class AbstractJsonPagelet {
 	val gson: Gson = new GsonBuilder()
 	  .setPrettyPrinting()
 	  .create()
+
+	/**
+	 * Response will be wrapped into [[cz.kamenitxan.jakon.core.dynamic.entity.AbstractJsonResponse]]
+	 */
+	val wrapResponse = true
 }
