@@ -6,7 +6,7 @@ import cz.kamenitxan.jakon.core.dynamic.PageletInitializer.{MethodArgs, createMe
 import cz.kamenitxan.jakon.core.dynamic.entity.{AbstractJsonResponse, JsonErrorResponse, JsonFailResponse, ResponseStatus}
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.I18nUtil
-import cz.kamenitxan.jakon.utils.TypeReferences._
+import cz.kamenitxan.jakon.utils.TypeReferences.*
 import cz.kamenitxan.jakon.validation.EntityValidator
 import cz.kamenitxan.jakon.webui.entity.Message
 import spark.{Request, Response, Spark}
@@ -14,7 +14,7 @@ import spark.{Request, Response, Spark}
 import java.io.{PrintWriter, StringWriter}
 import java.lang.reflect.Method
 import java.sql.Connection
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 /**
  * Created by TPa on 13.04.2020.
@@ -31,15 +31,15 @@ object JsonPageletInitializer {
 			c.getDeclaredMethods
 			  .filter(m => m.getAnnotation(classOf[Get]) != null || m.getAnnotation(classOf[Post]) != null)
 			  .foreach(m => {
-				  val get = m.getAnnotation(classOf[Get])
-				  val post = m.getAnnotation(classOf[Post])
-				  if (get != null) {
+					val get = m.getAnnotation(classOf[Get])
+					val post = m.getAnnotation(classOf[Post])
+					if (get != null) {
 					  initGetAnnotation(get, controllerAnn, m, c)
-				  }
-				  if (post != null) {
+					}
+					if (post != null) {
 					  initPostAnnotation(post, controllerAnn, m, c)
-				  }
-			  })
+					}
+				})
 		})
 
 		Logger.info("Json pagelet initialization complete")
@@ -150,7 +150,7 @@ object JsonPageletInitializer {
 	private def parseJsonArgs(m: Method, req: Request, res: Response,controller: AbstractJsonPagelet): (PageletInitializer.MethodArgs, Option[Connection]) = {
 		var dataRef: Any = null
 		var conn: Connection = null
-		val arr = m.getParameterTypes.map {
+		val arr: Array[Any] = m.getParameterTypes.map {
 			case REQUEST_CLS => req
 			case RESPONSE_CLS => res
 			case CONNECTION_CLS =>

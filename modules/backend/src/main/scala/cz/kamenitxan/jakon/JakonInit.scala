@@ -13,7 +13,7 @@ import cz.kamenitxan.jakon.utils.{LoggingExceptionHandler, PageContext}
 import cz.kamenitxan.jakon.webui.controller.impl.{DeployController, FileManagerController}
 import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, ResetPasswordEmailEntity}
 import cz.kamenitxan.jakon.webui.{AdminSettings, Routes}
-import spark.Spark._
+import spark.Spark.*
 import spark.{Filter, Request, Response}
 
 import java.io.File
@@ -82,8 +82,8 @@ class JakonInit {
 		taskSetup()
 
 		websocketSetup()
-		before((req: Request, res: Response) => {
-			PageContext.init(req, res)
+		before(new Filter {
+			override def handle(req: Request, res: Response): Unit = PageContext.init(req, res)
 		})
 		afterAfter((_: Request, _: Response) => PageContext.destroy())
 		if (Settings.getDeployMode != DeployMode.PRODUCTION) {

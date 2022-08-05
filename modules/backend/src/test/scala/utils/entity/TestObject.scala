@@ -1,14 +1,14 @@
 package utils.entity
 
 import cz.kamenitxan.jakon.core.database.annotation.{Embedded, ManyToOne, OneToMany}
-
-import java.time.{LocalDate, LocalDateTime, LocalTime}
-import java.util.Date
 import cz.kamenitxan.jakon.core.database.converters.ScalaMapConverter
 import cz.kamenitxan.jakon.core.database.{I18n, JakonField}
 import cz.kamenitxan.jakon.core.model.{JakonFile, JakonObject, JakonUser}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.entity.MessageSeverity
+
+import java.time.{LocalDate, LocalDateTime, LocalTime}
+import java.util.Date
 
 
 class TestObject extends JakonObject {
@@ -37,7 +37,7 @@ class TestObject extends JakonObject {
 	@JakonField
 	var self: TestObject = _
 	@JakonField
-	var enum: MessageSeverity = MessageSeverity.ERROR
+	var javaEnum: MessageSeverity = MessageSeverity.ERROR
 	@JakonField(converter = classOf[ScalaMapConverter])
 	var map: Map[String, String] = Map()
 	@JakonField

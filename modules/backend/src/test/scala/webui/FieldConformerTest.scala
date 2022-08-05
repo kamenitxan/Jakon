@@ -5,7 +5,7 @@ import cz.kamenitxan.jakon.core.database.annotation.ManyToMany
 import cz.kamenitxan.jakon.core.model.{JakonObject, JakonUser}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
-import cz.kamenitxan.jakon.webui.conform.FieldConformer._
+import cz.kamenitxan.jakon.webui.conform.FieldConformer.*
 import cz.kamenitxan.jakon.webui.entity.MessageSeverity
 import org.scalatest.DoNotDiscover
 import org.scalatest.funsuite.AnyFunSuite
@@ -46,7 +46,7 @@ class FieldConformerTest extends AnyFunSuite {
 		@JakonField
 		var self: TestObject = _
 		@JakonField
-		var enum: MessageSeverity = MessageSeverity.ERROR
+		var javaEnum: MessageSeverity = MessageSeverity.ERROR
 		@JakonField
 		var listJInt: util.ArrayList[Integer] = _
 		@JakonField
@@ -152,8 +152,8 @@ class FieldConformerTest extends AnyFunSuite {
 		assert(t == conformed)
 	}
 
-	test("conform enum") {
-		val conformed = "ERROR".conform(getField("enum"))
+	test("conform javaEnum") {
+		val conformed = "ERROR".conform(getField("javaEnum"))
 		val t = MessageSeverity.ERROR
 		assert(t == conformed)
 	}

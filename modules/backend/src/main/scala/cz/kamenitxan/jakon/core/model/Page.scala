@@ -1,9 +1,10 @@
 package cz.kamenitxan.jakon.core.model
 
-import java.sql.{Connection, Statement, Types}
 import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.core.database.annotation.{ManyToOne, Transient}
 import cz.kamenitxan.jakon.webui.ObjectSettings
+
+import java.sql.{Connection, Statement, Types}
 
 /**
   * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
@@ -19,10 +20,10 @@ class Page extends JakonObject with Ordered {
 	@JakonField
 	var showComments: Boolean = false
 	@JakonField(listOrder = -96, shownInEdit = false, shownInList = false)
-	override var objectOrder: Double = _
+	var objectOrder: Double = _
 	@Transient
 	@JakonField(listOrder = -96)
-	override var visibleOrder: Int = _
+	var visibleOrder: Int = _
 
 	override def createUrl: String = "/page/" + title.replaceAll(" ", "_").toLowerCase
 

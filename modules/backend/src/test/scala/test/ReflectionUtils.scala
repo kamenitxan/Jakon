@@ -11,7 +11,8 @@ object ReflectionUtils {
 	}
 
 	def changeObjectFieldValue(fieldName: String, objectName: String, value: Any): Unit = {
-		import scala.reflect.runtime.{universe => ru}
+		???
+		/*import scala.reflect.runtime.{universe => ru}
 		val mirror = ru.runtimeMirror(getClass.getClassLoader)
 
 		val moduleSymbol = mirror.staticModule(objectName)
@@ -23,7 +24,7 @@ object ReflectionUtils {
 		  .filter(f => f.name.toString.strip() == fieldName)
 		  .head
 		val fieldMirror = instanceMirror.reflectField(field.asTerm)
-		fieldMirror.set(value)
+		fieldMirror.set(value)*/
 
 	}
 }

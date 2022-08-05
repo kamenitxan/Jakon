@@ -1,8 +1,5 @@
 package cz.kamenitxan.jakon.utils.security.oauth
 
-import java.sql.Connection
-import java.util
-
 import com.github.scribejava.apis.GoogleApi20
 import com.github.scribejava.core.builder.ServiceBuilder
 import com.github.scribejava.core.model.{OAuth2AccessToken, OAuthRequest, Verb}
@@ -12,7 +9,9 @@ import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.utils.Utils.StringImprovements
 import spark.Request
 
-import scala.jdk.CollectionConverters._
+import java.sql.Connection
+import java.util
+import scala.jdk.CollectionConverters.*
 
 
 @Configuration
@@ -24,19 +23,19 @@ object Google extends OauthProvider {
 	var clientSecret: String = _
 
 	private lazy val gson = new Gson()
-	lazy val isEnabled = Utils.nonEmpty(clientId) && Utils.nonEmpty(clientSecret)
+	val isEnabled = Utils.nonEmpty(clientId) && Utils.nonEmpty(clientSecret)
 
 	def authInfo(req: Request, redirectTo: String) = OauthInfo("google", createAuthUrl(req, redirectTo))
 
 	lazy val service = new ServiceBuilder(clientId)
-	  .apiSecret(clientSecret)
-	  .defaultScope("email")
-	  .callback(s"http://${Settings.getHostname}${
-		  if (Settings.getPort != 80) {
-			  s":${Settings.getPort}"
-		  }
-	  }/admin/login/oauth?provider=${this.getClass.getSimpleName}")
-	  .build(GoogleApi20.instance)
+		.apiSecret(clientSecret)
+		.defaultScope("email")
+		.callback(s"http://${Settings.getHostname}${
+			if (Settings.getPort != 80) {
+				s":${Settings.getPort}"
+			}
+		}/admin/login/oauth?provider=${this.getClass.getSimpleName}")
+		.build(GoogleApi20.instance)
 
 	def createAuthUrl(req: Request, redirectTo: String): String = {
 		if (!isEnabled) return ""

@@ -1,20 +1,20 @@
 package cz.kamenitxan.jakon.core.database
 
-import java.io.File
-import java.sql.{Connection, SQLException}
 import com.zaxxer.hikari.HikariConfig
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper.getConnection
 import cz.kamenitxan.jakon.core.database.annotation.{Column, ManyToOne, Transient}
-import cz.kamenitxan.jakon.core.model._
+import cz.kamenitxan.jakon.core.model.*
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.Utils
 
+import java.io.File
+import java.sql.{Connection, SQLException}
 import scala.collection.mutable
 
 /**
-  * Created by TPa on 17/09/2019.
-  */
+ * Created by TPa on 17/09/2019.
+ */
 object DBInitializer {
 
 	val config = new HikariConfig
@@ -152,27 +152,27 @@ object DBInitializer {
 					Iterator.from(0).takeWhile(_ => rs.next()).map(_ => TableCollumnInfo(rs.getString(1), rs.getString(2))).toSeq
 			}
 			jo.getDeclaredFields
-			  .filter(f => f.getAnnotation(classOf[JakonField]) != null && f.getAnnotation(classOf[Transient]) == null)
-			  .foreach(f => {
-				  val columnAnn = f.getAnnotation(classOf[Column])
-				  val manyToOne = f.getAnnotation(classOf[ManyToOne])
-				  val column = if (columnAnn != null) {
-					  collumns.find(c => c.name == columnAnn.name())
-				  } else if (manyToOne != null) {
-					  collumns.find(c => c.name == f.getName + "_id")
-				  } else {
-					  collumns.find(c => c.name == f.getName)
-				  }
-				  if (column.isEmpty) {
-					  Logger.error(s"Field ${jo.getSimpleName}.${f.getName} is not in DB")
-				  }
-			  })
+				.filter(f => f.getAnnotation(classOf[JakonField]) != null && f.getAnnotation(classOf[Transient]) == null)
+				.foreach(f => {
+					val columnAnn = f.getAnnotation(classOf[Column])
+					val manyToOne = f.getAnnotation(classOf[ManyToOne])
+					val column = if (columnAnn != null) {
+						collumns.find(c => c.name == columnAnn.name())
+					} else if (manyToOne != null) {
+						collumns.find(c => c.name == f.getName + "_id")
+					} else {
+						collumns.find(c => c.name == f.getName)
+					}
+					if (column.isEmpty) {
+						Logger.error(s"Field ${jo.getSimpleName}.${f.getName} is not in DB")
+					}
+				})
 		})
 	}
 
 	case class TableCollumnInfo(
-	                             name: String,
-	                             dataType: String,
-	                           )
+															 name: String,
+															 dataType: String,
+														 )
 
 }

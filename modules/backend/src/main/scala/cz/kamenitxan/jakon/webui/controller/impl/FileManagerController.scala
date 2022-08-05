@@ -15,10 +15,10 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.lang3.SystemUtils
 import spark.{Request, Response}
 
-import java.io._
+import java.io.*
 import java.net.URI
 import java.nio.ByteBuffer
-import java.nio.file._
+import java.nio.file.*
 import java.nio.file.attribute.{BasicFileAttributes, PosixFileAttributeView, PosixFilePermissions}
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -29,7 +29,8 @@ import javax.mail.internet.MimeUtility
 import javax.servlet.ServletException
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.annotation.switch
-import scala.jdk.CollectionConverters._
+import scala.collection.mutable
+import scala.jdk.CollectionConverters.*
 
 /**
  * This controller serve angular-filemanager call<br>
@@ -422,15 +423,15 @@ object FileManagerController {
 
 	// TODO: presunout i v DB
 	private def move(params: JSONObject): JSONObject = try { //TODO: minidev json should be rewrited to gson
-		val paths = params.get("items").asInstanceOf[JSONArray]
+		val paths = params.get("items").asInstanceOf[JSONArray].asScala
 		val newpath = Paths.get(REPOSITORY_BASE_PATH, params.getAsString("newPath"))
-		paths.forEach(obj => {
+		paths.foreach(obj => {
 			val path = Paths.get(REPOSITORY_BASE_PATH, obj.toString)
 			val mpath = newpath.resolve(path.getFileName)
 			Logger.debug(s"mv $path to $mpath exists? ${Files.exists(mpath)}")
 			if (Files.exists(mpath)) return error(mpath.toString + AlreadyExists)
 		})
-		paths.forEach(obj => {
+		paths.foreach(obj => {
 			val path = Paths.get(REPOSITORY_BASE_PATH, obj.toString)
 			val mpath = newpath.resolve(path.getFileName)
 			Files.move(path, mpath, StandardCopyOption.REPLACE_EXISTING)
@@ -467,10 +468,10 @@ object FileManagerController {
 	// TODO: smazat i v DB
 	@throws[ServletException]
 	private def remove(params: JSONObject): JSONObject = {
-		val paths = params.get("items").asInstanceOf[JSONArray]
+		val paths = params.get("items").asInstanceOf[JSONArray].asScala
 		val error = new StringBuilder
 		val sb = new StringBuilder
-		paths.forEach(obj => {
+		paths.foreach(obj => {
 			val path = Paths.get(REPOSITORY_BASE_PATH, obj.toString)
 			if (!FileUtils.deleteQuietly(path.toFile)) {
 				val errrMsg = if (error.nonEmpty) {
@@ -524,10 +525,10 @@ object FileManagerController {
 
 	private def copy(params: JSONObject): JSONObject = {
 		try {
-			val paths = params.get("items").asInstanceOf[JSONArray]
+			val paths = params.get("items").asInstanceOf[JSONArray].asScala
 			val newpath = Paths.get(REPOSITORY_BASE_PATH, params.getAsString("newPath"))
 			val newFileName = params.getAsString("singleFilename")
-			paths.forEach(obj => {
+			paths.foreach(obj => {
 				val path = if (newFileName == null) {
 					Paths.get(REPOSITORY_BASE_PATH, obj.toString)
 				} else {
@@ -539,7 +540,7 @@ object FileManagerController {
 					return error(mpath.toString + AlreadyExists)
 				}
 			})
-			paths.forEach(obj => {
+			paths.foreach(obj => {
 				val path = Paths.get(REPOSITORY_BASE_PATH, obj.toString)
 				val mpath = newpath.resolve(if (newFileName == null) path.getFileName
 				else Paths.get(".", newFileName).getFileName)
@@ -554,7 +555,7 @@ object FileManagerController {
 	}
 
 	private def compress(params: JSONObject): JSONObject = try {
-		val paths = params.get("items").asInstanceOf[JSONArray]
+		val paths = params.get("items").asInstanceOf[JSONArray].asScala.toSeq
 		val paramDest = params.getAsString("destination")
 		val dest = Paths.get(REPOSITORY_BASE_PATH, paramDest)
 		val zip = dest.resolve(params.getAsString("compressedFilename"))
@@ -568,7 +569,7 @@ object FileManagerController {
 		val appDir = dest.toAbsolutePath.toString.replace("upload/basePath", "")
 		val zipfs = FileSystems.newFileSystem(URI.create(s"jar:file:$appDir" + zip.toString), env)
 		try {
-			paths.forEach(path => {
+			paths.foreach(path => {
 				val realPath = Paths.get(REPOSITORY_BASE_PATH, path.toString)
 				if (Files.isDirectory(realPath)) Files.walkFileTree(Paths.get(REPOSITORY_BASE_PATH, path.toString), new SimpleFileVisitor[Path]() {
 					@throws[IOException]
