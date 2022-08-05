@@ -4,7 +4,7 @@ val V = new {
 	val Scala = "2.13.8"
   val jakon = "0.4-SNAPSHOT"
 	val spark = "2.9.4-JAKON"
-	val log4j = "2.17.0"
+	val log4j = "2.18.0"
 }
 
 scalaVersion := V.Scala
@@ -102,7 +102,12 @@ lazy val backend = (project in file("modules/backend"))
 			"--port 8080",
 			"--mode prod"
 		),
-		Docker / packageName := "jakon-example"
+		Docker / packageName := "jakon-example",
+
+		ThisBuild / versionScheme := Some ("strict"),
+		publishTo := Some ("GC Repository" at "https://kamenitxans-maven-repository.appspot.com"),
+		credentials += Credentials(Path.userHome / ".m2" / "sbt_credentials"),
+		publishMavenStyle :=true
 	)
 
 lazy val shared = crossProject(JSPlatform, JVMPlatform)
