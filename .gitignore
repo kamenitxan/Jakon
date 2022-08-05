@@ -45,3 +45,5 @@ jakon_config.properties
 /modules/backend/upload/
 /modules/backend/localDeploy/
 /modules/backend/static/jakon/
+/.bsp/
+/jakond.iml
