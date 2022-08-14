@@ -38,7 +38,7 @@ class JsonPageletTest extends TestBase {
 		val url = host + s"${prefix}getResponse"
 		f.driver.get(url)
 
-		val resp = gson.fromJson(f.driver.getPageSource, classOf[JsonFailResponse])
+		val resp = gson.fromJson(f.driver.getPageSource, classOf[JsonFailResponse[String]])
 
 		assert(resp.status == ResponseStatus.fail)
 		assert(resp.data == "some_message")
@@ -50,7 +50,7 @@ class JsonPageletTest extends TestBase {
 		val url = host + s"${prefix}throw"
 		f.driver.get(url)
 
-		val resp = gson.fromJson(f.driver.getPageSource, classOf[JsonErrorResponse])
+		val resp = gson.fromJson(f.driver.getPageSource, classOf[JsonErrorResponse[AnyRef]])
 
 		assert(resp.status == ResponseStatus.error)
 		assert(resp.message.contains("IllegalAccessException"))
@@ -108,7 +108,7 @@ class JsonPageletTest extends TestBase {
 			.post(RequestBody.create(JsonType, ""))
 			.build()
 
-		val resp = getResponse(request, classOf[JsonErrorResponse])
+		val resp = getResponse(request, classOf[JsonErrorResponse[AnyRef]])
 
 		assert(resp.status == ResponseStatus.error)
 		assert(resp.message.contains("IllegalAccessException"))
@@ -145,7 +145,7 @@ class JsonPageletTest extends TestBase {
 			.post(body)
 			.build()
 
-		val resp = getResponse(request, classOf[JsonFailResponse])
+		val resp = getResponse(request, classOf[JsonFailResponse[AnyRef]])
 
 		assert(resp.status == ResponseStatus.fail)
 		assert(resp.data.toString.contains("test_json_pagelet"))

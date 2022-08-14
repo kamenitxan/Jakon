@@ -1,11 +1,11 @@
 package core.pagelet
 
-import java.sql.Connection
-
 import core.pagelet.entity.TestJsonPageletData
 import cz.kamenitxan.jakon.core.dynamic.entity.JsonFailResponse
 import cz.kamenitxan.jakon.core.dynamic.{AbstractJsonPagelet, Get, JsonPagelet, Post}
 import spark.{Request, Response}
+
+import java.sql.Connection
 
 /**
   * Created by TPa on 13.04.2020.
@@ -19,7 +19,7 @@ class TestJsonPagelet extends AbstractJsonPagelet {
 	}
 
 	@Get(path = "/getResponse")
-	def getResponse(req: Request, res: Response): JsonFailResponse = {
+	def getResponse(req: Request, res: Response): JsonFailResponse[String] = {
 		new JsonFailResponse("some_message")
 	}
 

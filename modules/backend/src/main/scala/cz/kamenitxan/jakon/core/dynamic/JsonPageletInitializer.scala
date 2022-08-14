@@ -110,10 +110,10 @@ object JsonPageletInitializer {
 		}
 		val wrap = (data: AnyRef) => {
 			val jr = new AbstractJsonResponse(ResponseStatus.success, data) {}
-			controller.gson.toJson(jr, classOf[AbstractJsonResponse])
+			controller.gson.toJson(jr, classOf[AbstractJsonResponse[AnyRef]])
 		}
 		responseData match {
-			case rd: AbstractJsonResponse => controller.gson.toJson(rd)
+			case rd: AbstractJsonResponse[AnyRef] => controller.gson.toJson(rd)
 			case rd: String => if (controller.wrapResponse) {
 				wrap(rd)
 			} else {
