@@ -29,7 +29,7 @@ class EmailEntity(u: Unit = ()) extends JakonObject {
 	var emailType: String = _
 	@JakonField(shownInList = false, converter = classOf[ScalaMapConverter])
 	var params: Map[String, String] = _
-	@OneToMany
+	@OneToMany(genericClass = classOf[JakonFile])
 	@JakonField(shownInList = false)
 	var attachments: Seq[JakonFile] = _
 

@@ -42,13 +42,13 @@ class TestObject extends JakonObject {
 	var map: Map[String, String] = Map()
 	@JakonField
 	var mapNoConverter: Map[String, String] = Map()
-	@OneToMany
+	@OneToMany(genericClass = classOf[JakonUser])
 	@JakonField
 	var oneToMany: Seq[JakonUser] = _
 	@Embedded
 	var embedded: TestEmbeddedObject = _
 	@JakonField
-	@I18n
+	@I18n(classOf[TestObjectI18n])
 	var i18n: Seq[TestObjectI18n] = _
 	@JakonField
 	var jakonFile: JakonFile = _

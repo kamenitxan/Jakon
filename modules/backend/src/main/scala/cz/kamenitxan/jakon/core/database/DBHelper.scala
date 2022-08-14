@@ -2,15 +2,15 @@ package cz.kamenitxan.jakon.core.database
 
 import com.zaxxer.hikari.HikariDataSource
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
-import cz.kamenitxan.jakon.core.model._
+import cz.kamenitxan.jakon.core.model.*
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.TypeReferences.SEQ
-import cz.kamenitxan.jakon.utils.Utils._
+import cz.kamenitxan.jakon.utils.Utils.*
 import org.intellij.lang.annotations.Language
 import org.sqlite.SQLiteConfig
 
 import java.lang.reflect.ParameterizedType
-import java.sql._
+import java.sql.*
 import scala.collection.mutable
 
 /**
@@ -210,7 +210,7 @@ object DBHelper {
 	private def fetchI18nData[T <: BaseEntity](res: QueryResult[T])(implicit conn: Connection): Unit =  {
 		if (res.i18nField.nonEmpty && res.entity.isInstanceOf[JakonObject]) {
 			val i18nF = res.i18nField.get
-			val cls = i18nF.getCollectionGenericTypeClass.asInstanceOf[Class[BaseEntity]]
+			val cls = i18nF.getDeclaredAnnotation(classOf[I18n]).genericClass().asInstanceOf[Class[BaseEntity]]
 			val sql = s"SELECT * FROM ${cls.getSimpleName} WHERE id = ?"
 			val i18nStmt = conn.prepareStatement(sql)
 			i18nStmt.setInt(1, res.entity.asInstanceOf[JakonObject].id)

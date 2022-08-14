@@ -58,19 +58,7 @@ object Utils {
 
 		}
 	}
-
-	implicit class FieldImprovements(f: Field) {
-
-		def getCollectionGenericType: Type = {
-			f.getGenericType.asInstanceOf[ParameterizedType].getActualTypeArguments.head
-		}
-
-		def getCollectionGenericTypeClass: Class[_] = {
-			Class.forName(getCollectionGenericType.getTypeName)
-		}
-
-	}
-
+	
 	def getFieldsUpTo(startClass: Class[_], exclusiveParent: Class[_]): Seq[Field] = {
 		var currentClassFields = getFields(startClass)
 		val parentClass = startClass.getSuperclass

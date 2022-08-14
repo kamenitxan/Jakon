@@ -4,9 +4,8 @@ import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.annotation.{ManyToOne, OneToMany}
 import cz.kamenitxan.jakon.core.database.{I18n, JakonField}
 import cz.kamenitxan.jakon.core.model.{I18nData, JakonObject}
-import cz.kamenitxan.jakon.utils.TypeReferences._
+import cz.kamenitxan.jakon.utils.TypeReferences.*
 import cz.kamenitxan.jakon.utils.Utils
-import cz.kamenitxan.jakon.utils.Utils._
 import cz.kamenitxan.jakon.webui.controller.impl.ObjectController
 import cz.kamenitxan.jakon.webui.entity.{FieldInfo, HtmlType}
 
@@ -14,7 +13,7 @@ import java.lang.reflect.{Field, ParameterizedType, Type}
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, LocalDateTime, LocalTime}
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 import scala.language.postfixOps
 
 object FieldConformer {
@@ -22,7 +21,7 @@ object FieldConformer {
 	val TIME_FORMAT = "HH:mm"
 	val DATE_FORMAT = "yyyy-MM-dd"
 	val DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm"
-	val i18nExcludedFields = ObjectController.excludedFields ++ Seq("locale", "id", "className")
+	val i18nExcludedFields: Seq[String] = ObjectController.excludedFields ++ Seq("locale", "id", "className")
 
 	implicit class StringConformer(val s: String) {
 
@@ -31,13 +30,13 @@ object FieldConformer {
 			if (s == null || s.isEmpty) {
 				return null
 			}
-			var gft: Array[Type] = null
-			try {
-				gft = f.getGenericType.asInstanceOf[ParameterizedType].getActualTypeArguments
-			} catch {
-				case _: Exception =>
+			val gtAnn = f.getDeclaredAnnotation(classOf[GenericType])
+			val gft: Type = if (gtAnn != null) {
+				gtAnn.cls()
+			} else {
+				null
 			}
-			conform(f.getType, if (gft != null) gft.head else null)
+			conform(f.getType, gft)
 		}
 
 		private def conform(t: Class[_], genericType: Type): Any = {
@@ -84,7 +83,6 @@ object FieldConformer {
 		fields.foreach(f => {
 			val an = f.getAnnotation(classOf[JakonField])
 			lazy val i18nAn = f.getAnnotation(classOf[I18n])
-			lazy val i18nTypeCls = f.getGenericType.asInstanceOf[ParameterizedType].getActualTypeArguments.head
 			if (an != null) {
 				f.setAccessible(true)
 				if (f.getDeclaredAnnotation(classOf[ManyToOne]) != null) {
@@ -92,7 +90,7 @@ object FieldConformer {
 					infos = infos :+ new FieldInfo(an, HtmlType.CHECKBOX, f, fv, "ManyToOne")
 				} else if (f.getDeclaredAnnotation(classOf[OneToMany]) != null) {
 					val fv = f.get(obj)
-					val typeCls = f.getCollectionGenericType
+					val typeCls = f.getDeclaredAnnotation(classOf[OneToMany]).genericClass()
 					val typeName = typeCls.getTypeName.substring(typeCls.getTypeName.lastIndexOf(".") + 1)
 					infos = infos :+ new FieldInfo(an, HtmlType.CHECKBOX, f, fv, "OneToMany", typeName)
 				} else {
@@ -154,7 +152,7 @@ object FieldConformer {
 							val fi = new FieldInfo(an, HtmlType.TEXT, f, fv, "i18n")
 							fi.extraData.put("locales", Settings.getSupportedLocales)
 
-							val fields = Utils.getFieldsUpTo(f.getCollectionGenericTypeClass, classOf[Object]).filter(n => !i18nExcludedFields.contains(n.getName))
+							val fields = Utils.getFieldsUpTo(i18nAn.genericClass(), classOf[Object]).filter(n => !i18nExcludedFields.contains(n.getName))
 							fi.extraData.put("fieldNames", fields.map(_.getName))
 
 
