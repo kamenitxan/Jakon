@@ -1,10 +1,10 @@
 package cz.kamenitxan.jakon.validation
 
-import java.lang.reflect.Field
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import spark.Request
 
+import java.lang.reflect.Field
 import scala.io.Source
 
 
@@ -52,7 +52,8 @@ object EntityValidator {
 			var res: (Field, String) = null
 			try {
 				f.setAccessible(true)
-				res = (f, f.get(data).toString)
+				val fieldValue = f.get(data)
+				res = (f, if fieldValue == null then "" else fieldValue.toString)
 			} catch {
 				case ex: Exception => Logger.error("Exception when setting pagelet form data value", ex)
 			}
@@ -67,7 +68,7 @@ object EntityValidator {
 		val anns = f.getDeclaredAnnotations.filter(a => a.annotationType().getAnnotation(classOf[ValidatedBy]) != null)
 		for (an <- anns) {
 			val by: ValidatedBy = an.annotationType().getAnnotation(classOf[ValidatedBy])
-			val validator: Validator = by.value().newInstance()
+			val validator: Validator = by.value().getDeclaredConstructor().newInstance()
 			val result = validator.isValid(fieldValue, an, f, validatedData)
 			if (result.isDefined) {
 				lazy val severityM = an.annotationType().getDeclaredMethod("severity")
