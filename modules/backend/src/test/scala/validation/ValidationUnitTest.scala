@@ -1,22 +1,24 @@
 package validation
 
+import cz.kamenitxan.jakon.utils.Utils
+import cz.kamenitxan.jakon.validation.Validator
+import cz.kamenitxan.jakon.validation.validators.*
+import cz.kamenitxan.jakon.webui.conform.FieldConformer.{DATETIME_FORMAT, DATE_FORMAT}
+import org.scalatest.DoNotDiscover
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.prop.TableDrivenPropertyChecks.*
+import org.scalatest.prop.TableFor2
+import utils.entity.TestObject
+
 import java.lang.annotation.Annotation
 import java.lang.reflect.Field
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, LocalDateTime}
-import cz.kamenitxan.jakon.utils.Utils
-import cz.kamenitxan.jakon.validation.Validator
-import cz.kamenitxan.jakon.validation.validators._
-import cz.kamenitxan.jakon.webui.conform.FieldConformer.{DATETIME_FORMAT, DATE_FORMAT}
-import org.scalatest.DoNotDiscover
-import org.scalatest.funsuite.AnyFunSuite
-import org.scalatest.prop.TableDrivenPropertyChecks.{forAll, _}
-import org.scalatest.prop.TableFor2
-import sun.reflect.annotation.AnnotationParser
-import utils.entity.TestObject
 
 @DoNotDiscover
 class ValidationUnitTest extends AnyFunSuite {
+
+	val obj = new ValidationTestData()
 
 	private def testTable(v: Validator, ann: Annotation, data: TableFor2[String, Boolean], obj: Map[Field, String] = null, field: Field = null): Any = {
 		forAll(data) { (value, expectedResult) => {
@@ -26,7 +28,7 @@ class ValidationUnitTest extends AnyFunSuite {
 		}
 	}
 
-	private def objectToMap(o: AnyRef): Map[Field, String] = {
+	private def objectToMap(o: ValidationTestData): Map[Field, String] = {
 		o.getClass.getDeclaredFields.map(f => {
 			f.setAccessible(true)
 			val v = f.get(o).asInstanceOf[String]
@@ -42,8 +44,9 @@ class ValidationUnitTest extends AnyFunSuite {
 			("", false)
 		)
 
+		val f = classOf[ValidationTestData].getDeclaredField("string")
+		val ann = f.getDeclaredAnnotation(classOf[NotEmpty])
 		val v = new NotEmptyValidator
-		val ann = AnnotationParser.annotationForMap(classOf[NotEmpty], null)
 		testTable(v, ann, data)
 	}
 
@@ -56,8 +59,7 @@ class ValidationUnitTest extends AnyFunSuite {
 		)
 
 		val v = new DummyValidator
-		val ann = AnnotationParser.annotationForMap(classOf[NotEmpty], null)
-		testTable(v, ann, data)
+		testTable(v, null, data)
 	}
 
 	test("size") {
@@ -69,11 +71,8 @@ class ValidationUnitTest extends AnyFunSuite {
 			(null, true)
 		)
 
-		class SizeTest {
-			@Size(min = 5, max = 10)
-			var size: String = _
-		}
-		val f = classOf[SizeTest].getDeclaredField("size")
+
+		val f = classOf[ValidationTestData].getDeclaredField("size")
 		val ann = f.getDeclaredAnnotationsByType(classOf[Size]).head
 		val v = new SizeValidator
 		testTable(v, ann, data)
@@ -87,13 +86,7 @@ class ValidationUnitTest extends AnyFunSuite {
 			(null, true)
 		)
 
-		class TestData {
-			var password: String = "testok"
-			@EqualsWithOther(value = "password")
-			var password2: String = _
-		}
-		val obj = new TestData()
-		val f = classOf[TestData].getDeclaredField("password2")
+		val f = classOf[ValidationTestData].getDeclaredField("password2")
 		val ann = f.getDeclaredAnnotationsByType(classOf[EqualsWithOther]).head
 		val v = new EqualsWithOtherValidator
 		testTable(v, ann, data, objectToMap(obj))
@@ -111,8 +104,7 @@ class ValidationUnitTest extends AnyFunSuite {
 		)
 
 		val v = new AssertTrueValidator
-		val ann = AnnotationParser.annotationForMap(classOf[AssertTrue], null)
-		testTable(v, ann, data)
+		testTable(v, null, data)
 	}
 
 	test("false") {
@@ -127,8 +119,7 @@ class ValidationUnitTest extends AnyFunSuite {
 		)
 
 		val v = new AssertFalseValidator
-		val ann = AnnotationParser.annotationForMap(classOf[AssertFalse], null)
-		testTable(v, ann, data)
+		testTable(v, null, data)
 	}
 
 	test("null") {
@@ -140,8 +131,7 @@ class ValidationUnitTest extends AnyFunSuite {
 		)
 
 		val v = new NullValidator
-		val ann = AnnotationParser.annotationForMap(classOf[cz.kamenitxan.jakon.validation.validators.Null], null)
-		testTable(v, ann, data)
+		testTable(v, null, data)
 	}
 
 	test("min") {
@@ -157,12 +147,7 @@ class ValidationUnitTest extends AnyFunSuite {
 			(null, true)
 		)
 
-		class TestData {
-			@Min(value = 5)
-			var number: String = _
-		}
-		val obj = new TestData()
-		val f = classOf[TestData].getDeclaredField("number")
+		val f = classOf[ValidationTestData].getDeclaredField("number")
 		val ann = f.getDeclaredAnnotationsByType(classOf[Min]).head
 		val v = new MinValidator
 		testTable(v, ann, data, objectToMap(obj))
@@ -181,15 +166,10 @@ class ValidationUnitTest extends AnyFunSuite {
 			(null, true)
 		)
 
-		class TestData {
-			@Max(value = 5)
-			var number: String = _
-		}
-		val obj = new TestData()
-		val f = classOf[TestData].getDeclaredField("number")
+		val f = classOf[ValidationTestData].getDeclaredField("number")
 		val ann = f.getDeclaredAnnotationsByType(classOf[Max]).head
 		val v = new MaxValidator
-		testTable(v, ann, data, objectToMap(obj))
+		testTable(v, ann, data, objectToMap(new ValidationTestData()))
 	}
 
 	test("positive") {
@@ -203,7 +183,7 @@ class ValidationUnitTest extends AnyFunSuite {
 		)
 
 		val v = new PositiveValidator
-		val ann = AnnotationParser.annotationForMap(classOf[cz.kamenitxan.jakon.validation.validators.Positive], null)
+		val ann = null
 		testTable(v, ann, data)
 	}
 
@@ -218,7 +198,7 @@ class ValidationUnitTest extends AnyFunSuite {
 		)
 
 		val v = new PositiveOrZeroValidator
-		val ann = AnnotationParser.annotationForMap(classOf[cz.kamenitxan.jakon.validation.validators.PositiveOrZero], null)
+		val ann = null
 		testTable(v, ann, data)
 	}
 
@@ -233,7 +213,7 @@ class ValidationUnitTest extends AnyFunSuite {
 		)
 
 		val v = new NegativeValidator
-		val ann = AnnotationParser.annotationForMap(classOf[cz.kamenitxan.jakon.validation.validators.Negative], null)
+		val ann = null
 		testTable(v, ann, data)
 	}
 
@@ -248,7 +228,7 @@ class ValidationUnitTest extends AnyFunSuite {
 		)
 
 		val v = new NegativeOrZeroValidator
-		val ann = AnnotationParser.annotationForMap(classOf[cz.kamenitxan.jakon.validation.validators.NegativeOrZero], null)
+		val ann = null
 		testTable(v, ann, data)
 	}
 
@@ -263,12 +243,8 @@ class ValidationUnitTest extends AnyFunSuite {
 			("bob@10mail.com", false)
 		)
 
-		class TestData {
-			@Email
-			var email: String = _
-		}
-		val obj = new TestData()
-		val f = classOf[TestData].getDeclaredField("email")
+
+		val f = classOf[ValidationTestData].getDeclaredField("email")
 		val ann = f.getDeclaredAnnotationsByType(classOf[Email]).head
 		val v = new EmailValidator
 		testTable(v, ann, data, objectToMap(obj))
@@ -286,7 +262,7 @@ class ValidationUnitTest extends AnyFunSuite {
 		)
 
 		val v = new PastValidator
-		val ann = AnnotationParser.annotationForMap(classOf[cz.kamenitxan.jakon.validation.validators.Past], null)
+		val ann = null
 		val (_, f) = Utils.getClassByFieldName(classOf[TestObject], "localDate")
 		testTable(v, ann, data, field = f)
 	}
@@ -305,7 +281,7 @@ class ValidationUnitTest extends AnyFunSuite {
 		)
 
 		val v = new PastValidator
-		val ann = AnnotationParser.annotationForMap(classOf[cz.kamenitxan.jakon.validation.validators.Past], null)
+		val ann = null
 		val (_, f) = Utils.getClassByFieldName(classOf[TestObject], "localDateTime")
 		testTable(v, ann, data, field = f)
 	}
@@ -324,7 +300,7 @@ class ValidationUnitTest extends AnyFunSuite {
 		)
 
 		val v = new PastValidator
-		val ann = AnnotationParser.annotationForMap(classOf[cz.kamenitxan.jakon.validation.validators.Past], null)
+		val ann = null
 		val (_, f) = Utils.getClassByFieldName(classOf[TestObject], "string")
 		testTable(v, ann, data, field = f)
 	}
@@ -341,7 +317,7 @@ class ValidationUnitTest extends AnyFunSuite {
 		)
 
 		val v = new FutureValidator
-		val ann = AnnotationParser.annotationForMap(classOf[cz.kamenitxan.jakon.validation.validators.Future], null)
+		val ann = null
 		val (_, f) = Utils.getClassByFieldName(classOf[TestObject], "localDate")
 		testTable(v, ann, data, field = f)
 	}
@@ -360,7 +336,7 @@ class ValidationUnitTest extends AnyFunSuite {
 		)
 
 		val v = new FutureValidator
-		val ann = AnnotationParser.annotationForMap(classOf[cz.kamenitxan.jakon.validation.validators.Future], null)
+		val ann = null
 		val (_, f) = Utils.getClassByFieldName(classOf[TestObject], "localDateTime")
 		testTable(v, ann, data, field = f)
 	}
@@ -379,7 +355,7 @@ class ValidationUnitTest extends AnyFunSuite {
 		)
 
 		val v = new FutureValidator
-		val ann = AnnotationParser.annotationForMap(classOf[cz.kamenitxan.jakon.validation.validators.Future], null)
+		val ann = null
 		val (_, f) = Utils.getClassByFieldName(classOf[TestObject], "string")
 		testTable(v, ann, data, field = f)
 	}

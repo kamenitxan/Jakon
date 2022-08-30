@@ -4,11 +4,11 @@ import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.utils.PageContext
 import spark.ModelAndView
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 /**
-  * Created by TPa on 06.09.16.
-  */
+ * Created by TPa on 06.09.16.
+ */
 class Context(var model: Map[String, Any], viewName: String) extends ModelAndView(model, viewName) {
 	if (model != null) {
 		model = model ++ getAdminContext
@@ -43,9 +43,9 @@ object Context {
 	def getAdminContext: Map[String, Any] = {
 		val user = PageContext.getInstance().getLoggedUser
 		val allModelClasses = DBHelper.getDaoClasses
-		  .filter(c => user.nonEmpty && (user.get.acl.masterAdmin || user.get.acl.allowedControllers.contains(c.getCanonicalName)))
-		  .groupBy(c => c.getPackage.getName.startsWith("cz.kamenitxan.jakon"))
-  		.mapValues(cl => cl.map(c => c.getSimpleName).asJavaCollection)
+			.filter(c => user.nonEmpty && (user.get.acl.masterAdmin || user.get.acl.allowedControllers.contains(c.getCanonicalName)))
+			.groupBy(c => c.getPackage.getName.startsWith("cz.kamenitxan.jakon"))
+			.mapValues(cl => cl.map(c => c.getSimpleName).asJavaCollection)
 		val customControllers = AdminSettings.customControllersInfo
 			.filter(c => user.nonEmpty && (user.get.acl.masterAdmin || user.get.acl.allowedControllers.contains(c.cls.getCanonicalName)))
 

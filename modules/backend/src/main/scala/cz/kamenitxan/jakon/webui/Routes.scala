@@ -10,7 +10,7 @@ import cz.kamenitxan.jakon.webui.api.Api
 import cz.kamenitxan.jakon.webui.controller.impl.{Authentication, FileManagerController, ObjectController, UserController}
 import cz.kamenitxan.jakon.webui.controller.{AbstractController, ExecuteFun}
 import cz.kamenitxan.jakon.webui.util.AdminExceptionHandler
-import spark.Spark._
+import spark.Spark.*
 import spark.route.HttpMethod
 import spark.{Filter, Request, Response, ResponseTransformer}
 
@@ -112,11 +112,11 @@ object Routes {
 					if (an != null) {
 						if (!m.isAccessible) m.setAccessible(true)
 						an.method match {
-							case HttpMethod.get =>
+							case x if x == HttpMethod.get =>
 								get(s"$AdminPrefix/" + an.path, (req: Request, res: Response) => m.invoke(instance, req, res).asInstanceOf[Context], te)
 							case HttpMethod.post =>
 								post(s"$AdminPrefix/" + an.path, (req: Request, _: Response) => m.invoke(instance, req, req).asInstanceOf[Context], te)
-							case default => throw new UnsupportedOperationException(default + " is not supported")
+							case default => throw new UnsupportedOperationException(default.toString + " is not supported")
 						}
 					}
 				}

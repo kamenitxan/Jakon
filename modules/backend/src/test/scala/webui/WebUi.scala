@@ -51,7 +51,7 @@ class WebUi extends TestBase {
 
 	test("Send user password reset email") { f =>
 		DBHelper.withDbConnection(implicit conn => {
-			val user = UserService.getMasterAdmin
+			val user = UserService.getMasterAdmin()
 			val url = host + s"/admin/profile/object/JakonUser/${user.id}/resetPassword"
 			f.driver.get(url)
 

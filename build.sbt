@@ -1,8 +1,8 @@
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val V = new {
-	val Scala = "2.13.8"
-  val jakon = "0.4-SNAPSHOT"
+	val Scala = "3.1.3"
+  val jakon = "0.5-SNAPSHOT"
 	val spark = "2.9.4-JAKON"
 	val log4j = "2.18.0"
 }
@@ -28,7 +28,6 @@ val Dependencies = new {
 		libraryDependencies ++=
 			Seq(
 				"com.sparkjava" % "spark-core" % V.spark,
-				"org.scala-lang" % "scala-reflect" % V.Scala,
 				"com.sparkjava" % "spark-template-pebble" % "2.7.1-jakon.1",
 				"org.slf4j" % "slf4j-api" % "1.8.0-beta4",
 				"org.apache.logging.log4j" % "log4j-api" % V.log4j,

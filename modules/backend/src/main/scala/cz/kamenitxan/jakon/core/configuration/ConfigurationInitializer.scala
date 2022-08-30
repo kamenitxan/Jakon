@@ -1,15 +1,13 @@
 package cz.kamenitxan.jakon.core.configuration
 
-import java.io.{File, FileInputStream, IOException}
-import java.util.Properties
-
-import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.utils.TypeReferences._
+import cz.kamenitxan.jakon.utils.Utils
 import org.slf4j.LoggerFactory
 
+import java.io.{File, FileInputStream, IOException}
+import java.util.Properties
 import scala.collection.mutable
 import scala.language.postfixOps
-import scala.reflect.runtime.universe
 
 
 object ConfigurationInitializer {
@@ -50,9 +48,7 @@ object ConfigurationInitializer {
 	def initConfiguration(configClasses: Seq[Class[_]]): Unit = {
 		configClasses.foreach(c => {
 			c.getDeclaredFields.filter(f => f.isAnnotationPresent(classOf[ConfigurationValue])).foreach(f => {
-				val runtimeMirror = universe.runtimeMirror(getClass.getClassLoader)
-				val module = runtimeMirror.staticModule(c.getName)
-				val obj = runtimeMirror.reflectModule(module).instance
+				val obj = c.getField("MODULE$").get(c)
 				val ann = f.getAnnotation(classOf[ConfigurationValue])
 				var confValue = conf.get(ann.name())
 				if (confValue.isEmpty) {

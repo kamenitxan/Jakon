@@ -12,7 +12,7 @@ CREATE TABLE TestObject
     localDate      DATETIME,
     localDateTime  DATETIME,
     self_id        INTEGER REFERENCES TestObject (id) ON DELETE CASCADE,
-    enum           VARCHAR(255),
+    javaEnum           VARCHAR(255),
     map            TEXT,
     mapNoConverter TEXT,
     embedded_string VARCHAR(255),

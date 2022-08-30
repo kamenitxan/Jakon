@@ -4,8 +4,8 @@ import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.core.database.annotation.ManyToMany
 import cz.kamenitxan.jakon.core.model.{JakonObject, JakonUser}
 import cz.kamenitxan.jakon.webui.ObjectSettings
-import cz.kamenitxan.jakon.webui.conform.FieldConformer
-import cz.kamenitxan.jakon.webui.conform.FieldConformer._
+import cz.kamenitxan.jakon.webui.conform.FieldConformer.*
+import cz.kamenitxan.jakon.webui.conform.{FieldConformer, GenericType}
 import cz.kamenitxan.jakon.webui.entity.MessageSeverity
 import org.scalatest.DoNotDiscover
 import org.scalatest.funsuite.AnyFunSuite
@@ -46,14 +46,17 @@ class FieldConformerTest extends AnyFunSuite {
 		@JakonField
 		var self: TestObject = _
 		@JakonField
-		var enum: MessageSeverity = MessageSeverity.ERROR
+		var javaEnum: MessageSeverity = MessageSeverity.ERROR
 		@JakonField
+		@GenericType(cls = classOf[Integer])
 		var listJInt: util.ArrayList[Integer] = _
 		@JakonField
+		@GenericType(classOf[String])
 		var listJString: util.ArrayList[String] = _
 		@JakonField
 		var seqI: Seq[Int] = _
 		@JakonField
+		@GenericType(classOf[String])
 		var seqS: Seq[String] = _
 		@JakonField
 		var float: Float = _
@@ -152,8 +155,8 @@ class FieldConformerTest extends AnyFunSuite {
 		assert(t == conformed)
 	}
 
-	test("conform enum") {
-		val conformed = "ERROR".conform(getField("enum"))
+	test("conform javaEnum") {
+		val conformed = "ERROR".conform(getField("javaEnum"))
 		val t = MessageSeverity.ERROR
 		assert(t == conformed)
 	}

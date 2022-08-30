@@ -1,10 +1,5 @@
 package cz.kamenitxan.jakon.core.deploy
 
-import java.lang.reflect.Type
-import java.sql.Connection
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import cz.kamenitxan.jakon.core.Director
@@ -15,8 +10,12 @@ import cz.kamenitxan.jakon.core.model.KeyValueEntity
 import cz.kamenitxan.jakon.core.service.KeyValueService
 import cz.kamenitxan.jakon.logging.Logger
 
-import scala.jdk.CollectionConverters._
+import java.lang.reflect.Type
+import java.sql.Connection
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import scala.io.Source
+import scala.jdk.CollectionConverters.*
 
 object DeployDirector {
 	private val KV_PREFIX = "SERVER_LAST_DEPLOY_"
@@ -31,16 +30,16 @@ object DeployDirector {
 			val s = gson.fromJson(Source.fromFile("servers.json").mkString, listType).asInstanceOf[util.ArrayList[Server]]
 			val b = s.asScala.zipWithIndex
 			  .map(zi => {
-				  val id = zi._2 + 1
-				  val s = zi._1
-				  val kve = KeyValueService.getByKey(KV_PREFIX + id)
-				  val lastDeployed = if (kve.nonEmpty) {
+					val id = zi._2 + 1
+					val s = zi._1
+					val kve = KeyValueService.getByKey(KV_PREFIX + id)
+					val lastDeployed = if (kve.nonEmpty) {
 					  LocalDateTime.parse(kve.get.value, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-				  } else {
+					} else {
 					  null
-				  }
-				  new Server(id, s.url, s.path, lastDeployed)
-			  })
+					}
+					new Server(id, s.url, s.path, lastDeployed)
+				})
 			b.toList
 		} catch {
 			case e: Throwable =>

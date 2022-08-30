@@ -13,7 +13,7 @@ import scala.collection.mutable
 class SqlGenTest extends TestBase {
 
 	test("insertStmt") { _ =>
-	  val obj = new JakonUser()
+		val obj = new JakonUser()
 		val tc = SqlGen.insertStmt(obj, DBHelper.getConnection, 0)
 		assert(tc != null)
 	}

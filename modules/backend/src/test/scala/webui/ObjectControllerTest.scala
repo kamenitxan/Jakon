@@ -5,7 +5,7 @@ import org.openqa.selenium.{By, WebDriver}
 import org.scalatest.DoNotDiscover
 import test.TestBase
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 /**
   * Created by TPa on 2019-03-19.
@@ -54,7 +54,7 @@ class ObjectControllerTest extends TestBase {
 	}
 
 	test("test move") { f =>
-	    implicit val driver: WebDriver = f.driver
+		implicit val driver: WebDriver = f.driver
 		val p1 = new Page()
 		p1.title = "page1"
 		p1.create()

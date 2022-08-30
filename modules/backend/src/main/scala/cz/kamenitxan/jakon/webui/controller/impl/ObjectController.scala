@@ -4,12 +4,12 @@ import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.{DBHelper, I18n}
 import cz.kamenitxan.jakon.core.model.{I18nData, JakonObject, Ordered}
 import cz.kamenitxan.jakon.logging.Logger
-import cz.kamenitxan.jakon.utils.Utils._
+import cz.kamenitxan.jakon.utils.Utils.*
 import cz.kamenitxan.jakon.utils.{PageContext, SqlGen, Utils}
 import cz.kamenitxan.jakon.validation.EntityValidator
 import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
-import cz.kamenitxan.jakon.webui.conform.FieldConformer._
+import cz.kamenitxan.jakon.webui.conform.FieldConformer.*
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import org.sqlite.{SQLiteErrorCode, SQLiteException}
 import spark.{ModelAndView, Request, Response}
@@ -18,7 +18,7 @@ import java.lang.reflect.Field
 import java.sql.Connection
 import scala.annotation.tailrec
 import scala.collection.mutable
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 import scala.util.Try
 
 /**
@@ -334,7 +334,7 @@ object ObjectController {
 	}
 
 	private def createI18nData(id: Integer, f: Field, req: Request, params: mutable.Set[String]): Any = {
-		implicit val cls: Class[_] = f.getCollectionGenericTypeClass
+		implicit val cls: Class[_] = f.getDeclaredAnnotation(classOf[I18n]).genericClass()
 		val fields = Utils.getFieldsUpTo(cls, classOf[Object])
 		Settings.getSupportedLocales.foreach(l => {
 			val isUpdate = DBHelper.withDbConnection(implicit conn => {

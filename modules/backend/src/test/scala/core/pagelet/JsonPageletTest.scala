@@ -6,7 +6,7 @@ import cz.kamenitxan.jakon.core.dynamic.JsonPageletInitializer
 import cz.kamenitxan.jakon.core.dynamic.entity.{JsonErrorResponse, JsonFailResponse, ResponseStatus}
 import okhttp3.{MediaType, OkHttpClient, Request, RequestBody}
 import org.scalatest.DoNotDiscover
-import test.JsonHelper._
+import test.JsonHelper.*
 import test.TestBase
 
 /**
@@ -38,7 +38,7 @@ class JsonPageletTest extends TestBase {
 		val url = host + s"${prefix}getResponse"
 		f.driver.get(url)
 
-		val resp = gson.fromJson(f.driver.getPageSource, classOf[JsonFailResponse])
+		val resp = gson.fromJson(f.driver.getPageSource, classOf[JsonFailResponse[String]])
 
 		assert(resp.status == ResponseStatus.fail)
 		assert(resp.data == "some_message")
@@ -50,7 +50,7 @@ class JsonPageletTest extends TestBase {
 		val url = host + s"${prefix}throw"
 		f.driver.get(url)
 
-		val resp = gson.fromJson(f.driver.getPageSource, classOf[JsonErrorResponse])
+		val resp = gson.fromJson(f.driver.getPageSource, classOf[JsonErrorResponse[AnyRef]])
 
 		assert(resp.status == ResponseStatus.error)
 		assert(resp.message.contains("IllegalAccessException"))
@@ -74,9 +74,9 @@ class JsonPageletTest extends TestBase {
 		val url = host + s"${prefix}post"
 
 		val request = new Request.Builder()
-		  .url(url)
-  		  .post(RequestBody.create(JsonType, ""))
-		  .build()
+			.url(url)
+			.post(RequestBody.create(JsonType, ""))
+			.build()
 
 		val resp = getResponse(request)
 
@@ -89,9 +89,9 @@ class JsonPageletTest extends TestBase {
 		val url = host + s"${prefix}postNoValidation"
 
 		val request = new Request.Builder()
-		  .url(url)
-		  .post(RequestBody.create(JsonType, ""))
-		  .build()
+			.url(url)
+			.post(RequestBody.create(JsonType, ""))
+			.build()
 
 		val resp = getResponse(request)
 
@@ -104,11 +104,11 @@ class JsonPageletTest extends TestBase {
 		val url = host + s"${prefix}postThrow"
 
 		val request = new Request.Builder()
-		  .url(url)
-		  .post(RequestBody.create(JsonType, ""))
-		  .build()
+			.url(url)
+			.post(RequestBody.create(JsonType, ""))
+			.build()
 
-		val resp = getResponse(request, classOf[JsonErrorResponse])
+		val resp = getResponse(request, classOf[JsonErrorResponse[AnyRef]])
 
 		assert(resp.status == ResponseStatus.error)
 		assert(resp.message.contains("IllegalAccessException"))
@@ -123,9 +123,9 @@ class JsonPageletTest extends TestBase {
 		val body = RequestBody.create(JsonType, json)
 
 		val request = new Request.Builder()
-		  .url(url)
-		  .post(body)
-		  .build()
+			.url(url)
+			.post(body)
+			.build()
 
 		val resp = getResponse(request)
 
@@ -141,18 +141,18 @@ class JsonPageletTest extends TestBase {
 		val body = RequestBody.create(JsonType, json)
 
 		val request = new Request.Builder()
-		  .url(url)
-		  .post(body)
-		  .build()
+			.url(url)
+			.post(body)
+			.build()
 
-		val resp = getResponse(request, classOf[JsonFailResponse])
+		val resp = getResponse(request, classOf[JsonFailResponse[AnyRef]])
 
 		assert(resp.status == ResponseStatus.fail)
 		assert(resp.data.toString.contains("test_json_pagelet"))
 	}
 
 
-	private def  getResponse[T](request: Request, responseType: Class[T] = classOf[GetResponse]): T = {
+	private def getResponse[T](request: Request, responseType: Class[T] = classOf[GetResponse]): T = {
 		val response = httpClient.newCall(request).execute
 		val result = try {
 			response.body.string
