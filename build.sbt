@@ -5,6 +5,7 @@ val V = new {
   val jakon = "0.5-SNAPSHOT"
 	val spark = "2.9.4-JAKON"
 	val log4j = "2.18.0"
+	val circeVersion = "0.14.2"
 }
 
 scalaVersion := V.Scala
@@ -44,6 +45,9 @@ val Dependencies = new {
 				"com.sun.mail" % "javax.mail" % "1.6.2",
 				"com.atlassian.commonmark" % "commonmark" % "0.11.0",
 				"com.google.code.gson" % "gson" % "2.9.0",
+				"io.circe" %% "circe-core" % V.circeVersion,
+				"io.circe" %% "circe-generic"% V.circeVersion,
+				"io.circe" %% "circe-parser"% V.circeVersion,
 				//"org.apache.lucene" % "lucene-core" % "7.5.0",
 				//"org.apache.lucene" % "lucene-queryparser" % "7.5.0",
 				"io.github.classgraph" % "classgraph" % "4.8.139",
