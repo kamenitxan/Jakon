@@ -41,13 +41,14 @@ val Dependencies = new {
 				"org.apache.commons" % "commons-lang3" % "3.12.0",
 				"de.svenkubiak" % "jBCrypt" % "0.4.3",
 				"commons-fileupload" % "commons-fileupload" % "1.4",
-				"net.minidev" % "json-smart" % "2.4.8",
+				"net.minidev" % "json-smart" % "2.4.8", // TODO remove
 				"com.sun.mail" % "javax.mail" % "1.6.2",
 				"com.atlassian.commonmark" % "commonmark" % "0.11.0",
-				"com.google.code.gson" % "gson" % "2.9.0",
+				"com.google.code.gson" % "gson" % "2.9.0", // TODO remove
 				"io.circe" %% "circe-core" % V.circeVersion,
 				"io.circe" %% "circe-generic"% V.circeVersion,
 				"io.circe" %% "circe-parser"% V.circeVersion,
+				"org.typelevel" %% "shapeless3-deriving" % "3.1.0",
 				//"org.apache.lucene" % "lucene-core" % "7.5.0",
 				//"org.apache.lucene" % "lucene-queryparser" % "7.5.0",
 				"io.github.classgraph" % "classgraph" % "4.8.139",

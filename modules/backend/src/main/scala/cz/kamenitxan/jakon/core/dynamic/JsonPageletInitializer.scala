@@ -157,7 +157,7 @@ object JsonPageletInitializer {
 				conn = DBHelper.getConnection
 				conn
 			case t =>
-				val data = controller.gson.fromJson(req.body(), t)
+				val data = controller.parseRequestData(req, t)
 				dataRef = data
 				Logger.debug(data.toString)
 				data
