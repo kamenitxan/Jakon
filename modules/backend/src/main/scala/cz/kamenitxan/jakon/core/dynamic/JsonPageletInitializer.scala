@@ -1,5 +1,6 @@
 package cz.kamenitxan.jakon.core.dynamic
 
+import cz.kamenitxan.jakon.Circe.ParsedValue
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.dynamic.PageletInitializer.{MethodArgs, createMethodArgs}
@@ -12,8 +13,9 @@ import cz.kamenitxan.jakon.webui.entity.Message
 import spark.{Request, Response, Spark}
 
 import java.io.{PrintWriter, StringWriter}
-import java.lang.reflect.Method
+import java.lang.reflect.{Field, Method}
 import java.sql.Connection
+import scala.collection.immutable.Map
 import scala.jdk.CollectionConverters.*
 
 /**
@@ -49,7 +51,7 @@ object JsonPageletInitializer {
 		Spark.get(controllerAnn.path() + get.path(), (req: Request, res: Response) => {
 			res.raw().setContentType(JsonContentType)
 			val pagelet = c.getDeclaredConstructor().newInstance().asInstanceOf[AbstractJsonPagelet]
-			DBHelper.withDbConnection(implicit conn => {
+			val response: String = DBHelper.withDbConnection(implicit conn => {
 				val methodArgs = createMethodArgs(m, req, res, conn, pagelet)
 				try {
 					val responseData = m.invoke(pagelet, methodArgs.array: _*)
@@ -60,6 +62,7 @@ object JsonPageletInitializer {
 						createErrorResponse(ex, res, pagelet)
 				}
 			})
+			response
 		})
 	}
 
@@ -67,12 +70,12 @@ object JsonPageletInitializer {
 		Spark.post(controllerAnn.path() + post.path(), (req: Request, res: Response) => {
 			res.raw().setContentType(JsonContentType)
 			val controller = c.getDeclaredConstructor().newInstance().asInstanceOf[AbstractJsonPagelet]
-				val methodArgs = parseJsonArgs(m, req, res, controller)
+				var methodArgs: (PageletInitializer.MethodArgs, Option[Connection]) = null
 				try {
 					val dataClass = PageletInitializer.getDataClass(m)
 					if (post.validate() && dataClass.isDefined) {
-						val formData = EntityValidator.createFormData(methodArgs._1.data)
-						EntityValidator.validate(dataClass.get.getSimpleName, formData) match {
+						val jsonData = controller.parseRequestData(req, dataClass.get)
+						EntityValidator.validateJson(dataClass.get.getSimpleName, jsonData) match {
 							case Left(result) =>
 								val translatedErrors = result.map(m => {
 									val ut = I18nUtil.getTranslation(Settings.getTemplateDir, "validations", m.text, Settings.getDefaultLocale)
@@ -84,11 +87,13 @@ object JsonPageletInitializer {
 									new Message(m._severity, t, m.params, m.bundle)
 								})
 								createFailResponse(res, controller, translatedErrors)
-							case Right(_) =>
+							case Right(validatedData) =>
+								methodArgs = parseJsonArgs(m, req, res, controller, validatedData)
 								val responseData = m.invoke(controller, methodArgs._1.array: _*)
 								createResponse(responseData, controller)
 						}
 					} else {
+						methodArgs = parseJsonArgs(m, req, res, controller)
 						val responseData = m.invoke(controller, methodArgs._1.array: _*)
 						createResponse(responseData, controller)
 					}
@@ -97,7 +102,7 @@ object JsonPageletInitializer {
 						Logger.error(s"${controller.getClass.getCanonicalName}.${m.getName}() threw exception", ex)
 						createErrorResponse(ex, res, controller)
 				} finally {
-					if (methodArgs._2.isDefined) {
+					if (methodArgs != null && methodArgs._2.isDefined) {
 						methodArgs._2.get.close()
 					}
 				}
@@ -147,7 +152,12 @@ object JsonPageletInitializer {
 		controller.gson.toJson(responseData)
 	}
 
-	private def parseJsonArgs(m: Method, req: Request, res: Response,controller: AbstractJsonPagelet): (PageletInitializer.MethodArgs, Option[Connection]) = {
+	private def parseJsonArgs(m: Method,
+														req: Request,
+														res: Response,
+														controller: AbstractJsonPagelet,
+														validatedData: Map[Field, ParsedValue] = Map.empty
+													 ): (PageletInitializer.MethodArgs, Option[Connection]) = {
 		var dataRef: Any = null
 		var conn: Connection = null
 		val arr: Array[Any] = m.getParameterTypes.map {
@@ -157,7 +167,7 @@ object JsonPageletInitializer {
 				conn = DBHelper.getConnection
 				conn
 			case t =>
-				val data = controller.parseRequestData(req, t)
+				val data = controller.createDataObject(validatedData, t)
 				dataRef = data
 				Logger.debug(data.toString)
 				data

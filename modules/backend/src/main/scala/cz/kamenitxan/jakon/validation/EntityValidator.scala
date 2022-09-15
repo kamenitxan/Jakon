@@ -1,5 +1,6 @@
 package cz.kamenitxan.jakon.validation
 
+import cz.kamenitxan.jakon.Circe.ParsedValue
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import spark.Request
@@ -15,6 +16,27 @@ object EntityValidator {
 			val anns = f._1.getDeclaredAnnotations
 			anns.exists(a => a.annotationType().getAnnotation(classOf[ValidatedBy]) != null)
 		}).flatMap(f => validateField(prefix, f._1, f._2, validatedData)).toSeq
+
+		if (errors.isEmpty) {
+			Right(validatedData)
+		} else {
+			Left(errors)
+		}
+	}
+	
+	// TODO: change name?
+	def validateJson(prefix: String, validatedData: Map[Field, ParsedValue]): Either[Seq[Message], Map[Field, ParsedValue]] = {
+		val errors = validatedData.filter(data => {
+			val anns = data._1.getDeclaredAnnotations
+			// TODO get annotations with validators
+			// data._1.getDeclaringClass.getDeclaredConstructors.head.getParameterAnnotations
+			anns.exists(a => a.annotationType().getAnnotation(classOf[ValidatedBy]) != null)
+		}).flatMap(data => {
+			// TODO: nested objects validation
+			val oldFormatData = validatedData.map(data => (data._1, data._2.stringValue))
+			validateField(prefix, data._1, data._2.stringValue, oldFormatData)
+		}).toSeq
+
 
 		if (errors.isEmpty) {
 			Right(validatedData)

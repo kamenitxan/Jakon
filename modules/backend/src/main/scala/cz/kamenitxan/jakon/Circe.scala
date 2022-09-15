@@ -54,11 +54,30 @@ object Circe {
 
 	}
 
+	def parseJsonData(json: String, t: Class[_]): Any = {
+		val res = parser.parse(json).getOrElse(Json.Null)
+		val hc: HCursor = res.hcursor
+
+		val fields = t.getDeclaredFields
+		val maped: Map[Field, ParsedValue] = fields.map(f => mapToString(hc, f)).toMap[Field, ParsedValue]
+
+		//EntityValidator.validate("", maped)
+
+		val validated: Map[Field, ParsedValue] = maped
+		val contructorParams = t.getDeclaredConstructors.head.getParameters.map(p => {
+			mapToValue(p, validated)
+		})
+
+		t.getDeclaredConstructors.head.newInstance(contructorParams: _*)
+	}
+
 	def mapToString(hc: HCursor, f: Field): (Field, ParsedValue) = {
 		val name = f.getName
 		val value = f.getType match
 			case STRING => ParsedValue(hc.downField(name).focus.get.asString.getOrElse(""), null, null)
-			case INTEGER | DOUBLE => ParsedValue(hc.downField(name).focus.map(_.toString).getOrElse(""), null, null)
+			case INTEGER | DOUBLE => ParsedValue(hc.downField(name).focus.map(v => {
+				v.toString.replace("\"", "").replace("\'", "")
+			}).getOrElse(""), null, null)
 			case SEQ =>
 				println("seq")
 				val objArr = hc.downField("inner").focus.flatMap(_.asArray).getOrElse(Vector.empty)

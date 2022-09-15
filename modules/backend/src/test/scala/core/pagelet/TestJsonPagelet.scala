@@ -1,8 +1,10 @@
 package core.pagelet
 
+import core.pagelet.entity.OldTestJsonPageletData
 import core.pagelet.entity.TestJsonPageletData
 import cz.kamenitxan.jakon.core.dynamic.entity.JsonFailResponse
 import cz.kamenitxan.jakon.core.dynamic.{AbstractJsonPagelet, Get, JsonPagelet, Post}
+import cz.kamenitxan.jakon.utils.Utils._
 import spark.{Request, Response}
 
 import java.sql.Connection
@@ -29,7 +31,7 @@ class TestJsonPagelet extends AbstractJsonPagelet {
 	}
 
 	@Get(path = "/withDataAndConnection")
-	def withDataAndConnection(req: Request, res: Response, data: TestJsonPageletData, conn: Connection): String = {
+	def withDataAndConnection(req: Request, res: Response, data: OldTestJsonPageletData, conn: Connection): String = {
 		data.msg
 	}
 
@@ -50,6 +52,7 @@ class TestJsonPagelet extends AbstractJsonPagelet {
 
 	@Post(path = "/postWithDataAndConnection")
 	def postWithDataAndConnection(req: Request, res: Response, data: TestJsonPageletData, conn: Connection): String = {
+		if data.msg.isNullOrEmpty then throw IllegalArgumentException("msg is empty")
 		data.msg
 	}
 
