@@ -6,7 +6,6 @@ import cz.kamenitxan.jakon.core.model.*
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.TypeReferences.SEQ
 import cz.kamenitxan.jakon.utils.Utils.*
-import org.intellij.lang.annotations.Language
 import org.sqlite.SQLiteConfig
 
 import java.lang.reflect.ParameterizedType
@@ -72,7 +71,7 @@ object DBHelper {
 		res
 	}
 
-	def select[T <: BaseEntity](stmt: Statement, @Language("SQL") sql: String, cls: Class[T])(implicit conn: Connection): List[QueryResult[T]] = {
+	def select[T <: BaseEntity](stmt: Statement, sql: String, cls: Class[T])(implicit conn: Connection): List[QueryResult[T]] = {
 		val rs = execute(stmt, sql)
 		val res = Iterator.from(0).takeWhile(_ => rs.next()).map(_ => {
 			EntityMapper.createJakonObject(rs, cls)
@@ -95,7 +94,7 @@ object DBHelper {
 		res
 	}
 
-	def selectSingle[T <: JakonObject](stmt: Statement, @Language("SQL") sql: String, cls: Class[T])(implicit conn: Connection): QueryResult[T] = {
+	def selectSingle[T <: JakonObject](stmt: Statement, sql: String, cls: Class[T])(implicit conn: Connection): QueryResult[T] = {
 		val rs = execute(stmt, sql)
 		val res: QueryResult[T] = if (rs.next()) {
 			EntityMapper.createJakonObject(rs, cls)
@@ -107,7 +106,7 @@ object DBHelper {
 		res
 	}
 
-	def selectSingleDeep[T <: JakonObject](stmt: Statement, @Language("SQL") sql: String)(implicit conn: Connection, cls: Class[T]): T = {
+	def selectSingleDeep[T <: JakonObject](stmt: Statement, sql: String)(implicit conn: Connection, cls: Class[T]): T = {
 		val res = selectSingle(stmt, sql, cls)
 		if (res.foreignIds != null && res.foreignIds.nonEmpty) {
 			res.foreignIds.values.foreach(fki => {
@@ -150,7 +149,7 @@ object DBHelper {
 		}
 	}
 
-	def selectDeep[T <: JakonObject](stmt: Statement, @Language("SQL") sql: String)(implicit conn: Connection, cls: Class[T]): List[T] = {
+	def selectDeep[T <: JakonObject](stmt: Statement, sql: String)(implicit conn: Connection, cls: Class[T]): List[T] = {
 		val res = select(stmt, sql, cls)
 		fetchForeignObjects(res)
 		res.map(r => r.entity)
@@ -222,7 +221,7 @@ object DBHelper {
 		}
 	}
 
-	def count(@Language("SQL") countSql: String)(implicit conn: Connection): Long = {
+	def count(countSql: String)(implicit conn: Connection): Long = {
 		val stmt = conn.createStatement()
 		val rs = stmt.executeQuery(countSql)
 		rs.next()
