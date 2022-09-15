@@ -29,12 +29,12 @@ val Dependencies = new {
 			Seq(
 				"com.sparkjava" % "spark-core" % V.spark,
 				"com.sparkjava" % "spark-template-pebble" % "2.7.1-jakon.1",
-				"org.slf4j" % "slf4j-api" % "1.8.0-beta4",
+				"org.slf4j" % "slf4j-api" % "2.0.0",
 				"org.apache.logging.log4j" % "log4j-api" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-core" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-slf4j18-impl" % V.log4j,
-				"org.xerial" % "sqlite-jdbc" % "3.36.0.2",
-				"mysql" % "mysql-connector-java" % "8.0.25",
+				"org.xerial" % "sqlite-jdbc" % "3.39.3.0",
+				"mysql" % "mysql-connector-java" % "8.0.30",
 				"com.google.guava" % "guava" % "29.0-jre",
 				"commons-io" % "commons-io" % "2.11.0",
 				"org.apache.commons" % "commons-lang3" % "3.12.0",
@@ -46,15 +46,14 @@ val Dependencies = new {
 				"com.google.code.gson" % "gson" % "2.9.0",
 				//"org.apache.lucene" % "lucene-core" % "7.5.0",
 				//"org.apache.lucene" % "lucene-queryparser" % "7.5.0",
-				"io.github.classgraph" % "classgraph" % "4.8.139",
+				"io.github.classgraph" % "classgraph" % "4.8.149",
 				"commons-codec" % "commons-codec" % "1.15",
 				"com.zaxxer" % "HikariCP" % "5.0.1",
 				"com.github.scribejava" % "scribejava-apis" % "8.3.1",
 				"cz.etn" % "email-validator" % "1.3.0",
-				"org.jetbrains" % "annotations" % "22.0.0",
-				"com.lihaoyi" %% "sourcecode" % "0.2.8",
-				"org.scalatest" %% "scalatest" % "3.2.9" % "test",
-				"org.seleniumhq.selenium" % "htmlunit-driver" % "2.58.0" % "test"
+				"com.lihaoyi" %% "sourcecode" % "0.3.0",
+				"org.scalatest" %% "scalatest" % "3.2.12" % "test",
+				"org.seleniumhq.selenium" % "htmlunit-driver" % "3.63.0" % "test"
 			)
 	)
 
