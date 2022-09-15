@@ -12,9 +12,9 @@
   "dependencies": {
     "awesomplete": "^1.1.2",
     "domador": "^2.4.4",
-    "jquery": "^3.5.1",
+    "jquery": "^3.6.1",
     "megamark": "^3.3.0",
-    "npm": "^6.14.8",
+    "npm": "^8.19.2",
     "punycode": "^2.1.1",
     "woofmark": "^4.2.6"
   },

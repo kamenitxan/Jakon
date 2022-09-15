@@ -1,4 +1,3 @@
-const {start} = require("npm/lib/utils/metrics");
 
 class FileSelector {
 
@@ -8,14 +7,14 @@ class FileSelector {
 		this.Ajax = require("utils/Ajax.js");
 	}
 
-	init() {
-		this.holder.querySelector(".btn").addEventListener("click", e => start())
-	}
-
 	start() {
 		this.Ajax.post(this.endPoint, {})
 			.then(data => this.fillTable(data))
 			.catch(error => console.error(error));
+	}
+
+	init() {
+		this.holder.querySelector(".btn").addEventListener("click", e => start())
 	}
 
 	fillTable(data) {
