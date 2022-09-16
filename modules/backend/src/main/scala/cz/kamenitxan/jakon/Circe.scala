@@ -7,8 +7,10 @@ import io.circe.parser.*
 import cz.kamenitxan.jakon.utils.TypeReferences.*
 import cz.kamenitxan.jakon.validation.EntityValidator
 import cz.kamenitxan.jakon.webui.conform.GenericType
+import cz.kamenitxan.jakon.utils.Utils._
 
 import java.lang.reflect.{Field, Parameter, ParameterizedType}
+import java.time.ZonedDateTime
 
 /**
 	* Created by TPa on 30.08.2022.
@@ -74,10 +76,11 @@ object Circe {
 	def mapToString(hc: HCursor, f: Field): (Field, ParsedValue) = {
 		val name = f.getName
 		val value = f.getType match
-			case STRING => ParsedValue(hc.downField(name).focus.get.asString.getOrElse(""), null, null)
-			case INTEGER | DOUBLE => ParsedValue(hc.downField(name).focus.map(v => {
+			case STRING | ZONED_DATETIME => ParsedValue(hc.downField(name).focus.get.asString.getOrElse(""), null, null)
+			case INTEGER | DOUBLE | FLOAT => ParsedValue(hc.downField(name).focus.map(v => {
 				v.toString.replace("\"", "").replace("\'", "")
 			}).getOrElse(""), null, null)
+			case BOOLEAN => ParsedValue(hc.downField(name).focus.get.asBoolean.getOrElse(false).toString, null, null)
 			case SEQ =>
 				println("seq")
 				val objArr = hc.downField("inner").focus.flatMap(_.asArray).getOrElse(Vector.empty)
@@ -87,7 +90,7 @@ object Circe {
 				val seqType = gft.headOption.orNull
 				val seqTypeFields = Class.forName(seqType.getTypeName).getDeclaredFields
 
-				val rr = objArr.map(o => seqTypeFields.map(f2 => mapToString(o.hcursor, f2)).toSeq).toSeq
+				val rr = objArr.map(o => seqTypeFields.map(f2 => mapToString(o.hcursor, f2)).toSeq)
 
 				ParsedValue(null, rr, null)
 			case x if x.isEnum =>
@@ -109,6 +112,16 @@ object Circe {
 			case STRING => validated.find(_._1.getName == p.getName).map(_._2.stringValue).orNull
 			case INTEGER => validated.find(_._1.getName == p.getName).map(_._2.stringValue.toInt).orNull
 			case DOUBLE => validated.find(_._1.getName == p.getName).map(_._2.stringValue.toDouble).orNull
+			case BOOLEAN => validated.find(_._1.getName == p.getName).map(_._2.stringValue.toBoolean).orNull
+			case FLOAT => validated.find(_._1.getName == p.getName).map(_._2.stringValue.toFloat).orNull
+			case ZONED_DATETIME => validated.find(_._1.getName == p.getName).map(fv => {
+				val dateString = fv._2.stringValue
+				if (dateString.isNullOrEmpty) {
+					null
+				} else {
+					ZonedDateTime.parse(dateString)
+				}
+			}).orNull
 			case SEQ =>
 				val parameterizedType = p.getParameterizedType.asInstanceOf[ParameterizedType].getActualTypeArguments.head
 				val constructor = Class.forName(parameterizedType.getTypeName).getDeclaredConstructors.head
