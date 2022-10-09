@@ -89,12 +89,14 @@ object JsonPageletInitializer {
 								createFailResponse(res, controller, translatedErrors)
 							case Right(validatedData) =>
 								methodArgs = parseJsonArgs(m, req, res, controller, validatedData)
-								val responseData = m.invoke(controller, methodArgs._1.array: _*)
+								val methodArgsArray = methodArgs._1.array
+								val responseData = m.invoke(controller, methodArgsArray: _*)
 								createResponse(responseData, controller)
 						}
 					} else {
 						methodArgs = parseJsonArgs(m, req, res, controller)
-						val responseData = m.invoke(controller, methodArgs._1.array: _*)
+						val methodArgsArray = methodArgs._1.array
+						val responseData = m.invoke(controller, methodArgsArray: _*)
 						createResponse(responseData, controller)
 					}
 				} catch {

@@ -1,7 +1,7 @@
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val V = new {
-	val Scala = "3.1.3"
+	val Scala = "3.2.0"
   val jakon = "0.5.1-SNAPSHOT"
 	val spark = "2.9.4-JAKON"
 	val log4j = "2.18.0"
@@ -111,7 +111,8 @@ lazy val backend = (project in file("modules/backend"))
 		ThisBuild / versionScheme := Some ("strict"),
 		publishTo := Some ("GC Repository" at "https://kamenitxans-maven-repository.appspot.com"),
 		credentials += Credentials(Path.userHome / ".m2" / "sbt_credentials"),
-		publishMavenStyle :=true
+		publishMavenStyle :=true,
+		coverageEnabled := true
 	)
 
 lazy val shared = crossProject(JSPlatform, JVMPlatform)

@@ -1,11 +1,12 @@
 package cz.kamenitxan.jakon.core.template.pebble
 
-import java.text.MessageFormat
-import java.util
 import com.mitchellbosecke.pebble.extension.i18n.i18nFunction
 import com.mitchellbosecke.pebble.template.{EvaluationContext, PebbleTemplate}
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.utils.{I18nUtil, PageContext}
+
+import java.text.MessageFormat
+import java.util
 
 class I18nFun extends i18nFunction {
 	getArgumentNames.add("def")
@@ -33,7 +34,8 @@ class I18nFun extends i18nFunction {
 
 		val phraseObject = I18nUtil.getTranslation(templateDir, basename, key, locale, default, silent)
 		if (phraseObject != null && params != null && params.nonEmpty) {
-			return MessageFormat.format(phraseObject, params.toArray:_*)
+			val paramsArray = params.toArray
+			return MessageFormat.format(phraseObject, paramsArray:_*)
 		}
 		phraseObject
 	}
