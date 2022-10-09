@@ -6,7 +6,7 @@ import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import spark.Request
 
 import java.lang.annotation.Annotation
-import java.lang.reflect.Field
+import java.lang.reflect.{Constructor, Field}
 import scala.io.Source
 
 
@@ -31,12 +31,19 @@ object EntityValidator {
 	// TODO: change name?
 	def validateJson(prefix: String, validatedData: Map[Field, ParsedValue]): Either[Seq[Message], Map[Field, ParsedValue]] = {
 		val errors = validatedData.map(data => {
-			val constructor = data._1.getDeclaringClass.getDeclaredConstructors.head
+			val constructor: Constructor[_] = data._1.getDeclaringClass.getDeclaredConstructors.head
 			val parameterIndex = constructor.getParameters.zipWithIndex.find(pi => {
+				//Logger.warn(s"${pi._1.getName} - ${data._1.getName} : ${pi._1.getName == data._1.getName}")
 				pi._1.getName == data._1.getName
-			}).map(_._2).get
-			val anns: Array[Annotation] = constructor.getParameterAnnotations()(parameterIndex)
-			(data._1, data._2, anns)
+			}).map(_._2)
+			if (parameterIndex.isEmpty) {
+				Logger.critical("Failed to find constructor param")
+				(data._1, data._2, Array.empty[Annotation])
+			} else {
+				val anns: Array[Annotation] = constructor.getParameterAnnotations()(parameterIndex.get)
+				(data._1, data._2, anns)
+			}
+
 		}).filter(data => {
 			data._3.exists(a => a.annotationType().getAnnotation(classOf[ValidatedBy]) != null)
 		}).flatMap(data => {
