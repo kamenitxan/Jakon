@@ -38,13 +38,3 @@ jobs:
         uses: codecov/codecov-action@v1.0.15
         with:
           fail_ci_if_error: true
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        with:
-          projectBaseDir: modules/backend/src
-          args: >
-            -Dsonar.projectKey=kamenitxan_Jakon_AYRtSv16KlwBpse3iIqR

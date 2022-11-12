@@ -28,4 +28,5 @@ jobs:
           args: >
             -Dsonar.projectKey=kamenitxan_Jakon_AYRtSv16KlwBpse3iIqR
             -Dsonar.sources=modules/backend/src
-            -Dsonar.verbose=true
+            -Dsonar.verbose=false
+            -Dsonar.exclusions=modules/backend/src/main/resources/**
