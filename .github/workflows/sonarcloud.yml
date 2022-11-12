@@ -25,7 +25,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
-          args: > # Additional arguments for the sonarcloud scanner
+          args: >
             -Dsonar.projectKey=kamenitxan_Jakon_AYRtSv16KlwBpse3iIqR
             -Dsonar.sources=modules/backend/src # optional, default is project base directory
             -Dsonar.verbose=true # optional, default is false
