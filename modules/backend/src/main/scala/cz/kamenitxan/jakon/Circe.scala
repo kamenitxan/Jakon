@@ -83,7 +83,6 @@ object Circe {
 			}).getOrElse(""), null, null, null)
 			case BOOLEAN => ParsedValue(hc.downField(name).focus.flatMap(_.asBoolean).getOrElse(false).toString, null, null, null)
 			case SEQ =>
-				println("seq")
 				val objArr = hc.downField(name).focus.flatMap(_.asArray).getOrElse(Vector.empty)
 				val seqTypeConstructor = f.getDeclaringClass.getDeclaredConstructors.head
 				val seqTypeParams = seqTypeConstructor.getParameters.map(_.getName)
@@ -98,7 +97,11 @@ object Circe {
 						ParsedValue(null, rr, null, null)
 
 			case x if x.isEnum =>
-				ParsedValue(hc.downField(name).focus.get.asString.getOrElse(""), null, null, null)
+				val jsonField = hc.downField(name).focus
+				jsonField
+					.map(f => ParsedValue(f.asString.getOrElse(""), null, null, null))
+					.getOrElse(ParsedValue(null, null, null, null))
+
 			case _ =>
 				println(f.getType.getName)
 				ParsedValue(null, null, null, null)
