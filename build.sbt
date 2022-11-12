@@ -56,9 +56,7 @@ val Dependencies = new {
 				"com.zaxxer" % "HikariCP" % "5.0.1",
 				"com.github.scribejava" % "scribejava-apis" % "8.3.1",
 				"cz.etn" % "email-validator" % "1.3.0",
-				"com.lihaoyi" %% "sourcecode" % "0.3.0",
-				"org.scalatest" %% "scalatest" % "3.2.12" % "test",
-				"org.seleniumhq.selenium" % "htmlunit-driver" % "3.63.0" % "test"
+				"com.lihaoyi" %% "sourcecode" % "0.3.0"
 			)
 	)
 
@@ -66,7 +64,13 @@ val Dependencies = new {
 
 	)
 
+	//noinspection SpellCheckingInspection
 	lazy val tests = Def.settings(
+		libraryDependencies ++= Seq(
+			"com.squareup.okhttp3" % "okhttp" % "4.10.0",
+			"org.scalatest" %% "scalatest" % "3.2.12" % "test",
+			"org.seleniumhq.selenium" % "htmlunit-driver" % "3.63.0" % "test"
+		)
 	)
 }
 
