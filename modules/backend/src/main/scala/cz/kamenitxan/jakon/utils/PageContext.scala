@@ -46,7 +46,8 @@ case class PageContext(req: Request, res: Response) {
 	val messages = new mutable.ArrayDeque[Message]()
 
 	def getLoggedUser: Option[JakonUser] = {
-		Option.apply(req.session.attribute("user"))
+		val user: JakonUser = req.session.attribute("user")
+		Option.apply(user)
 	}
 
 	def addMessage(severity: MessageSeverity, value: String): Unit = {

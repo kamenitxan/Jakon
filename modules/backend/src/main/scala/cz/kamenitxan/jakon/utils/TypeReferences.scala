@@ -1,7 +1,7 @@
 package cz.kamenitxan.jakon.utils
 
 import java.sql.Connection
-import java.time.{LocalDate, LocalDateTime, LocalTime}
+import java.time.{LocalDate, LocalDateTime, LocalTime, ZonedDateTime}
 import java.util.{Date, Locale}
 import spark.{Request, Response}
 
@@ -22,6 +22,7 @@ object TypeReferences {
 	val DATE_o = classOf[Date]
 	val SQL_DATE = classOf[java.sql.Date]
 	val DATETIME = classOf[LocalDateTime]
+	val ZONED_DATETIME = classOf[ZonedDateTime]
 	val TIME = classOf[LocalTime]
 	val SEQ = classOf[Seq[Any]]
 	val LOCALE = classOf[Locale]

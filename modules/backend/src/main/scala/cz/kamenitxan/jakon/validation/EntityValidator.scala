@@ -1,10 +1,12 @@
 package cz.kamenitxan.jakon.validation
 
+import cz.kamenitxan.jakon.Circe.ParsedValue
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import spark.Request
 
-import java.lang.reflect.Field
+import java.lang.annotation.Annotation
+import java.lang.reflect.{Constructor, Field}
 import scala.io.Source
 
 
@@ -14,7 +16,43 @@ object EntityValidator {
 		val errors = validatedData.filter(f => {
 			val anns = f._1.getDeclaredAnnotations
 			anns.exists(a => a.annotationType().getAnnotation(classOf[ValidatedBy]) != null)
-		}).flatMap(f => validateField(prefix, f._1, f._2, validatedData)).toSeq
+		}).flatMap(f => {
+			val anns = f._1.getDeclaredAnnotations.filter(a => a.annotationType().getAnnotation(classOf[ValidatedBy]) != null).toSeq
+			validateField(prefix, f._1, anns, f._2, validatedData)
+		}).toSeq
+
+		if (errors.isEmpty) {
+			Right(validatedData)
+		} else {
+			Left(errors)
+		}
+	}
+	
+	// TODO: change name?
+	def validateJson(prefix: String, validatedData: Map[Field, ParsedValue]): Either[Seq[Message], Map[Field, ParsedValue]] = {
+		val errors = validatedData.map(data => {
+			val constructor: Constructor[_] = data._1.getDeclaringClass.getDeclaredConstructors.head
+			val parameterIndex = constructor.getParameters.zipWithIndex.find(pi => {
+				//Logger.warn(s"${pi._1.getName} - ${data._1.getName} : ${pi._1.getName == data._1.getName}")
+				pi._1.getName == data._1.getName
+			}).map(_._2)
+			if (parameterIndex.isEmpty) {
+				Logger.critical("Failed to find constructor param")
+				(data._1, data._2, Array.empty[Annotation])
+			} else {
+				val anns: Array[Annotation] = constructor.getParameterAnnotations()(parameterIndex.get)
+				(data._1, data._2, anns)
+			}
+
+		}).filter(data => {
+			data._3.exists(a => a.annotationType().getAnnotation(classOf[ValidatedBy]) != null)
+		}).flatMap(data => {
+			// TODO: nested objects validation
+			val oldFormatData = validatedData.map(data => (data._1, data._2.stringValue))
+			val anns = data._3.filter(_.annotationType().getAnnotation(classOf[ValidatedBy]) != null)
+			validateField(prefix, data._1, anns.toSeq, data._2.stringValue, oldFormatData)
+		}).toSeq
+
 
 		if (errors.isEmpty) {
 			Right(validatedData)
@@ -61,12 +99,15 @@ object EntityValidator {
 		}).filter(t => t != null).toMap
 	}
 
-	private def validateField(prefix: String, f: Field, fieldValue: String, validatedData: Map[Field, String]): Seq[Message] = {
+	private def validateField(prefix: String,
+														f: Field,
+														validators: Seq[Annotation],
+														fieldValue: String,
+														validatedData: Map[Field, String]): Seq[Message] = {
 		if (!f.isAccessible) {
 			f.setAccessible(true)
 		}
-		val anns = f.getDeclaredAnnotations.filter(a => a.annotationType().getAnnotation(classOf[ValidatedBy]) != null)
-		for (an <- anns) {
+		for (an <- validators) {
 			val by: ValidatedBy = an.annotationType().getAnnotation(classOf[ValidatedBy])
 			val validator: Validator = by.value().getDeclaredConstructor().newInstance()
 			val result = validator.isValid(fieldValue, an, f, validatedData)

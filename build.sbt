@@ -2,9 +2,10 @@ import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val V = new {
 	val Scala = "3.2.0"
-  val jakon = "0.5-SNAPSHOT"
+  val jakon = "0.5.1-SNAPSHOT"
 	val spark = "2.9.4-JAKON"
 	val log4j = "2.18.0"
+	val circeVersion = "0.14.2"
 }
 
 scalaVersion := V.Scala
@@ -40,10 +41,14 @@ val Dependencies = new {
 				"org.apache.commons" % "commons-lang3" % "3.12.0",
 				"de.svenkubiak" % "jBCrypt" % "0.4.3",
 				"commons-fileupload" % "commons-fileupload" % "1.4",
-				"net.minidev" % "json-smart" % "2.4.8",
+				"net.minidev" % "json-smart" % "2.4.8", // TODO remove
 				"com.sun.mail" % "javax.mail" % "1.6.2",
 				"com.atlassian.commonmark" % "commonmark" % "0.11.0",
-				"com.google.code.gson" % "gson" % "2.9.0",
+				"com.google.code.gson" % "gson" % "2.9.0", // TODO remove
+				"io.circe" %% "circe-core" % V.circeVersion,
+				"io.circe" %% "circe-generic"% V.circeVersion,
+				"io.circe" %% "circe-parser"% V.circeVersion,
+				"org.typelevel" %% "shapeless3-deriving" % "3.1.0",
 				//"org.apache.lucene" % "lucene-core" % "7.5.0",
 				//"org.apache.lucene" % "lucene-queryparser" % "7.5.0",
 				"io.github.classgraph" % "classgraph" % "4.8.149",
@@ -94,7 +99,8 @@ lazy val backend = (project in file("modules/backend"))
 		ThisBuild / versionScheme := Some ("strict"),
 		publishTo := Some ("GC Repository" at "https://kamenitxans-maven-repository.appspot.com"),
 		credentials += Credentials(Path.userHome / ".m2" / "sbt_credentials"),
-		publishMavenStyle :=true
+		publishMavenStyle :=true,
+		coverageEnabled := true
 	)
 
 lazy val shared = crossProject(JSPlatform, JVMPlatform)

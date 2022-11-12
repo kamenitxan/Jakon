@@ -6,6 +6,7 @@ addSbtPlugin("io.spray" % "sbt-revolver" % "0.9.1")
 addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "1.1.0")
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.0.2")
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.4.2")
+addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.9.11")
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.31")
 addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.5.1")
 addDependencyTreePlugin
