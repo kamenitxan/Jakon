@@ -27,5 +27,5 @@ jobs:
         with:
           args: >
             -Dsonar.projectKey=kamenitxan_Jakon_AYRtSv16KlwBpse3iIqR
-            -Dsonar.sources=modules/backend/src # optional, default is project base directory
-            -Dsonar.verbose=true # optional, default is false
+            -Dsonar.sources=modules/backend/src
+            -Dsonar.verbose=true
