@@ -1,11 +1,11 @@
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val V = new {
-	val Scala = "3.2.0"
+	val Scala = "3.2.1"
   val jakon = "0.5.1-SNAPSHOT"
 	val spark = "2.9.4-JAKON"
-	val log4j = "2.18.0"
-	val circeVersion = "0.14.2"
+	val log4j = "2.19.0"
+	val circeVersion = "0.14.3"
 }
 
 scalaVersion := V.Scala
@@ -30,11 +30,11 @@ val Dependencies = new {
 			Seq(
 				"com.sparkjava" % "spark-core" % V.spark,
 				"com.sparkjava" % "spark-template-pebble" % "2.7.1-jakon.1",
-				"org.slf4j" % "slf4j-api" % "2.0.0",
+				"org.slf4j" % "slf4j-api" % "2.0.4",
 				"org.apache.logging.log4j" % "log4j-api" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-core" % V.log4j,
-				"org.apache.logging.log4j" % "log4j-slf4j18-impl" % V.log4j,
-				"org.xerial" % "sqlite-jdbc" % "3.39.3.0",
+				"org.apache.logging.log4j" % "log4j-slf4j18-impl" % "2.18.0",
+				"org.xerial" % "sqlite-jdbc" % "3.39.4.1",
 				"mysql" % "mysql-connector-java" % "8.0.30",
 				"com.google.guava" % "guava" % "29.0-jre",
 				"commons-io" % "commons-io" % "2.11.0",
@@ -44,17 +44,17 @@ val Dependencies = new {
 				"net.minidev" % "json-smart" % "2.4.8", // TODO remove
 				"com.sun.mail" % "javax.mail" % "1.6.2",
 				"com.atlassian.commonmark" % "commonmark" % "0.11.0",
-				"com.google.code.gson" % "gson" % "2.9.0", // TODO remove
+				"com.google.code.gson" % "gson" % "2.10", // TODO remove
 				"io.circe" %% "circe-core" % V.circeVersion,
 				"io.circe" %% "circe-generic"% V.circeVersion,
 				"io.circe" %% "circe-parser"% V.circeVersion,
 				"org.typelevel" %% "shapeless3-deriving" % "3.1.0",
 				//"org.apache.lucene" % "lucene-core" % "7.5.0",
 				//"org.apache.lucene" % "lucene-queryparser" % "7.5.0",
-				"io.github.classgraph" % "classgraph" % "4.8.149",
+				"io.github.classgraph" % "classgraph" % "4.8.151",
 				"commons-codec" % "commons-codec" % "1.15",
 				"com.zaxxer" % "HikariCP" % "5.0.1",
-				"com.github.scribejava" % "scribejava-apis" % "8.3.1",
+				"com.github.scribejava" % "scribejava-apis" % "8.3.3",
 				"cz.etn" % "email-validator" % "1.3.0",
 				"com.lihaoyi" %% "sourcecode" % "0.3.0"
 			)
@@ -68,7 +68,7 @@ val Dependencies = new {
 	lazy val tests = Def.settings(
 		libraryDependencies ++= Seq(
 			"com.squareup.okhttp3" % "okhttp" % "4.10.0",
-			"org.scalatest" %% "scalatest" % "3.2.12" % "test",
+			"org.scalatest" %% "scalatest" % "3.2.14" % "test",
 			"org.seleniumhq.selenium" % "htmlunit-driver" % "3.63.0" % "test"
 		)
 	)
@@ -104,7 +104,7 @@ lazy val backend = (project in file("modules/backend"))
 		publishTo := Some ("GC Repository" at "https://kamenitxans-maven-repository.appspot.com"),
 		credentials += Credentials(Path.userHome / ".m2" / "sbt_credentials"),
 		publishMavenStyle :=true,
-		coverageEnabled := true
+		coverageEnabled := false
 	)
 
 lazy val shared = crossProject(JSPlatform, JVMPlatform)
