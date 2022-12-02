@@ -7,6 +7,7 @@ import cz.kamenitxan.jakon.utils.{I18nUtil, PageContext}
 
 import java.text.MessageFormat
 import java.util
+import java.util.Locale
 
 class I18nFun extends i18nFunction {
 	getArgumentNames.add("def")
@@ -21,15 +22,18 @@ class I18nFun extends i18nFunction {
 		val default = args.get("def").asInstanceOf[String]
 		val silentArg = args.get("s").asInstanceOf[String]
 		val silent = if (silentArg == null) false else true
+		lazy val contextLocale = context.getVariable(I18nFun.renderLocale)
 
-		val context = args.get("_context").asInstanceOf[EvaluationContext]
+		val evaluationContext = args.get("_context").asInstanceOf[EvaluationContext] // TODO: je to tu potreba? nestaci promena context?
 		val lu = if (PageContext.getInstance() != null) PageContext.getInstance().getLoggedUser else null
 		val locale = if (lu != null && lu.nonEmpty && lu.get.locale != null) {
 			lu.get.locale
+		} else if (contextLocale != null && contextLocale.isInstanceOf[Locale]) {
+			contextLocale.asInstanceOf[Locale]
 		} else if (Settings.getDefaultLocale != null) {
 			Settings.getDefaultLocale
 		} else {
-			context.getLocale
+			evaluationContext.getLocale
 		}
 
 		val phraseObject = I18nUtil.getTranslation(templateDir, basename, key, locale, default, silent)
@@ -40,5 +44,9 @@ class I18nFun extends i18nFunction {
 		phraseObject
 	}
 
+}
+
+object I18nFun {
+	val renderLocale = "jakon_render_locale"
 }
 
