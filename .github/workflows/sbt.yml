@@ -31,7 +31,7 @@ jobs:
       - name: Build with Sbt
         run: sbt compile
       - name: Test
-        run: sbt coverage test
+        run: sbt 'set coverageEnabled := true' coverage test
       - name: Coverage Report
         run: sbt coverageReport
       - name: Upload to Codecov
