@@ -9,8 +9,8 @@ import java.io.File
 import java.sql.Connection
 import java.util.concurrent.TimeUnit
 import java.util.{Date, Properties}
-import javax.mail._
-import javax.mail.internet.{InternetAddress, MimeBodyPart, MimeMessage, MimeMultipart}
+import jakarta.mail._
+import jakarta.mail.internet.{InternetAddress, MimeBodyPart, MimeMessage, MimeMultipart}
 
 object EmailSendTask {
 	val TMPL_LANG = "tmplLanguage"

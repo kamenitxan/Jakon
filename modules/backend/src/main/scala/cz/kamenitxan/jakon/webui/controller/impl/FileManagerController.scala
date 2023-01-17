@@ -25,7 +25,7 @@ import java.time.LocalDateTime
 import java.util
 import java.util.Date
 import java.util.zip.{ZipEntry, ZipOutputStream}
-import javax.mail.internet.MimeUtility
+import jakarta.mail.internet.MimeUtility
 import javax.servlet.ServletException
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.annotation.switch

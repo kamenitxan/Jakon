@@ -42,7 +42,7 @@ val Dependencies = new {
 				"de.svenkubiak" % "jBCrypt" % "0.4.3",
 				"commons-fileupload" % "commons-fileupload" % "1.4",
 				"net.minidev" % "json-smart" % "2.4.8", // TODO remove
-				"com.sun.mail" % "javax.mail" % "1.6.2",
+				"com.sun.mail" % "jakarta.mail" % "2.0.1",
 				"com.atlassian.commonmark" % "commonmark" % "0.11.0",
 				"com.google.code.gson" % "gson" % "2.10", // TODO remove
 				"io.circe" %% "circe-core" % V.circeVersion,
@@ -55,7 +55,9 @@ val Dependencies = new {
 				"commons-codec" % "commons-codec" % "1.15",
 				"com.zaxxer" % "HikariCP" % "5.0.1",
 				"com.github.scribejava" % "scribejava-apis" % "8.3.3",
-				"cz.etn" % "email-validator" % "1.3.0",
+				"cz.etn" % "email-validator" % "1.3.0" excludeAll(
+					ExclusionRule(organization = "javax.mail", name = "javax.mail-api")
+				),
 				"com.lihaoyi" %% "sourcecode" % "0.3.0"
 			)
 	)
@@ -103,8 +105,7 @@ lazy val backend = (project in file("modules/backend"))
 		ThisBuild / versionScheme := Some ("strict"),
 		publishTo := Some ("GC Repository" at "https://kamenitxans-maven-repository.appspot.com"),
 		credentials += Credentials(Path.userHome / ".m2" / "sbt_credentials"),
-		publishMavenStyle :=true,
-		coverageEnabled := false
+		publishMavenStyle :=true
 	)
 
 lazy val shared = crossProject(JSPlatform, JVMPlatform)
@@ -188,5 +189,6 @@ val PrepareCICommands = Seq(
 ).mkString(";")
 
 addCommandAlias("ci", CICommands)
-
 addCommandAlias("preCI", PrepareCICommands)
+addCommandAlias("jar", "clean; coverageOff; assembly")
+addCommandAlias("githubTest", "coverageOn; coverage; test; coverageReport; coverageOff;")

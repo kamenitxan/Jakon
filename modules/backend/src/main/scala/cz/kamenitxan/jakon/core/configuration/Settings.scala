@@ -8,7 +8,7 @@ import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.utils.mail.EmailTypeHandler
 import cz.kamenitxan.jakon.webui.util.JakonFileLoader
-import javax.mail.Message
+import jakarta.mail.Message
 
 import scala.language.postfixOps
 

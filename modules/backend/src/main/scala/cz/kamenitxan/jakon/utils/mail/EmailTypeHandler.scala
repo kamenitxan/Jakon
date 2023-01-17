@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon.utils.mail
 
-import javax.mail.Message
+import jakarta.mail.Message
 
 
 trait EmailTypeHandler {

@@ -1,7 +1,7 @@
 package test
 
 import cz.kamenitxan.jakon.utils.mail.EmailTypeHandler
-import javax.mail.Message
+import jakarta.mail.Message
 
 class TestEmailTypeHandler extends EmailTypeHandler {
 

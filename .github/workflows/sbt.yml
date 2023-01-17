@@ -31,9 +31,7 @@ jobs:
       - name: Build with Sbt
         run: sbt compile
       - name: Test
-        run: sbt 'set coverageEnabled := true' coverage test
-      - name: Coverage Report
-        run: sbt coverageReport
+        run: sbt githubTest
       - name: Upload to Codecov
         uses: codecov/codecov-action@v1.0.15
         with:
