@@ -22,7 +22,15 @@ exports.files = {
 };
 
 exports.plugins = {
-    babel: {presets: ['latest']}
+    babel: {
+        presets: [
+            ["@babel/preset-env", {
+                targets: {
+                    browsers: ['last 2 versions']
+                }
+            }]
+        ]
+    }
 };
 
 exports.npm = {
