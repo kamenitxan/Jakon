@@ -81,7 +81,7 @@ object Circe {
 			case INTEGER | DOUBLE | FLOAT | DOUBLE_j | INTEGER_j => ParsedValue(hc.downField(name).focus.map(v => {
 				v.toString.replace("\"", "").replace("\'", "")
 			}).getOrElse(""), null, null, null)
-			case BOOLEAN => ParsedValue(hc.downField(name).focus.flatMap(_.asBoolean).getOrElse(false).toString, null, null, null)
+			case BOOLEAN | BOOLEAN_j => ParsedValue(hc.downField(name).focus.flatMap(_.asBoolean).getOrElse(false).toString, null, null, null)
 			case SEQ =>
 				val objArr = hc.downField(name).focus.flatMap(_.asArray).getOrElse(Vector.empty)
 				val seqTypeConstructor = f.getDeclaringClass.getDeclaredConstructors.head
@@ -92,6 +92,7 @@ object Circe {
 
 				seqType match
 					case INTEGER | DOUBLE | FLOAT | DOUBLE_j | INTEGER_j => ParsedValue(null, null, objArr.map(_.toString), null)
+					case STRING => ParsedValue(null, null, objArr.map(_.asString.getOrElse("")), null)
 					case _ =>
 						val rr = objArr.map(o => seqTypeFields.map(f2 => mapToString(o.hcursor, f2)).toSeq)
 						ParsedValue(null, rr, null, null)
@@ -118,9 +119,9 @@ object Circe {
 	def mapToValue(p: Parameter, validated: Map[Field, ParsedValue]): Any = {
 		val value = p.getType match
 			case STRING => validated.find(_._1.getName == p.getName).map(_._2.stringValue).orNull
-			case INTEGER => validated.find(_._1.getName == p.getName).flatMap(_._2.stringValue.toIntOption).orNull
-			case DOUBLE => validated.find(_._1.getName == p.getName).flatMap(_._2.stringValue.toDoubleOption).orNull
-			case BOOLEAN => validated.find(_._1.getName == p.getName).map(_._2.stringValue.toBoolean).orNull
+			case INTEGER | INTEGER_j => validated.find(_._1.getName == p.getName).flatMap(_._2.stringValue.toIntOption).orNull
+			case DOUBLE | DOUBLE_j => validated.find(_._1.getName == p.getName).flatMap(_._2.stringValue.toDoubleOption).orNull
+			case BOOLEAN | BOOLEAN_j => validated.find(_._1.getName == p.getName).map(_._2.stringValue.toBoolean).orNull
 			case FLOAT => validated.find(_._1.getName == p.getName).map(_._2.stringValue.toFloat).orNull
 			case ZONED_DATETIME => validated.find(_._1.getName == p.getName).map(fv => {
 				val dateString = fv._2.stringValue
@@ -136,6 +137,9 @@ object Circe {
 				validated.filter(_._1.getName == p.getName).map(parsedValue => {
 
 					parameterizedType match
+						case STRING =>
+							val seqValue = parsedValue._2.seqValue
+							seqValue.map(java.lang.String.valueOf)
 						case INTEGER_j =>
 							val seqValue = parsedValue._2.seqValue
 							seqValue.map(java.lang.Integer.valueOf)

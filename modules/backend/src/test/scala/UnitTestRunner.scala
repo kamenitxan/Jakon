@@ -1,5 +1,6 @@
 import core.database.ConvertersTest
 import core.functions.FunctionHelperTest
+import core.pagelet.JsonParserTest
 import core.template.TemplateUtilsTest
 import core.template.pebble.Pebble
 import org.scalatest.{BeforeAndAfterAll, Suites}
@@ -18,7 +19,8 @@ class UnitTestRunner extends Suites(
 	new Pebble,
 	new TemplateUtilsTest,
 	new ConvertersTest,
-	new AdminSettingsTest
+	new AdminSettingsTest,
+	new JsonParserTest
 ) with BeforeAndAfterAll {
 
 }

@@ -10,6 +10,7 @@ object TypeReferences {
 
 	val STRING = classOf[String]
 	val BOOLEAN = classOf[Boolean]
+	val BOOLEAN_j = classOf[java.lang.Boolean]
 	val INTEGER = classOf[Int]
 	val FLOAT = classOf[Float]
 	val DOUBLE = classOf[Double]
