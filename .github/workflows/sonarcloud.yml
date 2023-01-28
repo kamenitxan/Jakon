@@ -26,7 +26,7 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
           args: >
-            -Dsonar.projectKey=kamenitxan_Jakon_AYRtSv16KlwBpse3iIqR
+            -Dsonar.projectKey=kamenitxan_Jakon_AYX5P6qaok6eoBlpoZHT
             -Dsonar.sources=modules/backend/src
             -Dsonar.verbose=false
             -Dsonar.exclusions=modules/backend/src/main/resources/**
