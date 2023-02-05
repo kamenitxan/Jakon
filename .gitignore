@@ -47,3 +47,5 @@ jakon_config.properties
 /modules/backend/static/jakon/
 /.bsp/
 /jakond.iml
+/modules/backend/src/main/resources/static/jakon/
+/modules/backend/jakonUnitTest.sqlite
