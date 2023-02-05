@@ -1,7 +1,7 @@
 package core.template
 
-import cz.kamenitxan.jakon.core.function.FunctionHelper
 import cz.kamenitxan.jakon.core.model.Post
+import cz.kamenitxan.jakon.core.template.function.FunctionHelper
 import cz.kamenitxan.jakon.core.template.utils.TemplateUtils
 import org.scalatest.DoNotDiscover
 import org.scalatest.funsuite.AnyFunSuite

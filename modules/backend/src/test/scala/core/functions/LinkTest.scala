@@ -1,10 +1,11 @@
 package core.functions
 
-import java.util
-import cz.kamenitxan.jakon.core.function.FunctionHelper
 import cz.kamenitxan.jakon.core.model.Page
+import cz.kamenitxan.jakon.core.template.function.FunctionHelper
 import org.scalatest.DoNotDiscover
 import org.scalatest.funsuite.AnyFunSuite
+
+import java.util
 
 /**
   * Created by TPa on 01.09.16.

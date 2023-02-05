@@ -1,10 +1,10 @@
-package cz.kamenitxan.jakon.core.function
+package cz.kamenitxan.jakon.core.template.function
 
-import java.util
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.BasicJakonObject
 
 import java.sql.Connection
+import java.util
 
 /**
   * Created by TPa on 25.05.16.

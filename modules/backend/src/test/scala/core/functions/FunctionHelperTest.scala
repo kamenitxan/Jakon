@@ -1,11 +1,12 @@
 package core.functions
 
-import java.util
-import cz.kamenitxan.jakon.core.function.FunctionHelper
+import cz.kamenitxan.jakon.core.template.function.FunctionHelper
 import cz.kamenitxan.jakon.core.template.pebble.ValueFun
 import org.scalatest.DoNotDiscover
 import org.scalatest.funsuite.AnyFunSuite
 import test.HelloFun
+
+import java.util
 
 @DoNotDiscover
 class FunctionHelperTest extends AnyFunSuite {

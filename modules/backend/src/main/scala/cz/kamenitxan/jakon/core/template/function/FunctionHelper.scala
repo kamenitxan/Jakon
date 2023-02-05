@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.core.function
+package cz.kamenitxan.jakon.core.template.function
 
 import java.util
 import java.util.regex.Pattern

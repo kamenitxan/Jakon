@@ -1,8 +1,8 @@
 package test
 
-import java.util
+import cz.kamenitxan.jakon.core.template.function.IFuncion
 
-import cz.kamenitxan.jakon.core.function.IFuncion
+import java.util
 
 
 class HelloFun extends IFuncion {
