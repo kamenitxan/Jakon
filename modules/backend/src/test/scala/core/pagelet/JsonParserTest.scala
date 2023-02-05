@@ -1,8 +1,7 @@
 package core.pagelet
 
 import core.pagelet.entity.JsonDataEnum
-import cz.kamenitxan.jakon.Circe
-import cz.kamenitxan.jakon.Circe.{ParsedValue, parseJsonData}
+import cz.kamenitxan.jakon.core.dynamic.arguments.{CirceJsonParser, ParsedValue}
 import cz.kamenitxan.jakon.webui.AdminSettings
 import cz.kamenitxan.jakon.webui.controller.impl.Dashboard
 import io.circe.*
@@ -23,12 +22,12 @@ class JsonParserTest extends AnyFunSuite {
 		val hc: HCursor = res.hcursor
 
 		val fields = t.getDeclaredFields
-		fields.map(f => Circe.mapToString(hc, f)).toMap[Field, ParsedValue]
+		fields.map(f => CirceJsonParser.mapToString(hc, f)).toMap[Field, ParsedValue]
 	}
 
 	def createDataObject(data: Map[Field, ParsedValue], t: Class[_]): Any = {
 		val constructorParams = t.getDeclaredConstructors.head.getParameters.map(p => {
-			Circe.mapToValue(p, data)
+			CirceJsonParser.mapToObject(p, data)
 		})
 
 		t.getDeclaredConstructors.head.newInstance(constructorParams: _*)

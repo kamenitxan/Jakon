@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon.validation
 
-import cz.kamenitxan.jakon.Circe.ParsedValue
+import cz.kamenitxan.jakon.core.dynamic.arguments.ParsedValue
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import spark.Request

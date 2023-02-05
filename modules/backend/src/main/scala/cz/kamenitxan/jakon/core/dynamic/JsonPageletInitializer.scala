@@ -1,9 +1,9 @@
 package cz.kamenitxan.jakon.core.dynamic
 
-import cz.kamenitxan.jakon.Circe.ParsedValue
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.dynamic.PageletInitializer.{MethodArgs, createMethodArgs}
+import cz.kamenitxan.jakon.core.dynamic.arguments.ParsedValue
 import cz.kamenitxan.jakon.core.dynamic.entity.{AbstractJsonResponse, JsonErrorResponse, JsonFailResponse, ResponseStatus}
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.I18nUtil
