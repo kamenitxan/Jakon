@@ -1,8 +1,7 @@
 [![Java CI](https://github.com/kamenitxan/Jakon/actions/workflows/sbt.yml/badge.svg)](https://github.com/kamenitxan/Jakon/actions/workflows/sbt.yml)
 [![codecov](https://codecov.io/gh/kamenitxan/Jakon/branch/master/graph/badge.svg)](https://codecov.io/gh/kamenitxan/Jakon)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=kamenitxan_Jakon&metric=alert_status)](https://sonarcloud.io/dashboard?id=kamenitxan_Jakon)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=kamenitxan_Jakon&metric=bugs)](https://sonarcloud.io/dashboard?id=kamenitxan_Jakon)
-
+[![Quality Gate Status](https://sonarqube.kamenitxan.eu/api/project_badges/measure?project=kamenitxan_Jakon_AYX5P6qaok6eoBlpoZHT&metric=alert_status&token=088f6735c2704892b49dfa0d7a47c5d05fb943ec)](https://sonarqube.kamenitxan.eu/dashboard?id=kamenitxan_Jakon_AYX5P6qaok6eoBlpoZHT)
+[![Bugs](https://sonarqube.kamenitxan.eu/api/project_badges/measure?project=kamenitxan_Jakon_AYX5P6qaok6eoBlpoZHT&metric=bugs&token=088f6735c2704892b49dfa0d7a47c5d05fb943ec)](https://sonarqube.kamenitxan.eu/dashboard?id=kamenitxan_Jakon_AYX5P6qaok6eoBlpoZHT)
 ![](https://raw.githubusercontent.com/kamenitxan/Jakon/master/src/main/resources/static/jakon/css/images/logo2.png)
 
 Scala static web generator 
