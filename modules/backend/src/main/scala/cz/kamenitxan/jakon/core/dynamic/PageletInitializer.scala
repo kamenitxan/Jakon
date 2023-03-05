@@ -4,9 +4,9 @@ import com.google.gson.Gson
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.PageContext
-import cz.kamenitxan.jakon.utils.TypeReferences._
+import cz.kamenitxan.jakon.utils.TypeReferences.*
 import cz.kamenitxan.jakon.validation.EntityValidator
-import cz.kamenitxan.jakon.webui.conform.FieldConformer._
+import cz.kamenitxan.jakon.webui.conform.FieldConformer.*
 import cz.kamenitxan.jakon.webui.controller.pagelets.AbstractAdminPagelet
 import cz.kamenitxan.jakon.webui.entity.CustomControllerInfo
 import cz.kamenitxan.jakon.webui.{AdminSettings, Context}
@@ -17,7 +17,7 @@ import java.sql.Connection
 import javax.servlet.MultipartConfigElement
 import scala.annotation.tailrec
 import scala.collection.mutable
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 
 object PageletInitializer {
@@ -31,6 +31,9 @@ object PageletInitializer {
 		controllers.foreach(c => {
 			Logger.debug("Initializing pagelet: " + c.getSimpleName)
 			val controllerAnn = c.getAnnotation(classOf[Pagelet])
+			if (controllerAnn.path().endsWith("/")) {
+				Logger.warn(s"${c.getSimpleName} path ends with /. This is not recommended.")
+			}
 			if (controllerAnn.authRequired()) {
 				protectedPrefixes += controllerAnn.path()
 			}
@@ -45,6 +48,12 @@ object PageletInitializer {
 					}
 					if (post != null) {
 						initPostAnnotation(post, controllerAnn, m, c)
+					}
+					if ((get != null && get.path().endsWith("/")) || (post != null && post.path().endsWith("/"))) {
+						Logger.warn(s"${c.getSimpleName}.${m.getName} path ends with /. This is not recommended.")
+					}
+					if ((get != null && get.path().nonEmpty && !get.path().startsWith("/")) || (post != null && post.path().nonEmpty && !post.path().startsWith("/"))) {
+						Logger.warn(s"${c.getSimpleName}.${m.getName} path does not start with /. This is not recommended.")
 					}
 				})
 		})

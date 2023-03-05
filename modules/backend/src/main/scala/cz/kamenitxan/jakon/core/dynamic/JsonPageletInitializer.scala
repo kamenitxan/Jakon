@@ -29,6 +29,9 @@ object JsonPageletInitializer {
 		controllers.foreach(c => {
 			Logger.debug("Initializing json pagelet: " + c.getSimpleName)
 			val controllerAnn = c.getAnnotation(classOf[JsonPagelet])
+			if (controllerAnn.path().endsWith("/")) {
+				Logger.warn(s"${c.getSimpleName} path ends with /. This is not recommended.")
+			}
 
 			c.getDeclaredMethods
 			  .filter(m => m.getAnnotation(classOf[Get]) != null || m.getAnnotation(classOf[Post]) != null)
@@ -40,6 +43,12 @@ object JsonPageletInitializer {
 					}
 					if (post != null) {
 					  initPostAnnotation(post, controllerAnn, m, c)
+					}
+					if ((get != null && get.path().endsWith("/")) || (post != null && post.path().endsWith("/"))) {
+						Logger.warn(s"${c.getSimpleName}.${m.getName} path ends with /. This is not recommended.")
+					}
+					if ((get != null && get.path().nonEmpty && !get.path().startsWith("/")) || (post != null && post.path().nonEmpty && !post.path().startsWith("/"))) {
+						Logger.warn(s"${c.getSimpleName}.${m.getName} path does not start with /. This is not recommended.")
 					}
 				})
 		})
