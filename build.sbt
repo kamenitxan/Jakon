@@ -4,8 +4,8 @@ val V = new {
 	val Scala = "3.2.2"
   val jakon = "0.5.1-SNAPSHOT"
 	val spark = "2.9.4-JAKON"
-	val log4j = "2.19.0"
-	val circeVersion = "0.14.3"
+	val log4j = "2.20.0"
+	val circeVersion = "0.14.5"
 }
 
 scalaVersion := V.Scala
@@ -42,17 +42,17 @@ val Dependencies = new {
 				"commons-codec" % "commons-codec" % "1.15",
 				"commons-fileupload" % "commons-fileupload" % "1.4",
 				"de.svenkubiak" % "jBCrypt" % "0.4.3",
-				"net.minidev" % "json-smart" % "2.4.8", // TODO remove
+				"net.minidev" % "json-smart" % "2.4.10", // TODO remove
 				"com.sun.mail" % "jakarta.mail" % "2.0.1",
 				"com.atlassian.commonmark" % "commonmark" % "0.17.0",
-				"com.google.code.gson" % "gson" % "2.10", // TODO remove
+				"com.google.code.gson" % "gson" % "2.10.1", // TODO remove
 				"io.circe" %% "circe-core" % V.circeVersion,
 				"io.circe" %% "circe-generic"% V.circeVersion,
 				"io.circe" %% "circe-parser"% V.circeVersion,
-				"org.typelevel" %% "shapeless3-deriving" % "3.1.0",
+				"org.typelevel" %% "shapeless3-deriving" % "3.3.0", // TODO remove
 				//"org.apache.lucene" % "lucene-core" % "7.5.0",
 				//"org.apache.lucene" % "lucene-queryparser" % "7.5.0",
-				"io.github.classgraph" % "classgraph" % "4.8.154",
+				"io.github.classgraph" % "classgraph" % "4.8.157",
 				"com.zaxxer" % "HikariCP" % "5.0.1",
 				"com.github.scribejava" % "scribejava-apis" % "8.3.3",
 				"cz.etn" % "email-validator" % "1.3.0" excludeAll(
