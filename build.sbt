@@ -2,7 +2,7 @@ import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val V = new {
 	val Scala = "3.2.2"
-  val jakon = "0.5.1-SNAPSHOT"
+  val jakon = "0.5.2-SNAPSHOT"
 	val spark = "2.9.4-JAKON"
 	val log4j = "2.20.0"
 	val circeVersion = "0.14.5"
@@ -30,7 +30,7 @@ val Dependencies = new {
 			Seq(
 				"com.sparkjava" % "spark-core" % V.spark,
 				"com.sparkjava" % "spark-template-pebble" % "2.7.1-jakon.1",
-				"org.slf4j" % "slf4j-api" % "2.0.5",
+				"org.slf4j" % "slf4j-api" % "2.0.7",
 				"org.apache.logging.log4j" % "log4j-api" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-core" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-slf4j18-impl" % "2.18.0",
@@ -94,7 +94,7 @@ lazy val frontend = (project in file("modules/frontend"))
 	)
 
 lazy val backend = (project in file("modules/backend"))
-	.dependsOn(shared.jvm)
+	//.dependsOn(shared.jvm)
 	.settings(Dependencies.backend)
 	.settings(Dependencies.tests)
 	.settings(commonBuildSettings)
@@ -103,8 +103,8 @@ lazy val backend = (project in file("modules/backend"))
 		Test / fork := true,
 
 		ThisBuild / versionScheme := Some ("strict"),
-		publishTo := Some ("GC Repository" at "https://kamenitxans-maven-repository.appspot.com"),
-		credentials += Credentials(Path.userHome / ".m2" / "sbt_credentials"),
+		publishTo := Some ("Nexus" at "https://nexus.kamenitxan.eu/repository/jakon/"),
+		credentials += Credentials(Path.userHome / ".sbt" / ".credentials"),
 		publishMavenStyle :=true
 	)
 
@@ -116,7 +116,12 @@ lazy val shared = crossProject(JSPlatform, JVMPlatform)
 	.jsSettings(commonBuildSettings)
 	.jvmSettings(commonBuildSettings)
 	.settings(
-		name := "jakon-shared"
+		name := "jakon-shared",
+
+		ThisBuild / versionScheme := Some("strict"),
+		publishTo := Some("Nexus" at "https://nexus.kamenitxan.eu/repository/jakon/"),
+		credentials += Credentials(Path.userHome / ".sbt" / ".credentials"),
+		publishMavenStyle := true
 	)
 
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"

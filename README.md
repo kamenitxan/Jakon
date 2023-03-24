@@ -6,19 +6,24 @@
 
 Scala static web generator 
 
+```
+ThisBuild / resolvers += "Artifactory" at "https://nexus.kamenitxan.eu/repository/jakon/"
+libraryDependencies += "cz.kamenitxan" %% "jakon" % "0.5.1"
+```
+
 ```xml
 <repositories>
     <repository>
         <id>kamenitxan-maven-repository</id>
-        <url>https://kamenitxans-maven-repository.appspot.com/</url>
+        <url>https://nexus.kamenitxan.eu/repository/jakon/</url>
     </repository>
 </repositories>
 
 <dependencies>
     <dependency>
         <groupId>cz.kamenitxan</groupId>
-        <artifactId>jakon</artifactId>
-        <version>0.2-SNAPSHOT</version>
+        <artifactId>jakon_3</artifactId>
+        <version>0.5.1</version>
     </dependency>
 <dependencies>
 ```
