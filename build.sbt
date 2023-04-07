@@ -15,7 +15,7 @@ version := V.jakon
 
 
 ThisBuild / resolvers += Resolver.mavenLocal
-ThisBuild / resolvers += "Artifactory" at "https://kamenitxans-maven-repository.appspot.com/"
+ThisBuild / resolvers += "Artifactory" at "https://nexus.kamenitxan.eu/repository/jakon/"
 
 
 val Dependencies = new {
