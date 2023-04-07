@@ -16,6 +16,7 @@
 	<!-- /.row -->
 	<div class="row">
 		<div class="col-lg-12">
+			<a href="/admin/logs/heapdump" class="btn btn-lg btn-success btn_heapdump" >{{ i18n("common","LOG_HEAPDUMP") }}</a>
 			<div class="panel panel-default">
 				<!-- /.panel-heading -->
 				<div class="panel-body logs">

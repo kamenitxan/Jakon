@@ -25,3 +25,7 @@
 .logs .Critical {
 	background-color: #b50000;
 }
+
+.btn_heapdump {
+	margin: 14px 0;
+}
