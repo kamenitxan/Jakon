@@ -3,7 +3,7 @@ import sbtassembly.AssemblyPlugin.autoImport.assembly
 val V = new {
 	val Scala = "3.2.2"
   val jakon = "0.5.2-SNAPSHOT"
-	val spark = "2.9.4-JAKON"
+	val spark = "2.9.4-JAKON.2"
 	val log4j = "2.20.0"
 	val circeVersion = "0.14.5"
 }
@@ -33,14 +33,14 @@ val Dependencies = new {
 				"org.slf4j" % "slf4j-api" % "2.0.7",
 				"org.apache.logging.log4j" % "log4j-api" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-core" % V.log4j,
-				"org.apache.logging.log4j" % "log4j-slf4j18-impl" % "2.18.0",
+				"org.apache.logging.log4j" % "log4j-slf4j2-impl" % V.log4j,
 				"org.xerial" % "sqlite-jdbc" % "3.40.1.0",
 				"mysql" % "mysql-connector-java" % "8.0.32",
 				"com.google.guava" % "guava" % "29.0-jre",
 				"commons-io" % "commons-io" % "2.11.0",
 				"org.apache.commons" % "commons-lang3" % "3.12.0",
 				"commons-codec" % "commons-codec" % "1.15",
-				"commons-fileupload" % "commons-fileupload" % "1.4",
+				"commons-fileupload" % "commons-fileupload" % "1.5",
 				"de.svenkubiak" % "jBCrypt" % "0.4.3",
 				"net.minidev" % "json-smart" % "2.4.10", // TODO remove
 				"com.sun.mail" % "jakarta.mail" % "2.0.1",
