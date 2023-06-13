@@ -1,11 +1,11 @@
 package cz.kamenitxan.jakon.webui.functions
 
+import cz.kamenitxan.jakon.utils.Utils
+import io.pebbletemplates.pebble.extension.Function
+import io.pebbletemplates.pebble.template.{EvaluationContext, PebbleTemplate}
+
 import java.lang.reflect.Field
 import java.util
-
-import com.mitchellbosecke.pebble.extension.Function
-import com.mitchellbosecke.pebble.template.{EvaluationContext, PebbleTemplate}
-import cz.kamenitxan.jakon.utils.Utils
 
 /**
   * Created by TPa on 6.10.16.

@@ -1,18 +1,18 @@
 package cz.kamenitxan.jakon.core.template
 
-import com.mitchellbosecke.pebble.PebbleEngine
-import com.mitchellbosecke.pebble.error.PebbleException
-import com.mitchellbosecke.pebble.loader.StringLoader
-import com.mitchellbosecke.pebble.template.PebbleTemplate
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.controller.IController
 import cz.kamenitxan.jakon.core.template.pebble.PebbleExtension
 import cz.kamenitxan.jakon.core.template.utils.TemplateUtils
 import cz.kamenitxan.jakon.devtools.DevRender
 import cz.kamenitxan.jakon.webui.util.JakonFileLoader
+import io.pebbletemplates.pebble.PebbleEngine
+import io.pebbletemplates.pebble.error.PebbleException
+import io.pebbletemplates.pebble.loader.StringLoader
+import io.pebbletemplates.pebble.template.PebbleTemplate
 
 import java.io.StringWriter
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 
 /**

@@ -2,7 +2,7 @@ import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val V = new {
 	val Scala = "3.2.2"
-  val jakon = "0.5.2-SNAPSHOT"
+  val jakon = "0.5.3-SNAPSHOT"
 	val spark = "2.9.4-JAKON.2"
 	val log4j = "2.20.0"
 	val circeVersion = "0.14.5"
@@ -29,7 +29,7 @@ val Dependencies = new {
 		libraryDependencies ++=
 			Seq(
 				"com.sparkjava" % "spark-core" % V.spark,
-				"com.sparkjava" % "spark-template-pebble" % "2.7.1-jakon.1",
+				"com.sparkjava" % "spark-template-pebble" % "2.7.1-jakon.2",
 				"org.slf4j" % "slf4j-api" % "2.0.7",
 				"org.apache.logging.log4j" % "log4j-api" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-core" % V.log4j,
@@ -49,7 +49,6 @@ val Dependencies = new {
 				"io.circe" %% "circe-core" % V.circeVersion,
 				"io.circe" %% "circe-generic"% V.circeVersion,
 				"io.circe" %% "circe-parser"% V.circeVersion,
-				"org.typelevel" %% "shapeless3-deriving" % "3.3.0", // TODO remove
 				//"org.apache.lucene" % "lucene-core" % "7.5.0",
 				//"org.apache.lucene" % "lucene-queryparser" % "7.5.0",
 				"io.github.classgraph" % "classgraph" % "4.8.157",
@@ -69,7 +68,7 @@ val Dependencies = new {
 	//noinspection SpellCheckingInspection
 	lazy val tests = Def.settings(
 		libraryDependencies ++= Seq(
-			"com.squareup.okhttp3" % "okhttp" % "4.10.0",
+			"com.squareup.okhttp3" % "okhttp" % "4.10.0",  // TODO remove
 			"org.scalatest" %% "scalatest" % "3.2.15" % "test",
 			"org.seleniumhq.selenium" % "htmlunit-driver" % "3.63.0" % "test"
 		)

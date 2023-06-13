@@ -1,11 +1,10 @@
 package cz.kamenitxan.jakon.core.template.pebble
 
+import io.pebbletemplates.pebble.extension.Function
+import io.pebbletemplates.pebble.template.{EvaluationContext, PebbleTemplate}
+
 import java.util
-
-import com.mitchellbosecke.pebble.extension.Function
-import com.mitchellbosecke.pebble.template.{EvaluationContext, PebbleTemplate}
-
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 /**
   * @return first not null argument

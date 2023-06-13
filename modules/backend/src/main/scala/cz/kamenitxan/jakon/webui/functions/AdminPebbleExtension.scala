@@ -1,9 +1,9 @@
 package cz.kamenitxan.jakon.webui.functions
 
-import java.util
-
-import com.mitchellbosecke.pebble.extension.Function
 import cz.kamenitxan.jakon.core.template.pebble.PebbleExtension
+import io.pebbletemplates.pebble.extension.Function
+
+import java.util
 /**
   * Created by tomaspavel on 6.10.16.
   */

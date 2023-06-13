@@ -1,12 +1,11 @@
 package cz.kamenitxan.jakon.core.template.pebble
 
-import java.util
-
-import com.mitchellbosecke.pebble.`extension`.Filter
-import com.mitchellbosecke.pebble.template.{EvaluationContext, PebbleTemplate}
 import cz.kamenitxan.jakon.core.configuration.Settings
+import io.pebbletemplates.pebble.`extension`.Filter
+import io.pebbletemplates.pebble.template.{EvaluationContext, PebbleTemplate}
 
-import scala.jdk.CollectionConverters._
+import java.util
+import scala.jdk.CollectionConverters.*
 
 /**
  * Created by TPa on 30.11.2020.

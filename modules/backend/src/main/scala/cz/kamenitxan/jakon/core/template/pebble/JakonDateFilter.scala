@@ -1,13 +1,12 @@
 package cz.kamenitxan.jakon.core.template.pebble
 
-import java.time.{LocalDate, LocalDateTime}
+import cz.kamenitxan.jakon.utils.TypeReferences.*
+import io.pebbletemplates.pebble.extension.core.DateFilter
+import io.pebbletemplates.pebble.template.{EvaluationContext, PebbleTemplate}
+
 import java.time.format.DateTimeFormatter
+import java.time.{LocalDate, LocalDateTime}
 import java.util
-
-import cz.kamenitxan.jakon.utils.TypeReferences._
-import com.mitchellbosecke.pebble.extension.core.DateFilter
-import com.mitchellbosecke.pebble.template.{EvaluationContext, PebbleTemplate}
-
 import scala.language.postfixOps
 
 class JakonDateFilter extends DateFilter {

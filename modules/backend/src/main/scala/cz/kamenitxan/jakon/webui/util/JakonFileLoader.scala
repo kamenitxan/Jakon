@@ -1,9 +1,10 @@
 package cz.kamenitxan.jakon.webui.util
 
-import java.io._
+import io.pebbletemplates.pebble.error.LoaderException
+import io.pebbletemplates.pebble.loader.FileLoader
 
-import com.mitchellbosecke.pebble.error.LoaderException
-import com.mitchellbosecke.pebble.loader.FileLoader
+import java.io.*
+
 
 class JakonFileLoader(templateDir: String, loadFromJar: Boolean = false) extends FileLoader {
 	val ADMIN_TMPL_DIR = "templates/admin"

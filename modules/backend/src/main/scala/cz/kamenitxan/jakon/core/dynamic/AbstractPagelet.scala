@@ -1,15 +1,15 @@
 package cz.kamenitxan.jakon.core.dynamic
 
-import com.mitchellbosecke.pebble.PebbleEngine
-import com.mitchellbosecke.pebble.loader.FileLoader
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.template.pebble.PebbleExtension
 import cz.kamenitxan.jakon.utils.PageContext
-import spark._
+import io.pebbletemplates.pebble.PebbleEngine
+import io.pebbletemplates.pebble.loader.FileLoader
+import spark.*
 import spark.template.pebble.PebbleTemplateEngine
 
-import scala.jdk.CollectionConverters._
 import scala.collection.mutable
+import scala.jdk.CollectionConverters.*
 
 /**
   * Created by tomaspavel on 29.5.17.

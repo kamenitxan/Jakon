@@ -1,9 +1,9 @@
 package cz.kamenitxan.jakon.core.template.pebble
 
-import java.util
-
-import com.mitchellbosecke.pebble.extension.{AbstractExtension, Filter, Function}
 import cz.kamenitxan.jakon.webui.functions.LinkFun
+import io.pebbletemplates.pebble.extension.{AbstractExtension, Filter, Function}
+
+import java.util
 
 /**
   * Created by tomaspavel on 6.10.16.
