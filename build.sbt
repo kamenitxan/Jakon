@@ -39,7 +39,7 @@ val Dependencies = new {
 				"com.google.guava" % "guava" % "32.0.1-jre",
 				"commons-io" % "commons-io" % "2.13.0",
 				"org.apache.commons" % "commons-lang3" % "3.12.0",
-				"commons-codec" % "commons-codec" % "1.15",
+				"commons-codec" % "commons-codec" % "1.16.0",
 				"commons-fileupload" % "commons-fileupload" % "1.5",
 				"de.svenkubiak" % "jBCrypt" % "0.4.3",
 				"net.minidev" % "json-smart" % "2.4.10", // TODO remove
@@ -68,9 +68,10 @@ val Dependencies = new {
 	//noinspection SpellCheckingInspection
 	lazy val tests = Def.settings(
 		libraryDependencies ++= Seq(
+			//"dev.zio" %% "zio-http" % "3.0.0-RC2",
 			"com.squareup.okhttp3" % "okhttp" % "4.10.0",  // TODO remove
-			"org.scalatest" %% "scalatest" % "3.2.15" % "test",
-			"org.seleniumhq.selenium" % "htmlunit-driver" % "3.63.0" % "test"
+			"org.scalatest" %% "scalatest" % "3.2.16" % "test",
+			"org.seleniumhq.selenium" % "htmlunit-driver" % "4.10.0" % "test"
 		)
 	)
 }
