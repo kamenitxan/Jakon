@@ -3,6 +3,7 @@ class JTextarea {
 		const megamark = require('megamark');
 		const domador = require('domador');
 		const woofmark = require('woofmark');
+		const punycode = require('punycode'); // brunch issue
 		const wmi = woofmark(document.querySelector("#editor-container" + fieldHash),
 			{
 				parseMarkdown: megamark,
