@@ -1,8 +1,6 @@
 package cz.kamenitxan.jakon.core.configuration
 
-import java.util._
-
-import cz.kamenitxan.jakon.core.template.utils.FixedPebbleTemplateEngine
+import cz.kamenitxan.jakon.core.template.utils.JakonPebbleTemplateEngine
 import cz.kamenitxan.jakon.core.template.{Pebble, TemplateEngine}
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.Utils
@@ -10,6 +8,7 @@ import cz.kamenitxan.jakon.utils.mail.EmailTypeHandler
 import cz.kamenitxan.jakon.webui.util.JakonFileLoader
 import jakarta.mail.Message
 
+import java.util.*
 import scala.language.postfixOps
 
 /**
@@ -32,7 +31,7 @@ object Settings {
 	def doAfterLoad(): Unit = {
 		val loader = new JakonFileLoader("templates/admin", true)
 		loader.setSuffix(".peb")
-		adminEngine = new FixedPebbleTemplateEngine(loader)
+		adminEngine = new JakonPebbleTemplateEngine(loader)
 		setTemplateEngine(new Pebble)
 		getDatabaseConnPath match {
 			case p if p.startsWith("jdbc:mysql:") => databaseType = DatabaseType.MYSQL

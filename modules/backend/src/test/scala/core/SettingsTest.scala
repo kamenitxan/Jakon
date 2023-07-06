@@ -1,7 +1,7 @@
 package core
 
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
-import cz.kamenitxan.jakon.core.template.utils.FixedPebbleTemplateEngine
+import cz.kamenitxan.jakon.core.template.utils.JakonPebbleTemplateEngine
 import cz.kamenitxan.jakon.webui.util.JakonFileLoader
 import org.scalatest.DoNotDiscover
 import test.{TestBase, TestEmailTypeHandler}
@@ -12,7 +12,7 @@ class SettingsTest extends TestBase {
 	test("setters") { _ =>
 		val loader = new JakonFileLoader("templates/admin", true)
 		loader.setSuffix(".peb")
-		Settings.setAdminEngine(new FixedPebbleTemplateEngine(loader))
+		Settings.setAdminEngine(new JakonPebbleTemplateEngine(loader))
 		Settings.setEmailTypeHandler(new TestEmailTypeHandler)
 		assertThrows[IllegalArgumentException](Settings.setStaticDir(Settings.getOutputDir))
 		assertThrows[IllegalArgumentException](Settings.setOutputDir(Settings.getStaticDir))

@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.core.template.utils
 
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
+import cz.kamenitxan.jakon.core.template.pebble.JakonMethodAccessValidator
 import cz.kamenitxan.jakon.webui.functions.AdminPebbleExtension
 import io.pebbletemplates.pebble.PebbleEngine
 import io.pebbletemplates.pebble.error.PebbleException
@@ -12,10 +13,8 @@ import java.util
 
 /**
   * Template Engine based on Pebble.
-  *
-  * @author Nikki
   */
-class FixedPebbleTemplateEngine() extends spark.TemplateEngine {
+class JakonPebbleTemplateEngine extends spark.TemplateEngine {
 	var engine: PebbleEngine = _
 
 	/**
@@ -28,6 +27,7 @@ class FixedPebbleTemplateEngine() extends spark.TemplateEngine {
 			builder.templateCache(null)
 			builder.tagCache(null)
 			builder.cacheActive(false)
+			builder.methodAccessValidator(new JakonMethodAccessValidator)
 		}
 		this.engine = builder.build
 	}
