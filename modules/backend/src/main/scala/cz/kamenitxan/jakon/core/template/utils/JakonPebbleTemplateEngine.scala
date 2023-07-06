@@ -22,12 +22,14 @@ class JakonPebbleTemplateEngine extends spark.TemplateEngine {
 	  */
 	def this(loader: Loader[_]) = {
 		this()
-		val builder = new PebbleEngine.Builder().loader(loader).extension(new AdminPebbleExtension)
+		val builder = new PebbleEngine.Builder()
+			.loader(loader)
+			.extension(new AdminPebbleExtension)
+			.methodAccessValidator(new JakonMethodAccessValidator)
 		if (DeployMode.PRODUCTION != Settings.getDeployMode) {
 			builder.templateCache(null)
 			builder.tagCache(null)
 			builder.cacheActive(false)
-			builder.methodAccessValidator(new JakonMethodAccessValidator)
 		}
 		this.engine = builder.build
 	}
