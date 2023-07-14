@@ -21,7 +21,10 @@ ThisBuild / resolvers += "Artifactory" at "https://nexus.kamenitxan.eu/repositor
 val Dependencies = new {
 
 	lazy val frontend = Seq(
-
+		libraryDependencies ++=
+			Seq(
+				"org.scala-js" %%% "scalajs-dom" % "2.2.0"
+			).flatten
 	)
 
 	//noinspection SpellCheckingInspection
