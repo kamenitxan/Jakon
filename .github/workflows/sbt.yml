@@ -48,7 +48,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
-          scoverageReport: target/scala-3.2.1/scoverage-report/scoverage.xml
+          scoverageReport: modules/backend/target/scala-3.3.1-RC4/scoverage-report/scoverage.xml
           args: >
             -Dsonar.projectKey=kamenitxan_Jakon_AYX5P6qaok6eoBlpoZHT
             -Dsonar.sources=modules/backend/src
