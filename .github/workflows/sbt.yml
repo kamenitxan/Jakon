@@ -41,14 +41,18 @@ jobs:
         uses: codecov/codecov-action@v1.0.15
         with:
           fail_ci_if_error: true
+      - name: Replace all working directory paths with sources path
+        run: if [[ -n "${{ inputs.scoverageReport }}" ]]; then sed -i -e s,`pwd`,/github/workspace,g ${{ inputs.scoverageReport }}; fi
+        shell: bash
+        with:
+          scoverageReport: modules/backend/target/scala-3.3.1-RC4/scoverage-report/scoverage.xml
       - name: Analyze with SonarCube
-        uses: pervasive-cats/sonarcloud-scoverage-fix@v1.0.1
+        uses: sonarsource/sonarqube-scan-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
-          scoverageReport: modules/backend/target/scala-3.3.1-RC4/scoverage-report/scoverage.xml
           args: >
             -Dsonar.projectKey=kamenitxan_Jakon_AYX5P6qaok6eoBlpoZHT
             -Dsonar.sources=modules/backend/src
