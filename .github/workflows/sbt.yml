@@ -53,3 +53,4 @@ jobs:
             -Dsonar.sources=modules/backend/src
             -Dsonar.verbose=false
             -Dsonar.exclusions=modules/backend/src/main/resources/**
+            -Dsonar.scala.coverage.reportPaths=modules/backend/target/scala-3.3.1-RC4/scoverage-report
