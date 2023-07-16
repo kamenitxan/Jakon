@@ -57,5 +57,5 @@ jobs:
             -Dsonar.projectKey=kamenitxan_Jakon_AYX5P6qaok6eoBlpoZHT
             -Dsonar.sources=modules/backend/src
             -Dsonar.verbose=false
-            -Dsonar.exclusions=modules/backend/src/main/resources/**
+            -Dsonar.exclusions=modules/backend/src/main/resources/**,modules/backend/src/test/**
             -Dsonar.scala.coverage.reportPaths=modules/backend/target/scala-3.3.1-RC4/scoverage-report/scoverage.xml
