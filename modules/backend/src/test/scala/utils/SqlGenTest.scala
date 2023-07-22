@@ -53,14 +53,14 @@ class SqlGenTest extends TestBase {
 		})
 	}
 
-	/*test("DBHelper selectDeep") { _ =>
+	test("DBHelper selectDeep") { _ =>
 		DBHelper.withDbConnection(implicit conn => {
 			val stmt = conn.prepareStatement("SELECT * FROM JakonUser")
-			val users = DBHelper.selectDeep(stmt, classOf[JakonUser])
+			val users = DBHelper.selectDeep(stmt)(conn, classOf[JakonUser])
 			assert(users.nonEmpty)
 			assert(users.forall( u => u.acl != null))
 		})
-	}*/
+	}
 
 	test("parseFilterParams invalid number") { _ =>
 		val params = mutable.Map(
