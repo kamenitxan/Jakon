@@ -4,7 +4,7 @@ import cz.kamenitxan.jakon.core.database.annotation.{Column, Embedded, ManyToOne
 import cz.kamenitxan.jakon.core.database.converters.AbstractConverter
 import cz.kamenitxan.jakon.core.model.{BaseEntity, JakonObject}
 import cz.kamenitxan.jakon.logging.Logger
-import cz.kamenitxan.jakon.utils.TypeReferences._
+import cz.kamenitxan.jakon.utils.TypeReferences.*
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
 
@@ -105,7 +105,9 @@ object EntityMapper {
 				} else if (oneToMany != null) {
 					val fv = rs.getString(columnName)
 					if (fv != null && fv.nonEmpty) {
-						foreignIds = columnName -> new ForeignKeyInfo(fv.split(";").map(id => id.toInt), columnName, field)
+						foreignIds = columnName -> new ForeignKeyInfo(fv.split(";").toSeq.map(id => id.toInt), columnName, field)
+					} else {
+						field.set(obj, Seq.empty)
 					}
 				} else if (jakonField != null) {
 					val converter = jakonField.converter()

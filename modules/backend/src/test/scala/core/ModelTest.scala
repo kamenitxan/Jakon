@@ -122,6 +122,22 @@ class ModelTest extends TestBase {
 		})
 	}
 
+	test("Create empty OneToMany") { _ =>
+		val obj = new TestObject
+		obj.oneToMany = Seq.empty
+		eoid = obj.create()
+	}
+
+	test("Fetch empty OneToMany") { _ =>
+		DBHelper.withDbConnection(implicit conn => {
+			val sql = "SELECT * From TestObject WHERE id = ?"
+			val stmt = conn.prepareStatement(sql)
+			stmt.setInt(1, eoid)
+			val entity = DBHelper.selectSingleDeep(stmt)(conn, classOf[TestObject])
+			assert(entity.oneToMany.isEmpty)
+		})
+	}
+
 	var post: Post = _
 	test("Post Create") { _ =>
 		val obj = new Post {
