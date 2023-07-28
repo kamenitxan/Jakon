@@ -30,12 +30,16 @@ object FieldConformer {
 			if (s == null || s.isEmpty) {
 				return null
 			}
-			val gtAnn = f.getDeclaredAnnotation(classOf[GenericType])
-			val gft: Type = if (gtAnn != null) {
+			val otmAnn = f.getDeclaredAnnotation(classOf[OneToMany])
+			lazy val gtAnn = f.getDeclaredAnnotation(classOf[GenericType])
+			val gft: Type = if (otmAnn != null) { 
+				otmAnn.genericClass()
+			} else if (gtAnn != null) {
 				gtAnn.cls()
 			} else {
 				null
 			}
+			
 			conform(f.getType, gft)
 		}
 

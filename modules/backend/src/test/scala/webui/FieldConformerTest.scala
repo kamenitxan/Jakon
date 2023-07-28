@@ -1,7 +1,7 @@
 package webui
 
 import cz.kamenitxan.jakon.core.database.JakonField
-import cz.kamenitxan.jakon.core.database.annotation.ManyToMany
+import cz.kamenitxan.jakon.core.database.annotation.{ManyToMany, OneToMany}
 import cz.kamenitxan.jakon.core.model.{JakonObject, JakonUser}
 import cz.kamenitxan.jakon.webui.ObjectSettings
 import cz.kamenitxan.jakon.webui.conform.FieldConformer.*
@@ -17,10 +17,9 @@ import java.util.{Calendar, Date, GregorianCalendar}
 @DoNotDiscover
 class FieldConformerTest extends AnyFunSuite {
 
-	private val fieldCount = 17
+	private val fieldCount = 18
 
 	class TestObject extends JakonObject {
-		//TODO oneToMany
 
 		@JakonField
 		var string: String = ""
@@ -55,6 +54,9 @@ class FieldConformerTest extends AnyFunSuite {
 		var listJString: util.ArrayList[String] = _
 		@JakonField
 		var seqI: Seq[Int] = _
+		@JakonField
+		@OneToMany(genericClass = classOf[JakonUser])
+		var seqUsers: Seq[JakonUser] = _
 		@JakonField
 		@GenericType(classOf[String])
 		var seqS: Seq[String] = _
@@ -142,6 +144,14 @@ class FieldConformerTest extends AnyFunSuite {
 		assert(conformed.asInstanceOf[Seq[String]].contains("1"))
 		assert(conformed.asInstanceOf[Seq[String]].contains("2"))
 		assert(conformed.asInstanceOf[Seq[String]].contains("3"))
+	}
+
+	test("conform oneToMany") {
+		val conformed = "2\r\n186".conform(getField("seqUsers"))
+		assert(conformed.asInstanceOf[Seq[JakonUser]].nonEmpty)
+		assert(conformed.asInstanceOf[Seq[JakonUser]].length == 2)
+		assert(conformed.asInstanceOf[Seq[JakonUser]].exists(u => u.id == 2))
+		assert(conformed.asInstanceOf[Seq[JakonUser]].exists(u => u.id == 186))
 	}
 
 	test("conform float") {
