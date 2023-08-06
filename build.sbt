@@ -101,11 +101,21 @@ lazy val backend = (project in file("modules/backend"))
 	.settings(
 		name := "jakon",
 		Test / fork := true,
-
 		ThisBuild / versionScheme := Some ("strict"),
 		publishTo := Some ("Nexus" at "https://nexus.kamenitxan.eu/repository/jakon/"),
 		credentials += Credentials(Path.userHome / ".sbt" / ".credentials"),
-		publishMavenStyle :=true
+		publishMavenStyle :=true,
+		scalacOptions ++= Seq(
+			"-deprecation", // emit warning and location for usages of deprecated APIs
+			//"-explain", // explain errors in more detail
+			"-explain-types", // explain type errors in more detail
+			"-feature", // emit warning and location for usages of features that should be imported explicitly
+			"-no-indent", // do not allow significant indentation.
+			"-print-lines", // show source code line numbers.
+			"-unchecked", // enable additional warnings where generated code depends on assumptions
+			//"-Xfatal-warnings", // fail the compilation if there are any warnings
+			//"-Yexplicit-nulls"
+		)
 	)
 
 lazy val shared = crossProject(JSPlatform, JVMPlatform)
@@ -126,7 +136,6 @@ lazy val shared = crossProject(JSPlatform, JVMPlatform)
 
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 ThisBuild / semanticdbEnabled := false
-ThisBuild / scalacOptions += "-deprecation"
 ThisBuild / assembly / assemblyMergeStrategy := {
 	case PathList("module-info.class") => MergeStrategy.discard
 	case x if x.endsWith("module-info.class") => MergeStrategy.discard

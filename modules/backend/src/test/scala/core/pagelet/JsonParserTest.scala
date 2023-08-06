@@ -2,17 +2,14 @@ package core.pagelet
 
 import core.pagelet.entity.JsonDataEnum
 import cz.kamenitxan.jakon.core.dynamic.arguments.{CirceJsonParser, ParsedValue}
-import cz.kamenitxan.jakon.webui.AdminSettings
-import cz.kamenitxan.jakon.webui.controller.impl.Dashboard
 import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.parser.*
 import org.scalatest.DoNotDiscover
 import org.scalatest.funsuite.AnyFunSuite
-import spark.Request
 
 import java.lang.reflect.Field
-import java.time.ZonedDateTime
+import java.time.{LocalDate, ZonedDateTime}
 
 @DoNotDiscover
 class JsonParserTest extends AnyFunSuite {
@@ -123,6 +120,14 @@ class JsonParserTest extends AnyFunSuite {
 		assert(data2.v == null)
 	}
 
+	test("LocalDate") {
+		val now = LocalDate.now()
+		val data = parse(s"""{"v": "${now.toString}"}""", classOf[LocalDateData]).asInstanceOf[LocalDateData]
+		assert(data.v == now)
+		val data2 = parse(s"""{"v": ""}""", classOf[LocalDateData]).asInstanceOf[LocalDateData]
+		assert(data2.v == null)
+	}
+
 }
 
 case class StringData(name: String)
@@ -139,3 +144,4 @@ case class DoubleJSeqData(v: Seq[java.lang.Double])
 case class StringDataSeqData(v: Seq[StringData])
 case class EnumData(v: JsonDataEnum)
 case class ZonedDateTimeData(v: ZonedDateTime)
+case class LocalDateData(v: LocalDate)
