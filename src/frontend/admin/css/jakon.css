@@ -126,3 +126,12 @@
 .panel-body {
 	overflow-x: auto;
 }
+
+/* side menu */
+
+#sub-menuAccordion {
+	padding-left: 26px;
+}
+#menu_jakon_objects {
+	padding-left: 12px;
+}
