@@ -7,10 +7,10 @@ import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.controller.AbstractController
 import cz.kamenitxan.jakon.webui.controller.impl.FileManagerController.getManager
 import cz.kamenitxan.jakon.webui.entity.FileManagerMode
+import jakarta.mail.internet.MimeUtility
+import jakarta.servlet.ServletException
+import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import net.minidev.json.{JSONArray, JSONObject, JSONValue}
-import org.apache.commons.fileupload.FileUploadException
-import org.apache.commons.fileupload.disk.DiskFileItemFactory
-import org.apache.commons.fileupload.servlet.ServletFileUpload
 import org.apache.commons.io.FileUtils
 import org.apache.commons.lang3.SystemUtils
 import spark.{Request, Response}
@@ -25,9 +25,6 @@ import java.time.LocalDateTime
 import java.util
 import java.util.Date
 import java.util.zip.{ZipEntry, ZipOutputStream}
-import jakarta.mail.internet.MimeUtility
-import javax.servlet.ServletException
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.annotation.switch
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
@@ -177,7 +174,7 @@ object FileManagerController {
 
 	def executePost(req: Request, res: Response): Response = {
 		try { // if request contains multipart-form-data
-			if (ServletFileUpload.isMultipartContent(req.raw())) {
+			if (req.raw().getContentType == "multipart/form-data") {
 				if (isSupportFeature(FileManagerMode.UPLOAD)) {
 					uploadFile(req.raw(), res.raw())
 				} else {
@@ -288,14 +285,13 @@ object FileManagerController {
 			try {
 				var destination: String = null
 				val files = new util.HashMap[String, InputStream]
-				val sfu = new ServletFileUpload(new DiskFileItemFactory)
-				sfu.setHeaderEncoding("UTF-8")
-				val items = sfu.parseRequest(request).asScala
+				val items = request.getParts.asScala
 				for (item <- items) {
-					if (item.isFormField) { // Process regular form field (input type="text|radio|checkbox|etc", select, etc).
-						if ("destination" == item.getFieldName) {
+					request.
+					if (true /*item.isFormField*/) { // Process regular form field (input type="text|radio|checkbox|etc", select, etc).
+						/*if ("destination" == item.getName) {
 							destination = item.getString("UTF-8")
-						}
+						}*/
 					}
 					else { // Process form file field (input type="file").
 						files.put(item.getName, item.getInputStream)
@@ -328,9 +324,6 @@ object FileManagerController {
 					out.flush()
 				}
 			} catch {
-				case e: FileUploadException =>
-					Logger.error("Cannot parse multipart request: DiskFileItemFactory.parseRequest", e)
-					throw new ServletException("Cannot parse multipart request: DiskFileItemFactory.parseRequest", e)
 				case e: IOException =>
 					Logger.error("Cannot parse multipart request: item.getInputStream")
 					throw new ServletException("Cannot parse multipart request: item.getInputStream", e)
