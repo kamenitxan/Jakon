@@ -40,7 +40,7 @@ val Dependencies = new {
 				"commons-io" % "commons-io" % "2.13.0",
 				"org.apache.commons" % "commons-lang3" % "3.12.0",
 				"commons-codec" % "commons-codec" % "1.16.0",
-				"org.apache.commons" % "commons-fileupload2" % "2.0.0-M1" pomOnly(),
+				"org.apache.commons" % "commons-fileupload2-jakarta" % "2.0.0-M1",
 				"de.svenkubiak" % "jBCrypt" % "0.4.3",
 				"net.minidev" % "json-smart" % "2.4.10", // TODO remove
 				"com.sun.mail" % "jakarta.mail" % "2.0.1",
