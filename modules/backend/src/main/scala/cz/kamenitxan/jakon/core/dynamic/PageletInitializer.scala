@@ -10,11 +10,11 @@ import cz.kamenitxan.jakon.webui.conform.FieldConformer.*
 import cz.kamenitxan.jakon.webui.controller.pagelets.AbstractAdminPagelet
 import cz.kamenitxan.jakon.webui.entity.CustomControllerInfo
 import cz.kamenitxan.jakon.webui.{AdminSettings, Context}
+import jakarta.servlet.MultipartConfigElement
 import spark.{Request, Response, Spark}
 
 import java.lang.reflect.Method
 import java.sql.Connection
-import javax.servlet.MultipartConfigElement
 import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
