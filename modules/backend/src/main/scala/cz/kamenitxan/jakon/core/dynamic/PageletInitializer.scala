@@ -108,10 +108,10 @@ object PageletInitializer {
 			// TODO: vytvoreni conn pouze pokud je potreba
 			DBHelper.withDbConnection(conn => {
 				val dataClass = getDataClass(m)
+				if (req.raw().getContentType.startsWith("multipart/form-data")) {
+					req.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"))
+				}
 				if (post.validate() && dataClass.isDefined) {
-					if (req.raw().getContentType.startsWith("multipart/form-data")) {
-						req.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"))
-					}
 					val formData = EntityValidator.createFormData(req, dataClass.get)
 					EntityValidator.validate(dataClass.get.getSimpleName, formData) match {
 						case Left(result) =>
