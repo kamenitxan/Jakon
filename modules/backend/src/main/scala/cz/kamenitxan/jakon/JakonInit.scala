@@ -14,6 +14,7 @@ import cz.kamenitxan.jakon.webui.controller.impl.{DeployController, FileManagerC
 import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, ResetPasswordEmailEntity}
 import cz.kamenitxan.jakon.webui.{AdminSettings, Routes}
 import spark.Spark.*
+import spark.http.matching.Configuration
 import spark.{Filter, Request, Response}
 
 import java.io.File
@@ -70,6 +71,7 @@ class JakonInit {
 		val annotationScanner = new AnnotationScanner
 		annotationScanner.loadConfiguration()
 
+		Configuration.setDefaultcontentype("text/html; charset=utf-8")
 		staticFiles.externalLocation(Settings.getStaticDir)
 		staticFiles.location("/static")
 		val portNumber: Int = arguments.find(a => a._1 == "port").map(a => a._2.toInt).getOrElse(Settings.getPort)

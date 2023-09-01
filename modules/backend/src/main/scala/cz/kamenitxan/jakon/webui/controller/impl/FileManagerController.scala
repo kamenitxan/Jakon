@@ -8,9 +8,10 @@ import cz.kamenitxan.jakon.webui.controller.AbstractController
 import cz.kamenitxan.jakon.webui.controller.impl.FileManagerController.getManager
 import cz.kamenitxan.jakon.webui.entity.FileManagerMode
 import net.minidev.json.{JSONArray, JSONObject, JSONValue}
-import org.apache.commons.fileupload.FileUploadException
-import org.apache.commons.fileupload.disk.DiskFileItemFactory
-import org.apache.commons.fileupload.servlet.ServletFileUpload
+import org.apache.commons.fileupload2.core.FileUploadException
+import org.apache.commons.fileupload2.core.DiskFileItemFactory
+import org.apache.commons.fileupload2.jakarta.JakartaServletFileUpload
+import org.apache.commons.fileupload2.jakarta.JakartaServletDiskFileUpload
 import org.apache.commons.io.FileUtils
 import org.apache.commons.lang3.SystemUtils
 import spark.{Request, Response}
@@ -26,8 +27,8 @@ import java.util
 import java.util.Date
 import java.util.zip.{ZipEntry, ZipOutputStream}
 import jakarta.mail.internet.MimeUtility
-import javax.servlet.ServletException
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import jakarta.servlet.ServletException
+import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.annotation.switch
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
@@ -39,28 +40,28 @@ import scala.jdk.CollectionConverters.*
  * in angular-filemanager-master/index.html uncomment links to js files<br>
  * in my assest/config.js I have :
  *
-  * <pre>
-  * listUrl : "/fm/listUrl",
-  * uploadUrl : "/fm/uploadUrl",
-  * renameUrl : "/fm/renameUrl",
-  * copyUrl : "/fm/copyUrl",
-  * removeUrl : "/fm/removeUrl",
-  * editUrl : "/fm/editUrl",
-  * getContentUrl : "/fm/getContentUrl",
-  * createFolderUrl : "/fm/createFolderUrl",
-  * downloadFileUrl : "/fm/downloadFileUrl",
-  * compressUrl : "/fm/compressUrl",
-  * extractUrl : "/fm/extractUrl",
-  * permissionsUrl : "/fm/permissionsUrl",
-  * </pre>
-  *
-  * <b>NOTE:</b><br>
-  * Does NOT manage 'preview' parameter in download<br>
-  * Compress and expand are NOT implemented<br>
-  *
-  * @author Paolo Biavati https://github.com/paolobiavati (java servlet version)
-  * @author Kamenitxan this implementation
-  */
+ * <pre>
+ * listUrl : "/fm/listUrl",
+ * uploadUrl : "/fm/uploadUrl",
+ * renameUrl : "/fm/renameUrl",
+ * copyUrl : "/fm/copyUrl",
+ * removeUrl : "/fm/removeUrl",
+ * editUrl : "/fm/editUrl",
+ * getContentUrl : "/fm/getContentUrl",
+ * createFolderUrl : "/fm/createFolderUrl",
+ * downloadFileUrl : "/fm/downloadFileUrl",
+ * compressUrl : "/fm/compressUrl",
+ * extractUrl : "/fm/extractUrl",
+ * permissionsUrl : "/fm/permissionsUrl",
+ * </pre>
+ *
+ * <b>NOTE:</b><br>
+ * Does NOT manage 'preview' parameter in download<br>
+ * Compress and expand are NOT implemented<br>
+ *
+ * @author Paolo Biavati https://github.com/paolobiavati (java servlet version)
+ * @author Kamenitxan this implementation
+ */
 class FileManagerController extends AbstractController {
 	override val template: String = "objects/fileManager"
 
@@ -177,7 +178,7 @@ object FileManagerController {
 
 	def executePost(req: Request, res: Response): Response = {
 		try { // if request contains multipart-form-data
-			if (ServletFileUpload.isMultipartContent(req.raw())) {
+			if (JakartaServletFileUpload.isMultipartContent(req.raw())) {
 				if (isSupportFeature(FileManagerMode.UPLOAD)) {
 					uploadFile(req.raw(), res.raw())
 				} else {
@@ -277,10 +278,10 @@ object FileManagerController {
 
 
 	/**
-	  * URL: $config.uploadUrl, Method: POST, Content-Type: multipart/form-data
-	  * Unlimited file upload, each item will be enumerated as file-1, file-2, etc.
-	  * [$config.uploadUrl]?destination=/public_html/image.jpg&file-1={..}&file-2={...}
-	  */
+	 * URL: $config.uploadUrl, Method: POST, Content-Type: multipart/form-data
+	 * Unlimited file upload, each item will be enumerated as file-1, file-2, etc.
+	 * [$config.uploadUrl]?destination=/public_html/image.jpg&file-1={..}&file-2={...}
+	 */
 	@throws[ServletException]
 	private def uploadFile(request: HttpServletRequest, response: HttpServletResponse): Unit = {
 		if (isSupportFeature(FileManagerMode.UPLOAD)) {
@@ -288,13 +289,16 @@ object FileManagerController {
 			try {
 				var destination: String = null
 				val files = new util.HashMap[String, InputStream]
-				val sfu = new ServletFileUpload(new DiskFileItemFactory)
-				sfu.setHeaderEncoding("UTF-8")
+
+				val factory = DiskFileItemFactory.builder().get()
+
+				val sfu: JakartaServletDiskFileUpload = new JakartaServletDiskFileUpload(factory)
+				//sfu.setHeaderEncoding("UTF-8")
 				val items = sfu.parseRequest(request).asScala
 				for (item <- items) {
 					if (item.isFormField) { // Process regular form field (input type="text|radio|checkbox|etc", select, etc).
 						if ("destination" == item.getFieldName) {
-							destination = item.getString("UTF-8")
+							destination = item.getString()
 						}
 					}
 					else { // Process form file field (input type="file").
@@ -674,8 +678,8 @@ object FileManagerController {
 	}
 
 	/**
-	  * http://www.programcreek.com/java-api-examples/index.php?api=java.nio.file.attribute.PosixFileAttributes
-	  */
+	 * http://www.programcreek.com/java-api-examples/index.php?api=java.nio.file.attribute.PosixFileAttributes
+	 */
 	/*@throws[IOException]
 	private def setPermissions(file: File, permsCode: String, recursive: Boolean): String = {
 		val fileAttributeView = Files.getFileAttributeView(file.toPath, classOf[PosixFileAttributeView])
@@ -698,8 +702,8 @@ object FileManagerController {
 	}
 
 	/**
-	  * { "result": { "success": false, "error": "msg" } }
-	  */
+	 * { "result": { "success": false, "error": "msg" } }
+	 */
 	private def error(msg: String) = {
 		val result = new JSONObject
 		result.put("success", java.lang.Boolean.FALSE)
@@ -710,8 +714,8 @@ object FileManagerController {
 	}
 
 	/**
-	  * { "result": { "success": true, "error": null } }
-	  */
+	 * { "result": { "success": true, "error": null } }
+	 */
 	private def success() = {
 		val result = new JSONObject
 		result.put("success", java.lang.Boolean.TRUE)

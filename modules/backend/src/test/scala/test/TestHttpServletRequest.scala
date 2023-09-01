@@ -1,15 +1,14 @@
 package test
 
+import jakarta.servlet.*
+import jakarta.servlet.http.*
+
 import java.io.BufferedReader
 import java.security.Principal
 import java.util
 import java.util.{Collections, Locale}
-
-import javax.servlet.http._
-import javax.servlet._
-
-import scala.jdk.CollectionConverters._
 import scala.collection.mutable
+import scala.jdk.CollectionConverters.*
 
 
 class TestHttpServletRequest extends HttpServletRequest {

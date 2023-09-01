@@ -11,6 +11,7 @@ import cz.kamenitxan.jakon.webui.controller.impl.{Authentication, FileManagerCon
 import cz.kamenitxan.jakon.webui.controller.{AbstractController, ExecuteFun}
 import cz.kamenitxan.jakon.webui.util.AdminExceptionHandler
 import spark.Spark.*
+import spark.http.matching.Configuration
 import spark.route.HttpMethod
 import spark.{Filter, Request, Response, ResponseTransformer}
 
