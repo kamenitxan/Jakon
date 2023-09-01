@@ -36,7 +36,7 @@ val Dependencies = new {
 				"org.apache.logging.log4j" % "log4j-slf4j2-impl" % V.log4j,
 				"org.xerial" % "sqlite-jdbc" % "3.42.0.0",
 				"mysql" % "mysql-connector-java" % "8.0.33",
-				"com.google.guava" % "guava" % "32.0.1-jre",
+				"com.google.guava" % "guava" % "32.1.2-jre",
 				"commons-io" % "commons-io" % "2.13.0",
 				"org.apache.commons" % "commons-lang3" % "3.12.0",
 				"commons-codec" % "commons-codec" % "1.16.0",
