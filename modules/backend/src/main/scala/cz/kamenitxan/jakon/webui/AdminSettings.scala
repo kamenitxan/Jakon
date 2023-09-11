@@ -19,12 +19,16 @@ object AdminSettings {
 
 	@Deprecated
 	def registerCustomController[T <: AbstractController](controller: Class[T]): Unit = {
-		val inst = controller.newInstance()
+		val inst = controller.getDeclaredConstructor().newInstance()
 		customControllers += controller
 		customControllersInfo += new CustomControllerInfo(inst.name(), inst.icon, "/admin/" + inst.path(), controller)
 	}
 
 	def setDashboardController(fun: (Request, Response) => Context): Unit = {
-		dashboardController = fun
+		dashboardController = (req: Request, res: Response) => {
+			val result: Context = fun(req, res)
+			result.getModel.put("pathInfo", req.pathInfo())
+			result
+		}
 	}
 }

@@ -3,6 +3,7 @@
 {# @pebvariable name="objectName" type="java.lang.String" #}
 {# @pebvariable name="modelClasses" type="java.util.List" #}
 {# @pebvariable name="jakonModelClasses" type="java.util.List" #}
+{# @pebvariable name="pathInfo" type="java.lang.String" #}
 
 
 <!-- Navigation -->
@@ -16,121 +17,45 @@
 
 </nav>
 <div class="sidebar navbar-light" role="navigation">
-	<div class="sidebar-nav navbar-collapse" id="navbarSupportedContent">
-		<ul class="nav flex-column" id="side-menu">
-			<!--li class="sidebar-search">
-                <div class="input-group custom-search-form">
-                    <input type="text" class="form-control" placeholder="Search...">
-                    <span class="input-group-btn">
-                            <button class="btn btn-secondary" type="button">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </span>
-                </div>
-            </li-->
-			<li class="nav-item">
-				<a href="/admin/index" class="nav-link"><i class="fa fa-dashboard fa-fw"></i> {{ i18n("common","DASHBOARD") }}</a>
-			</li>
-			<li class="nav-item{% if modelClasses contains objectName or jakonModelClasses contains modelClasses %} active{% endif %}">
-				<a href="#" class="nav-link"><i class="fa fa-edit fa-fw"></i> {{ i18n("common","JAKON_OBJECTS") }}<span class="fa arrow"></span></a>
-				<ul class="nav nav-second-level flex-column">
-					<li class="nav-item{% if jakonModelClasses contains modelClasses %} active{% endif %}">
-						<a href="#" class="nav-link">{{ i18n("common","JAKON_CORE_OBJECTS") }} <span class="fa arrow"></span></a>
-						<ul class="nav nav-third-level flex-column">
-						{% for model in jakonModelClasses %}
-							<li class="nav-item">
-								<a href="/admin/object/{{ model }}" class="nav-link{% if objectName == model %} active{% endif %}"><i
-										class="fa {{ objectSettings[model].icon }}"></i> {{ i18n("objects", model) }}</a>
-							</li>
-						{% endfor %}
-						</ul>
-						<!-- /.nav-third-level -->
-					</li>
-					{% for model in modelClasses %}
-						<li class="nav-item">
+	<div id="menuAccordion">
+		<div>
+			<div class="nav-item">
+			{{ pathInfo }}
+				<a href="/admin/index" class="nav-link{% if "/admin/index" == pathInfo %} active{% endif %}"><i class="fa fa-dashboard fa-fw"></i> {{ i18n("common","DASHBOARD") }}</a>
+			</div>
+			<a href="#" class="nav-link " data-bs-toggle="collapse" data-bs-target="#menu_objects"><i class="fa fa-edit fa-fw"></i> {{ i18n("common","JAKON_OBJECTS") }}<span class="fa arrow"></span></a>
+			<div id="menu_objects" class="accordion-collapse collapse{% if modelClasses contains objectName or jakonModelClasses contains objectName %} show{% endif %}"  data-bs-parent="#menuAccordion">
+				<div id="sub-menuAccordion">
+					<div>
+						<a href="#" class="nav-link" data-bs-toggle="collapse" data-bs-target="#menu_jakon_objects">{{ i18n("common","JAKON_CORE_OBJECTS") }} <span class="fa arrow"></span></a>
+						<div id="menu_jakon_objects" class="accordion-collapse collapse{% if jakonModelClasses contains objectName %} show{% endif %}" data-bs-parent="#sub-menuAccordion">
+								{% for model in jakonModelClasses %}
+								<div class="nav-item">
+									<a href="/admin/object/{{ model }}" class="nav-link{% if objectName == model %} active{% endif %}"><i
+											class="fa {{ objectSettings[model].icon }}"></i> {{ i18n("objects", model) }}</a>
+								</div>
+								{% endfor %}
+						</div>
+					</div>
+					<div>
+						{% for model in modelClasses %}
+						<div class="nav-item">
 							<a href="/admin/object/{{ model }}" class="nav-link{% if objectName == model %} active{% endif %}"><i
 									class="fa {{ objectSettings[model].icon }}"></i> {{ i18n("objects", model) }}</a>
-						</li>
-					{% endfor %}
-				</ul>
-				<!-- /.nav-second-level -->
-			</li>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
 			{% for c in customControllers %}
-				<li class="nav-item">
-					<a href="{{ c.path }}" class="nav-link"><i class="fa {{ c.icon }} fa-fw"></i> {{ i18n("common", c.name) }}</a>
-				</li>
+				<div class="nav-item">
+					<a href="{{ c.path }}" class="nav-link{% if c.path == pathInfo %} active{% endif %}"><i class="fa {{ c.icon }} fa-fw"></i> {{ i18n("common", c.name) }}</a>
+				</div>
 			{% endfor %}
-			{#<li>
-                <a href="forms.html"><i class="fa fa-edit fa-fw"></i> Forms</a>
-            </li>
-            <li>
-                <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <li>
-                        <a href="panels-wells.html">Panels and Wells</a>
-                    </li>
-                    <li>
-                        <a href="buttons.html">Buttons</a>
-                    </li>
-                    <li>
-                        <a href="notifications.html">Notifications</a>
-                    </li>
-                    <li>
-                        <a href="typography.html">Typography</a>
-                    </li>
-                    <li>
-                        <a href="icons.html"> Icons</a>
-                    </li>
-                    <li>
-                        <a href="grid.html">Grid</a>
-                    </li>
-                </ul>
-                <!-- /.nav-second-level -->
-            </li>
-            <li>
-                <a href="#"><i class="fa fa-sitemap fa-fw"></i> Multi-Level Dropdown<span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <li>
-                        <a href="#">Second Level Item</a>
-                    </li>
-                    <li>
-                        <a href="#">Second Level Item</a>
-                    </li>
-                    <li>
-                        <a href="#">Third Level <span class="fa arrow"></span></a>
-                        <ul class="nav nav-third-level">
-                            <li>
-                                <a href="#">Third Level Item</a>
-                            </li>
-                            <li>
-                                <a href="#">Third Level Item</a>
-                            </li>
-                            <li>
-                                <a href="#">Third Level Item</a>
-                            </li>
-                            <li>
-                                <a href="#">Third Level Item</a>
-                            </li>
-                        </ul>
-                        <!-- /.nav-third-level -->
-                    </li>
-                </ul>
-                <!-- /.nav-second-level -->
-            </li>
-            <li>
-                <a href="#"><i class="fa fa-files-o fa-fw"></i> Sample Pages<span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <li>
-                        <a href="blank.html">Blank Page</a>
-                    </li>
-                    <li>
-                        <a href="login.html">Login Page</a>
-                    </li>
-                </ul>
-                <!-- /.nav-second-level -->
-            </li>#}
-		</ul>
+		</div>
 	</div>
 	<!-- /.sidebar-collapse -->
 </div>
+
 <!-- /.navbar-static-side -->
+

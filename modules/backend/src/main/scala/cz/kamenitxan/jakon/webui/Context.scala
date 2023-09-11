@@ -4,6 +4,7 @@ import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.utils.PageContext
 import spark.ModelAndView
 
+import java.util
 import scala.jdk.CollectionConverters.*
 
 /**
@@ -53,7 +54,7 @@ object Context {
 			"user" -> user.orNull,
 			"modelClasses" -> allModelClasses.getOrElse(false, new java.util.ArrayList[String]()),
 			"jakonModelClasses" -> allModelClasses.getOrElse(true, new java.util.ArrayList[String]()),
-			"objectSettings" -> DBHelper.getDaoClasses.map(o => (o.getSimpleName, o.newInstance().objectSettings)).toMap.asJava,
+			"objectSettings" -> DBHelper.getDaoClasses.map(o => (o.getSimpleName, o.getDeclaredConstructor().newInstance().objectSettings)).toMap.asJava,
 			"enableFiles" -> AdminSettings.enableFiles,
 			"customControllers" -> customControllers.asJava,
 			"jakon_messages" -> PageContext.getInstance().messages.asJava

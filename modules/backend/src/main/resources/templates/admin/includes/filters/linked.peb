@@ -6,7 +6,7 @@
 
 {% set fieldHash = "filter_" + field.name %}
 <input id="js_foreign_{{ fieldHash }}" class="hidden js_foreign">
-<select class="form-control"
+<select class="form-select"
 		name="filter_{{ field.name }}"
 		id="{{ fieldHash }}" {% if field.disabled %}disabled{% endif %}
 		data-selected_id="{{ filterParams[field.name] }}"

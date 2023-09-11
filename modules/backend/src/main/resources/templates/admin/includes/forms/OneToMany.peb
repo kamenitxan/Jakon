@@ -3,7 +3,7 @@
 
 <input id="js_foreign_{{ fieldHash }}" class="hidden js_foreign">
 {% set objects = field.value | asJava %}
-<select class="form-control" name="{{ field.name }}" id="{{ fieldHash }}" {% if field.disabled %}disabled{% endif %} multiple="multiple"
+<select class="form-select" name="{{ field.name }}" id="{{ fieldHash }}" {% if field.disabled %}disabled{% endif %} multiple="multiple"
 data-selected_id="{% for o in objects %}{{ o.id }}{% if not loop.last %},{% endif %}{% endfor %}">
 
 {% for o in objects %}
