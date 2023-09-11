@@ -82,7 +82,7 @@ class ObjectControllerTest extends TestBase {
 		assert(checkPageLoad(f.driver))
 
 
-		val objects2 = findElements("#dataTables-example tbody tr")
+		val objects2 = getAdminTableRows()
 		assert(objects2.nonEmpty)
 
 		val second = objects2.tail.head
@@ -117,7 +117,7 @@ class ObjectControllerTest extends TestBase {
 		f.driver.get(url)
 		assert(checkPageLoad(f.driver))
 
-		val objects2 = findElements("#dataTables-example tbody tr")
+		val objects2 = getAdminTableRows()
 		assert(objects2.nonEmpty)
 
 		val second = objects2.head

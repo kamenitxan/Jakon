@@ -44,7 +44,7 @@ class TestBase extends FixtureAnyFunSuite {
 	}
 
 	protected def getAdminTableRows()(implicit driver: WebDriver): mutable.Buffer[WebElement] = {
-		findElements("#dataTables-example tbody tr")
+		findElements("#objectTable tbody tr")
 	}
 
 	protected def assertNotEmpty(v: String): Assertion = {

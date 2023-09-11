@@ -24,7 +24,7 @@ class ObjectExtensionFun extends Function {
 			})
 			.map(oe => {
 				val instance = oe.getDeclaredConstructor().newInstance()
-				"<div class=\"extension_holder\">" + instance.render(
+				"<div class=\"extension_holder container-fluid\">" + instance.render(
 					mutable.Map[String, Any](
 						"object" -> obj
 					), "objects/extension/" + instance.getClass.getSimpleName, PageContext.getInstance().req

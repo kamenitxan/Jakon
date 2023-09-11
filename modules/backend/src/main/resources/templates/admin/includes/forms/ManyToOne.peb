@@ -3,7 +3,7 @@
 
 <div class="select_wrapper">
 	<input id="js_foreign_{{ fieldHash }}" class="hidden js_foreign" placeholder="Search...">
-	<select class="form-control" name="{{ field.name }}" id="{{ fieldHash }}" {% if field.disabled %}disabled{% endif %} data-selected_id="{{ field.value.id }}">
+	<select class="form-select" name="{{ field.name }}" id="{{ fieldHash }}" {% if field.disabled %}disabled{% endif %} data-selected_id="{{ field.value.id }}">
 	</select>
 	<script>
 		(() => {

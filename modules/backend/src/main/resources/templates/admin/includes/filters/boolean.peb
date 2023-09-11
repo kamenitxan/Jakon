@@ -8,7 +8,7 @@
 <input type="checkbox"
 	   id="filter_{{ field.name }}"
 	   data-value="{{ filterParams[field.name] }}"
-	   class="list_filter form-control">
+	   class="list_filter form-check-input">
 <script>
 	(() => {
 		const cb = document.querySelector("#filter_{{ field.name }}");
