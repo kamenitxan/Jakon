@@ -128,10 +128,12 @@
 }
 
 /* side menu */
-
-#sub-menuAccordion {
-	padding-left: 26px;
+.sidebar #menu_objects, #menu_jakon_objects {
+	padding-left: 15px;
 }
-#menu_jakon_objects {
-	padding-left: 12px;
+.nav-item {
+	border-bottom: 1px solid #e7e7e7;
+}
+.nav-link.active {
+	background-color: #eeeeee;
 }

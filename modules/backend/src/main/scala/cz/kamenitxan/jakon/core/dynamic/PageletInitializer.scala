@@ -85,7 +85,7 @@ object PageletInitializer {
 						if (context == null) {
 							context = mutable.Map[String, Any]()
 						}
-						context = context ++ Context.getAdminContext
+						context = context ++ Context.getAdminContext ++ mutable.Map("pathInfo" -> req.pathInfo())
 					}
 					try {
 						pagelet.render(context, get.template(), req)

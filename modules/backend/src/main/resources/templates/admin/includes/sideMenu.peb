@@ -3,6 +3,7 @@
 {# @pebvariable name="objectName" type="java.lang.String" #}
 {# @pebvariable name="modelClasses" type="java.util.List" #}
 {# @pebvariable name="jakonModelClasses" type="java.util.List" #}
+{# @pebvariable name="pathInfo" type="java.lang.String" #}
 
 
 <!-- Navigation -->
@@ -19,7 +20,8 @@
 	<div id="menuAccordion">
 		<div>
 			<div class="nav-item">
-				<a href="/admin/index" class="nav-link"><i class="fa fa-dashboard fa-fw"></i> {{ i18n("common","DASHBOARD") }}</a>
+			{{ pathInfo }}
+				<a href="/admin/index" class="nav-link{% if "/admin/index" == pathInfo %} active{% endif %}"><i class="fa fa-dashboard fa-fw"></i> {{ i18n("common","DASHBOARD") }}</a>
 			</div>
 			<a href="#" class="nav-link " data-bs-toggle="collapse" data-bs-target="#menu_objects"><i class="fa fa-edit fa-fw"></i> {{ i18n("common","JAKON_OBJECTS") }}<span class="fa arrow"></span></a>
 			<div id="menu_objects" class="accordion-collapse collapse{% if modelClasses contains objectName or jakonModelClasses contains objectName %} show{% endif %}"  data-bs-parent="#menuAccordion">
@@ -47,7 +49,7 @@
 			</div>
 			{% for c in customControllers %}
 				<div class="nav-item">
-					<a href="{{ c.path }}" class="nav-link"><i class="fa {{ c.icon }} fa-fw"></i> {{ i18n("common", c.name) }}</a>
+					<a href="{{ c.path }}" class="nav-link{% if c.path == pathInfo %} active{% endif %}"><i class="fa {{ c.icon }} fa-fw"></i> {{ i18n("common", c.name) }}</a>
 				</div>
 			{% endfor %}
 		</div>

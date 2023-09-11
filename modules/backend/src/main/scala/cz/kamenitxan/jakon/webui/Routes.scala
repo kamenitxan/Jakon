@@ -105,7 +105,7 @@ object Routes {
 		})
 		AdminSettings.customControllers.foreach((c: Class[_ <: AbstractController]) => {
 			try {
-				val instance = c.newInstance
+				val instance = c.getDeclaredConstructor().newInstance()
 				get(s"$AdminPrefix/" + instance.path(), (req: Request, res: Response) => instance.doRender(req, res), te)
 				val methods = c.getDeclaredMethods
 				for (m <- methods) {
