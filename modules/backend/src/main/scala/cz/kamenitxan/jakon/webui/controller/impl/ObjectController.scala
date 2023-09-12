@@ -191,11 +191,13 @@ object ObjectController {
 		EntityValidator.validate(objectClass.getSimpleName, formData) match {
 			case Left(result) =>
 				result.foreach(r => PageContext.getInstance().messages += r)
-				val redirectUrl = objectId match {
-					case Some(id) => s"/admin/object/$objectName/$id"
-					case None => s"/admin/object/create/$objectName"
+				if (result.exists(r => r._severity == MessageSeverity.ERROR)) {
+					val redirectUrl = objectId match {
+						case Some(id) => s"/admin/object/$objectName/$id"
+						case None => s"/admin/object/create/$objectName"
+					}
+					return redirect(req, res, redirectUrl)
 				}
-				return redirect(req, res, redirectUrl)
 			case _ =>
 		}
 
