@@ -168,7 +168,10 @@ fullOptCompileCopy := {
 		source,
 		baseDirectory.value / jsPath / "scalajs.js"
 	)
-
+	IO.copyFile(
+		new File(source.getAbsolutePath + ".map"),
+		baseDirectory.value / jsPath / "jakon-fe-opt.js.map"
+	)
 }
 
 lazy val commonBuildSettings: Seq[Def.Setting[_]] = Seq(
