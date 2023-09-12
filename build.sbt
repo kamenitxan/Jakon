@@ -69,7 +69,6 @@ val Dependencies = new {
 	lazy val tests = Def.settings(
 		libraryDependencies ++= Seq(
 			//"dev.zio" %% "zio-http" % "3.0.0-RC2",
-			"com.squareup.okhttp3" % "okhttp" % "4.11.0",  // TODO remove,
 			"org.scalatest" %% "scalatest" % "3.2.17" % "test",
 			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.12.0" % "test"
 		)
