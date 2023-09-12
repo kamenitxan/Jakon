@@ -23,8 +23,8 @@ val Dependencies = new {
 	lazy val frontend = Seq(
 		libraryDependencies ++=
 			Seq(
-				"org.scala-js" %%% "scalajs-dom" % "2.2.0"
-			).flatten
+				"org.scala-js" %%% "scalajs-dom" % "2.6.0"
+			)
 	)
 
 	//noinspection SpellCheckingInspection
@@ -78,13 +78,12 @@ val Dependencies = new {
 	)
 }
 
-lazy val root =
-	(project in file(".")).aggregate(frontend, backend, shared.js, shared.jvm)
+lazy val root = (project in file(".")).aggregate(frontend, backend, shared.js, shared.jvm)
 
 lazy val frontend = (project in file("modules/frontend"))
 	.dependsOn(shared.js)
 	.enablePlugins(ScalaJSPlugin)
-	.settings(scalaJSUseMainModuleInitializer := true)
+	.settings(scalaJSUseMainModuleInitializer := false)
 	.settings(
 		Dependencies.frontend,
 		Dependencies.tests//,
@@ -93,6 +92,7 @@ lazy val frontend = (project in file("modules/frontend"))
 	.settings(
 		commonBuildSettings,
 		name := "jakon-fe"
+		//scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) }
 	)
 
 lazy val backend = (project in file("modules/backend"))
@@ -151,13 +151,12 @@ Test / logBuffered := false
 
 lazy val fastOptCompileCopy = taskKey[Unit]("")
 
-val jsPath = "modules/backend/src/main/resources"
-
+val jsPath = "modules/backend/src/main/resources/static/jakon/js"
 fastOptCompileCopy := {
 	val source = (frontend / Compile / fastOptJS).value.data
 	IO.copyFile(
 		source,
-		baseDirectory.value / jsPath / "dev.js"
+		baseDirectory.value / jsPath / "scalajs.js"
 	)
 }
 
@@ -167,7 +166,7 @@ fullOptCompileCopy := {
 	val source = (frontend / Compile / fullOptJS).value.data
 	IO.copyFile(
 		source,
-		baseDirectory.value / jsPath / "prod.js"
+		baseDirectory.value / jsPath / "scalajs.js"
 	)
 
 }
@@ -206,5 +205,5 @@ val PrepareCICommands = Seq(
 
 addCommandAlias("ci", CICommands)
 addCommandAlias("preCI", PrepareCICommands)
-addCommandAlias("jar", "clean; coverageOff; assembly")
+addCommandAlias("jar", "clean; fullOptCompileCopy; coverageOff; assembly")
 addCommandAlias("githubTest", "coverageOn; coverage; test; coverageReport; coverageOff;")

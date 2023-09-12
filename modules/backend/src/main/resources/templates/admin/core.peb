@@ -9,6 +9,7 @@
 
     <script src="/jakon/js/vendor.js"></script>
     <script src="/jakon/js/jakon.js"></script>
+    <script src="/jakon/js/scalajs.js"></script>
     <link href="/jakon/css/jakon.css" rel="stylesheet">
 
 	<link rel="icon" type="image/png" sizes="32x32" href="/jakon/img/favicon/favicon-32x32.png">
