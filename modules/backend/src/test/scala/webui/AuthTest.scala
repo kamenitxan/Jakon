@@ -3,11 +3,12 @@ package webui
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonUser
+import cz.kamenitxan.jakon.core.service.AclRuleService
 import cz.kamenitxan.jakon.webui.controller.impl.Authentication
 import org.openqa.selenium.htmlunit.HtmlUnitDriver
 import org.openqa.selenium.{By, WebDriver}
-import org.scalatest.{DoNotDiscover, Outcome}
 import org.scalatest.funsuite.FixtureAnyFunSuite
+import org.scalatest.{DoNotDiscover, Outcome}
 
 import java.util.Locale
 import scala.util.Random
@@ -41,14 +42,17 @@ class AuthTest extends FixtureAnyFunSuite {
 	}
 
 	test("create user") { _ =>
-		val user = new JakonUser()
-		user.firstName = "testName"
-		user.lastName = "lastName"
-		user.email = email
-		user.password = password
-		user.locale = new Locale("en", "US")
+		DBHelper.withDbConnection(implicit conn => {
+			val user = new JakonUser()
+			user.firstName = "testName"
+			user.lastName = "lastName"
+			user.email = email
+			user.password = password
+			user.locale = new Locale("en", "US")
+			user.acl = AclRuleService.getByName("Admin").get
 
-		assert(user.create() > 0)
+			assert(user.create() > 0)
+		})
 	}
 
 	test("check password") { _ =>

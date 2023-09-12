@@ -20,7 +20,7 @@
 			<div class="panel panel-default">
 				<!-- /.panel-heading -->
 				<div class="panel-body logs">
-					<table width="100%" class="table table-bordered table-hover logTable" id="dataTables-example">
+					<table width="100%" class="table table-bordered table-hover logTable" >
 						<thead>
 						<tr>
 							<th>{{ i18n("common","LOG_TIME") }}</th>

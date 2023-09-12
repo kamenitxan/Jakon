@@ -107,7 +107,7 @@
 	font-size: 24px;
 }
 
-.changeOrder:hover {
+.changeOrder {
 	text-decoration: none;
 }
 
@@ -125,4 +125,15 @@
 
 .panel-body {
 	overflow-x: auto;
+}
+
+/* side menu */
+.sidebar #menu_objects, #menu_jakon_objects {
+	padding-left: 15px;
+}
+.nav-item {
+	border-bottom: 1px solid #e7e7e7;
+}
+.nav-link.active {
+	background-color: #eeeeee;
 }

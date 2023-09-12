@@ -1,7 +1,9 @@
 package utils.mail
 
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
+import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonUser
+import cz.kamenitxan.jakon.core.service.AclRuleService
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.webui.controller.pagelets.JakonRegistrationPagelet
 import org.scalatest.DoNotDiscover
@@ -16,10 +18,15 @@ import scala.util.Random
 class EmailTest extends AnyFunSuite {
 
 	test("registrationEmailTest") {
-		val user = new JakonUser()
-		user.email = "test@test.com" + Random.nextInt()
-		user.create()
-		new JakonRegistrationPagelet().sendRegistrationEmail(user)
+		DBHelper.withDbConnection(implicit conn => {
+			val user = new JakonUser()
+			user.firstName = "registrationEmailTest"
+			user.lastName = "lastName"
+			user.email = "test@test.com" + Random.nextInt()
+			user.acl = AclRuleService.getByName("Admin").get
+			user.create()
+			new JakonRegistrationPagelet().sendRegistrationEmail(user)
+		})
 	}
 
 	test("EmailEntity") {

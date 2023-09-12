@@ -10,11 +10,11 @@ import cz.kamenitxan.jakon.webui.conform.FieldConformer.*
 import cz.kamenitxan.jakon.webui.controller.pagelets.AbstractAdminPagelet
 import cz.kamenitxan.jakon.webui.entity.CustomControllerInfo
 import cz.kamenitxan.jakon.webui.{AdminSettings, Context}
+import jakarta.servlet.MultipartConfigElement
 import spark.{Request, Response, Spark}
 
 import java.lang.reflect.Method
 import java.sql.Connection
-import javax.servlet.MultipartConfigElement
 import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
@@ -85,7 +85,7 @@ object PageletInitializer {
 						if (context == null) {
 							context = mutable.Map[String, Any]()
 						}
-						context = context ++ Context.getAdminContext
+						context = context ++ Context.getAdminContext ++ mutable.Map("pathInfo" -> req.pathInfo())
 					}
 					try {
 						pagelet.render(context, get.template(), req)
@@ -108,10 +108,10 @@ object PageletInitializer {
 			// TODO: vytvoreni conn pouze pokud je potreba
 			DBHelper.withDbConnection(conn => {
 				val dataClass = getDataClass(m)
+				if (req.raw().getContentType.startsWith("multipart/form-data")) {
+					req.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"))
+				}
 				if (post.validate() && dataClass.isDefined) {
-					if (req.raw().getContentType.startsWith("multipart/form-data")) {
-						req.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"))
-					}
 					val formData = EntityValidator.createFormData(req, dataClass.get)
 					EntityValidator.validate(dataClass.get.getSimpleName, formData) match {
 						case Left(result) =>

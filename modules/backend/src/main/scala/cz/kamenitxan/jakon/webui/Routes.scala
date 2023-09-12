@@ -11,6 +11,7 @@ import cz.kamenitxan.jakon.webui.controller.impl.{Authentication, FileManagerCon
 import cz.kamenitxan.jakon.webui.controller.{AbstractController, ExecuteFun}
 import cz.kamenitxan.jakon.webui.util.AdminExceptionHandler
 import spark.Spark.*
+import spark.http.matching.Configuration
 import spark.route.HttpMethod
 import spark.{Filter, Request, Response, ResponseTransformer}
 
@@ -104,7 +105,7 @@ object Routes {
 		})
 		AdminSettings.customControllers.foreach((c: Class[_ <: AbstractController]) => {
 			try {
-				val instance = c.newInstance
+				val instance = c.getDeclaredConstructor().newInstance()
 				get(s"$AdminPrefix/" + instance.path(), (req: Request, res: Response) => instance.doRender(req, res), te)
 				val methods = c.getDeclaredMethods
 				for (m <- methods) {

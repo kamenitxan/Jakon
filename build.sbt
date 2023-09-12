@@ -1,11 +1,11 @@
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val V = new {
-	val Scala = "3.3.0"
-  val jakon = "0.5.5"
-	val spark = "2.9.4-JAKON.2"
+	val Scala = "3.3.1-RC4"
+  val jakon = "0.5.8-SNAPSHOT"
+	val spark = "2.9.4-jakon-3"
 	val log4j = "2.20.0"
-	val circeVersion = "0.14.5"
+	val circeVersion = "0.14.6"
 }
 
 scalaVersion := V.Scala
@@ -31,21 +31,21 @@ val Dependencies = new {
 	lazy val backend = Seq(
 		libraryDependencies ++=
 			Seq(
-				"com.sparkjava" % "spark-core" % V.spark,
-				"com.sparkjava" % "spark-template-pebble" % "2.7.1-jakon.2",
-				"org.slf4j" % "slf4j-api" % "2.0.7",
+				"com.intellisrc" % "spark-core" % V.spark,
+				"com.sparkjava" % "spark-template-pebble" % "2.7.1-jakon.3",
+				"org.slf4j" % "slf4j-api" % "2.0.9",
 				"org.apache.logging.log4j" % "log4j-api" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-core" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-slf4j2-impl" % V.log4j,
 				"org.xerial" % "sqlite-jdbc" % "3.42.0.0",
 				"mysql" % "mysql-connector-java" % "8.0.33",
-				"com.google.guava" % "guava" % "32.0.1-jre",
+				"com.google.guava" % "guava" % "32.1.2-jre",
 				"commons-io" % "commons-io" % "2.13.0",
-				"org.apache.commons" % "commons-lang3" % "3.12.0",
+				"org.apache.commons" % "commons-lang3" % "3.13.0",
 				"commons-codec" % "commons-codec" % "1.16.0",
-				"commons-fileupload" % "commons-fileupload" % "1.5",
+				"org.apache.commons" % "commons-fileupload2-jakarta" % "2.0.0-M1",
 				"de.svenkubiak" % "jBCrypt" % "0.4.3",
-				"net.minidev" % "json-smart" % "2.4.10", // TODO remove
+				"net.minidev" % "json-smart" % "2.5.0", // TODO remove
 				"com.sun.mail" % "jakarta.mail" % "2.0.1",
 				"com.atlassian.commonmark" % "commonmark" % "0.17.0", // TODO https://mvnrepository.com/artifact/org.commonmark/commonmark
 				"com.google.code.gson" % "gson" % "2.10.1", // TODO remove
@@ -54,7 +54,7 @@ val Dependencies = new {
 				"io.circe" %% "circe-parser"% V.circeVersion,
 				//"org.apache.lucene" % "lucene-core" % "7.5.0",
 				//"org.apache.lucene" % "lucene-queryparser" % "7.5.0",
-				"io.github.classgraph" % "classgraph" % "4.8.160",
+				"io.github.classgraph" % "classgraph" % "4.8.162",
 				"com.zaxxer" % "HikariCP" % "5.0.1",
 				"com.github.scribejava" % "scribejava-apis" % "8.3.3",
 				"cz.etn" % "email-validator" % "1.3.0" excludeAll(
@@ -72,9 +72,8 @@ val Dependencies = new {
 	lazy val tests = Def.settings(
 		libraryDependencies ++= Seq(
 			//"dev.zio" %% "zio-http" % "3.0.0-RC2",
-			"com.squareup.okhttp3" % "okhttp" % "4.10.0",  // TODO remove
-			"org.scalatest" %% "scalatest" % "3.2.16" % "test",
-			"org.seleniumhq.selenium" % "htmlunit-driver" % "4.10.0" % "test"
+			"org.scalatest" %% "scalatest" % "3.2.17" % "test",
+			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.12.0" % "test"
 		)
 	)
 }
@@ -104,11 +103,21 @@ lazy val backend = (project in file("modules/backend"))
 	.settings(
 		name := "jakon",
 		Test / fork := true,
-
 		ThisBuild / versionScheme := Some ("strict"),
 		publishTo := Some ("Nexus" at "https://nexus.kamenitxan.eu/repository/jakon/"),
 		credentials += Credentials(Path.userHome / ".sbt" / ".credentials"),
-		publishMavenStyle :=true
+		publishMavenStyle :=true,
+		scalacOptions ++= Seq(
+			"-deprecation", // emit warning and location for usages of deprecated APIs
+			//"-explain", // explain errors in more detail
+			"-explain-types", // explain type errors in more detail
+			"-feature", // emit warning and location for usages of features that should be imported explicitly
+			"-no-indent", // do not allow significant indentation.
+			"-print-lines", // show source code line numbers.
+			"-unchecked", // enable additional warnings where generated code depends on assumptions
+			//"-Xfatal-warnings", // fail the compilation if there are any warnings
+			//"-Yexplicit-nulls"
+		)
 	)
 
 lazy val shared = crossProject(JSPlatform, JVMPlatform)
@@ -129,7 +138,6 @@ lazy val shared = crossProject(JSPlatform, JVMPlatform)
 
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 ThisBuild / semanticdbEnabled := false
-ThisBuild / scalacOptions += "-deprecation"
 ThisBuild / assembly / assemblyMergeStrategy := {
 	case PathList("module-info.class") => MergeStrategy.discard
 	case x if x.endsWith("module-info.class") => MergeStrategy.discard

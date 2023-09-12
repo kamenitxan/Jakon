@@ -19,7 +19,7 @@
                         Deploy Mode: {{deployMode}} <br />
                         Deploy Type: {{deployType}} <br /><br />
                         <a href="/admin/deploy/generate" class="btn btn-primary">Render</a> <a href="/admin/deploy/start" class="btn btn-primary">Deploy</a><br /><br />
-                        <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                        <table width="100%" class="table table-striped table-bordered table-hover" >
                             <thead>
                             <tr>
                                 <th>Id</th>

@@ -1,21 +1,16 @@
 package cz.kamenitxan.jakon.core.dynamic.arguments
 
-import cz.kamenitxan.jakon.core.configuration.DeployMode
+import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.TypeReferences.*
-import cz.kamenitxan.jakon.utils.Utils.*
-import cz.kamenitxan.jakon.validation.EntityValidator
-import cz.kamenitxan.jakon.webui.conform.GenericType
 import io.circe.*
-import io.circe.generic.auto.*
 import io.circe.parser.*
 import spark.Request
 
-import java.lang.reflect.{Field, Parameter, ParameterizedType}
-import java.time.ZonedDateTime
+import java.lang.reflect.{Field, ParameterizedType}
 
 /**
-	* Created by TPa on 30.08.2022.
-	*/
+ * Created by TPa on 30.08.2022.
+ */
 object CirceJsonParser extends ArgumentParser {
 
 	override def parseRequestData(req: Request, t: Class[_]): Map[Field, ParsedValue] = {
@@ -25,11 +20,11 @@ object CirceJsonParser extends ArgumentParser {
 		val fields = t.getDeclaredFields
 		fields.map(f => CirceJsonParser.mapToString(hc, f)).toMap[Field, ParsedValue]
 	}
-	
+
 	def mapToString(hc: HCursor, f: Field): (Field, ParsedValue) = {
 		val name = f.getName
-		val value = f.getType match
-			case STRING | ZONED_DATETIME => ParsedValue(hc.downField(name).focus.flatMap(_.asString).getOrElse(""), null,null, null)
+		val value = f.getType match {
+			case STRING | ZONED_DATETIME | DATE=> ParsedValue(hc.downField(name).focus.flatMap(_.asString).getOrElse(""), null, null, null)
 			case INTEGER | DOUBLE | FLOAT | DOUBLE_j | INTEGER_j => ParsedValue(hc.downField(name).focus.map(v => {
 				v.toString.replace("\"", "").replace("\'", "")
 			}).getOrElse(""), null, null, null)
@@ -41,14 +36,13 @@ object CirceJsonParser extends ArgumentParser {
 				val gft = seqTypeConstructor.getGenericParameterTypes.drop(seqTypeParams.indexOf(name)).head.asInstanceOf[ParameterizedType].getActualTypeArguments
 				val seqType = gft.headOption.orNull
 				val seqTypeFields = Class.forName(seqType.getTypeName).getDeclaredFields
-
-				seqType match
+				seqType match {
 					case INTEGER | DOUBLE | FLOAT | DOUBLE_j | INTEGER_j => ParsedValue(null, null, objArr.map(_.toString), null)
 					case STRING => ParsedValue(null, null, objArr.map(_.asString.getOrElse("")), null)
 					case _ =>
 						val rr = objArr.map(o => seqTypeFields.map(f2 => mapToString(o.hcursor, f2)).toSeq)
 						ParsedValue(null, rr, null, null)
-
+				}
 			case x if x.isEnum =>
 				val jsonField = hc.downField(name).focus
 				jsonField
@@ -56,10 +50,12 @@ object CirceJsonParser extends ArgumentParser {
 					.getOrElse(ParsedValue(null, null, null, null))
 
 			case _ =>
-				println(f.getType.getName)
+				Logger.warn(s"Unknow type: ${f.getType.getName}")
 				ParsedValue(null, null, null, null)
+		}
+
 		(f -> value)
 	}
-	
+
 
 }

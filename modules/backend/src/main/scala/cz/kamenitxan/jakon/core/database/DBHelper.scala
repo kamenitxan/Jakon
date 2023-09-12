@@ -2,6 +2,7 @@ package cz.kamenitxan.jakon.core.database
 
 import com.zaxxer.hikari.HikariDataSource
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
+import cz.kamenitxan.jakon.core.database.annotation.OneToMany
 import cz.kamenitxan.jakon.core.model.*
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.TypeReferences.SEQ
@@ -169,19 +170,14 @@ object DBHelper {
 					if (fki._2.ids.size == 1 && r.entity.id == fki._2.ids.head) {
 						field.set(r.entity, r.entity)
 					} else {
-						val objectClass = field.getGenericType match {
-							case parameterizedType: ParameterizedType =>
-								Class.forName(parameterizedType.getActualTypeArguments.toList.head.getTypeName).asInstanceOf[Class[JakonObject]]
-							case _ =>
-								field.getType.asInstanceOf[Class[JakonObject]]
+						val oneToManyAnn = field.getDeclaredAnnotation(classOf[OneToMany])
+						val objectClass = if (oneToManyAnn != null) {
+							oneToManyAnn.genericClass().asInstanceOf[Class[JakonObject]]
+						} else {
+							field.getType.asInstanceOf[Class[JakonObject]]
 						}
-						val (className, superClass) = field.getGenericType match {
-							case parameterizedType: ParameterizedType =>
-								val typeCls = parameterizedType.getActualTypeArguments.head
-								(typeCls.getTypeName.substring(typeCls.getTypeName.lastIndexOf(".") + 1), typeCls.getClass.getSuperclass)
-							case _ =>
-								(objectClass.getSimpleName, objectClass.getSuperclass)
-						}
+
+						val (className, superClass) = (objectClass.getSimpleName, objectClass.getSuperclass)
 						val joinSql = if (objectClass.getSuperclass != classOf[JakonObject]) {
 							s"JOIN ${superClass.getSimpleName} s ON s.id = JakonObject.id"
 						} else {

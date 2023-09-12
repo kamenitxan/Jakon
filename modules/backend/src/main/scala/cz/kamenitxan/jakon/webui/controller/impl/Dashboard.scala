@@ -8,6 +8,8 @@ import spark.{Request, Response}
   */
 object Dashboard {
 	def getDashboard(req: Request, res: Response): Context = {
-		new Context(Map[String, Any](), "logged")
+		new Context(Map[String, Any](
+			"pathInfo" -> "/admin/index"
+		), "logged")
 	}
 }
