@@ -2,6 +2,8 @@
 
 {% extends "core" %}
 
+{% block title %} - {{ objectName }}{% endblock %}
+
 {% block content %}
 {% include "includes/sideMenu" with {"compactMessagesList" : true} %}
 
