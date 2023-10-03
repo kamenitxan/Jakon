@@ -57,7 +57,8 @@ val Dependencies = new {
 				"cz.etn" % "email-validator" % "1.3.0" excludeAll(
 					ExclusionRule(organization = "javax.mail", name = "javax.mail-api")
 				),
-				"com.lihaoyi" %% "sourcecode" % "0.3.0"
+				"com.lihaoyi" %% "sourcecode" % "0.3.0",
+				"dev.zio" %% "zio-http" % "3.0.0-RC2",
 			)
 	)
 
