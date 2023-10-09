@@ -37,10 +37,6 @@ jobs:
         run: sbt compile
       - name: Test
         run: sbt githubTest
-      - name: Upload to Codecov
-        uses: codecov/codecov-action@v1.0.15
-        with:
-          fail_ci_if_error: true
       - name: Replace all working directory paths with sources path
         run: if [[ -n "modules/backend/target/scala-3.3.1-RC4/scoverage-report/scoverage.xml" ]]; then sed -i -e s,`pwd`,/github/workspace,g modules/backend/target/scala-3.3.1-RC4/scoverage-report/scoverage.xml; fi
         shell: bash
