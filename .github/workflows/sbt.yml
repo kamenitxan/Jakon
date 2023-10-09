@@ -42,7 +42,7 @@ jobs:
         with:
           fail_ci_if_error: true
       - name: Replace all working directory paths with sources path
-        run: if [[ -n "modules/backend/target/scala-3.3.1-RC4/scoverage-report/scoverage.xml" ]]; then sed -i -e s,`pwd`,/github/workspace,g modules/backend/target/scala-3.3.1-RC4/scoverage-report/scoverage.xml; fi
+        run: if [[ -n "modules/backend/target/scala-3.3.1/scoverage-report/scoverage.xml" ]]; then sed -i -e s,`pwd`,/github/workspace,g modules/backend/target/scala-3.3.1/scoverage-report/scoverage.xml; fi
         shell: bash
       - name: Analyze with SonarCube
         uses: sonarsource/sonarqube-scan-action@master
@@ -56,4 +56,4 @@ jobs:
             -Dsonar.sources=modules/backend/src
             -Dsonar.verbose=false
             -Dsonar.exclusions=modules/backend/src/main/resources/**,modules/backend/src/test/**
-            -Dsonar.scala.coverage.reportPaths=modules/backend/target/scala-3.3.1-RC4/scoverage-report/scoverage.xml
+            -Dsonar.scala.coverage.reportPaths=modules/backend/target/scala-3.3.1/scoverage-report/scoverage.xml
