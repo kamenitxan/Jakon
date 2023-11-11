@@ -80,7 +80,11 @@ trait ArgumentParser {
 				}).head
 			case x if x.isEnum =>
 				val stringValue = validated.find(_._1.getName == p.getName).map(_._2.stringValue).orNull
-				x.getDeclaredMethod("valueOf", classOf[String]).invoke(x, stringValue)
+				if (stringValue != null && stringValue.nonEmpty) {
+					x.getDeclaredMethod("valueOf", classOf[String]).invoke(x, stringValue)
+				} else {
+					null
+				}
 			case _ =>
 				Logger.warn("")
 				null
