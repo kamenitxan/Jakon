@@ -17,7 +17,11 @@ class InMemoryLogRepository extends LogRepository {
 	private val locked = new AtomicBoolean()
 
 	scheduledExecutor.scheduleAtFixedRate(() => {
-		if (locked.compareAndSet(false, true)) {
+		moveLogs()
+	}, 0, 10, TimeUnit.SECONDS)
+
+	private def moveLogs(): Unit = {
+		if (!locked.get() && locked.compareAndSet(false, true)) {
 			try {
 				val size = newLogs.size
 				logs.appendAll(newLogs.take(size))
@@ -26,7 +30,7 @@ class InMemoryLogRepository extends LogRepository {
 				locked.set(false)
 			}
 		}
-	}, 0, 10, TimeUnit.SECONDS)
+	}
 
 	def addLog(log: Log): Unit = {
 		if (LoggingSetting.getMaxLimit != 0 && logs.size >= LoggingSetting.getMaxLimit) {
@@ -66,5 +70,8 @@ class InMemoryLogRepository extends LogRepository {
 
 	}
 
-	override def getLogs: Seq[Log] = logs.toSeq
+	override def getLogs: Seq[Log] = {
+		moveLogs()
+		logs.toSeq
+	}
 }

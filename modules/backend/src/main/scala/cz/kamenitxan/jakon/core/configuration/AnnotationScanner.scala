@@ -32,9 +32,11 @@ class AnnotationScanner {
 
 	def load(): Unit = {
 		try {
-			loadControllers(scanResult)
+			if (Settings.isInitRoutes) {
+				loadControllers(scanResult)
+				loadObjectExtensions(scanResult)
+			}
 			loadCustomPages(scanResult)
-			loadObjectExtensions(scanResult)
 			copyResources()
 		} finally {
 			scanResult.close()

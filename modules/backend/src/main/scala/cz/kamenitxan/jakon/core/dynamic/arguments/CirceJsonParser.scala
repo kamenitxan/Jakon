@@ -24,7 +24,15 @@ object CirceJsonParser extends ArgumentParser {
 	def mapToString(hc: HCursor, f: Field): (Field, ParsedValue) = {
 		val name = f.getName
 		val value = f.getType match {
-			case STRING | ZONED_DATETIME | DATE=> ParsedValue(hc.downField(name).focus.flatMap(_.asString).getOrElse(""), null, null, null)
+			case STRING | ZONED_DATETIME | DATE=> ParsedValue(hc.downField(name).focus.flatMap(jsonObject => {
+				if (jsonObject.isBoolean) {
+					jsonObject.asBoolean.map(_.toString)
+				} else if (jsonObject.isNumber) {
+					jsonObject.asNumber.map(_.toString)
+				} else {
+					jsonObject.asString
+				}
+			}).getOrElse(""), null, null, null)
 			case INTEGER | DOUBLE | FLOAT | DOUBLE_j | INTEGER_j => ParsedValue(hc.downField(name).focus.map(v => {
 				v.toString.replace("\"", "").replace("\'", "")
 			}).getOrElse(""), null, null, null)

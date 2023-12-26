@@ -83,41 +83,47 @@ class JakonInit {
 		adminControllers()
 		taskSetup()
 
-		websocketSetup()
-		before(new Filter {
-			override def handle(req: Request, res: Response): Unit = PageContext.init(req, res)
-		})
-		afterAfter((_: Request, _: Response) => PageContext.destroy())
-		if (Settings.getDeployMode != DeployMode.PRODUCTION) {
-			before((request: Request, _: Response) => {
-				DevRender.rerender(request.pathInfo())
+		if (Settings.isInitRoutes) {
+			websocketSetup()
+			before(new Filter {
+				override def handle(req: Request, res: Response): Unit = PageContext.init(req, res)
 			})
-			exception(classOf[Exception], new LoggingExceptionHandler)
+			afterAfter((_: Request, _: Response) => PageContext.destroy())
+			if (Settings.getDeployMode != DeployMode.PRODUCTION) {
+				before((request: Request, _: Response) => {
+					DevRender.rerender(request.pathInfo())
+				})
+				exception(classOf[Exception], new LoggingExceptionHandler)
 
-			get("/upload/*", (req: Request, res: Response) => new UploadFilesController().doGet(req, res))
+				get("/upload/*", (req: Request, res: Response) => new UploadFilesController().doGet(req, res))
 
-			notFound((req: Request, res: Response) => new StaticFilesController().doGet(req, res))
-		}
-		routesSetup()
-		annotationScanner.load()
-		if (Settings.getDeployMode !=  DeployMode.DEVEL) {
-			PageletInitializer.protectedPrefixes.filter(_ != Routes.AdminPrefix).foreach(pp => {
-				before(pp + "*", new Filter {
-					Logger.debug(s"Adding protected prefix '$pp*'")
-					override def handle(req: Request, res: Response): Unit = {
-						val user: JakonUser = req.session.attribute("user")
-						if (user == null || (!user.acl.adminAllowed && !user.acl.allowedFrontendPrefixes.contains(pp))) {
-							Logger.debug(s"User $user denied access to '$pp*'")
-							if (req.pathInfo().startsWith(Routes.AdminPrefix)) {
-								res.redirect(Routes.AdminPrefix + s"?redirectTo=${req.pathInfo()}", 302)
-							} else {
-								res.redirect(Settings.getLoginPath + s"?redirectTo=${req.pathInfo()}", 302)
+				notFound((req: Request, res: Response) => new StaticFilesController().doGet(req, res))
+			}
+			routesSetup()
+			if (Settings.getDeployMode != DeployMode.DEVEL) {
+				PageletInitializer.protectedPrefixes.filter(_ != Routes.AdminPrefix).foreach(pp => {
+					before(pp + "*", new Filter {
+						Logger.debug(s"Adding protected prefix '$pp*'")
+
+						override def handle(req: Request, res: Response): Unit = {
+							val user: JakonUser = req.session.attribute("user")
+							if (user == null || (!user.acl.adminAllowed && !user.acl.allowedFrontendPrefixes.contains(pp))) {
+								Logger.debug(s"User $user denied access to '$pp*'")
+								if (req.pathInfo().startsWith(Routes.AdminPrefix)) {
+									res.redirect(Routes.AdminPrefix + s"?redirectTo=${req.pathInfo()}", 302)
+								} else {
+									res.redirect(Settings.getLoginPath + s"?redirectTo=${req.pathInfo()}", 302)
+								}
 							}
 						}
-					}
-				} )
-			})
+					})
+				})
+			}
 		}
+
+
+		annotationScanner.load()
+
 		Director.start()
 		afterInit()
 	}

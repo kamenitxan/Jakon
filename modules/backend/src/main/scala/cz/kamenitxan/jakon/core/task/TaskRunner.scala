@@ -50,4 +50,9 @@ object TaskRunner {
 			taskFutures -= task.name.value
 		})
 	}
+
+	def shutdown(): Boolean = {
+		scheduledExecutor.shutdown()
+		scheduledExecutor.awaitTermination(30, TimeUnit.SECONDS)
+	}
 }

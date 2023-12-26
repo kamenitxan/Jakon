@@ -122,6 +122,12 @@ object Settings {
 	@ConfigurationValue(name = "HCAPTCHA.siteKey", required = false)
 	private var hCaptchaSiteKey: String = _
 
+	@ConfigurationValue(name = "initRoutes", required = true, defaultValue = "true")
+	private var initRoutes: Boolean = _
+
+	@ConfigurationValue(name = "onlyRender", required = true, defaultValue = "false")
+	private var onlyRender: Boolean = _
+
 	def getTemplateDir: String = templateDir
 
 	def setTemplateDir(templateDir: String): Unit = this.templateDir = templateDir
@@ -234,4 +240,11 @@ object Settings {
 	def getHCaptchaSecret: String = hCaptchaSecret
 
 	def getHCaptchaSiteKey: String = hCaptchaSiteKey
+
+	/**
+	 * @return true if routes should be initialized
+	 */
+	def isInitRoutes: Boolean = initRoutes
+
+	def isOnlyRender: Boolean = onlyRender
 }

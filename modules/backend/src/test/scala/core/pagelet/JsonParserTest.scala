@@ -40,6 +40,18 @@ class JsonParserTest extends AnyFunSuite {
 		assert(data.name == "test")
 	}
 
+	test("number to string") {
+		val data = parse("""{"name": 42}""", classOf[StringData]).asInstanceOf[StringData]
+		assert(data.name == "42")
+	}
+
+	test("boolean to string") {
+		val data = parse("""{"name": true}""", classOf[StringData]).asInstanceOf[StringData]
+		assert(data.name == "true")
+		val data2 = parse("""{"name": false}""", classOf[StringData]).asInstanceOf[StringData]
+		assert(data2.name == "false")
+	}
+
 	test("int") {
 		val data = parse("""{"v": 42}""", classOf[IntData]).asInstanceOf[IntData]
 		assert(data.v == 42)
