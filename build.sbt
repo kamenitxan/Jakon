@@ -42,7 +42,6 @@ val Dependencies = new {
 				"commons-codec" % "commons-codec" % "1.16.0",
 				"org.apache.commons" % "commons-fileupload2-jakarta" % "2.0.0-M1",
 				"de.svenkubiak" % "jBCrypt" % "0.4.3",
-				"net.minidev" % "json-smart" % "2.5.0", // TODO remove
 				"com.sun.mail" % "jakarta.mail" % "2.0.1",
 				"org.commonmark" % "commonmark" % "0.21.0",
 				"com.google.code.gson" % "gson" % "2.10.1", // TODO remove
