@@ -7,8 +7,10 @@
 	</select>
 	<script>
 		(() => {
-			var ForeignObjectSelector = require("forms/j_foreign_object.js");
-			new ForeignObjectSelector("{{ field.objectName }}", "{{ fieldHash }}", true);
+			//var ForeignObjectSelector = require("forms/j_foreign_object.js");
+			//new ForeignObjectSelector("{{ field.objectName }}", "{{ fieldHash }}", true);
+
+			Forms.initForeignObject("{{ field.objectName }}", "{{ fieldHash }}", true);
 		}).apply();
 	</script>
 </div>

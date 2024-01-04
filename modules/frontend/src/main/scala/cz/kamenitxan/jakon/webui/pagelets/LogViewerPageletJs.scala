@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.webui.utils.pagelets
+package cz.kamenitxan.jakon.webui.pagelets
 
 import org.scalajs.dom
 import org.scalajs.dom.{Event, HTMLSelectElement, document}

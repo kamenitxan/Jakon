@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.webui.utils
+package cz.kamenitxan.jakon.webui
 
 import org.scalajs.dom
 import org.scalajs.dom.{Event, PointerEvent, Element}
