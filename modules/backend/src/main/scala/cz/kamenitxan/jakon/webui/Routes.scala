@@ -23,6 +23,12 @@ object Routes {
 	val AdminPrefix = "/admin"
 
 	def init(): Unit = {
+		if (Settings.isInitRoutes) {
+			initRoutes()
+		}
+	}
+
+	private def initRoutes(): Unit = {
 		val te = Settings.getAdminEngine
 		val gson = new Gson
 		val gsonTransformer: ResponseTransformer = (model: Any) => gson.toJson(model)

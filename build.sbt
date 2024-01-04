@@ -1,9 +1,9 @@
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val V = new {
-	val Scala = "3.3.1-RC4"
-  val jakon = "0.5.8-SNAPSHOT"
-	val spark = "2.9.4-jakon-3"
+	val Scala = "3.3.1"
+  val jakon = "0.5.9-SNAPSHOT"
+	val spark = "2.9.4-jakon-4"
 	val log4j = "2.20.0"
 	val circeVersion = "0.14.6"
 }
@@ -45,9 +45,8 @@ val Dependencies = new {
 				"commons-codec" % "commons-codec" % "1.16.0",
 				"org.apache.commons" % "commons-fileupload2-jakarta" % "2.0.0-M1",
 				"de.svenkubiak" % "jBCrypt" % "0.4.3",
-				"net.minidev" % "json-smart" % "2.5.0", // TODO remove
 				"com.sun.mail" % "jakarta.mail" % "2.0.1",
-				"com.atlassian.commonmark" % "commonmark" % "0.17.0", // TODO https://mvnrepository.com/artifact/org.commonmark/commonmark
+				"org.commonmark" % "commonmark" % "0.21.0",
 				"com.google.code.gson" % "gson" % "2.10.1", // TODO remove
 				"io.circe" %% "circe-core" % V.circeVersion,
 				"io.circe" %% "circe-generic"% V.circeVersion,
@@ -60,7 +59,7 @@ val Dependencies = new {
 				"cz.etn" % "email-validator" % "1.3.0" excludeAll(
 					ExclusionRule(organization = "javax.mail", name = "javax.mail-api")
 				),
-				"com.lihaoyi" %% "sourcecode" % "0.3.0"
+				"com.lihaoyi" %% "sourcecode" % "0.3.1"
 			)
 	)
 
@@ -73,7 +72,7 @@ val Dependencies = new {
 		libraryDependencies ++= Seq(
 			//"dev.zio" %% "zio-http" % "3.0.0-RC2",
 			"org.scalatest" %% "scalatest" % "3.2.17" % "test",
-			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.12.0" % "test"
+			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.16.0" % "test"
 		)
 	)
 }
@@ -210,3 +209,4 @@ addCommandAlias("ci", CICommands)
 addCommandAlias("preCI", PrepareCICommands)
 addCommandAlias("jar", "clean; fullOptCompileCopy; coverageOff; assembly")
 addCommandAlias("githubTest", "coverageOn; coverage; test; coverageReport; coverageOff;")
+addCommandAlias("outdated", "dependencyUpdates")

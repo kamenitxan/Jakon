@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>JakonUI</title>
+    <title>JakonUI{% block title %}{% endblock %}</title>
 
     <script src="/jakon/js/vendor.js"></script>
     <script src="/jakon/js/jakon.js"></script>

@@ -6,8 +6,16 @@ object LogService {
 		LoggingSetting.getLogRepository
 	}
 
-	def getLogs:Seq[Log] = {
+	def getLogs: Seq[Log] = {
 		LoggingSetting.getLogRepository.getLogs
+	}
+
+	def criticalCount: Int = {
+		getLogs.count(_.severity == Critical)
+	}
+
+	def errorCount: Int = {
+		getLogs.count(_.severity == Error)
 	}
 
 }

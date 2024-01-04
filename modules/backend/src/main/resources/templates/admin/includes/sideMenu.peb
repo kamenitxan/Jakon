@@ -20,7 +20,6 @@
 	<div id="menuAccordion">
 		<div>
 			<div class="nav-item">
-			{{ pathInfo }}
 				<a href="/admin/index" class="nav-link{% if "/admin/index" == pathInfo %} active{% endif %}"><i class="fa fa-dashboard fa-fw"></i> {{ i18n("common","DASHBOARD") }}</a>
 			</div>
 			<a href="#" class="nav-link " data-bs-toggle="collapse" data-bs-target="#menu_objects"><i class="fa fa-edit fa-fw"></i> {{ i18n("common","JAKON_OBJECTS") }}<span class="fa arrow"></span></a>

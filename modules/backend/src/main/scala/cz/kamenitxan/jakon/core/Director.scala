@@ -5,13 +5,14 @@ import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.controller.IController
 import cz.kamenitxan.jakon.core.custom_pages.AbstractCustomPage
 import cz.kamenitxan.jakon.core.database.DBInitializer
-import cz.kamenitxan.jakon.core.task.TaskRunner
+import cz.kamenitxan.jakon.core.task.{RenderTask, TaskRunner}
 import cz.kamenitxan.jakon.core.template.Pebble
 import cz.kamenitxan.jakon.core.template.utils.TemplateUtils
-import cz.kamenitxan.jakon.logging.Logger
+import cz.kamenitxan.jakon.logging.{LogService, Logger}
 import cz.kamenitxan.jakon.webui.Routes
 
 import java.nio.charset.Charset
+import java.util.concurrent.TimeUnit
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -42,7 +43,22 @@ object Director {
 			DBInitializer.checkDbConsistency()
 		}
 
-		TaskRunner.startTaskRunner()
+		if (Settings.isOnlyRender) {
+			TaskRunner.runSingle(new RenderTask(5, TimeUnit.MINUTES))
+			if (TaskRunner.shutdown()) {
+				if (LogService.criticalCount > 0) {
+					System.exit(2)
+				} else if (LogService.errorCount > 0) {
+					System.exit(3)
+				} else {
+					System.exit(0)
+				}
+			} else {
+				System.exit(1)
+			}
+		} else {
+			TaskRunner.startTaskRunner()
+		}
 		Routes.init()
 		Logger.info("Jakon started")
 
@@ -64,8 +80,6 @@ object Director {
 		if (Settings.getStaticDir != null && Settings.getOutputDir != null) {
 			TemplateUtils.copy(Settings.getStaticDir, Settings.getOutputDir)
 		}
-		//TODO: moznost vypnout administraci
-		//TemplateUtils.copy("templates/admin/static", Settings.getOutputDir)
 		Logger.info("Render complete")
 	}
 
