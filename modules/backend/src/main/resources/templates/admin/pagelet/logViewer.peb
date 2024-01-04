@@ -65,7 +65,6 @@
 	</div>
 </div>
 <script>
-	const FRcls = new (require("logs.js"));
-	const FR = FRcls.init();
+    LogViewerPagelet.init();
 </script>
 {% endblock %}
