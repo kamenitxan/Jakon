@@ -184,7 +184,7 @@ object FileManagerController {
 				if (isSupportFeature(FileManagerMode.UPLOAD)) {
 					uploadFile(req.raw(), res.raw())
 				} else {
-					setError(new IllegalAccessError(notSupportFeature(FileManagerMode.UPLOAD).get("error").getAsString()), res.raw())
+					setError(new IllegalAccessError(notSupportFeature(FileManagerMode.UPLOAD).get("error").getAsString), res.raw())
 				}
 			} else { // all other post request has jspn params in body}
 				fileOperation(req.raw(), res.raw())
@@ -219,8 +219,8 @@ object FileManagerController {
 			val str = Stream.continually(br.readLine()).takeWhile(_ != null).mkString("\n")
 			br.close()
 
-			val params: JsonObject = JsonParser.parseString(str).getAsJsonObject();
-			val mode: FileManagerMode = FileManagerMode.ofAction(params.get("action").getAsString())
+			val params: JsonObject = JsonParser.parseString(str).getAsJsonObject;
+			val mode: FileManagerMode = FileManagerMode.ofAction(params.get("action").getAsString)
 			responseJsonObject = (mode: @switch) match {
 				case FileManagerMode.CREATE_FOLDER =>
 					executeIfSupported(mode, params, p => createFolder(p))
@@ -345,14 +345,14 @@ object FileManagerController {
 					throw new ServletException("Cannot write file", e)
 			}
 		} else {
-			throw new ServletException(notSupportFeature(FileManagerMode.UPLOAD).get("error").getAsString())
+			throw new ServletException(notSupportFeature(FileManagerMode.UPLOAD).get("error").getAsString)
 		}
 	}
 
 	private def list(params: JsonObject) = {
 		try {
-			val onlyFolders = "true".equalsIgnoreCase(params.get("onlyFolders").getAsString())
-			val path = params.get("path").getAsString()
+			val onlyFolders = "true".equalsIgnoreCase(Option.apply(params.get("onlyFolders")).map(_.getAsString).getOrElse("false"))
+			val path = params.get("path").getAsString
 			Logger.debug(s"list path: Paths.get('$REPOSITORY_BASE_PATH', '$path'), onlyFolders: $onlyFolders")
 			val resultList = new util.ArrayList[JsonObject]
 			val directoryStream = Files.newDirectoryStream(Paths.get(REPOSITORY_BASE_PATH, path))
@@ -392,7 +392,7 @@ object FileManagerController {
 	}
 
 	private def createFolder(params: JsonObject) = try {
-		val path = Paths.get(REPOSITORY_BASE_PATH, params.get("newPath").getAsString())
+		val path = Paths.get(REPOSITORY_BASE_PATH, params.get("newPath").getAsString)
 		Logger.debug(s"createFolder path: $path")
 		val createdDirectory = Files.createDirectories(path)
 		val fo = new JakonFile()
@@ -433,7 +433,7 @@ object FileManagerController {
 	// TODO: presunout i v DB
 	private def move(params: JsonObject): JsonObject = try {
 		val paths = params.get("items").asInstanceOf[JsonArray].asScala
-		val newpath = Paths.get(REPOSITORY_BASE_PATH, params.get("newPath").getAsString())
+		val newpath = Paths.get(REPOSITORY_BASE_PATH, params.get("newPath").getAsString)
 		paths.foreach(obj => {
 			val path = Paths.get(REPOSITORY_BASE_PATH, obj.toString)
 			val mpath = newpath.resolve(path.getFileName)
@@ -455,8 +455,8 @@ object FileManagerController {
 	// TODO: prejmenovat i v DB
 	private def rename(params: JsonObject) = {
 		try {
-			val path = params.get("item").getAsString()
-			val newpath = params.get("newItemPath").getAsString()
+			val path = params.get("item").getAsString
+			val newpath = params.get("newItemPath").getAsString
 			Logger.debug(s"rename from: $path to: $newpath")
 			val srcFile = new File(REPOSITORY_BASE_PATH, path)
 			val destFile = new File(REPOSITORY_BASE_PATH, newpath)
@@ -508,7 +508,7 @@ object FileManagerController {
 	private def getContent(params: JsonObject) = {
 		try {
 			val json = new JsonObject
-			val item: String = params.get("item").getAsString()
+			val item: String = params.get("item").getAsString
 			json.add("result", JsonPrimitive(FileUtils.readFileToString(Paths.get(REPOSITORY_BASE_PATH, item).toFile)))
 			json
 		} catch {
@@ -520,10 +520,10 @@ object FileManagerController {
 
 	private def editFile(params: JsonObject) = { // get content
 		try {
-			val path = params.get("item").getAsString()
+			val path = params.get("item").getAsString
 			Logger.debug(s"editFile path: $path")
 			val srcFile = new File(REPOSITORY_BASE_PATH, path)
-			val content = params.get("content").getAsString()
+			val content = params.get("content").getAsString
 			FileUtils.writeStringToFile(srcFile, content)
 			success()
 		} catch {
@@ -536,8 +536,8 @@ object FileManagerController {
 	private def copy(params: JsonObject): JsonObject = {
 		try {
 			val paths = params.get("items").asInstanceOf[JsonArray].asScala
-			val newpath = Paths.get(REPOSITORY_BASE_PATH, params.get("newPath").getAsString())
-			val newFileName = params.get("singleFilename").getAsString()
+			val newpath = Paths.get(REPOSITORY_BASE_PATH, params.get("newPath").getAsString)
+			val newFileName = params.get("singleFilename").getAsString
 			paths.foreach(obj => {
 				val path = if (newFileName == null) {
 					Paths.get(REPOSITORY_BASE_PATH, obj.toString)
@@ -566,9 +566,9 @@ object FileManagerController {
 
 	private def compress(params: JsonObject): JsonObject = try {
 		val paths = params.get("items").asInstanceOf[JsonArray].asScala.toSeq
-		val paramDest = params.get("destination").getAsString()
+		val paramDest = params.get("destination").getAsString
 		val dest = Paths.get(REPOSITORY_BASE_PATH, paramDest)
-		val zip = dest.resolve(params.get("compressedFilename").getAsString())
+		val zip = dest.resolve(params.get("compressedFilename").getAsString)
 		if (Files.exists(zip)) {
 			return error(zip.toString + AlreadyExists)
 		}
