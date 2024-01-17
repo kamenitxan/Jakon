@@ -435,13 +435,13 @@ object FileManagerController {
 		val paths = params.get("items").asInstanceOf[JsonArray].asScala
 		val newpath = Paths.get(REPOSITORY_BASE_PATH, params.get("newPath").getAsString)
 		paths.foreach(obj => {
-			val path = Paths.get(REPOSITORY_BASE_PATH, obj.toString)
+			val path = Paths.get(REPOSITORY_BASE_PATH, obj.getAsString)
 			val mpath = newpath.resolve(path.getFileName)
 			Logger.debug(s"mv $path to $mpath exists? ${Files.exists(mpath)}")
 			if (Files.exists(mpath)) return error(mpath.toString + AlreadyExists)
 		})
 		paths.foreach(obj => {
-			val path = Paths.get(REPOSITORY_BASE_PATH, obj.toString)
+			val path = Paths.get(REPOSITORY_BASE_PATH, obj.getAsString)
 			val mpath = newpath.resolve(path.getFileName)
 			Files.move(path, mpath, StandardCopyOption.REPLACE_EXISTING)
 		})
@@ -481,7 +481,7 @@ object FileManagerController {
 		val error = new StringBuilder
 		val sb = new StringBuilder
 		paths.foreach(obj => {
-			val path = Paths.get(REPOSITORY_BASE_PATH, obj.toString)
+			val path = Paths.get(REPOSITORY_BASE_PATH, obj.getAsString)
 			if (!FileUtils.deleteQuietly(path.toFile)) {
 				val errrMsg = if (error.nonEmpty) {
 					"\n"
@@ -540,7 +540,7 @@ object FileManagerController {
 			val newFileName = params.get("singleFilename").getAsString
 			paths.foreach(obj => {
 				val path = if (newFileName == null) {
-					Paths.get(REPOSITORY_BASE_PATH, obj.toString)
+					Paths.get(REPOSITORY_BASE_PATH, obj.getAsString)
 				} else {
 					Paths.get(".", newFileName)
 				}
@@ -551,7 +551,7 @@ object FileManagerController {
 				}
 			})
 			paths.foreach(obj => {
-				val path = Paths.get(REPOSITORY_BASE_PATH, obj.toString)
+				val path = Paths.get(REPOSITORY_BASE_PATH, obj.getAsString)
 				val mpath = newpath.resolve(if (newFileName == null) path.getFileName
 				else Paths.get(".", newFileName).getFileName)
 				Files.copy(path, mpath, StandardCopyOption.REPLACE_EXISTING)
@@ -580,8 +580,8 @@ object FileManagerController {
 		val zipfs = FileSystems.newFileSystem(URI.create(s"jar:file:$appDir" + zip.toString), env)
 		try {
 			paths.foreach(path => {
-				val realPath = Paths.get(REPOSITORY_BASE_PATH, path.toString)
-				if (Files.isDirectory(realPath)) Files.walkFileTree(Paths.get(REPOSITORY_BASE_PATH, path.toString), new SimpleFileVisitor[Path]() {
+				val realPath = Paths.get(REPOSITORY_BASE_PATH, path.getAsString)
+				if (Files.isDirectory(realPath)) Files.walkFileTree(Paths.get(REPOSITORY_BASE_PATH, path.getAsString), new SimpleFileVisitor[Path]() {
 					@throws[IOException]
 					override def preVisitDirectory(dir: Path, attrs: BasicFileAttributes): FileVisitResult = {
 						Files.createDirectories(zipfs.getPath(dir.toString.substring(dest.toString.length)))
