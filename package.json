@@ -7,12 +7,12 @@
   "repository": "",
   "scripts": {
     "start": "brunch watch --server",
-    "build": "brunch build --production"
+    "build": "brunch build"
   },
   "dependencies": {
     "awesomplete": "^1.1.2",
     "domador": "^2.4.4",
-    "jquery": "3.6.2",
+    "jquery": "3.6.3",
     "megamark": "^3.3.0",
     "npm": "^8.19.2",
     "punycode": "^2.1.1",
