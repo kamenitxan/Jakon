@@ -17,5 +17,11 @@ object FormsJs {
 
 		ForeignObjectJs.handleSearch(objectName, searchBox.value, selectBox, includeEmptyValue)
 	}
+	
+	@JSExport
+	def initFileSelector(fieldHash: String): Unit = {
+		val holder = document.querySelector(s"#file_selector_$fieldHash")
+		FileSelectJs.openFileSelect(holder)
+	}
 
 }

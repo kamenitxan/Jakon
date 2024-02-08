@@ -6,6 +6,8 @@ import org.scalajs.dom.{HTMLSelectElement, document, html}
 
 import scala.scalajs.js
 import scala.scalajs.js.JSON
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{Failure, Success}
 
 object ForeignObjectJs {
 
@@ -15,10 +17,13 @@ object ForeignObjectJs {
 	def handleSearch(objectName: String, query: String, selectBox: HTMLSelectElement, includeEmptyValue: Boolean): Unit =  {
 		val reqData = js.Dynamic.literal(objectName = objectName, query = query)
 
-		Ajax.post(this.endPoint, reqData).`then`(data => {
-			println(data.toString)
-			fillSelect(JSON.parse(data), selectBox, includeEmptyValue)
-		})
+		Ajax.post(this.endPoint, reqData).onComplete {
+				case Failure(exception) =>
+					println(exception)
+				case Success(data) =>
+					println(data)
+					fillSelect(JSON.parse(data), selectBox, includeEmptyValue)
+			}
 	}
 
 	private def fillSelect(data: js.Dynamic, selectBox: HTMLSelectElement, includeEmptyValue: Boolean): Unit =  {
