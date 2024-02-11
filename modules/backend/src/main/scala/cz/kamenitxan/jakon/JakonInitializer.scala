@@ -18,14 +18,16 @@ object JakonInitializer {
 			val masterAdminStmt = conn.prepareStatement("SELECT * FROM AclRule WHERE masterAdmin = ?")
 			masterAdminStmt.setBoolean(1, true)
 			val masterAdmin = DBHelper.selectSingleDeep(masterAdminStmt)(implicitly, classOf[AclRule])
-			var acl: AclRule = null
-			if (masterAdmin == null) {
-				acl = new AclRule()
+			val acl = if (masterAdmin == null) {
+				val acl = new AclRule()
 				acl.name = "Admin"
 				acl.masterAdmin = true
 				acl.adminAllowed = true
 				val aclId = acl.create()
 				acl.id = aclId
+				acl
+			} else {
+				masterAdmin
 			}
 
 			val userCount = DBHelper.count("SELECT count(*) FROM JakonUser")
@@ -52,7 +54,7 @@ object JakonInitializer {
 		}
 	}
 
-	def createDefaultEmailTemplates()(implicit conn: Connection): AnyVal = {
+	private def createDefaultEmailTemplates()(implicit conn: Connection): AnyVal = {
 		val tmpl = EmailTemplateService.getByName("REGISTRATION")
 		if (tmpl == null) {
 			val tmpl = Utils.getResourceFromJar("/templates/admin/email/registration.peb")
