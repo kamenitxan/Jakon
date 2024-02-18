@@ -19,9 +19,9 @@ object FormsJs {
 	}
 	
 	@JSExport
-	def initFileSelector(fieldHash: String): Unit = {
+	def initFileSelector(fieldHash: Int): Unit = {
 		val holder = document.querySelector(s"#file_selector_$fieldHash")
-		FileSelectJs.openFileSelect(holder)
+		FileSelectJs.init(holder)
 	}
 
 }

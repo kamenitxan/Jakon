@@ -14,7 +14,7 @@ class FileSelector {
 	}
 
 	init() {
-		this.holder.querySelector(".btn").addEventListener("click", e => start())
+		this.holder.querySelector(".btn").addEventListener("click", e => this.start())
 	}
 
 	fillTable(data) {
@@ -53,9 +53,7 @@ class FileSelector {
 				const hasParent = parentPath !== "";
 				const parentArrow = hasParent ? `<i class="fas fa-arrow-up pointer"></i>` : "";
 
-				this.holder.querySelector(".modal-title").innerHTML = `
-				<h4 class="modal-title" id="gridSystemModalLabel">${parentArrow} Aktuální složka: ${path}</h4>
-			`;
+				this.holder.querySelector(".modal-title").innerHTML = `<h4 class="modal-title" id="gridSystemModalLabel">${parentArrow} Aktuální složka: ${path}</h4>`;
 				if (hasParent) {
 					this.holder.querySelector(".modal-title i").addEventListener("click", (e) => {
 						this.changeFolder(path.substring(0, path.lastIndexOf("/")));

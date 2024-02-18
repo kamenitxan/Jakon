@@ -1,11 +1,12 @@
 package cz.kamenitxan.jakon.webui
 
-import com.google.gson.Gson
+import com.google.gson.{Gson, GsonBuilder}
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.core.service.UserService
 import cz.kamenitxan.jakon.logging.Logger
+import cz.kamenitxan.jakon.utils.gson.{GsonLocalDateTimeSerializer, GsonMapSerializer, GsonOptionSerializer, GsonSeqSerializer, GsonZonedDateTimeDeserializer, GsonZonedDateTimeSerializer}
 import cz.kamenitxan.jakon.webui.api.Api
 import cz.kamenitxan.jakon.webui.controller.impl.{Authentication, FileManagerController, ObjectController, UserController}
 import cz.kamenitxan.jakon.webui.controller.{AbstractController, ExecuteFun}
@@ -14,6 +15,8 @@ import spark.Spark.*
 import spark.http.matching.Configuration
 import spark.route.HttpMethod
 import spark.{Filter, Request, Response, ResponseTransformer}
+
+import java.time.{LocalDateTime, ZonedDateTime}
 
 
 /**
@@ -30,7 +33,14 @@ object Routes {
 
 	private def initRoutes(): Unit = {
 		val te = Settings.getAdminEngine
-		val gson = new Gson
+		val gson = new GsonBuilder()
+			.registerTypeAdapter(classOf[Option[Any]], new GsonOptionSerializer[Any])
+			.registerTypeAdapter(classOf[Seq[Any]], new GsonSeqSerializer[Any])
+			.registerTypeAdapter(classOf[Map[Any, Any]], new GsonMapSerializer[Any, Any])
+			.registerTypeAdapter(classOf[ZonedDateTime], new GsonZonedDateTimeDeserializer)
+			.registerTypeAdapter(classOf[ZonedDateTime], new GsonZonedDateTimeSerializer)
+			.registerTypeAdapter(classOf[LocalDateTime], new GsonLocalDateTimeSerializer)
+			.create()
 		val gsonTransformer: ResponseTransformer = (model: Any) => gson.toJson(model)
 
 		before("*", new Filter {

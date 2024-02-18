@@ -13,7 +13,7 @@ object Ajax {
 	import js.Thenable.Implicits._
 
 	def post(url: String, data: js.Any): Future[String] = {
-		 val res = dom.fetch(url, new RequestInit {
+		val res = dom.fetch(url, new RequestInit {
 			body = js.JSON.stringify(data)
 			headers = new Headers(
 				js.Array(
@@ -23,7 +23,7 @@ object Ajax {
 
 			method = HttpMethod.POST
 			mode = RequestMode.cors // no-cors, cors, *same-origin
-			redirect =  RequestRedirect.follow  // manual, *follow, error
+			redirect = RequestRedirect.follow // manual, *follow, error
 			//referrer=  'no-referrer' // *client, no-referrer
 		}).toFuture.flatMap((response: Response) => {
 			if (response.ok) {
