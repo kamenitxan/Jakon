@@ -67,6 +67,8 @@ object FileSelectJs {
 				"fa-image"
 			} else if (fileType == "FOLDER") {
 				"fa-folder"
+			} else {
+				""
 			}
 			val btn = if (fileType == "IMAGE") "<button class=\"btn btn-primary btn-sm\">Vložit</button>" else ""
 			val html =
@@ -95,10 +97,33 @@ object FileSelectJs {
 				row.classList.add("pointer")
 				row.addEventListener("click", e => {
 					e.preventDefault()
-					// TODO changeFolder(f.path + f.name)
+					changeFolder(f.path.toString + f.name.toString, holder)
 				})
 			}
 		})
+	}
+
+	private def changeFolder(path: String, holder: Element): Unit = {
+		Ajax.post(endPoint, js.Dynamic.literal(path = path)).onComplete {
+			case Failure(exception) => println(exception)
+			case Success(data) => {
+				println(data);
+				val target = holder.querySelector(".modal-body")
+				target.innerHTML = ""
+				this.createList(JSON.parse(data), target, holder)
+
+				val parentPath = path.substring(0, path.lastIndexOf("/"))
+				val hasParent = parentPath.nonEmpty
+				val parentArrow = if (hasParent) "<i class=\"fas fa-arrow-up pointer\"></i>" else ""
+
+				holder.querySelector(".modal-title").innerHTML = s"<h4 class=\"modal-title\" id=\"gridSystemModalLabel\">$parentArrow Aktuální složka: $path</h4>";
+				if (hasParent) {
+					holder.querySelector(".modal-title i").addEventListener("click", (e) => {
+						this.changeFolder(path.substring(0, path.lastIndexOf("/")), holder);
+					});
+				}
+			}
+		}
 	}
 
 	private def selectFile(name: String, link: String, holder: Element): Unit = {

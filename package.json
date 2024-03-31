@@ -24,6 +24,7 @@
     "babel-preset-env": "^1.7.0",
     "brunch": "^4",
     "clean-css-brunch": "^3",
+    "laravel-mix": "^6.0.49",
     "less-brunch": "^2.10.0",
     "uglify-js-brunch": "^2"
   }

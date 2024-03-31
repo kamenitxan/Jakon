@@ -8,9 +8,6 @@
 	<div class="fs_modal"></div>
 	<script>
 		(() => {
-			//const FileSelector = require("forms/j_file_select.js");
-			//new FileSelector({{ fieldHash }}).init();
-			
 			Forms.initFileSelector({{ fieldHash }});
 		}).apply();
 	</script>

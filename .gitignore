@@ -49,3 +49,5 @@ jakon_config.properties
 /jakond.iml
 /modules/backend/src/main/resources/static/jakon/
 /modules/backend/jakonUnitTest.sqlite
+/modules/backend/src/main/main.iml
+/modules/backend/src/test/test.iml
