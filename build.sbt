@@ -208,6 +208,6 @@ val PrepareCICommands = Seq(
 addCommandAlias("ci", CICommands)
 addCommandAlias("preCI", PrepareCICommands)
 addCommandAlias("jar", "clean; fullOptCompileCopy; coverageOff; assembly")
-addCommandAlias("testJar", "clean; coverageOff; set assembly / mainClass := Some(\"cz.kamenitxan.jakon.Main\"); assembly")
+addCommandAlias("testJar", "clean; coverageOff; fullOptCompileCopy; set assembly / mainClass := Some(\"cz.kamenitxan.jakon.Main\"); assembly")
 addCommandAlias("githubTest", "coverageOn; coverage; backend/test; coverageReport; coverageOff;")
 addCommandAlias("outdated", "dependencyUpdates")
