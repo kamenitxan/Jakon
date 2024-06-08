@@ -1,20 +1,45 @@
+import $ from 'jquery';
+window.$ = window.jQuery = $;
 
-class FileSelector {
-
-	constructor(fieldHash) {
-		this.endPoint = "/admin/api/files";
-		this.holder = document.querySelector("#file_selector_" + fieldHash);
-		this.Ajax = require("utils/Ajax.js");
+export default class JTextarea {
+	init(fieldHash) {
+		const megamark = require('megamark');
+		const domador = require('domador');
+		const woofmark = require('woofmark');
+		const punycode = require('punycode'); // brunch issue
+		const wmi = woofmark(document.querySelector("#editor-container" + fieldHash),
+			{
+				parseMarkdown: megamark,
+				defaultMode: 'wysiwyg',
+				parseHTML: domador,
+				classes: {
+					wysiwyg: ["form-control", "wk-textfield"]
+				}
+			});
+		// removes default woofmark image button
+		Array.from(document.querySelectorAll(".wk-command")).filter(e => e.innerHTML === "Image")[0].remove()
+		// adds custom one
+		wmi.addCommandButton("Image", function insertImage(e, mode, chunks) {
+			const done = this.async();
+			new ImageSelector(chunks, done).init();
+		});
 	}
+}
 
-	start() {
-		this.Ajax.post(this.endPoint, {})
-			.then(data => this.fillTable(data))
-			.catch(error => console.error(error));
+class ImageSelector {
+
+	constructor(chunks, done) {
+		this.endPoint = "/admin/api/images";
+		this.holder = document.querySelector("#image_selector");
+		this.chunks = chunks;
+		this.done = done;
+		this.Ajax = require("../utils/Ajax.js");
 	}
 
 	init() {
-		this.holder.querySelector(".btn").addEventListener("click", e => start())
+		this.Ajax.post(this.endPoint, {})
+			.then(data => this.fillTable(data))
+			.catch(error => console.error(error));
 	}
 
 	fillTable(data) {
@@ -43,26 +68,26 @@ class FileSelector {
 		this.Ajax.post(this.endPoint, {
 			path : path
 		})
-			.then(data => {
-				console.log(data);
-				const target = this.holder.querySelector(".modal-body");
-				target.innerHTML = "";
-				this.createList(data, target);
+		.then(data => {
+			console.log(data);
+			const target = this.holder.querySelector(".modal-body");
+			target.innerHTML = "";
+			this.createList(data, target);
 
-				const parentPath = path.substring(0, path.lastIndexOf("/"));
-				const hasParent = parentPath !== "";
-				const parentArrow = hasParent ? `<i class="fas fa-arrow-up pointer"></i>` : "";
+			const parentPath = path.substring(0, path.lastIndexOf("/"));
+			const hasParent = parentPath !== "";
+			const parentArrow = hasParent ? `<i class="fas fa-arrow-up pointer"></i>` : "";
 
-				this.holder.querySelector(".modal-title").innerHTML = `
+			this.holder.querySelector(".modal-title").innerHTML = `
 				<h4 class="modal-title" id="gridSystemModalLabel">${parentArrow} Aktuální složka: ${path}</h4>
 			`;
-				if (hasParent) {
-					this.holder.querySelector(".modal-title i").addEventListener("click", (e) => {
-						this.changeFolder(path.substring(0, path.lastIndexOf("/")));
-					});
-				}
-			})
-			.catch(error => console.error(error));
+			if (hasParent) {
+				this.holder.querySelector(".modal-title i").addEventListener("click", (e) => {
+					this.changeFolder(path.substring(0, path.lastIndexOf("/")));
+				});
+			}
+		})
+		.catch(error => console.error(error));
 	}
 
 	createList(data, target) {
@@ -91,7 +116,7 @@ class FileSelector {
 				const select = target.querySelector("#fid" + f.id + " button");
 				select.addEventListener("click", e => {
 					e.preventDefault();
-					this.selectFile(f.name, "/" + f.path + f.name);
+					this.fillImage(f.name, "/" + f.path + f.name);
 				});
 			} else if (f.fileType === "FOLDER") {
 				const row = target.querySelector("#fid" + f.id);
@@ -106,7 +131,8 @@ class FileSelector {
 	}
 
 
-	selectFile(name, link) {
+	fillImage(name, link) {
+		console.log(this.chunks)
 		this.chunks.before = this.chunks.before + "![" + name + "](" + link + ")";
 		this.close();
 	}
@@ -114,7 +140,6 @@ class FileSelector {
 	close() {
 		$('.bs-example-modal-lg').modal('hide');
 		this.holder.innerHTML = "";
+		this.done();
 	}
 }
-
-module.exports = FileSelector;

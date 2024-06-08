@@ -1,3 +1,6 @@
+@import "logs.css";
+@import "forms.css";
+
 .hidden {
 	display: none;
 }
