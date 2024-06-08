@@ -6,8 +6,6 @@
   "version": "0.0.1",
   "repository": "",
   "scripts": {
-    "start": "brunch watch --server",
-    "build": "brunch build --production",
     "mix": "npx mix"
   },
   "dependencies": {
@@ -20,13 +18,6 @@
     "woofmark": "^4.2.6"
   },
   "devDependencies": {
-    "auto-reload-brunch": "^2",
-    "babel-brunch": "~7.0",
-    "babel-preset-env": "^1.7.0",
-    "brunch": "^4",
-    "clean-css-brunch": "^3",
-    "laravel-mix": "^6.0.49",
-    "less-brunch": "^2.10.0",
-    "uglify-js-brunch": "^2"
+    "laravel-mix": "^6.0.49"
   }
 }
