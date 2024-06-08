@@ -5,9 +5,8 @@
 </div>
 <div id="image_selector"></div>
 
-<script>
+<script type="module">
 	(() => {
-		const JTextarea = require("forms/j_textarea.js");
-		new JTextarea().init({{ fieldHash }})
+		new jakon.JTextarea().init({{ fieldHash }})
 	}).apply();
 </script>

@@ -1,4 +1,7 @@
-class JTextarea {
+import $ from 'jquery';
+window.$ = window.jQuery = $;
+
+export default class JTextarea {
 	init(fieldHash) {
 		const megamark = require('megamark');
 		const domador = require('domador');
@@ -22,7 +25,6 @@ class JTextarea {
 		});
 	}
 }
-module.exports = JTextarea;
 
 class ImageSelector {
 
@@ -31,7 +33,7 @@ class ImageSelector {
 		this.holder = document.querySelector("#image_selector");
 		this.chunks = chunks;
 		this.done = done;
-		this.Ajax = require("utils/Ajax.js");
+		this.Ajax = require("../utils/Ajax.js");
 	}
 
 	init() {

@@ -52,7 +52,7 @@ object JakonInitializer {
 		}
 	}
 
-	def createDefaultEmailTemplates()(implicit conn: Connection): AnyVal = {
+	private def createDefaultEmailTemplates()(implicit conn: Connection): AnyVal = {
 		val tmpl = EmailTemplateService.getByName("REGISTRATION")
 		if (tmpl == null) {
 			val tmpl = Utils.getResourceFromJar("/templates/admin/email/registration.peb")
