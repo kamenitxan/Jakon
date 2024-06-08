@@ -23,7 +23,7 @@ val Dependencies = new {
 	lazy val frontend = Seq(
 		libraryDependencies ++=
 			Seq(
-				"org.scala-js" %%% "scalajs-dom" % "2.6.0"
+				"org.scala-js" %%% "scalajs-dom" % "2.8.0"
 			)
 	)
 
