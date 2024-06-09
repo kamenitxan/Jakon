@@ -56,9 +56,7 @@ val Dependencies = new {
 				"io.github.classgraph" % "classgraph" % "4.8.171",
 				"com.zaxxer" % "HikariCP" % "5.1.0",
 				"com.github.scribejava" % "scribejava-apis" % "8.3.3",
-				"cz.etn" % "email-validator" % "1.3.0" excludeAll(
-					ExclusionRule(organization = "javax.mail", name = "javax.mail-api")
-				),
+				"cz.etn" % "email-validator" % "1.4.0",
 				"com.lihaoyi" %% "sourcecode" % "0.4.2"
 			)
 	)
