@@ -5,7 +5,7 @@ val V = new {
   val jakon = "0.6.0-SNAPSHOT"
 	val spark = "2.9.4-jakon-5"
 	val log4j = "2.23.1"
-	val circeVersion = "0.14.7"
+	val circeVersion = "0.14.9"
 }
 
 scalaVersion := V.Scala
@@ -33,13 +33,13 @@ val Dependencies = new {
 			Seq(
 				"com.intellisrc" % "spark-core" % V.spark,
 				"com.sparkjava" % "spark-template-pebble" % "2.7.1-jakon.3",
-				"org.slf4j" % "slf4j-api" % "2.0.12",
+				"org.slf4j" % "slf4j-api" % "2.0.13",
 				"org.apache.logging.log4j" % "log4j-api" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-core" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-slf4j2-impl" % V.log4j,
 				"org.xerial" % "sqlite-jdbc" % "3.46.0.0",
 				"mysql" % "mysql-connector-java" % "8.0.33",
-				"com.google.guava" % "guava" % "32.1.2-jre",
+				"com.google.guava" % "guava" % "32.1.3-jre",
 				"commons-io" % "commons-io" % "2.16.1",
 				"org.apache.commons" % "commons-lang3" % "3.14.0",
 				"commons-codec" % "commons-codec" % "1.17.0",
@@ -47,7 +47,7 @@ val Dependencies = new {
 				"de.svenkubiak" % "jBCrypt" % "0.4.3",
 				"com.sun.mail" % "jakarta.mail" % "2.0.1",
 				"org.commonmark" % "commonmark" % "0.22.0",
-				"com.google.code.gson" % "gson" % "2.10.1", // TODO remove
+				"com.google.code.gson" % "gson" % "2.11.0", // TODO remove
 				"io.circe" %% "circe-core" % V.circeVersion,
 				"io.circe" %% "circe-generic"% V.circeVersion,
 				"io.circe" %% "circe-parser"% V.circeVersion,
@@ -69,7 +69,7 @@ val Dependencies = new {
 	lazy val tests = Def.settings(
 		libraryDependencies ++= Seq(
 			//"dev.zio" %% "zio-http" % "3.0.0-RC2",
-			"org.scalatest" %% "scalatest" % "3.2.18" % "test",
+			"org.scalatest" %% "scalatest" % "3.2.19" % "test",
 			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.20.0" % "test"
 		)
 	)
