@@ -7,9 +7,9 @@ import cz.kamenitxan.jakon.utils.security.oauth.Google.createAuthUrl
 import cz.kamenitxan.jakon.utils.security.oauth.{OauthInfo, OauthProvider}
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import jakarta.servlet.http.HttpServletRequest
+import jakontest.test.{TestBase, TestHttpServletRequest}
 import org.scalatest.DoNotDiscover
 import spark.Request
-import jakontest.test.{TestBase, TestHttpServletRequest}
 
 import java.sql.Connection
 

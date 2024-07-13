@@ -22,12 +22,12 @@ object DeployDirector {
 
 	val servers: List[Server] = {
 		implicit val conn: Connection = DBHelper.getConnection
+		val source = Source.fromFile("servers.json")
 		try {
 			val gson = new Gson()
 			import java.util
 			val listType: Type = new TypeToken[util.ArrayList[Server]]() {}.getType
-			// TODO: close source
-			val s = gson.fromJson(Source.fromFile("servers.json").mkString, listType).asInstanceOf[util.ArrayList[Server]]
+			val s = gson.fromJson(source.mkString, listType).asInstanceOf[util.ArrayList[Server]]
 			val b = s.asScala.zipWithIndex
 			  .map(zi => {
 					val id = zi._2 + 1
@@ -47,6 +47,7 @@ object DeployDirector {
 				List[Server]()
 		} finally {
 			conn.close()
+			source.close()
 		}
 
 

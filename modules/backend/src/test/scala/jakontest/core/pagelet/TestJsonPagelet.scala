@@ -1,13 +1,13 @@
 package jakontest.core.pagelet
 
-import jakontest.core.pagelet.entity.OldTestJsonPageletData
-import jakontest.core.pagelet.entity.TestJsonPageletData
-import cz.kamenitxan.jakon.core.dynamic.entity.JsonFailResponse
+import jakontest.core.pagelet.entity.{OldTestJsonPageletData, SingleTestResponse, TestJsonPageletData, TypedTestResponseData}
+import cz.kamenitxan.jakon.core.dynamic.entity.{AbstractJsonResponse, JsonFailResponse}
 import cz.kamenitxan.jakon.core.dynamic.{AbstractJsonPagelet, Get, JsonPagelet, Post}
-import cz.kamenitxan.jakon.utils.Utils._
+import cz.kamenitxan.jakon.utils.Utils.*
 import spark.{Request, Response}
 
 import java.sql.Connection
+import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
 
 /**
   * Created by TPa on 13.04.2020.
@@ -59,5 +59,24 @@ class TestJsonPagelet extends AbstractJsonPagelet {
 	@Post(path = "/postValidate")
 	def postValidate(req: Request, res: Response, data: TestJsonPageletData): String = {
 		"validation_ok"
+	}
+
+	@Get(path = "/getTyped")
+	def getTyped(req: Request, res: Response): AbstractJsonResponse[_ <: Any] = {
+		val data = TypedTestResponseData(
+			"msg",
+			1,
+			Seq("a", "b"),
+			Seq(18, 19),
+			Some("optStr"),
+			Option.empty,
+			Some(75),
+			LocalDateTime.of(2024, 7, 13, 0, 0),
+			ZonedDateTime.of(2024, 7, 13, 0, 0, 0, 0, ZoneId.of("UTC")),
+			1,
+			null,
+			Map("key" -> "value")
+		)
+		SingleTestResponse(data)
 	}
 }

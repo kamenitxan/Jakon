@@ -2,14 +2,14 @@ package cz.kamenitxan.jakon.core.dynamic
 
 import com.google.gson.{Gson, GsonBuilder}
 import cz.kamenitxan.jakon.core.dynamic.arguments.{CirceJsonParser, ParsedValue}
-import cz.kamenitxan.jakon.utils.gson.{GsonMapSerializer, GsonOptionSerializer, GsonSeqSerializer, GsonZonedDateTimeDeserializer, GsonZonedDateTimeSerializer, IntegerTypeAdapter}
+import cz.kamenitxan.jakon.utils.gson.{GsonLocalDateTimeSerializer, GsonMapSerializer, GsonOptionSerializer, GsonSeqSerializer, GsonZonedDateTimeDeserializer, GsonZonedDateTimeSerializer, IntegerTypeAdapter}
 import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.parser.*
 import spark.Request
 
 import java.lang.reflect.Field
-import java.time.ZonedDateTime
+import java.time.{LocalDateTime, ZonedDateTime}
 
 /**
  * Created by TPa on 13.04.2020.
@@ -22,6 +22,7 @@ abstract class AbstractJsonPagelet {
 		.registerTypeAdapter(classOf[Map[Any,Any]], new GsonMapSerializer[Any,Any])
 		.registerTypeAdapter(classOf[ZonedDateTime], new GsonZonedDateTimeDeserializer)
 		.registerTypeAdapter(classOf[ZonedDateTime], new GsonZonedDateTimeSerializer)
+		.registerTypeAdapter(classOf[LocalDateTime], new GsonLocalDateTimeSerializer)
 		.registerTypeAdapter(classOf[java.lang.Integer], new IntegerTypeAdapter)
 	  .create()
 

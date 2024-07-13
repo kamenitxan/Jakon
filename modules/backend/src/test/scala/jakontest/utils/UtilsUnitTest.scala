@@ -2,7 +2,8 @@ package jakontest.utils
 
 import cz.kamenitxan.jakon.Main
 import cz.kamenitxan.jakon.core.model.{JakonObject, JakonUser}
-import cz.kamenitxan.jakon.utils.Utils._
+import cz.kamenitxan.jakon.utils.Utils.*
+import cz.kamenitxan.jakon.utils.security.RandomString
 import cz.kamenitxan.jakon.utils.{TypeReferences, Utils}
 import org.scalatest.DoNotDiscover
 import org.scalatest.funsuite.AnyFunSuite
@@ -53,6 +54,14 @@ class UtilsUnitTest extends AnyFunSuite {
 
 	test("TypeReferences") {
 		assert(TypeReferences.STRING != null)
+	}
+
+	test("test random string generator") {
+		val randomStringGen = new RandomString()
+		val s1 = randomStringGen.nextString()
+		val s2 = randomStringGen.nextString()
+		assert(s1.length == 21)
+		assert(s1 != s2)
 	}
 
 }

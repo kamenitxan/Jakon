@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import jakontest.core.pagelet.entity.GetResponse
 import cz.kamenitxan.jakon.core.dynamic.JsonPageletInitializer
 import cz.kamenitxan.jakon.core.dynamic.entity.{JsonErrorResponse, JsonFailResponse, ResponseStatus}
+import cz.kamenitxan.jakon.logging.Logger
 import org.scalatest.DoNotDiscover
 import jakontest.test.JsonHelper.*
 import jakontest.test.TestBase
@@ -155,6 +156,34 @@ class JsonPageletTest extends TestBase {
 
 		assert(resp.status == ResponseStatus.fail)
 		assert(resp.data.toString.contains("test_json_pagelet"))
+	}
+
+	test("example json pagelet - get typed response") { f =>
+		JsonPageletInitializer.initControllers(Seq(classOf[TestJsonPagelet]))
+
+		val url = host + s"${prefix}getTyped"
+		f.driver.get(url)
+
+		val resp = f.driver.getPageSource
+
+		Logger.error(resp)
+
+		assert(resp.contains("\"msg\": \"msg\""))
+		assert(resp.contains("\"num\": 1"))
+		assert(resp.contains("a"))
+		assert(resp.contains("b"))
+		assert(resp.contains("18"))
+		assert(resp.contains("19"))
+		assert(resp.contains("\"optStr\": \"optStr\""))
+		assert(resp.contains("\"optInt\": 75,"))
+		assert(resp.contains("\"localDateTime\": \"2024-07-13T00:00\""))
+		assert(resp.contains("\"zonedDateTimeData\": \"2024-07-13T00:00Z\""))
+		assert(resp.contains("\"integer\": 1"))
+		assert(resp.contains("key"))
+		assert(resp.contains("value"))
+		assert(!resp.contains("optStrEmpty"))
+		assert(!resp.contains("integerNull"))
+
 	}
 
 
