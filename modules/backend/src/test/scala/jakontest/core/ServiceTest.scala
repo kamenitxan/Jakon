@@ -35,6 +35,13 @@ class ServiceTest extends TestBase {
 		})
 	}
 
+	test("UserService getByUsername") { _ =>
+		DBHelper.withDbConnection(implicit conn => {
+			val u = UserService.getByUsername(user.username)
+			assert(u != null)
+		})
+	}
+
 	test("JakonFileService getImages") { _ =>
 		DBHelper.withDbConnection(implicit conn => {
 			val images = JakonFileService.getImages()
