@@ -33,7 +33,6 @@ object EntityValidator {
 		val errors = validatedData.map(data => {
 			val constructor: Constructor[_] = data._1.getDeclaringClass.getDeclaredConstructors.head
 			val parameterIndex = constructor.getParameters.zipWithIndex.find(pi => {
-				//Logger.warn(s"${pi._1.getName} - ${data._1.getName} : ${pi._1.getName == data._1.getName}")
 				pi._1.getName == data._1.getName
 			}).map(_._2)
 			if (parameterIndex.isEmpty) {

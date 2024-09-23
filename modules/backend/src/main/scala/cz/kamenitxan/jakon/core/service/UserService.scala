@@ -18,6 +18,8 @@ object UserService {
 	implicit val cls: Class[JakonUser] = classOf[JakonUser]
 
 	// language=SQL
+	val SQL_FIND_USER = "SELECT * FROM JakonUser WHERE email = ?"
+	// language=SQL
 	val SQL_FIND_USER_BY_USERNAME = "SELECT * FROM JakonUser WHERE username = ?"
 	
 	def getById(id: Int)(implicit conn: Connection): JakonUser = {
@@ -27,7 +29,7 @@ object UserService {
 	}
 
 	def getByEmail(email: String)(implicit conn: Connection): JakonUser = {
-		val stmt = conn.prepareStatement(Authentication.SQL_FIND_USER)
+		val stmt = conn.prepareStatement(SQL_FIND_USER)
 		stmt.setString(1, email)
 		DBHelper.selectSingleDeep(stmt)
 	}

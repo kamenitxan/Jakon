@@ -3,6 +3,7 @@ package cz.kamenitxan.jakon.webui.controller.impl
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
+import cz.kamenitxan.jakon.core.service.UserService
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.security.oauth.{Facebook, Google}
 import cz.kamenitxan.jakon.utils.{PageContext, Utils}
@@ -19,8 +20,7 @@ import scala.language.postfixOps
   */
 object Authentication {
 
-	// language=SQL
-	val SQL_FIND_USER = "SELECT * FROM JakonUser WHERE email = ?"
+
 	// language=SQL
 	val SQL_FIND_ACL = "SELECT * FROM AclRule WHERE id = ?"
 
@@ -41,27 +41,17 @@ object Authentication {
 		if (email != null && password != null) {
 			implicit val conn: Connection = DBHelper.getConnection
 			try {
-				// TODO: Use UserService
-				val stmt = conn.prepareStatement(SQL_FIND_USER)
-				stmt.setString(1, email)
-
-				val result = DBHelper.selectSingle(stmt, classOf[JakonUser])
-				if (result.entity == null) {
+				val user = UserService.getByEmail(email)
+				if (user == null) {
 					Logger.info("User " + email + " not found when logging in")
 					PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "WRONG_EMAIL_OR_PASSWORD")
 					return new Context(null, "login")
 				}
 
-				val user = result.entity
 				if (!user.enabled) {
 					PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "USER_NOT_ENABLED")
 					Logger.debug("User " + user.username + " is not enabled")
 				} else if (checkPassword(password, user.password)) {
-					val stmt = conn.prepareStatement(SQL_FIND_ACL)
-					stmt.setInt(1, result.foreignIds.getOrElse("acl_id", null).ids.head)
-					val aclResult = DBHelper.selectSingle(stmt, classOf[AclRule])
-					user.acl = aclResult.entity
-
 					if (Settings.getDeployMode == DeployMode.PRODUCTION && user.acl.masterAdmin && password == "admin") {
 						PageContext.getInstance().addMessage(MessageSeverity.WARNING, "DEFAULT_ADMIN_PASSWORD")
 						req.session().attribute(PageContext.MESSAGES_KEY, PageContext.getInstance().messages)
