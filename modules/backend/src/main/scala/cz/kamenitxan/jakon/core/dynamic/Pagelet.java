@@ -25,7 +25,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Documented
 public @interface Pagelet {
-	String path() default "/";
+	String path() default "";
 
 	boolean authRequired() default false;
 

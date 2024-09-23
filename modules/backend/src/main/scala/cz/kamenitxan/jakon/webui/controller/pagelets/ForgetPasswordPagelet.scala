@@ -50,7 +50,7 @@ class ForgetPasswordPagelet extends AbstractAdminPagelet {
 		redirect(req, res, "/admin")
 	}
 
-	@Post(path = "setPassword", template = "SetPassword")
+	@Post(path = "/setPassword", template = "SetPassword")
 	def postStep2(req: Request, res: Response, data: SetPasswordData): mutable.Map[String, Any] = {
 		DBHelper.withDbConnection(implicit conn => {
 			// language=SQL
