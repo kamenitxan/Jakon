@@ -1,9 +1,9 @@
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val V = new {
-	val Scala = "3.3.3"
-  val jakon = "0.6.0-SNAPSHOT"
-	val spark = "2.9.4-jakon-5"
+	val Scala = "3.3.4"
+  val jakon = "0.6.0"
+	val spark = "2.9.4-jakon-6"
 	val log4j = "2.24.0"
 	val circeVersion = "0.14.10"
 }
@@ -39,7 +39,7 @@ val Dependencies = new {
 				"org.apache.logging.log4j" % "log4j-slf4j2-impl" % V.log4j,
 				"org.xerial" % "sqlite-jdbc" % "3.46.1.0",
 				"mysql" % "mysql-connector-java" % "8.0.33",
-				"com.google.guava" % "guava" % "33.0.0-jre",
+				"com.google.guava" % "guava" % "33.2.1-jre",
 				"commons-io" % "commons-io" % "2.17.0",
 				"org.apache.commons" % "commons-lang3" % "3.17.0",
 				"commons-codec" % "commons-codec" % "1.17.1",
