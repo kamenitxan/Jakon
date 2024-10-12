@@ -6,15 +6,16 @@
   "version": "0.0.1",
   "repository": "",
   "scripts": {
-    "mix": "npx mix"
+    "mix": "npx mix",
+    "update-browserslist-dby": "npx update-browserslist-db@latest"
   },
   "dependencies": {
-    "awesomplete": "^1.1.2",
+    "awesomplete": "^1.1.7",
     "domador": "^2.4.4",
-    "jquery": "3.6.3",
+    "jquery": "3.7.1",
     "megamark": "^3.3.0",
     "npm": "^10.5.2",
-    "punycode": "^2.1.1",
+    "punycode": "^2.3.1",
     "woofmark": "^4.2.6"
   },
   "devDependencies": {
