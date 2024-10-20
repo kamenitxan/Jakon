@@ -5,7 +5,7 @@ import cz.kamenitxan.jakon.core.database.{DBHelper, I18n}
 import cz.kamenitxan.jakon.core.model.{I18nData, JakonObject, Ordered}
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.Utils.*
-import cz.kamenitxan.jakon.utils.{PageContext, SqlGen, Utils}
+import cz.kamenitxan.jakon.utils.{ContextExtension, PageContext, SqlGen, Utils}
 import cz.kamenitxan.jakon.validation.EntityValidator
 import cz.kamenitxan.jakon.webui.ModelAndView
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
@@ -117,7 +117,7 @@ object ObjectController {
 
 	def getItem(ctx: Context): cz.kamenitxan.jakon.webui.Context = {
 		val objectName = ctx.pathParam("name")
-		val objectId = ctx.pathParam("id").toOptInt
+		val objectId = ctx.`with`(classOf[ContextExtension]).pathParamOpt("id").map(_.toInt)
 		val filteredClasses = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(objectName))
 		if (filteredClasses.isEmpty) {
 			ctx.status(404)
@@ -163,7 +163,7 @@ object ObjectController {
 	def updateItem(ctx: Context): cz.kamenitxan.jakon.webui.Context = {
 		val params = ctx.queryParamMap().asScala.keySet.toSet
 		val objectName = ctx.pathParam("name")
-		val objectId = ctx.pathParam("id").toOptInt
+		val objectId = ctx.`with`(classOf[ContextExtension]).pathParamOpt("id").map(_.toInt)
 		val objectClass = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(objectName)).head
 
 		if (!isAuthorized(objectClass)) {

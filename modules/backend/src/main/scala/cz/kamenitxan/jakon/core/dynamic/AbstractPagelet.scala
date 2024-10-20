@@ -1,10 +1,10 @@
 package cz.kamenitxan.jakon.core.dynamic
 
+import com.mitchellbosecke.pebble.PebbleEngine
+import com.mitchellbosecke.pebble.loader.FileLoader
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.template.pebble.PebbleExtension
 import cz.kamenitxan.jakon.utils.PageContext
-import com.mitchellbosecke.pebble.PebbleEngine
-import com.mitchellbosecke.pebble.loader.FileLoader
 import io.javalin.http.Context
 import io.javalin.rendering.FileRenderer
 import io.javalin.rendering.template.JavalinPebble
@@ -38,8 +38,10 @@ abstract class AbstractPagelet extends IPagelet {
 		ctx += "jakon_messages" -> PageContext.getInstance().messages.asJava
 		val rp = javalinCtx.queryParamMap()
 		val srp = javalinCtx.sessionAttribute(AbstractPagelet.REQUEST_PARAMS).asInstanceOf[java.util.Map[String, java.util.List[String]]]
-		if (srp != null) {
-			rp.putAll(srp)
+		val mergedRp = if (srp != null) {
+			srp.putAll(rp)
+		} else {
+			rp
 		}
 
 		ctx += AbstractPagelet.REQUEST_PARAMS -> rp

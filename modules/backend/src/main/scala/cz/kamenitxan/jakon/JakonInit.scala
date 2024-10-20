@@ -9,7 +9,7 @@ import cz.kamenitxan.jakon.core.task.{FileManagerConsistencyTestTask, RenderTask
 import cz.kamenitxan.jakon.devtools.{DevRender, StaticFilesController, UploadFilesController}
 import cz.kamenitxan.jakon.logging.{LogCleanerTask, Logger}
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
-import cz.kamenitxan.jakon.utils.{LoggingExceptionHandler, PageContext}
+import cz.kamenitxan.jakon.utils.{ContextExtension, LoggingExceptionHandler, PageContext}
 import cz.kamenitxan.jakon.webui.controller.impl.{DeployController, FileManagerController}
 import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, ResetPasswordEmailEntity}
 import cz.kamenitxan.jakon.webui.{AdminSettings, Routes}
@@ -79,6 +79,7 @@ class JakonInit {
 			config.http.defaultContentType = "text/html; charset=utf-8"
 			config.staticFiles.add(Settings.getStaticDir)
 			config.staticFiles.add("/static")
+			config.registerPlugin(new ContextExtension)
 		})
 		JakonInit.javalin = app
 		ApiBuilder.setStaticJavalin(app)
