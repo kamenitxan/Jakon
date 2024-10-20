@@ -6,10 +6,10 @@ import cz.kamenitxan.jakon.utils.security.AesEncryptor
 import cz.kamenitxan.jakon.utils.security.oauth.Google.createAuthUrl
 import cz.kamenitxan.jakon.utils.security.oauth.{OauthInfo, OauthProvider}
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
+import io.javalin.http.Context
 import jakarta.servlet.http.HttpServletRequest
 import jakontest.test.{TestBase, TestHttpServletRequest}
 import org.scalatest.DoNotDiscover
-import spark.Request
 
 import java.sql.Connection
 
@@ -19,19 +19,19 @@ class SecurityTest extends TestBase {
 	class TestOauthProvider(email: String) extends OauthProvider {
 		override val isEnabled: Boolean = true
 
-		override def authInfo(req: Request, redirectTo: String): OauthInfo = OauthInfo("test", createAuthUrl(req, redirectTo))
+		override def authInfo(ctx: Context, redirectTo: String): OauthInfo = OauthInfo("test", createAuthUrl(ctx, redirectTo))
 
-		override def handleAuthResponse(req: Request)(implicit conn: Connection): Boolean = {
-			logIn(req, email)
+		override def handleAuthResponse(ctx: Context)(implicit conn: Connection): Boolean = {
+			logIn(ctx, email)
 		}
 	}
 
 	val fakeReq = {
-		val constructor = classOf[Request].getDeclaredConstructor(Array(classOf[HttpServletRequest]): _*)
+		val constructor = classOf[Context].getDeclaredConstructor(Array(classOf[HttpServletRequest]): _*)
 		constructor.setAccessible(true)
 		val req = constructor.newInstance(new TestHttpServletRequest)
 
-		req.session(true)
+		//req.session(true)
 		req
 	}
 
@@ -53,7 +53,7 @@ class SecurityTest extends TestBase {
 	}
 
 	test("test provider bob") { _ =>
-		PageContext.init(fakeReq, null)
+		PageContext.init(fakeReq)
 		PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "")
 		val provider = new TestOauthProvider("bob@test.test")
 		provider.authInfo(fakeReq, "")
@@ -62,7 +62,7 @@ class SecurityTest extends TestBase {
 	}
 
 	test("test provider admin") { _ =>
-		PageContext.init(fakeReq, null)
+		PageContext.init(fakeReq)
 		PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "")
 		val provider = new TestOauthProvider("admin@admin.cz")
 		provider.authInfo(fakeReq, "")

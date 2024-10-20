@@ -1,9 +1,5 @@
 package jakontest
 
-import jakontest.core.functions.LinkTest
-import jakontest.core.pagelet.{JsonPageletTest, PageletTest}
-import jakontest.core.task.TaskRunnerTest
-import jakontest.core._
 import cz.kamenitxan.jakon.JakonInit
 import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.configuration.Settings
@@ -12,14 +8,18 @@ import cz.kamenitxan.jakon.core.custom_pages.AbstractStaticPage
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{Category, Page, Post}
 import cz.kamenitxan.jakon.core.template.Pebble
+import jakontest.core.*
+import jakontest.core.functions.LinkTest
+import jakontest.core.pagelet.{JsonPageletTest, PageletTest}
+import jakontest.core.task.TaskRunnerTest
 import jakontest.devtools.DevtoolsTest
 import jakontest.logging.LoggingTest
-import org.scalatest.{BeforeAndAfterAll, Suites}
 import jakontest.utils.entity.{TestExtNoFields, TestExtUser, TestObject}
 import jakontest.utils.mail.EmailTest
 import jakontest.utils.{I18NUtilTest, SecurityTest, SqlGenTest, UtilsTest}
 import jakontest.validation.ValidationTest
 import jakontest.webui.*
+import org.scalatest.{BeforeAndAfterAll, Suites}
 
 import java.io.{File, IOException}
 
@@ -85,8 +85,6 @@ class TestRunner extends Suites(
 }
 
 class TestJakonApp extends JakonInit {
-
-	spark.Spark.stop()
 
 	override def daoSetup(): Unit = {
 		super.daoSetup()
