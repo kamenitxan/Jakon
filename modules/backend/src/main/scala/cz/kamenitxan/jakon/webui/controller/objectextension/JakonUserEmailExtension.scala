@@ -1,6 +1,5 @@
 package cz.kamenitxan.jakon.webui.controller.objectextension
 
-import java.sql.Connection
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.dynamic.{Get, Pagelet}
@@ -11,8 +10,9 @@ import cz.kamenitxan.jakon.utils.{PageContext, SqlGen}
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import io.javalin.http.Context
 
-import scala.jdk.CollectionConverters.*
+import java.sql.Connection
 import scala.collection.mutable
+import scala.jdk.CollectionConverters.*
 
 @ObjectExtension(value = classOf[JakonUser], extensionType = ExtensionType.BOTH)
 @Pagelet
@@ -38,9 +38,9 @@ class JakonUserEmailExtension extends AbstractObjectExtension {
 		}
 	}
 
-	@Get(path = "/admin/object/JakonUser/:id/sendEmail", template = "")
+	@Get(path = "/admin/object/JakonUser/{id}/sendEmail", template = "")
 	def single(ctx: Context): Unit = {
-		val objectId = ctx.pathParam(":id").toInt
+		val objectId = ctx.pathParam("id").toInt
 		DBHelper.withDbConnection(implicit conn => {
 			val stmt = conn.prepareStatement("SELECT * FROM JakonUser WHERE id = ?")
 			stmt.setInt(1, objectId)

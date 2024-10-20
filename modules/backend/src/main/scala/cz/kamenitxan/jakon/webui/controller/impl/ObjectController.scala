@@ -17,7 +17,6 @@ import org.sqlite.{SQLiteErrorCode, SQLiteException}
 import java.lang.reflect.Field
 import java.sql.Connection
 import scala.annotation.tailrec
-import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 import scala.util.Try
 
@@ -33,8 +32,8 @@ object ObjectController {
 	val pageSize = 10
 
 	def getList(ctx: Context): ModelAndView = {
-		val objectName = ctx.pathParam(":name")
-		val page = ctx.pathParam("page")
+		val objectName = ctx.pathParam("name")
+		val page = ctx.queryParam("page")
 		val pageNumber = Try(Integer.parseInt(page)).getOrElse(1)
 		val filterParams = ctx.queryParamMap().asScala.filter(kv => kv._1.startsWith("filter_") && kv._2.asScala.head.nonEmpty).map(kv => kv._1.substring(7) -> kv._2.asScala.head)
 		val objectClass = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(objectName))
@@ -117,8 +116,8 @@ object ObjectController {
 	}
 
 	def getItem(ctx: Context): cz.kamenitxan.jakon.webui.Context = {
-		val objectName = ctx.pathParam(":name")
-		val objectId = ctx.pathParam(":id").toOptInt
+		val objectName = ctx.pathParam("name")
+		val objectId = ctx.pathParam("id").toOptInt
 		val filteredClasses = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(objectName))
 		if (filteredClasses.isEmpty) {
 			ctx.status(404)
@@ -163,8 +162,8 @@ object ObjectController {
 
 	def updateItem(ctx: Context): cz.kamenitxan.jakon.webui.Context = {
 		val params = ctx.queryParamMap().asScala.keySet.toSet
-		val objectName = ctx.pathParam(":name")
-		val objectId = ctx.pathParam(":id").toOptInt
+		val objectName = ctx.pathParam("name")
+		val objectId = ctx.pathParam("id").toOptInt
 		val objectClass = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(objectName)).head
 
 		if (!isAuthorized(objectClass)) {
@@ -257,8 +256,8 @@ object ObjectController {
 	}
 
 	def deleteItem(ctx: Context): cz.kamenitxan.jakon.webui.Context = {
-		val objectName = ctx.pathParam(":name")
-		val objectId = ctx.pathParam(":id").toOptInt.get
+		val objectName = ctx.pathParam("name")
+		val objectId = ctx.pathParam("id").toOptInt.get
 		val objectClass = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(objectName)).head
 		if (!isAuthorized(objectClass)) {
 			return new cz.kamenitxan.jakon.webui.Context(Map[String, Any](
@@ -289,8 +288,8 @@ object ObjectController {
 
 
 	def moveInList(ctx: Context, up: Boolean): cz.kamenitxan.jakon.webui.Context = {
-		val objectName = ctx.pathParam(":name")
-		val objectId = ctx.pathParam(":id").toOptInt
+		val objectName = ctx.pathParam("name")
+		val objectId = ctx.pathParam("id").toOptInt
 		val order = ctx.queryParam("currentOrder").toOptInt
 
 		implicit val objectClass: Class[_ <: JakonObject] = DBHelper.getDaoClasses.filter(c => c.getSimpleName.equals(objectName)).head

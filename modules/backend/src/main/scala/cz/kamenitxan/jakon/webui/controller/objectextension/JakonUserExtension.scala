@@ -26,9 +26,9 @@ class JakonUserExtension extends AbstractObjectExtension {
 		}
 	}
 
-	@Get(path = "/admin/object/JakonUser/:id/resetPassword", template = "")
+	@Get(path = "/admin/object/JakonUser/{id}/resetPassword", template = "")
 	def get(ctx: Context): Unit = {
-		val objectId = ctx.pathParam(":id").toInt
+		val objectId = ctx.pathParam("id").toInt
 
 		DBHelper.withDbConnection(implicit conn => {
 			val stmt = conn.prepareStatement("SELECT * FROM JakonUser WHERE id = ?")

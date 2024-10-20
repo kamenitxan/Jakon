@@ -1,23 +1,23 @@
 package cz.kamenitxan.jakon.webui
 
-import com.google.gson.{Gson, GsonBuilder}
+import com.google.gson.GsonBuilder
 import cz.kamenitxan.jakon.JakonInit
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.core.service.UserService
 import cz.kamenitxan.jakon.logging.Logger
-import cz.kamenitxan.jakon.utils.gson.{GsonLocalDateTimeSerializer, GsonMapSerializer, GsonOptionSerializer, GsonSeqSerializer, GsonZonedDateTimeDeserializer, GsonZonedDateTimeSerializer}
+import cz.kamenitxan.jakon.utils.gson.*
 import cz.kamenitxan.jakon.webui.api.Api
 import cz.kamenitxan.jakon.webui.controller.impl.{Authentication, FileManagerController, ObjectController, UserController}
 import cz.kamenitxan.jakon.webui.controller.{AbstractController, ExecuteFun}
 import cz.kamenitxan.jakon.webui.util.AdminExceptionHandler
 import io.javalin.apibuilder.ApiBuilder
-import io.javalin.http.{Context, Handler, HttpStatus}
 import io.javalin.apibuilder.ApiBuilder.*
+import io.javalin.http.{Context, Handler, HttpStatus}
 
-import scala.jdk.CollectionConverters.*
 import java.time.{LocalDateTime, ZonedDateTime}
+import scala.jdk.CollectionConverters.*
 
 
 /**
@@ -132,49 +132,49 @@ object Routes {
 					ctx.result(res)
 				}
 			})
-			get("/object/:name", new Handler {
+			get("/object/{name}", new Handler {
 				override def handle(ctx: Context): Unit = {
 					val res = render(ctx, ObjectController.getList(ctx))
 					ctx.result(res)
 				}
 			})
-			get("/object/create/:name", new Handler {
+			get("/object/create/{name}", new Handler {
 				override def handle(ctx: Context): Unit = {
 					val res = render(ctx, ObjectController.getItem(ctx))
 					ctx.result(res)
 				}
 			})
-			post("/object/create/:name", new Handler {
+			post("/object/create/{name}", new Handler {
 				override def handle(ctx: Context): Unit = {
 					val res = render(ctx, ObjectController.updateItem(ctx))
 					ctx.result(res)
 				}
 			})
-			get("/object/delete/:name/:id", new Handler {
+			get("/object/delete/{name}/{id}", new Handler {
 				override def handle(ctx: Context): Unit = {
 					val res = render(ctx, ObjectController.deleteItem(ctx))
 					ctx.result(res)
 				}
 			})
-			get("/object/moveUp/:name/:id", new Handler {
+			get("/object/moveUp/{name}/{id}", new Handler {
 				override def handle(ctx: Context): Unit = {
 					val res = render(ctx, ObjectController.moveInList(ctx, up = true))
 					ctx.result(res)
 				}
 			})
-			get("/object/moveDown/:name/:id", new Handler {
+			get("/object/moveDown/{name}/{id}", new Handler {
 				override def handle(ctx: Context): Unit = {
 					val res = render(ctx, ObjectController.moveInList(ctx, up = false))
 					ctx.result(res)
 				}
 			})
-			get("/object/:name/:id", new Handler {
+			get("/object/{name}/{id}", new Handler {
 				override def handle(ctx: Context): Unit = {
 					val res = render(ctx, ObjectController.getItem(ctx))
 					ctx.result(res)
 				}
 			})
-			post("/object/:name/:id", new Handler {
+			post("/object/{name}/{id}", new Handler {
 				override def handle(ctx: Context): Unit = {
 					val res = render(ctx, ObjectController.updateItem(ctx))
 					ctx.result(res)
@@ -196,12 +196,12 @@ object Routes {
 						ctx.result(res)
 					}
 				})
-				get("/:method", new Handler {
+				get("/{method}", new Handler {
 					override def handle(ctx: Context): Unit = {
 						FileManagerController.executeGet(ctx)
 					}
 				})
-				post("/:method", new Handler {
+				post("/{method}", new Handler {
 					override def handle(ctx: Context): Unit = {
 						FileManagerController.executePost(ctx)
 					}

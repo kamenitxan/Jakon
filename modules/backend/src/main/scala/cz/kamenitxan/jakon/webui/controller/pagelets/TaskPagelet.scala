@@ -30,17 +30,17 @@ class TaskPagelet extends AbstractAdminPagelet {
 		)
 	}
 
-	@Get(path = "/run/:name", template = "pagelet/task")
+	@Get(path = "/run/{name}", template = "pagelet/task")
 	def runSingle(ctx: Context): Unit = {
-		val name = ctx.pathParam(":name")
+		val name = ctx.pathParam("name")
 		val task = TaskRunner.taskList.find(t => t.name.value.equals(name))
 		if (task.isDefined) TaskRunner.runSingle(task.get)
 		ctx.redirect(redirectPath)
 	}
 
-	@Get(path = "/pause/:name", template = "pagelet/task")
+	@Get(path = "/pause/{name}", template = "pagelet/task")
 	def pause(ctx: Context): Unit = {
-		val name = ctx.pathParam(":name")
+		val name = ctx.pathParam("name")
 		val task = TaskRunner.taskList.find(t => t.name.value.equals(name))
 		if (task.isDefined) {
 			val kve = new KeyValueEntity
@@ -52,9 +52,9 @@ class TaskPagelet extends AbstractAdminPagelet {
 		ctx.redirect(redirectPath)
 	}
 
-	@Get(path = "/resume/:name", template = "pagelet/task")
+	@Get(path = "/resume/{name}", template = "pagelet/task")
 	def resume(ctx: Context): Unit = {
-		val name = ctx.pathParam(":name")
+		val name = ctx.pathParam("name")
 		val task = TaskRunner.taskList.find(t => t.name.value.equals(name))
 		if (task.isDefined) {
 			DBHelper.withDbConnection(implicit conn => {

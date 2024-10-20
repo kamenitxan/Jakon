@@ -14,6 +14,7 @@ import cz.kamenitxan.jakon.webui.controller.impl.{DeployController, FileManagerC
 import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, ResetPasswordEmailEntity}
 import cz.kamenitxan.jakon.webui.{AdminSettings, Routes}
 import io.javalin.Javalin
+import io.javalin.apibuilder.ApiBuilder
 import io.javalin.http.{Context, Handler, HttpStatus}
 
 import java.io.File
@@ -80,6 +81,7 @@ class JakonInit {
 			config.staticFiles.add("/static")
 		})
 		JakonInit.javalin = app
+		ApiBuilder.setStaticJavalin(app)
 
 		Logger.info("Starting in " + Settings.getDeployMode + " mode")
 
@@ -106,12 +108,12 @@ class JakonInit {
 					}
 				})
 
-				/*app.error(404, new Handler { // TODO
+				app.error(404, new Handler { // TODO
 					override def handle(ctx: Context): Unit = {
 						val res = new StaticFilesController().doGet(ctx)
-						ctx.result(res)
+						//ctx.result(res)
 					}
-				})*/
+				})
 			}
 			routesSetup()
 			if (Settings.getDeployMode != DeployMode.DEVEL) {
@@ -136,7 +138,7 @@ class JakonInit {
 
 
 		annotationScanner.load()
-
+		app.start(Settings.getPort)
 		Director.start()
 		afterInit()
 	}

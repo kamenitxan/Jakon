@@ -22,9 +22,9 @@ class JakonUserLogAsExtension extends AbstractObjectExtension {
 		}
 	}
 
-	@Get(path = "/admin/object/JakonUser/:id/forceLogin", template = "")
+	@Get(path = "/admin/object/JakonUser/{id}/forceLogin", template = "")
 	def get(ctx: Context): Unit = {
-		val objectId = ctx.pathParam(":id").toInt
+		val objectId = ctx.pathParam("id").toInt
 		if (PageContext.getInstance().getLoggedUser.exists(_.acl.masterAdmin)) {
 			DBHelper.withDbConnection(implicit conn => {
 				val user = UserService.getById(objectId)
