@@ -1,13 +1,13 @@
 package jakontest.core.pagelet
 
 import com.google.gson.Gson
-import jakontest.core.pagelet.entity.GetResponse
 import cz.kamenitxan.jakon.core.dynamic.JsonPageletInitializer
 import cz.kamenitxan.jakon.core.dynamic.entity.{JsonErrorResponse, JsonFailResponse, ResponseStatus}
 import cz.kamenitxan.jakon.logging.Logger
-import org.scalatest.DoNotDiscover
+import jakontest.core.pagelet.entity.GetResponse
 import jakontest.test.JsonHelper.*
 import jakontest.test.TestBase
+import org.scalatest.DoNotDiscover
 
 import java.net.URI
 import java.net.http.HttpResponse.BodyHandlers
@@ -37,7 +37,6 @@ class JsonPageletTest extends TestBase {
 	}
 
 	test("example json pagelet - get response") { f =>
-		JsonPageletInitializer.initControllers(Seq(classOf[TestJsonPagelet]))
 
 		val url = host + s"${prefix}getResponse"
 		f.driver.get(url)
@@ -49,7 +48,6 @@ class JsonPageletTest extends TestBase {
 	}
 
 	test("example json pagelet - get throw") { f =>
-		JsonPageletInitializer.initControllers(Seq(classOf[TestJsonPagelet]))
 
 		val url = host + s"${prefix}throw"
 		f.driver.get(url)
@@ -61,7 +59,6 @@ class JsonPageletTest extends TestBase {
 	}
 
 	test("example json pagelet - get withDataAndConnection") { f =>
-		JsonPageletInitializer.initControllers(Seq(classOf[TestJsonPagelet]))
 		val message = "test_message"
 
 		val url = host + s"${prefix}withDataAndConnection?msg=$message"
@@ -74,7 +71,6 @@ class JsonPageletTest extends TestBase {
 	}
 
 	test("example json pagelet - post") { _ =>
-		JsonPageletInitializer.initControllers(Seq(classOf[TestJsonPagelet]))
 		val url = new URI(host + s"${prefix}post")
 
 		val request = HttpRequest.newBuilder()
@@ -90,7 +86,6 @@ class JsonPageletTest extends TestBase {
 	}
 
 	test("example json pagelet - post no validation") { _ =>
-		JsonPageletInitializer.initControllers(Seq(classOf[TestJsonPagelet]))
 		val url = new URI(host + s"${prefix}postNoValidation")
 
 		val request = HttpRequest.newBuilder()
@@ -106,7 +101,6 @@ class JsonPageletTest extends TestBase {
 	}
 
 	test("example json pagelet - post throw") { _ =>
-		JsonPageletInitializer.initControllers(Seq(classOf[TestJsonPagelet]))
 		val url = new URI(host + s"${prefix}postThrow")
 
 		val request = HttpRequest.newBuilder()
@@ -122,7 +116,6 @@ class JsonPageletTest extends TestBase {
 	}
 
 	test("example json pagelet - post withDataAndConnection") { _ =>
-		JsonPageletInitializer.initControllers(Seq(classOf[TestJsonPagelet]))
 		val message = "test_message"
 		val url = new URI(host + s"${prefix}postWithDataAndConnection")
 
@@ -141,7 +134,6 @@ class JsonPageletTest extends TestBase {
 	}
 
 	test("example json pagelet - post validate") { _ =>
-		JsonPageletInitializer.initControllers(Seq(classOf[TestJsonPagelet]))
 		val url = new URI(host + s"${prefix}postValidate")
 
 		val json = JSON("msg" -> "").toString
@@ -159,7 +151,6 @@ class JsonPageletTest extends TestBase {
 	}
 
 	test("example json pagelet - get typed response") { f =>
-		JsonPageletInitializer.initControllers(Seq(classOf[TestJsonPagelet]))
 
 		val url = host + s"${prefix}getTyped"
 		f.driver.get(url)

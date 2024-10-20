@@ -7,8 +7,8 @@ import cz.kamenitxan.jakon.utils.security.oauth.Google.createAuthUrl
 import cz.kamenitxan.jakon.utils.security.oauth.{OauthInfo, OauthProvider}
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import io.javalin.http.Context
-import jakarta.servlet.http.HttpServletRequest
-import jakontest.test.{TestBase, TestHttpServletRequest}
+import io.javalin.http.servlet.JavalinServletContext
+import jakontest.test.TestBase
 import org.scalatest.DoNotDiscover
 
 import java.sql.Connection
@@ -26,10 +26,8 @@ class SecurityTest extends TestBase {
 		}
 	}
 
-	val fakeReq = {
-		val constructor = classOf[Context].getDeclaredConstructor(Array(classOf[HttpServletRequest]): _*)
-		constructor.setAccessible(true)
-		val req = constructor.newInstance(new TestHttpServletRequest)
+	def fakeReq: Context = {
+		val req = new JavalinServletContext(null, null, false, null, null, null, null, null, null, null, null, null, null, null, 1500)
 
 		//req.session(true)
 		req
