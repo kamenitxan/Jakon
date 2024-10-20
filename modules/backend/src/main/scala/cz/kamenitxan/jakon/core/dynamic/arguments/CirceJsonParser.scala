@@ -4,7 +4,7 @@ import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.TypeReferences.*
 import io.circe.*
 import io.circe.parser.*
-import spark.Request
+import io.javalin.http.Context
 
 import java.lang.reflect.{Field, ParameterizedType}
 
@@ -13,8 +13,8 @@ import java.lang.reflect.{Field, ParameterizedType}
  */
 object CirceJsonParser extends ArgumentParser {
 
-	override def parseRequestData(req: Request, t: Class[_]): Map[Field, ParsedValue] = {
-		val res = parser.parse(req.body()).getOrElse(Json.Null)
+	override def parseRequestData(ctx: Context, t: Class[_]): Map[Field, ParsedValue] = {
+		val res = parser.parse(ctx.body()).getOrElse(Json.Null)
 		val hc: HCursor = res.hcursor
 
 		val fields = t.getDeclaredFields

@@ -7,7 +7,7 @@ import com.google.gson.Gson
 import cz.kamenitxan.jakon.core.configuration.{Configuration, ConfigurationValue, Settings}
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.utils.Utils.StringImprovements
-import spark.Request
+import io.javalin.http.Context
 
 import java.sql.Connection
 import java.util
@@ -25,7 +25,7 @@ object Google extends OauthProvider {
 	private lazy val gson = new Gson()
 	val isEnabled = Utils.nonEmpty(clientId) && Utils.nonEmpty(clientSecret)
 
-	def authInfo(req: Request, redirectTo: String) = OauthInfo("google", createAuthUrl(req, redirectTo))
+	def authInfo(ctx: Context, redirectTo: String) = OauthInfo("google", createAuthUrl(ctx, redirectTo))
 
 	lazy val service = new ServiceBuilder(clientId)
 		.apiSecret(clientSecret)
@@ -37,10 +37,10 @@ object Google extends OauthProvider {
 		}/admin/login/oauth?provider=${this.getClass.getSimpleName}")
 		.build(GoogleApi20.instance)
 
-	def createAuthUrl(req: Request, redirectTo: String): String = {
+	def createAuthUrl(ctx: Context, redirectTo: String): String = {
 		if (!isEnabled) return ""
 
-		val secretState = setSecretState(req)
+		val secretState = setSecretState(ctx)
 
 
 		// Obtain the Authorization URL// Obtain the Authorization URL
@@ -57,9 +57,9 @@ object Google extends OauthProvider {
 	}
 
 	// TODO: endpoint discovery https://stackoverflow.com/questions/55541686/google-oauth2-userinfo-api-not-returning-users-name-data
-	override def handleAuthResponse(req: Request)(implicit conn: Connection): Boolean = {
-		val secret = req.queryParams("secretState")
-		val code = req.queryParams("code")
+	override def handleAuthResponse(ctx: Context)(implicit conn: Connection): Boolean = {
+		val secret = ctx.queryParam("secretState")
+		val code = ctx.queryParam("code")
 		if (secret.isNullOrEmpty || code.isNullOrEmpty) {
 			return false
 		}
@@ -75,7 +75,7 @@ object Google extends OauthProvider {
 			val authInfo = gson.fromJson(response.getBody, classOf[util.Map[String, String]]).asScala.toMap
 			val email = authInfo("email")
 			if (email.nonEmpty) {
-				logIn(req, email)
+				logIn(ctx, email)
 			} else {
 				false
 			}

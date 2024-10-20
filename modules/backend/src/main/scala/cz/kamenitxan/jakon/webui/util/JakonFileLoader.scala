@@ -1,7 +1,7 @@
 package cz.kamenitxan.jakon.webui.util
 
-import io.pebbletemplates.pebble.error.LoaderException
-import io.pebbletemplates.pebble.loader.FileLoader
+import com.mitchellbosecke.pebble.error.LoaderException
+import com.mitchellbosecke.pebble.loader.FileLoader
 
 import java.io.*
 

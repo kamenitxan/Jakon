@@ -31,8 +31,9 @@ val Dependencies = new {
 	lazy val backend = Seq(
 		libraryDependencies ++=
 			Seq(
-				"com.intellisrc" % "spark-core" % V.spark,
-				"com.sparkjava" % "spark-template-pebble" % "2.7.1-jakon.3",
+				"io.javalin" % "javalin" % "6.3.0",
+				"io.javalin" % "javalin-rendering" % "6.3.0",
+				"io.pebbletemplates" % "pebble" % "3.1.6",
 				"org.slf4j" % "slf4j-api" % "2.0.16",
 				"org.apache.logging.log4j" % "log4j-api" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-core" % V.log4j,

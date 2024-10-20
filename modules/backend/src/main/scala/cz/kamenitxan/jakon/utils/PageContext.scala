@@ -2,7 +2,7 @@ package cz.kamenitxan.jakon.utils
 
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
-import spark.{Request, Response}
+import io.javalin.http.Context
 
 import scala.collection.mutable
 
@@ -15,20 +15,20 @@ object PageContext {
 
 	val excludedPaths = List("/favicon.ico", "/css", "/js", "/jakon", "/vendor")
 
-	def init(req: Request, res: Response): PageContext = {
+	def init(javalinContext: Context): PageContext = {
 		if (PageContext.context.get() != null) {
 			throw new IllegalStateException("PageContext already initialized")
 		}
-		if (req == null || excludedPaths.exists(path => req.pathInfo().startsWith(path))) {
+		if (javalinContext == null || excludedPaths.exists(path => javalinContext.path().startsWith(path))) {
 			return null
 		}
-		val ctx = new PageContext(req, res)
+		val ctx = new PageContext(javalinContext)
 		context.set(ctx)
-		if (req.session().attribute(MESSAGES_KEY) != null) {
-			req.session().attribute(MESSAGES_KEY).asInstanceOf[mutable.ArrayDeque[Message]].foreach(m => {
+		if (javalinContext.sessionAttribute(MESSAGES_KEY) != null) {
+			javalinContext.sessionAttribute(MESSAGES_KEY).asInstanceOf[mutable.ArrayDeque[Message]].foreach(m => {
 				context.get().messages += m
 			})
-			req.session().removeAttribute(MESSAGES_KEY)
+			javalinContext.sessionAttribute(MESSAGES_KEY, null)
 		}
 		ctx
 	}
@@ -42,11 +42,11 @@ object PageContext {
 	}
 }
 
-case class PageContext(req: Request, res: Response) {
+case class PageContext(ctx: Context) {
 	val messages = new mutable.ArrayDeque[Message]()
 
 	def getLoggedUser: Option[JakonUser] = {
-		val user: JakonUser = req.session.attribute("user")
+		val user: JakonUser = ctx.sessionAttribute("user")
 		Option.apply(user)
 	}
 

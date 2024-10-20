@@ -6,10 +6,10 @@ import cz.kamenitxan.jakon.core.model.KeyValueEntity
 import cz.kamenitxan.jakon.core.service.KeyValueService
 import cz.kamenitxan.jakon.core.task.TaskRunner
 import cz.kamenitxan.jakon.logging.Logger
-import spark.{Request, Response}
+import io.javalin.http.Context
 
 import scala.collection.mutable
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 /**
  * Created by TPa on 19.03.2022.
@@ -24,23 +24,23 @@ class TaskPagelet extends AbstractAdminPagelet {
 	private val redirectPath = "/admin/task"
 
 	@Get(path = "", template = "pagelet/task")
-	def render(req: Request, res: Response): mutable.Map[String, Any] = {
+	def render(): mutable.Map[String, Any] = {
 		mutable.Map[String, Any](
 			"tasks" -> TaskRunner.taskList.asJava
 		)
 	}
 
 	@Get(path = "/run/:name", template = "pagelet/task")
-	def runSingle(req: Request, res: Response): Unit = {
-		val name = req.params(":name")
+	def runSingle(ctx: Context): Unit = {
+		val name = ctx.pathParam(":name")
 		val task = TaskRunner.taskList.find(t => t.name.value.equals(name))
 		if (task.isDefined) TaskRunner.runSingle(task.get)
-		res.redirect(redirectPath)
+		ctx.redirect(redirectPath)
 	}
 
 	@Get(path = "/pause/:name", template = "pagelet/task")
-	def pause(req: Request, res: Response): Unit = {
-		val name = req.params(":name")
+	def pause(ctx: Context): Unit = {
+		val name = ctx.pathParam(":name")
 		val task = TaskRunner.taskList.find(t => t.name.value.equals(name))
 		if (task.isDefined) {
 			val kve = new KeyValueEntity
@@ -49,12 +49,12 @@ class TaskPagelet extends AbstractAdminPagelet {
 			kve.create()
 			Logger.info(s"Task $name paused")
 		}
-		res.redirect(redirectPath)
+		ctx.redirect(redirectPath)
 	}
 
 	@Get(path = "/resume/:name", template = "pagelet/task")
-	def resume(req: Request, res: Response): Unit = {
-		val name = req.params(":name")
+	def resume(ctx: Context): Unit = {
+		val name = ctx.pathParam(":name")
 		val task = TaskRunner.taskList.find(t => t.name.value.equals(name))
 		if (task.isDefined) {
 			DBHelper.withDbConnection(implicit conn => {
@@ -63,7 +63,7 @@ class TaskPagelet extends AbstractAdminPagelet {
 				Logger.info(s"Task $name resumed")
 			})
 		}
-		res.redirect(redirectPath)
+		ctx.redirect(redirectPath)
 	}
 
 }

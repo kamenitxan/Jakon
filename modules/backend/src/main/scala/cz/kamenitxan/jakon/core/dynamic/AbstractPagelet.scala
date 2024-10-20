@@ -3,10 +3,11 @@ package cz.kamenitxan.jakon.core.dynamic
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.template.pebble.PebbleExtension
 import cz.kamenitxan.jakon.utils.PageContext
-import io.pebbletemplates.pebble.PebbleEngine
-import io.pebbletemplates.pebble.loader.FileLoader
-import spark.*
-import spark.template.pebble.PebbleTemplateEngine
+import com.mitchellbosecke.pebble.PebbleEngine
+import com.mitchellbosecke.pebble.loader.FileLoader
+import io.javalin.http.Context
+import io.javalin.rendering.FileRenderer
+import io.javalin.rendering.template.JavalinPebble
 
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
@@ -27,33 +28,32 @@ abstract class AbstractPagelet extends IPagelet {
 		builder.tagCache(null)
 		builder.cacheActive(false)
 	}
-	val engine: TemplateEngine = new PebbleTemplateEngine(builder.build())
+	val engine: FileRenderer = new JavalinPebble(builder.build())
 
 
 
-	def render(context: mutable.Map[String, Any], templatePath: String, req: Request): String = {
+	def render(context: mutable.Map[String, Any], templatePath: String, javalinCtx: Context): String = {
 		val ctx = if (context != null) context else mutable.Map[String, Any]()
 
 		ctx += "jakon_messages" -> PageContext.getInstance().messages.asJava
-		val rp:java.util.Map[String, Any] = req.queryMap().toMap.asInstanceOf[java.util.Map[String, Any]]
-		val srp = req.session().attribute(AbstractPagelet.REQUEST_PARAMS).asInstanceOf[java.util.Map[String, Any]]
+		val rp = javalinCtx.queryParamMap()
+		val srp = javalinCtx.sessionAttribute(AbstractPagelet.REQUEST_PARAMS).asInstanceOf[java.util.Map[String, java.util.List[String]]]
 		if (srp != null) {
 			rp.putAll(srp)
 		}
 
 		ctx += AbstractPagelet.REQUEST_PARAMS -> rp
-		engine.render(new ModelAndView(ctx.asJava, templatePath))
+		engine.render(templatePath, ctx.asJava, javalinCtx)
 	}
 
-	def redirect(req: Request, res: Response, target: String): mutable.Map[String, Any] = {
-		redirect(req, res, target, null)
+	def redirect(ctx: Context, target: String): Unit = {
+		redirect(ctx, target, null)
 	}
 
-	def redirect(req: Request, res: Response, target: String, requestParams: Map[String, Any]): mutable.Map[String, Any] = {
-		req.session().attribute(PageContext.MESSAGES_KEY, PageContext.getInstance().messages)
-		req.session().attribute(AbstractPagelet.REQUEST_PARAMS, requestParams.asJava)
-		res.redirect(target)
-		null
+	def redirect(ctx: Context, target: String, requestParams: Map[String, Any]): Unit = {
+		ctx.sessionAttribute(PageContext.MESSAGES_KEY, PageContext.getInstance().messages)
+		ctx.sessionAttribute(AbstractPagelet.REQUEST_PARAMS, requestParams.asJava)
+		ctx.redirect(target)
 	}
 }
 

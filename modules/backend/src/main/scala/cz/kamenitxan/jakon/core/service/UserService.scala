@@ -8,7 +8,7 @@ import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask}
 import cz.kamenitxan.jakon.utils.security.AesEncryptor
 import cz.kamenitxan.jakon.webui.controller.impl.Authentication
 import cz.kamenitxan.jakon.webui.entity.ResetPasswordEmailEntity
-import spark.Request
+import io.javalin.http.Context
 
 import java.sql.Connection
 import java.util.{Calendar, Date}
@@ -61,7 +61,7 @@ object UserService {
 	  * @param conn     DB connection
 	  * @return true if successful
 	  */
-	def sendForgetPasswordEmail(user: JakonUser, req: Request, expireIn: Int = 1)(implicit conn: Connection): Boolean = {
+	def sendForgetPasswordEmail(user: JakonUser, ctx: Context, expireIn: Int = 1)(implicit conn: Connection): Boolean = {
 		if (!Settings.isEmailEnabled) return false
 
 		val tmpl = EmailTemplateService.getByName("FORGET_PASSWORD")
@@ -84,8 +84,8 @@ object UserService {
 			"email" -> user.email,
 			"username" -> user.username,
 			"token" -> resetEmailEntity.token,
-			"protocol" -> (if (req.raw().isSecure) "https" else "http"),
-			"host" -> req.host(),
+			"protocol" -> (if (ctx.req().isSecure) "https" else "http"),
+			"host" -> ctx.host(),
 			EmailSendTask.TMPL_LANG -> Settings.getDefaultLocale.getCountry
 
 		))

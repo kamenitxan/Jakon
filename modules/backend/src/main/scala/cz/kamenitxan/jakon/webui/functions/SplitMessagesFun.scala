@@ -1,8 +1,8 @@
 package cz.kamenitxan.jakon.webui.functions
 
 import cz.kamenitxan.jakon.webui.entity.Message
-import io.pebbletemplates.pebble.extension.Function
-import io.pebbletemplates.pebble.template.{EvaluationContext, PebbleTemplate}
+import com.mitchellbosecke.pebble.extension.Function
+import com.mitchellbosecke.pebble.template.{EvaluationContext, PebbleTemplate}
 
 import java.util
 import scala.jdk.CollectionConverters.*

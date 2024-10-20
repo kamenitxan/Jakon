@@ -1,7 +1,7 @@
 package cz.kamenitxan.jakon.webui.functions
 
 import cz.kamenitxan.jakon.core.template.pebble.PebbleExtension
-import io.pebbletemplates.pebble.extension.Function
+import com.mitchellbosecke.pebble.extension.Function
 
 import java.util
 /**

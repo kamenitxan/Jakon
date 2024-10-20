@@ -7,7 +7,7 @@ import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.core.service.UserService
 import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
-import spark.{Request, Response}
+import io.javalin.http.Context
 
 import scala.collection.mutable
 
@@ -18,23 +18,23 @@ import scala.collection.mutable
 @Pagelet
 class JakonUserExtension extends AbstractObjectExtension {
 
-	override def render(context: mutable.Map[String, Any], templatePath: String, req: Request): String = {
+	override def render(context: mutable.Map[String, Any], templatePath: String, ctx: Context): String = {
 		if (Settings.isEmailEnabled) {
-			super.render(context, templatePath, req)
+			super.render(context, templatePath, ctx)
 		} else {
 			""
 		}
 	}
 
 	@Get(path = "/admin/object/JakonUser/:id/resetPassword", template = "")
-	def get(req: Request, res: Response): Unit = {
-		val objectId = req.params(":id").toInt
+	def get(ctx: Context): Unit = {
+		val objectId = ctx.pathParam(":id").toInt
 
 		DBHelper.withDbConnection(implicit conn => {
 			val stmt = conn.prepareStatement("SELECT * FROM JakonUser WHERE id = ?")
 			stmt.setInt(1, objectId)
 			val user = DBHelper.selectSingleDeep(stmt)(implicitly, classOf[JakonUser])
-			val result = UserService.sendForgetPasswordEmail(user, req, 168)
+			val result = UserService.sendForgetPasswordEmail(user, ctx, 168)
 			if (result) {
 				PageContext.getInstance().messages += new Message(MessageSeverity.SUCCESS, "ADMIN_PASSWORD_RESET_OK")
 			} else {
@@ -43,12 +43,12 @@ class JakonUserExtension extends AbstractObjectExtension {
 		})
 
 
-		val redirectTo = if (req.headers("Referer") != null) {
-			req.headers("Referer")
+		val redirectTo = if (ctx.header("Referer") != null) {
+			ctx.header("Referer")
 		} else {
 			"/admin/object/JakonUser"
 		}
-		redirect(req, res, redirectTo)
+		redirect(ctx, redirectTo)
 
 
 	}

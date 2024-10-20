@@ -1,9 +1,7 @@
 package cz.kamenitxan.jakon.webui.controller
 
-
+import io.javalin.http.Context
 import cz.kamenitxan.jakon.logging.Logger
-import cz.kamenitxan.jakon.webui.Context
-import spark.{Request, Response}
 
 
 @Deprecated
@@ -11,13 +9,13 @@ abstract class AbstractController extends CustomController {
 	val template: String
 	val icon: String = "fa-cog"
 
-	def doRender(req: Request, res: Response): Context = {
+	def doRender(ctx: Context): cz.kamenitxan.jakon.webui.Context = {
 		try {
-			render(req, res)
+			render(ctx)
 		} catch {
 			case e: Exception => {
 				Logger.error("Exception thrown during " + name() + " controller render", e)
-				new Context(Map[String, Any](
+				new cz.kamenitxan.jakon.webui.Context(Map[String, Any](
 					"errors" -> List(e.toString)
 				), template)
 			}

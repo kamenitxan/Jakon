@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.core.dynamic
 
 import com.google.gson.Gson
+import cz.kamenitxan.jakon.JakonInit
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.PageContext
@@ -9,9 +10,9 @@ import cz.kamenitxan.jakon.validation.EntityValidator
 import cz.kamenitxan.jakon.webui.conform.FieldConformer.*
 import cz.kamenitxan.jakon.webui.controller.pagelets.AbstractAdminPagelet
 import cz.kamenitxan.jakon.webui.entity.CustomControllerInfo
-import cz.kamenitxan.jakon.webui.{AdminSettings, Context}
+import cz.kamenitxan.jakon.webui.AdminSettings
+import io.javalin.http.{Context, Handler}
 import jakarta.servlet.MultipartConfigElement
-import spark.{Request, Response, Spark}
 
 import java.lang.reflect.Method
 import java.sql.Connection
@@ -74,69 +75,75 @@ object PageletInitializer {
 
 	private def initGetAnnotation(get: Get, controllerAnn: Pagelet, m: Method, c: Class[_]): Unit = {
 		//TODO m.getReturnType.is
-		Spark.get(controllerAnn.path() + get.path(), (req: Request, res: Response) => {
-			val pagelet: IPagelet = c.getDeclaredConstructor().newInstance().asInstanceOf[IPagelet]
-			// TODO: vytvoreni conn pouze pokud je potreba
-			DBHelper.withDbConnection(conn => {
-				val methodArgs = createMethodArgs(m, req, res, conn, pagelet)
-				var context = m.invoke(pagelet, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
-				if (notRedirected(res)) {
-					if (pagelet.isInstanceOf[AbstractAdminPagelet]) {
-						if (context == null) {
-							context = mutable.Map[String, Any]()
+		JakonInit.javalin.get(controllerAnn.path() + get.path(), new Handler {
+			override def handle(ctx: Context): Unit = {
+				val pagelet: IPagelet = c.getDeclaredConstructor().newInstance().asInstanceOf[IPagelet]
+				// TODO: vytvoreni conn pouze pokud je potreba
+				DBHelper.withDbConnection(conn => {
+					val methodArgs = createMethodArgs(m, ctx, conn, pagelet)
+					var context = m.invoke(pagelet, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
+					if (notRedirected(ctx)) {
+						if (pagelet.isInstanceOf[AbstractAdminPagelet]) {
+							if (context == null) {
+								context = mutable.Map[String, Any]()
+							}
+							context = context ++ cz.kamenitxan.jakon.webui.Context.getAdminContext ++ mutable.Map("pathInfo" -> ctx.path())
 						}
-						context = context ++ Context.getAdminContext ++ mutable.Map("pathInfo" -> req.pathInfo())
+						try {
+							val res = pagelet.render(context, get.template(), ctx)
+							ctx.result(res)
+						} catch {
+							case ex: Exception =>
+								Logger.error(s"${pagelet.getClass.getCanonicalName}.${m.getName}() threw exception", ex)
+								throw ex
+						}
+					} else {
+						ctx.result("")
 					}
-					try {
-						pagelet.render(context, get.template(), req)
-					} catch {
-						case ex: Exception =>
-							Logger.error(s"${pagelet.getClass.getCanonicalName}.${m.getName}() threw exception", ex)
-							throw ex
-					}
-				} else {
-					""
-				}
-			})
+				})
+			}
 		})
 	}
 
 	private def initPostAnnotation(post: Post, controllerAnn: Pagelet, m: Method, c: Class[_]): Unit = {
-		Spark.post(controllerAnn.path() + post.path(), (req: Request, res: Response) => {
-			val pagelet = c.getDeclaredConstructor().newInstance().asInstanceOf[IPagelet]
+		JakonInit.javalin.post(controllerAnn.path() + post.path(), new Handler {
+			override def handle(ctx: Context): Unit = {
+				val pagelet = c.getDeclaredConstructor().newInstance().asInstanceOf[IPagelet]
 
-			// TODO: vytvoreni conn pouze pokud je potreba
-			DBHelper.withDbConnection(conn => {
-				val dataClass = getDataClass(m)
-				if (req.raw().getContentType.startsWith("multipart/form-data")) {
-					req.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"))
-				}
-				if (post.validate() && dataClass.isDefined) {
-					val formData = EntityValidator.createFormData(req, dataClass.get)
-					EntityValidator.validate(dataClass.get.getSimpleName, formData) match {
-						case Left(result) =>
-							if ("true".equals(req.queryParams(METHOD_VALDIATE))) {
-								gson.toJson(result)
-							} else {
-								result.foreach(r => PageContext.getInstance().messages += r)
-								val rp = formData.map(kv => (kv._1.getName, kv._2))
+				// TODO: vytvoreni conn pouze pokud je potreba
+				DBHelper.withDbConnection(conn => {
+					val dataClass = getDataClass(m)
+					/*if (ctx.contentType().startsWith("multipart/form-data")) { // TODO: stale potreba?
+						req.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"))
+					}*/
+					if (post.validate() && dataClass.isDefined) {
+						val formData = EntityValidator.createFormData(ctx, dataClass.get)
+						EntityValidator.validate(dataClass.get.getSimpleName, formData) match {
+							case Left(result) =>
+								if ("true".equals(ctx.queryParam(METHOD_VALDIATE))) {
+									val res = gson.toJson(result)
+									ctx.result(res)
+								} else {
+									result.foreach(r => PageContext.getInstance().messages += r)
+									val rp = formData.map(kv => (kv._1.getName, kv._2))
 
-								val path = replacePathParams(controllerAnn.path() + post.path(), req.params.asScala)
-								pagelet.redirect(req, res, path, rp)
-							}
-						case Right(_) =>
-							if ("true".equals(req.queryParams(METHOD_VALDIATE))) {
-								gson.toJson(true)
-							} else {
-								val methodArgs = createMethodArgs(m, req, res, conn, pagelet)
-								invokePost(req, res, pagelet, m, post, methodArgs)
-							}
+									val path = replacePathParams(controllerAnn.path() + post.path(), ctx.pathParamMap().asScala)
+									pagelet.redirect(ctx, path, rp)
+								}
+							case Right(_) =>
+								if ("true".equals(ctx.queryParam(METHOD_VALDIATE))) {
+									gson.toJson(true)
+								} else {
+									val methodArgs = createMethodArgs(m, ctx, conn, pagelet)
+									invokePost(ctx, pagelet, m, post, methodArgs)
+								}
+						}
+					} else {
+						val methodArgs = createMethodArgs(m, ctx, conn, pagelet)
+						invokePost(ctx, pagelet, m, post, methodArgs)
 					}
-				} else {
-					val methodArgs = createMethodArgs(m, req, res, conn, pagelet)
-					invokePost(req, res, pagelet, m, post, methodArgs)
-				}
-			})
+				})
+			}
 		})
 	}
 
@@ -151,19 +158,15 @@ object PageletInitializer {
 		}
 	}
 
-	private def invokePost(req: Request, res: Response, controller: IPagelet, m: Method, post: Post, methodArgs: MethodArgs) = {
-		if (notRedirected(res)) {
+	private def invokePost(ctx: Context, controller: IPagelet, m: Method, post: Post, methodArgs: MethodArgs) = {
+		if (notRedirected(ctx)) {
 			m.getReturnType match {
 				case STRING =>
 					m.invoke(controller, methodArgs.array: _*)
 				case _ =>
 					try {
 						val context = m.invoke(controller, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
-						if (notRedirected(res)) {
-							controller.render(context, post.template(), req)
-						} else {
-							""
-						}
+						controller.render(context, post.template(), ctx)
 					} catch {
 						case ex: Exception =>
 							Logger.error(s"${controller.getClass.getCanonicalName}.${m.getName}() threw exception", ex)
@@ -175,8 +178,8 @@ object PageletInitializer {
 		}
 	}
 
-	private def notRedirected(res: Response) = {
-		if (res.raw().getStatus == 302 || res.raw().getStatus == 301) {
+	private def notRedirected(ctx: Context) = {
+		if (ctx.statusCode() == 302 || ctx.statusCode() == 301) {
 			false
 		} else {
 			true
@@ -185,14 +188,13 @@ object PageletInitializer {
 
 
 	def getDataClass(m: Method): Option[Class[_]] = {
-		m.getParameterTypes.find(c => c != REQUEST_CLS && c != RESPONSE_CLS && c != CONNECTION_CLS)
+		m.getParameterTypes.find(c => c != CONTEXT_CLS && c != CONNECTION_CLS)
 	}
 
-	private[dynamic] def createMethodArgs(m: Method, req: Request, res: Response, conn: Connection, pagelet: AnyRef): MethodArgs = {
+	private[dynamic] def createMethodArgs(m: Method, ctx: Context, conn: Connection, pagelet: AnyRef): MethodArgs = {
 		var dataRef: Any = null
 		val arr = m.getParameterTypes.map {
-			case REQUEST_CLS => req
-			case RESPONSE_CLS => res
+			case CONTEXT_CLS => ctx
 			case CONNECTION_CLS => conn
 			case t =>
 				val enclosingCls = t.getEnclosingClass
@@ -201,8 +203,8 @@ object PageletInitializer {
 				Logger.debug(s"Creating pagelet data: {${t.getSimpleName}}")
 				t.getDeclaredFields.foreach(f => {
 					try {
-						if (req.queryMap(f.getName).hasValue) {
-							val value = req.queryMap(f.getName).values().mkString("\r\n")
+						if (!ctx.queryParams(f.getName).isEmpty) {
+							val value = ctx.queryParams(f.getName).asScala.mkString("\r\n")
 							f.setAccessible(true)
 							f.set(data, value.conform(f))
 						}

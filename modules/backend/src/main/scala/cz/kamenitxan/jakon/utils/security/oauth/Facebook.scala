@@ -5,7 +5,7 @@ import com.github.scribejava.core.builder.ServiceBuilder
 import com.google.gson.Gson
 import cz.kamenitxan.jakon.core.configuration.{Configuration, ConfigurationValue, Settings}
 import cz.kamenitxan.jakon.utils.Utils
-import spark.Request
+import io.javalin.http.Context
 
 import java.sql.Connection
 
@@ -21,7 +21,7 @@ object Facebook extends OauthProvider {
 	private lazy val gson = new Gson()
 	val isEnabled = Utils.nonEmpty(clientId)
 
-	def authInfo(req: Request, redirectTo: String) = OauthInfo("facebook", createAuthUrl(req))
+	def authInfo(ctx: Context, redirectTo: String) = OauthInfo("facebook", createAuthUrl(ctx))
 
 	lazy val service = new ServiceBuilder(clientId)
 		.callback(s"http://${Settings.getHostname}${
@@ -31,14 +31,14 @@ object Facebook extends OauthProvider {
 		}/admin/login/oauth?provider=${this.getClass.getSimpleName}")
 		.build(FacebookApi.instance)
 
-	def createAuthUrl(req: Request): String = {
+	def createAuthUrl(ctx: Context): String = {
 		if (!isEnabled) return ""
 
-		val secretState = setSecretState(req)
+		val secretState = setSecretState(ctx)
 		service.getAuthorizationUrl(secretState)
 	}
 
-	override def handleAuthResponse(req: Request)(implicit conn: Connection): Boolean = {
+	override def handleAuthResponse(ctx: Context)(implicit conn: Connection): Boolean = {
 		false
 	}
 }

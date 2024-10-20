@@ -1,8 +1,7 @@
 package cz.kamenitxan.jakon.webui.controller;
 
-import spark.route.HttpMethod;
-
 import java.lang.annotation.*;
+import cz.kamenitxan.jakon.webui.HttpMethod;
 
 @Deprecated
 @Documented

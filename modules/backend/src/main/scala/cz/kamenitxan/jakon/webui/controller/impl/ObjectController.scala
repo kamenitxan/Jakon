@@ -7,12 +7,12 @@ import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.Utils.*
 import cz.kamenitxan.jakon.utils.{PageContext, SqlGen, Utils}
 import cz.kamenitxan.jakon.validation.EntityValidator
-import cz.kamenitxan.jakon.webui.Context
+import cz.kamenitxan.jakon.webui.ModelAndView
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
 import cz.kamenitxan.jakon.webui.conform.FieldConformer.*
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
+import io.javalin.http.Context
 import org.sqlite.{SQLiteErrorCode, SQLiteException}
-import spark.{ModelAndView, Request, Response}
 
 import java.lang.reflect.Field
 import java.sql.Connection
@@ -32,15 +32,15 @@ object ObjectController {
 
 	val pageSize = 10
 
-	def getList(req: Request, res: Response): ModelAndView = {
-		val objectName = req.params(":name")
-		val page = req.queryParams("page")
+	def getList(ctx: Context): ModelAndView = {
+		val objectName = ctx.pathParam(":name")
+		val page = ctx.pathParam("page")
 		val pageNumber = Try(Integer.parseInt(page)).getOrElse(1)
-		val filterParams = req.queryMap().toMap.asScala.filter(kv => kv._1.startsWith("filter_") && kv._2.head.nonEmpty).map(kv => kv._1.substring(7) -> kv._2.head)
+		val filterParams = ctx.queryParamMap().asScala.filter(kv => kv._1.startsWith("filter_") && kv._2.asScala.head.nonEmpty).map(kv => kv._1.substring(7) -> kv._2.asScala.head)
 		val objectClass = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(objectName))
 		if (objectClass.isDefined) {
 			if (!isAuthorized(objectClass.get)) {
-				return new Context(Map[String, Any](
+				return new cz.kamenitxan.jakon.webui.Context(Map[String, Any](
 					"objectName" -> objectName
 				), UNAUTHORIZED_TMPL)
 			}
@@ -93,7 +93,7 @@ object ObjectController {
 				}
 				val fields = Utils.getFieldsUpTo(objectClass.get, upperClass).filter(n => !excludedFields.contains(n.getName))
 				val fi = FieldConformer.getEmptyFieldInfos(fields)
-				new Context(Map[String, Any](
+				new cz.kamenitxan.jakon.webui.Context(Map[String, Any](
 					"objectName" -> objectName,
 					"objects" -> pageItems,
 					"object" -> ocls.getDeclaredConstructor().newInstance(), // used for ObjectExtensions
@@ -111,23 +111,23 @@ object ObjectController {
 				conn.close()
 			}
 		} else {
-			res.status(404)
-			new Context(Map[String, Any](), "errors/404")
+			ctx.status(404)
+			new cz.kamenitxan.jakon.webui.Context(Map[String, Any](), "errors/404")
 		}
 	}
 
-	def getItem(req: Request, res: Response): Context = {
-		val objectName = req.params(":name")
-		val objectId = req.params(":id").toOptInt
+	def getItem(ctx: Context): cz.kamenitxan.jakon.webui.Context = {
+		val objectName = ctx.pathParam(":name")
+		val objectId = ctx.pathParam(":id").toOptInt
 		val filteredClasses = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(objectName))
 		if (filteredClasses.isEmpty) {
-			res.status(404)
-			return new Context(Map[String, Any](), "errors/404")
+			ctx.status(404)
+			return new cz.kamenitxan.jakon.webui.Context(Map[String, Any](), "errors/404")
 		}
 		implicit val objectClass: Class[_ <: JakonObject] = filteredClasses.head
 
 		if (!isAuthorized(objectClass)) {
-			return new Context(Map[String, Any](
+			return new cz.kamenitxan.jakon.webui.Context(Map[String, Any](
 				"objectName" -> objectName
 			), UNAUTHORIZED_TMPL)
 		}
@@ -152,23 +152,23 @@ object ObjectController {
 		//TODO: moznost udelat promene required
 		val fields = Utils.getFieldsUpTo(objectClass, classOf[Object]).filter(n => !excludedFields.contains(n.getName))
 		val f = FieldConformer.getFieldInfos(obj, fields).asJava
-		new Context(Map[String, Any](
+		new cz.kamenitxan.jakon.webui.Context(Map[String, Any](
 			"objectName" -> objectName,
 			"object" -> obj,
 			"id" -> obj.id,
 			"fields" -> f,
-			"page" -> req.queryParams("page")
+			"page" -> ctx.queryParam("page")
 		), "objects/single")
 	}
 
-	def updateItem(req: Request, res: Response): Context = {
-		val params: mutable.Set[String] = req.queryParams().asScala
-		val objectName = req.params(":name")
-		val objectId = req.params(":id").toOptInt
+	def updateItem(ctx: Context): cz.kamenitxan.jakon.webui.Context = {
+		val params = ctx.queryParamMap().asScala.keySet.toSet
+		val objectName = ctx.pathParam(":name")
+		val objectId = ctx.pathParam(":id").toOptInt
 		val objectClass = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(objectName)).head
 
 		if (!isAuthorized(objectClass)) {
-			return new Context(Map[String, Any](
+			return new cz.kamenitxan.jakon.webui.Context(Map[String, Any](
 				"objectName" -> objectName
 			), UNAUTHORIZED_TMPL)
 		}
@@ -184,9 +184,9 @@ object ObjectController {
 		}
 
 		val formData: Map[Field, String] = if (objectId.nonEmpty) {
-			EntityValidator.createFormData(req, objectClass) + (Utils.getFields(classOf[JakonObject]).find(_.getName == "id").get -> objectId.get.toString)
+			EntityValidator.createFormData(ctx, objectClass) + (Utils.getFields(classOf[JakonObject]).find(_.getName == "id").get -> objectId.get.toString)
 		} else {
-			EntityValidator.createFormData(req, objectClass)
+			EntityValidator.createFormData(ctx, objectClass)
 		}
 		EntityValidator.validate(objectClass.getSimpleName, formData) match {
 			case Left(result) =>
@@ -196,7 +196,7 @@ object ObjectController {
 						case Some(id) => s"/admin/object/$objectName/$id"
 						case None => s"/admin/object/create/$objectName"
 					}
-					return redirect(req, res, redirectUrl)
+					return redirect(ctx, redirectUrl)
 				}
 			case _ =>
 		}
@@ -209,7 +209,7 @@ object ObjectController {
 			if (fieldRefOpt.isDefined) {
 				val fieldRef = fieldRefOpt.get
 				fieldRef.setAccessible(true)
-				val value = req.queryParamsValues(p).map(_.trim).mkString("\r\n").conform(fieldRef)
+				val value = ctx.queryParams(p).asScala.map(_.trim).mkString("\r\n").conform(fieldRef)
 				if (value != null) {
 					p match {
 						case "visibleOrder" => formOrder = value.asInstanceOf[Int]
@@ -236,7 +236,7 @@ object ObjectController {
 					// TODO: mysql
 					// TODO: better msg
 					PageContext.getInstance().addMessage(MessageSeverity.ERROR, "NEW_OBJ_UNIQUE_FAIL")
-					redirect(req, res, "/admin/object/create/" + objectName)
+					redirect(ctx, "/admin/object/create/" + objectName)
 				} else {
 					throw ex
 				}
@@ -244,24 +244,24 @@ object ObjectController {
 
 		val i18nFieldOpt = fields.find(_.getAnnotation(classOf[I18n]) != null)
 		if (i18nFieldOpt.nonEmpty) {
-			createI18nData(obj.id, i18nFieldOpt.get, req, params)
+			createI18nData(obj.id, i18nFieldOpt.get, ctx, params)
 		}
 
-		if (req.queryParams("save_and_new").toBoolOrFalse) {
+		if (ctx.queryParam("save_and_new").toBoolOrFalse) {
 			PageContext.getInstance().addMessage(MessageSeverity.SUCCESS, "NEW_OBJ_CREATED")
-			redirect(req, res, "/admin/object/create/" + objectName)
+			redirect(ctx, "/admin/object/create/" + objectName)
 		} else {
-			val target = ObjectPath + objectName + s"?page=${req.queryParams("admin_page")}"
-			redirect(req, res, target)
+			val target = ObjectPath + objectName + s"?page=${ctx.queryParam("admin_page")}"
+			redirect(ctx, target)
 		}
 	}
 
-	def deleteItem(req: Request, res: Response): Context = {
-		val objectName = req.params(":name")
-		val objectId = req.params(":id").toOptInt.get
+	def deleteItem(ctx: Context): cz.kamenitxan.jakon.webui.Context = {
+		val objectName = ctx.pathParam(":name")
+		val objectId = ctx.pathParam(":id").toOptInt.get
 		val objectClass = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(objectName)).head
 		if (!isAuthorized(objectClass)) {
-			return new Context(Map[String, Any](
+			return new cz.kamenitxan.jakon.webui.Context(Map[String, Any](
 				"objectName" -> objectName
 			), UNAUTHORIZED_TMPL)
 		}
@@ -274,8 +274,8 @@ object ObjectController {
 		stmt.executeUpdate()
 		conn.close()
 
-		res.redirect(ObjectPath + objectName)
-		new Context(Map[String, Any](), ListTmpl)
+		ctx.redirect(ObjectPath + objectName)
+		new cz.kamenitxan.jakon.webui.Context(Map[String, Any](), ListTmpl)
 	}
 
 	private def isAuthorized(objectClass: Class[_]): Boolean = {
@@ -288,15 +288,15 @@ object ObjectController {
 	}
 
 
-	def moveInList(req: Request, res: Response, up: Boolean): Context = {
-		val objectName = req.params(":name")
-		val objectId = req.params(":id").toOptInt
-		val order = req.queryParams("currentOrder").toOptInt
+	def moveInList(ctx: Context, up: Boolean): cz.kamenitxan.jakon.webui.Context = {
+		val objectName = ctx.pathParam(":name")
+		val objectId = ctx.pathParam(":id").toOptInt
+		val order = ctx.queryParam("currentOrder").toOptInt
 
 		implicit val objectClass: Class[_ <: JakonObject] = DBHelper.getDaoClasses.filter(c => c.getSimpleName.equals(objectName)).head
 		if (!objectClass.getInterfaces.contains(classOf[Ordered])) {
 			PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "OBJECT_NOT_ORDERED")
-			redirect(req, res, ObjectPath + objectName)
+			redirect(ctx, ObjectPath + objectName)
 		}
 
 
@@ -314,13 +314,13 @@ object ObjectController {
 			conn.close()
 		}
 
-		res.redirect(ObjectPath + objectName)
-		new Context(Map[String, Any](), ListTmpl)
+		ctx.redirect(ObjectPath + objectName)
+		new cz.kamenitxan.jakon.webui.Context(Map[String, Any](), ListTmpl)
 	}
 
-	private def redirect(req: Request, res: Response, target: String): Context = {
-		req.session().attribute(PageContext.MESSAGES_KEY, PageContext.getInstance().messages)
-		res.redirect(target)
+	private def redirect(ctx: Context, target: String): cz.kamenitxan.jakon.webui.Context = {
+		ctx.sessionAttribute(PageContext.MESSAGES_KEY, PageContext.getInstance().messages)
+		ctx.redirect(target)
 		null
 	}
 
@@ -335,7 +335,7 @@ object ObjectController {
 		}
 	}
 
-	private def createI18nData(id: Integer, f: Field, req: Request, params: mutable.Set[String]): Any = {
+	private def createI18nData(id: Integer, f: Field, ctx: Context, params: Set[String]): Any = {
 		implicit val cls: Class[_] = f.getDeclaredAnnotation(classOf[I18n]).genericClass()
 		val fields = Utils.getFieldsUpTo(cls, classOf[Object])
 		Settings.getSupportedLocales.foreach(l => {
@@ -355,7 +355,7 @@ object ObjectController {
 				if (fieldRefOpt.isDefined) {
 					val fieldRef = fieldRefOpt.get
 					fieldRef.setAccessible(true)
-					val value = req.queryParams(p).conform(fieldRef)
+					val value = ctx.queryParam(p).conform(fieldRef)
 					if (value != null) {
 						fieldRef.set(i18nData, value)
 					}

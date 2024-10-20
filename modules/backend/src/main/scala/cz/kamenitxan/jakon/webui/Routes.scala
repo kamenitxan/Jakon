@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.webui
 
 import com.google.gson.{Gson, GsonBuilder}
+import cz.kamenitxan.jakon.JakonInit
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonUser
@@ -11,11 +12,11 @@ import cz.kamenitxan.jakon.webui.api.Api
 import cz.kamenitxan.jakon.webui.controller.impl.{Authentication, FileManagerController, ObjectController, UserController}
 import cz.kamenitxan.jakon.webui.controller.{AbstractController, ExecuteFun}
 import cz.kamenitxan.jakon.webui.util.AdminExceptionHandler
-import spark.Spark.*
-import spark.http.matching.Configuration
-import spark.route.HttpMethod
-import spark.{Filter, Request, Response, ResponseTransformer}
+import io.javalin.apibuilder.ApiBuilder
+import io.javalin.http.{Context, Handler, HttpStatus}
+import io.javalin.apibuilder.ApiBuilder.*
 
+import scala.jdk.CollectionConverters.*
 import java.time.{LocalDateTime, ZonedDateTime}
 
 
@@ -24,6 +25,7 @@ import java.time.{LocalDateTime, ZonedDateTime}
  */
 object Routes {
 	val AdminPrefix = "/admin"
+	private val te = Settings.getAdminEngine
 
 	def init(): Unit = {
 		if (Settings.isInitRoutes) {
@@ -31,8 +33,12 @@ object Routes {
 		}
 	}
 
+	private def render(ctx: Context, modelAndView: ModelAndView): String = {
+		te.render(modelAndView.getViewName, modelAndView.getModel.asInstanceOf[java. util. Map[String, ?]], ctx)
+	}
+
 	private def initRoutes(): Unit = {
-		val te = Settings.getAdminEngine
+
 		val gson = new GsonBuilder()
 			.registerTypeAdapter(classOf[Option[Any]], new GsonOptionSerializer[Any])
 			.registerTypeAdapter(classOf[Seq[Any]], new GsonSeqSerializer[Any])
@@ -41,88 +47,197 @@ object Routes {
 			.registerTypeAdapter(classOf[ZonedDateTime], new GsonZonedDateTimeSerializer)
 			.registerTypeAdapter(classOf[LocalDateTime], new GsonLocalDateTimeSerializer)
 			.create()
-		val gsonTransformer: ResponseTransformer = (model: Any) => gson.toJson(model)
+		//val gsonTransformer: ResponseTransformer = (model: Any) => gson.toJson(model)
 
-		before("*", new Filter {
-			override def handle(request: Request, response: Response): Unit = {
+		JakonInit.javalin.before("*", new Handler {
+			override def handle(ctx: Context): Unit = {
 				// also prepares page context
-				if (!request.pathInfo.startsWith("/jakon/")) {
-					Logger.debug("Processing req: " + request.pathInfo)
+				if (!ctx.path().startsWith("/jakon/")) {
+					Logger.debug("Processing req: " + ctx.path())
 				}
 			}
 		})
-		before(AdminPrefix, new Filter {
-			override def handle(request: Request, response: Response): Unit = {
-				val user: JakonUser = request.session.attribute("user")
+		JakonInit.javalin.before(AdminPrefix, new Handler {
+			override def handle(ctx: Context): Unit = {
+				val user: JakonUser =  ctx.sessionAttribute("user") // request.session.attribute("user")
 				if ((Settings.getDeployMode ne DeployMode.DEVEL)
 				  && user != null
 				  && (user.acl.adminAllowed || user.acl.masterAdmin)) {
-					response.redirect(s"$AdminPrefix/index", 302)
+					ctx.redirect(s"$AdminPrefix/index", HttpStatus.FOUND)
 				}
 			}
 		})
 
-		before(s"$AdminPrefix/*", new Filter {
-			override def handle(req: Request, res: Response): Unit = {
-				if (req.pathInfo != s"$AdminPrefix/register"
-				  && req.pathInfo != s"$AdminPrefix/logout"
-				  && req.pathInfo != s"$AdminPrefix/login"
-				  && req.pathInfo != s"$AdminPrefix/resetPassword"
-				  && !req.pathInfo.startsWith(s"$AdminPrefix/login/oauth")) {
-					var user: JakonUser = req.session.attribute("user")
+		JakonInit.javalin.before(s"$AdminPrefix/*", new Handler {
+			override def handle(ctx: Context): Unit = {
+				if (ctx.path() != s"$AdminPrefix/register"
+				  && ctx.path() != s"$AdminPrefix/logout"
+				  && ctx.path() != s"$AdminPrefix/login"
+				  && ctx.path() != s"$AdminPrefix/resetPassword"
+				  && !ctx.path().startsWith(s"$AdminPrefix/login/oauth")) {
+					var user: JakonUser = ctx.sessionAttribute("user")
 					if ((Settings.getDeployMode eq DeployMode.DEVEL) && user == null) {
 						DBHelper.withDbConnection(implicit conn => {
 							user = UserService.getMasterAdmin()
-							req.session(true).attribute("user", user)
+							ctx.sessionAttribute("user", user)
 						})
 					}
 					if (user == null || !user.acl.adminAllowed && !user.acl.masterAdmin) {
-						res.redirect(AdminPrefix, 302)
+						ctx.redirect(AdminPrefix, HttpStatus.FOUND)
 					}
 				}
 			}
 		})
 
 
-		get(AdminPrefix, (req: Request, _: Response) => Authentication.loginGet(req), te)
-		post(AdminPrefix, (req: Request, res: Response) => Authentication.loginPost(req, res), te)
+		JakonInit.javalin.get(AdminPrefix, new Handler {
+			override def handle(ctx: Context): Unit = {
+				val res = render(ctx, Authentication.loginGet(ctx))
+				ctx.result(res)
+			}
+		})
+		JakonInit.javalin.post(AdminPrefix, new Handler {
+			override def handle(ctx: Context): Unit = {
+				val res = render(ctx, Authentication.loginPost(ctx))
+				ctx.result(res)
+			}
+		})
 
-		path(s"$AdminPrefix", () => {
+		ApiBuilder.path(s"$AdminPrefix", () => {
 			if (Settings.getDeployMode == DeployMode.PRODUCTION) {
-				exception(classOf[Exception], new AdminExceptionHandler)
+				JakonInit.javalin.exception(classOf[Exception], new AdminExceptionHandler)
 			}
 
-			get("/index", (request: Request, response: Response) => AdminSettings.dashboardController.apply(request, response), te)
-			get("/logout", (req: Request, res: Response) => Authentication.logoutPost(req, res), te)
-			get("/profile", (req: Request, res: Response) => UserController.render(req, res), te)
-			post("/profile", (req: Request, res: Response) => UserController.update(req, res), te)
-			get("/object/:name", (req: Request, res: Response) => ObjectController.getList(req, res), te)
-			get("/object/create/:name", (req: Request, res: Response) => ObjectController.getItem(req, res), te)
-			post("/object/create/:name", (req: Request, res: Response) => ObjectController.updateItem(req, res), te)
-			get("/object/delete/:name/:id", (req: Request, res: Response) => ObjectController.deleteItem(req, res), te)
-			get("/object/moveUp/:name/:id", (req: Request, res: Response) => ObjectController.moveInList(req, res, up = true), te)
-			get("/object/moveDown/:name/:id", (req: Request, res: Response) => ObjectController.moveInList(req, res, up = false), te)
-			get("/object/:name/:id", (req: Request, res: Response) => ObjectController.getItem(req, res), te)
-			post("/object/:name/:id", (req: Request, res: Response) => ObjectController.updateItem(req, res), te)
+			get("/index", new Handler {
+				override def handle(ctx: Context): Unit = {
+					val res = render(ctx, AdminSettings.dashboardController.apply(ctx))
+					ctx.result(res)
+				}
+			})
+			get("/logout", new Handler {
+				override def handle(ctx: Context): Unit = {
+					val res = render(ctx, Authentication.logoutPost(ctx))
+					ctx.result(res)
+				}
+			})
+			get("/profile", new Handler {
+				override def handle(ctx: Context): Unit = {
+					val res = render(ctx, UserController.render(ctx))
+					ctx.result(res)
+				}
+			})
+			post("/profile", new Handler {
+				override def handle(ctx: Context): Unit = {
+					val res = render(ctx, UserController.update(ctx))
+					ctx.result(res)
+				}
+			})
+			get("/object/:name", new Handler {
+				override def handle(ctx: Context): Unit = {
+					val res = render(ctx, ObjectController.getList(ctx))
+					ctx.result(res)
+				}
+			})
+			get("/object/create/:name", new Handler {
+				override def handle(ctx: Context): Unit = {
+					val res = render(ctx, ObjectController.getItem(ctx))
+					ctx.result(res)
+				}
+			})
+			post("/object/create/:name", new Handler {
+				override def handle(ctx: Context): Unit = {
+					val res = render(ctx, ObjectController.updateItem(ctx))
+					ctx.result(res)
+				}
+			})
+			get("/object/delete/:name/:id", new Handler {
+				override def handle(ctx: Context): Unit = {
+					val res = render(ctx, ObjectController.deleteItem(ctx))
+					ctx.result(res)
+				}
+			})
+			get("/object/moveUp/:name/:id", new Handler {
+				override def handle(ctx: Context): Unit = {
+					val res = render(ctx, ObjectController.moveInList(ctx, up = true))
+					ctx.result(res)
+				}
+			})
+			get("/object/moveDown/:name/:id", new Handler {
+				override def handle(ctx: Context): Unit = {
+					val res = render(ctx, ObjectController.moveInList(ctx, up = false))
+					ctx.result(res)
+				}
+			})
+			get("/object/:name/:id", new Handler {
+				override def handle(ctx: Context): Unit = {
+					val res = render(ctx, ObjectController.getItem(ctx))
+					ctx.result(res)
+				}
+			})
+			post("/object/:name/:id", new Handler {
+				override def handle(ctx: Context): Unit = {
+					val res = render(ctx, ObjectController.updateItem(ctx))
+					ctx.result(res)
+				}
+			})
 		})
+
 		if (AdminSettings.enableFiles) {
 			path(s"$AdminPrefix/files", () => {
-				get("/", (req: Request, res: Response) => FileManagerController.getManager(req, res), te)
-				get("/frame", (req: Request, res: Response) => FileManagerController.getManagerFrame(req, res), te)
-				get("/:method", FileManagerController.executeGet)
-				post("/:method", FileManagerController.executePost)
+				get("/", new Handler {
+					override def handle(ctx: Context): Unit = {
+						val res = render(ctx, FileManagerController.getManager(ctx))
+						ctx.result(res)
+					}
+				})
+				get("/frame", new Handler {
+					override def handle(ctx: Context): Unit = {
+						val res = render(ctx, FileManagerController.getManagerFrame(ctx))
+						ctx.result(res)
+					}
+				})
+				get("/:method", new Handler {
+					override def handle(ctx: Context): Unit = {
+						FileManagerController.executeGet(ctx)
+					}
+				})
+				post("/:method", new Handler {
+					override def handle(ctx: Context): Unit = {
+						FileManagerController.executePost(ctx)
+					}
+				})
 			})
 		}
 
-		path(s"$AdminPrefix/api", () => {
-			post("/search", (req: Request, res: Response) => Api.search(req, res), gsonTransformer)
-			post("/files", (req: Request, _: Response) => Api.getFiles(req, Option.empty), gsonTransformer)
-			post("/images", (req: Request, res: Response) => Api.getImages(req, res), gsonTransformer)
+		ApiBuilder.path(s"$AdminPrefix/api", () => {
+			post("/search", new Handler {
+				override def handle(ctx: Context): Unit = {
+					val res = gson.toJson(Api.search(ctx))
+					ctx.result(res)
+				}
+			})
+			post("/files", new Handler {
+				override def handle(ctx: Context): Unit = {
+					val res = gson.toJson(Api.getFiles(ctx, Option.empty))
+					ctx.result(res)
+				}
+			})
+			post("/images", new Handler {
+				override def handle(ctx: Context): Unit = {
+					val res = gson.toJson(Api.getImages(ctx))
+					ctx.result(res)
+				}
+			})
 		})
 		AdminSettings.customControllers.foreach((c: Class[_ <: AbstractController]) => {
 			try {
 				val instance = c.getDeclaredConstructor().newInstance()
-				get(s"$AdminPrefix/" + instance.path(), (req: Request, res: Response) => instance.doRender(req, res), te)
+				get(s"$AdminPrefix/" + instance.path(), new Handler {
+					override def handle(ctx: Context): Unit = {
+						val res = render(ctx, instance.doRender(ctx))
+						ctx.result(res)
+					}
+				})
 				val methods = c.getDeclaredMethods
 				for (m <- methods) {
 					val an = m.getAnnotation(classOf[ExecuteFun])
@@ -130,9 +245,19 @@ object Routes {
 						if (!m.isAccessible) m.setAccessible(true)
 						an.method match {
 							case x if x == HttpMethod.get =>
-								get(s"$AdminPrefix/" + an.path, (req: Request, res: Response) => m.invoke(instance, req, res).asInstanceOf[Context], te)
+								get(s"$AdminPrefix/" + an.path, new Handler {
+									override def handle(ctx: Context): Unit = {
+										val res = render(ctx, m.invoke(instance, ctx).asInstanceOf[cz.kamenitxan.jakon.webui.Context])
+										ctx.result(res)
+									}
+								})
 							case HttpMethod.post =>
-								post(s"$AdminPrefix/" + an.path, (req: Request, _: Response) => m.invoke(instance, req, req).asInstanceOf[Context], te)
+								post(s"$AdminPrefix/" + an.path, new Handler {
+									override def handle(ctx: Context): Unit = {
+										val res = render(ctx,  m.invoke(instance, ctx).asInstanceOf[cz.kamenitxan.jakon.webui.Context])
+										ctx.result(res)
+									}
+								})
 							case default => throw new UnsupportedOperationException(default.toString + " is not supported")
 						}
 					}
@@ -143,11 +268,14 @@ object Routes {
 					Logger.error("Failed to register custom controller", e)
 			}
 		})
-		get(s"$AdminPrefix/*", (req: Request, res: Response) => {
-			Logger.warn("Unknown page requested - " + req.url)
-			res.status(404)
-			new Context(null, "errors/404")
-		}, te)
+		get(s"$AdminPrefix/*", new Handler {
+			override def handle(ctx: Context): Unit = {
+				Logger.warn("Unknown page requested - " + ctx.url())
+				ctx.status(404)
+				val res = render(ctx,new cz.kamenitxan.jakon.webui.Context(null, "errors/404"))
+				ctx.result(res)
+			}
+		})
 	}
 
 }

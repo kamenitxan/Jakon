@@ -5,7 +5,7 @@ import cz.kamenitxan.jakon.core.dynamic.{Get, Pagelet, Post}
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
-import spark._
+import io.javalin.http.Context
 
 import scala.collection.mutable
 
@@ -17,12 +17,12 @@ class DbConsolePagelet extends AbstractAdminPagelet {
 	override val name: String = this.getClass.getSimpleName
 
 	@Get(path = "",template = "pagelet/db_console/db_console")
-	def registrationGet(response: Response): Unit = {
+	def registrationGet(): Unit = {
 		// just render
 	}
 
 	@Post(path = "", template = "")
-	def registrationPost(req: Request, res: Response, data: DbConsoleData): mutable.Map[String, Any] = {
+	def registrationPost(ctx: Context, data: DbConsoleData): mutable.Map[String, Any] = {
 		try {
 			DBHelper.withDbConnection(implicit conn => {
 				val stmt = conn.createStatement()
@@ -35,7 +35,8 @@ class DbConsolePagelet extends AbstractAdminPagelet {
 				PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "SQL_EXECUTION_FAILED", Seq(ex.getMessage))
 		}
 
-		redirect(req, res, "/admin/dbconsole")
+		redirect(ctx, "/admin/dbconsole")
+		null
 	}
 }
 

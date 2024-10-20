@@ -13,9 +13,8 @@ import cz.kamenitxan.jakon.utils.{LoggingExceptionHandler, PageContext}
 import cz.kamenitxan.jakon.webui.controller.impl.{DeployController, FileManagerController}
 import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, ResetPasswordEmailEntity}
 import cz.kamenitxan.jakon.webui.{AdminSettings, Routes}
-import spark.Spark.*
-import spark.http.matching.Configuration
-import spark.{Filter, Request, Response}
+import io.javalin.Javalin
+import io.javalin.http.{Context, Handler, HttpStatus}
 
 import java.io.File
 import java.nio.file.{Files, Paths}
@@ -71,11 +70,16 @@ class JakonInit {
 		val annotationScanner = new AnnotationScanner
 		annotationScanner.loadConfiguration()
 
-		Configuration.setDefaultcontentype("text/html; charset=utf-8")
-		staticFiles.externalLocation(Settings.getStaticDir)
-		staticFiles.location("/static")
 		val portNumber: Int = arguments.find(a => a._1 == "port").map(a => a._2.toInt).getOrElse(Settings.getPort)
-		port(portNumber)
+
+		val app = Javalin.create(config => {
+			config.jetty.defaultPort = portNumber
+			// config.useVirtualThreads = true TODO: config
+			config.http.defaultContentType = "text/html; charset=utf-8"
+			config.staticFiles.add(Settings.getStaticDir)
+			config.staticFiles.add("/static")
+		})
+		JakonInit.javalin = app
 
 		Logger.info("Starting in " + Settings.getDeployMode + " mode")
 
@@ -85,37 +89,46 @@ class JakonInit {
 
 		if (Settings.isInitRoutes) {
 			websocketSetup()
-			before(new Filter {
-				override def handle(req: Request, res: Response): Unit = PageContext.init(req, res)
+			app.before((ctx: Context) => {
+				PageContext.init(ctx)
 			})
-			afterAfter((_: Request, _: Response) => PageContext.destroy())
+			app.after((ctx: Context) => PageContext.destroy())
 			if (Settings.getDeployMode != DeployMode.PRODUCTION) {
-				before((request: Request, _: Response) => {
-					DevRender.rerender(request.pathInfo())
+				app.before((ctx: Context) => {
+					DevRender.rerender(ctx.path())
 				})
-				exception(classOf[Exception], new LoggingExceptionHandler)
+				app.exception(classOf[Exception], new LoggingExceptionHandler)
 
-				get("/upload/*", (req: Request, res: Response) => new UploadFilesController().doGet(req, res))
+				app.get("/upload/*", new Handler {
+					override def handle(ctx: Context): Unit = {
+						val res = new UploadFilesController().doGet(ctx)
+						ctx.result(res)
+					}
+				})
 
-				notFound((req: Request, res: Response) => new StaticFilesController().doGet(req, res))
+				/*app.error(404, new Handler { // TODO
+					override def handle(ctx: Context): Unit = {
+						val res = new StaticFilesController().doGet(ctx)
+						ctx.result(res)
+					}
+				})*/
 			}
 			routesSetup()
 			if (Settings.getDeployMode != DeployMode.DEVEL) {
 				PageletInitializer.protectedPrefixes.filter(_ != Routes.AdminPrefix).foreach(pp => {
-					before(pp + "*", new Filter {
+					app.before(pp + "*", (ctx: Context) => {
 						Logger.debug(s"Adding protected prefix '$pp*'")
 
-						override def handle(req: Request, res: Response): Unit = {
-							val user: JakonUser = req.session.attribute("user")
-							if (user == null || (!user.acl.adminAllowed && !user.acl.allowedFrontendPrefixes.contains(pp))) {
-								Logger.debug(s"User $user denied access to '$pp*'")
-								if (req.pathInfo().startsWith(Routes.AdminPrefix)) {
-									res.redirect(Routes.AdminPrefix + s"?redirectTo=${req.pathInfo()}", 302)
-								} else {
-									res.redirect(Settings.getLoginPath + s"?redirectTo=${req.pathInfo()}", 302)
-								}
+						val user: JakonUser = ctx.sessionAttribute("user")
+						if (user == null || (!user.acl.adminAllowed && !user.acl.allowedFrontendPrefixes.contains(pp))) {
+							Logger.debug(s"User $user denied access to '$pp*'")
+							if (ctx.path().startsWith(Routes.AdminPrefix)) {
+								ctx.redirect(Routes.AdminPrefix + s"?redirectTo=${ctx.path()}", HttpStatus.FOUND)
+							} else {
+								ctx.redirect(Settings.getLoginPath + s"?redirectTo=${ctx.path()}", HttpStatus.FOUND)
 							}
 						}
+
 					})
 				})
 			}
@@ -127,4 +140,7 @@ class JakonInit {
 		Director.start()
 		afterInit()
 	}
+}
+object JakonInit {
+	var javalin: Javalin = _
 }

@@ -6,7 +6,7 @@ import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{FileType, JakonFile, JakonObject}
 import cz.kamenitxan.jakon.webui.api.objects.{GetFilesRequest, GetFilesResponse, SearchRequest, SearchResponse}
 import cz.kamenitxan.jakon.webui.controller.impl.FileManagerController
-import spark.{Request, Response}
+import io.javalin.http.Context
 
 import java.sql.Connection
 import scala.language.postfixOps
@@ -18,8 +18,8 @@ import scala.language.postfixOps
 object Api {
 	val gson = new Gson()
 
-	def search(req: Request, res: Response): SearchResponse = {
-		val jsonReq = gson.fromJson(req.body(), classOf[SearchRequest])
+	def search(ctx: Context): SearchResponse = {
+		val jsonReq = gson.fromJson(ctx.body(), classOf[SearchRequest])
 		val objectClass = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(jsonReq.objectName)).head
 
 		implicit val conn: Connection = DBHelper.getConnection
@@ -52,8 +52,8 @@ object Api {
 	}
 
 
-	def getFiles(req: Request, fileType: Option[FileType]): GetFilesResponse = {
-		val jsonReq = gson.fromJson(req.body(), classOf[GetFilesRequest])
+	def getFiles(ctx: Context, fileType: Option[FileType]): GetFilesResponse = {
+		val jsonReq = gson.fromJson(ctx.body(), classOf[GetFilesRequest])
 
 		val path = Option.apply(jsonReq.path)
 			.getOrElse(FileManagerController.REPOSITORY_BASE_PATH)
@@ -77,7 +77,7 @@ object Api {
 		new GetFilesResponse(true, files)
 	}
 
-	def getImages(req: Request, res: Response): GetFilesResponse = {
-		getFiles(req, Option.apply(FileType.IMAGE))
+	def getImages(ctx: Context): GetFilesResponse = {
+		getFiles(ctx, Option.apply(FileType.IMAGE))
 	}
 }
