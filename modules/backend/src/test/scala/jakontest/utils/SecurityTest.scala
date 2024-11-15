@@ -9,14 +9,18 @@ import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import io.javalin.http.Context
 import io.javalin.http.servlet.JavalinServletContext
 import jakontest.test.TestBase
+import org.scalamock.scalatest.MockFactory
 import org.scalatest.DoNotDiscover
 
 import java.sql.Connection
 
 @DoNotDiscover
-class SecurityTest extends TestBase {
+class SecurityTest extends TestBase with MockFactory {
 
-	class TestOauthProvider(email: String) extends OauthProvider {
+	//val fakeReq: Context = mock[Context]
+	val fakeReq: Context = null
+
+	class TestOauthProvider(email: String) extends OauthProvider  {
 		override val isEnabled: Boolean = true
 
 		override def authInfo(ctx: Context, redirectTo: String): OauthInfo = OauthInfo("test", createAuthUrl(ctx, redirectTo))
@@ -24,13 +28,6 @@ class SecurityTest extends TestBase {
 		override def handleAuthResponse(ctx: Context)(implicit conn: Connection): Boolean = {
 			logIn(ctx, email)
 		}
-	}
-
-	def fakeReq: Context = {
-		val req = new JavalinServletContext(null, null, false, null, null, null, null, null, null, null, null, null, null, null, 1500)
-
-		//req.session(true)
-		req
 	}
 
 	test("encrypt&decrypt") { _ =>

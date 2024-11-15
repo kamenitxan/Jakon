@@ -72,7 +72,7 @@ object EntityValidator {
 					Source.fromInputStream(is).mkString
 				} else {
 					val paramName = Option.apply(f.getDeclaredAnnotation(classOf[Name])).map(_.name()).getOrElse(f.getName)
-					ctx.queryParam(paramName)
+					ctx.formParam(paramName)
 				}
 
 				res = (f, value)

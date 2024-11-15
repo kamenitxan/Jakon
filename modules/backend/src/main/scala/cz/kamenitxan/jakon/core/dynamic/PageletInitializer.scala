@@ -7,12 +7,11 @@ import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.utils.TypeReferences.*
 import cz.kamenitxan.jakon.validation.EntityValidator
+import cz.kamenitxan.jakon.webui.AdminSettings
 import cz.kamenitxan.jakon.webui.conform.FieldConformer.*
 import cz.kamenitxan.jakon.webui.controller.pagelets.AbstractAdminPagelet
 import cz.kamenitxan.jakon.webui.entity.CustomControllerInfo
-import cz.kamenitxan.jakon.webui.AdminSettings
 import io.javalin.http.{Context, Handler}
-import jakarta.servlet.MultipartConfigElement
 
 import java.lang.reflect.Method
 import java.sql.Connection
@@ -131,16 +130,18 @@ object PageletInitializer {
 									pagelet.redirect(ctx, path, rp)
 								}
 							case Right(_) =>
-								if ("true".equals(ctx.queryParam(METHOD_VALDIATE))) {
+								val result = if ("true".equals(ctx.queryParam(METHOD_VALDIATE))) {
 									gson.toJson(true)
 								} else {
 									val methodArgs = createMethodArgs(m, ctx, conn, pagelet)
 									invokePost(ctx, pagelet, m, post, methodArgs)
 								}
+								ctx.result(result)
 						}
 					} else {
 						val methodArgs = createMethodArgs(m, ctx, conn, pagelet)
-						invokePost(ctx, pagelet, m, post, methodArgs)
+						val result = invokePost(ctx, pagelet, m, post, methodArgs)
+						ctx.result(result)
 					}
 				})
 			}
@@ -158,11 +159,11 @@ object PageletInitializer {
 		}
 	}
 
-	private def invokePost(ctx: Context, controller: IPagelet, m: Method, post: Post, methodArgs: MethodArgs) = {
+	private def invokePost(ctx: Context, controller: IPagelet, m: Method, post: Post, methodArgs: MethodArgs): String = {
 		if (notRedirected(ctx)) {
 			m.getReturnType match {
 				case STRING =>
-					m.invoke(controller, methodArgs.array: _*)
+					m.invoke(controller, methodArgs.array: _*).asInstanceOf[String]
 				case _ =>
 					try {
 						val context = m.invoke(controller, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]

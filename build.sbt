@@ -71,6 +71,7 @@ val Dependencies = new {
 		libraryDependencies ++= Seq(
 			//"dev.zio" %% "zio-http" % "3.0.0-RC2",
 			"org.scalatest" %% "scalatest" % "3.2.19" % "test",
+			"org.scalamock" %% "scalamock" % "6.0.0" % Test,
 			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.23.0" % "test"
 		)
 	)

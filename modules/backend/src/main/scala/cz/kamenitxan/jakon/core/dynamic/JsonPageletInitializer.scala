@@ -79,14 +79,14 @@ object JsonPageletInitializer {
 	}
 
 	private def initPostAnnotation(post: Post, controllerAnn: JsonPagelet, m: Method, c: Class[_]): Unit = {
-		JakonInit.javalin.get(controllerAnn.path() + post.path(), new Handler {
+		JakonInit.javalin.post(controllerAnn.path() + post.path(), new Handler {
 			override def handle(ctx: Context): Unit = {
 				ctx.contentType(JsonContentType)
 				val controller = c.getDeclaredConstructor().newInstance().asInstanceOf[AbstractJsonPagelet]
 				var methodArgs: (PageletInitializer.MethodArgs, Option[Connection]) = null
 				try {
 					val dataClass = PageletInitializer.getDataClass(m)
-					if (post.validate() && dataClass.isDefined) {
+					val response = if (post.validate() && dataClass.isDefined) {
 						val jsonData = controller.parseRequestData(ctx, dataClass.get)
 						EntityValidator.validateJson(dataClass.get.getSimpleName, jsonData) match {
 							case Left(result) =>
@@ -112,10 +112,12 @@ object JsonPageletInitializer {
 						val responseData = m.invoke(controller, methodArgsArray: _*)
 						createResponse(responseData, controller)
 					}
+					ctx.result(response)
 				} catch {
 					case ex: Exception =>
 						Logger.error(s"${controller.getClass.getCanonicalName}.${m.getName}() threw exception", ex)
-						createErrorResponse(ex, ctx, controller)
+						val response = createErrorResponse(ex, ctx, controller)
+						ctx.result(response)
 				} finally {
 					if (methodArgs != null && methodArgs._2.isDefined) {
 						methodArgs._2.get.close()
