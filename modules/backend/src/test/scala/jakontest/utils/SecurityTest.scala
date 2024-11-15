@@ -7,7 +7,6 @@ import cz.kamenitxan.jakon.utils.security.oauth.Google.createAuthUrl
 import cz.kamenitxan.jakon.utils.security.oauth.{OauthInfo, OauthProvider}
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import io.javalin.http.Context
-import io.javalin.http.servlet.JavalinServletContext
 import jakontest.test.TestBase
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.DoNotDiscover
@@ -17,8 +16,8 @@ import java.sql.Connection
 @DoNotDiscover
 class SecurityTest extends TestBase with MockFactory {
 
-	//val fakeReq: Context = mock[Context]
-	val fakeReq: Context = null
+	val fakeReq: Context = ScalalinServletContext()
+
 
 	class TestOauthProvider(email: String) extends OauthProvider  {
 		override val isEnabled: Boolean = true
