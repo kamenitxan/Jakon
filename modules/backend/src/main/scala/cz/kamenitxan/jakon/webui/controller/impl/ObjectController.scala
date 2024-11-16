@@ -296,25 +296,24 @@ object ObjectController {
 		if (!objectClass.getInterfaces.contains(classOf[Ordered])) {
 			PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "OBJECT_NOT_ORDERED")
 			redirect(ctx, ObjectPath + objectName)
+		} else {
+			val newOrder = if (up) order.get - 1 else order.get + 1
+
+			implicit val conn: Connection = DBHelper.getConnection
+			try {
+
+				val ps = conn.prepareStatement("SELECT * FROM " + objectName + " WHERE id = ?")
+				ps.setInt(1, objectId.get)
+				val obj = DBHelper.selectSingleDeep(ps).asInstanceOf[JakonObject with Ordered]
+				obj.updateOrder(newOrder)
+				obj.update()
+			} finally {
+				conn.close()
+			}
+
+			ctx.redirect(ObjectPath + objectName)
+			new cz.kamenitxan.jakon.webui.Context(Map[String, Any](), ListTmpl)
 		}
-
-
-		val newOrder = if (up) order.get - 1 else order.get + 1
-
-		implicit val conn: Connection = DBHelper.getConnection
-		try {
-
-			val ps = conn.prepareStatement("SELECT * FROM " + objectName + " WHERE id = ?")
-			ps.setInt(1, objectId.get)
-			val obj = DBHelper.selectSingleDeep(ps).asInstanceOf[JakonObject with Ordered]
-			obj.updateOrder(newOrder)
-			obj.update()
-		} finally {
-			conn.close()
-		}
-
-		ctx.redirect(ObjectPath + objectName)
-		new cz.kamenitxan.jakon.webui.Context(Map[String, Any](), ListTmpl)
 	}
 
 	private def redirect(ctx: Context, target: String): cz.kamenitxan.jakon.webui.Context = {

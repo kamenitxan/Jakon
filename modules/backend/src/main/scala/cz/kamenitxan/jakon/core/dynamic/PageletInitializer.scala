@@ -167,7 +167,12 @@ object PageletInitializer {
 				case _ =>
 					try {
 						val context = m.invoke(controller, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
-						controller.render(context, post.template(), ctx)
+						if (notRedirected(ctx)) {
+							controller.render(context, post.template(), ctx)
+
+						} else {
+							""
+						}
 					} catch {
 						case ex: Exception =>
 							Logger.error(s"${controller.getClass.getCanonicalName}.${m.getName}() threw exception", ex)
@@ -204,8 +209,8 @@ object PageletInitializer {
 				Logger.debug(s"Creating pagelet data: {${t.getSimpleName}}")
 				t.getDeclaredFields.foreach(f => {
 					try {
-						if (!ctx.queryParams(f.getName).isEmpty) {
-							val value = ctx.queryParams(f.getName).asScala.mkString("\r\n")
+						if (ctx.formParam(f.getName).nonEmpty) {
+							val value = ctx.formParam(f.getName)
 							f.setAccessible(true)
 							f.set(data, value.conform(f))
 						}

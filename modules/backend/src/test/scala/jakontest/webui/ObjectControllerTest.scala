@@ -14,7 +14,8 @@ import scala.jdk.CollectionConverters.*
 class ObjectControllerTest extends TestBase {
 
 	private def checkPageLoad(driver: WebDriver) = {
-		driver.findElements(By.cssSelector(".navbar-brand")).get(0) != null
+		val els = driver.findElements(By.cssSelector(".navbar-brand"))
+		!els.isEmpty && els.get(0) != null
 	}
 
 	test("resetPassword") { f =>
