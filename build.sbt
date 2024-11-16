@@ -1,3 +1,4 @@
+import sbt.Tests.{Group, SubProcess}
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val V = new {
@@ -102,6 +103,9 @@ lazy val backend = (project in file("modules/backend"))
 	.settings(
 		name := "jakon",
 		Test / fork := true,
+		Test / testGrouping := (Test / definedTests).value.map { suite =>
+			Group(suite.name, Seq(suite), SubProcess(ForkOptions().withWorkingDirectory(new File("modules/backend"))))
+		},
 		ThisBuild / versionScheme := Some ("strict"),
 		publishTo := Some ("Nexus" at "https://nexus.kamenitxan.eu/repository/jakon/"),
 		credentials += Credentials(Path.userHome / ".sbt" / ".credentials"),
