@@ -2,12 +2,12 @@ package cz.kamenitxan.jakon.webui.controller.impl
 
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.utils.{PageContext, Utils}
-import cz.kamenitxan.jakon.webui.Context
+import cz.kamenitxan.jakon.webui.ModelAndView
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
-import cz.kamenitxan.jakon.webui.conform.FieldConformer._
-import spark.{ModelAndView, Request, Response}
+import cz.kamenitxan.jakon.webui.conform.FieldConformer.*
+import io.javalin.http.Context
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 import scala.language.postfixOps
 
 /**
@@ -17,29 +17,29 @@ object UserController {
 
 	private val excludedFields = ObjectController.excludedFields ++ Seq("acl")
 
-	def render(req: Request, res: Response): ModelAndView = {
+	def render(ctx: Context): ModelAndView = {
 		if (PageContext.getInstance().getLoggedUser.isEmpty) {
-			return new Context(Map[String, Any](
+			return new cz.kamenitxan.jakon.webui.Context(Map[String, Any](
 				"objectName" -> classOf[JakonUser].getSimpleName
 			), "pages/unauthorized")
 		}
 		val user = PageContext.getInstance().getLoggedUser.get
 		val fields = Utils.getFieldsUpTo(user.getClass, classOf[Object]).filter(n => !excludedFields.contains(n.getName))
 		val f = FieldConformer.getFieldInfos(user, fields).asJava
-		new Context(Map[String, Any](
+		new cz.kamenitxan.jakon.webui.Context(Map[String, Any](
 			"objectName" -> classOf[JakonUser].getSimpleName,
 			"object" -> user,
 			"id" -> user.id,
 			"fields" -> f), "pages/profile")
 	}
 
-	def update(req: Request, res: Response): ModelAndView = {
+	def update(ctx: Context): ModelAndView = {
 		if (PageContext.getInstance().getLoggedUser.isEmpty) {
-			return new Context(Map[String, Any](
+			return new cz.kamenitxan.jakon.webui.Context(Map[String, Any](
 				"objectName" -> classOf[JakonUser].getSimpleName
 			), "pages/unauthorized")
 		}
-		val params = req.queryParams() asScala
+		val params = ctx.queryParamMap().asScala
 		val user = PageContext.getInstance().getLoggedUser.get
 
 		for (p <- params.filter(p => !p.equals("id"))) {
@@ -48,7 +48,9 @@ object UserController {
 			if (fieldRefOpt.isDefined) {
 				val fieldRef = fieldRefOpt.get
 				fieldRef.setAccessible(true)
-				val value = req.queryParams(p).conform(fieldRef)
+				val pad = p
+				// val value = ctx.queryParam(p).conform(fieldRef) // TODO JAVALIN FIX
+				val value = "adsasda"
 				if (value != null) {
 					if (p.equals("password")) {
 						if (!value.asInstanceOf[String].startsWith("$2a$")) {
@@ -62,7 +64,7 @@ object UserController {
 		}
 
 		user.update()
-		res.redirect("/admin/profile")
-		new Context(Map[String, Any](), "pages/profile")
+		ctx.redirect("/admin/profile")
+		new cz.kamenitxan.jakon.webui.Context(Map[String, Any](), "pages/profile")
 	}
 }

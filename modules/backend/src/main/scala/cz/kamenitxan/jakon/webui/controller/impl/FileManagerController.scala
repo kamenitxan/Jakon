@@ -3,7 +3,6 @@ package cz.kamenitxan.jakon.webui.controller.impl
 import cz.kamenitxan.jakon.core.model.{FileType, JakonFile}
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.PageContext
-import cz.kamenitxan.jakon.webui.Context
 import cz.kamenitxan.jakon.webui.controller.AbstractController
 import cz.kamenitxan.jakon.webui.controller.impl.FileManagerController.getManager
 import cz.kamenitxan.jakon.webui.entity.FileManagerMode
@@ -13,8 +12,8 @@ import org.apache.commons.fileupload2.jakarta.JakartaServletFileUpload
 import org.apache.commons.fileupload2.jakarta.JakartaServletDiskFileUpload
 import org.apache.commons.io.FileUtils
 import org.apache.commons.lang3.SystemUtils
-import spark.{Request, Response}
-import com.google.gson.{JsonObject, JsonPrimitive, Gson, JsonParser, JsonArray}
+import com.google.gson.{Gson, JsonArray, JsonObject, JsonParser, JsonPrimitive}
+import io.javalin.http.Context
 
 import java.io.*
 import java.net.URI
@@ -29,6 +28,7 @@ import java.util.zip.{ZipEntry, ZipOutputStream}
 import jakarta.mail.internet.MimeUtility
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
+
 import scala.annotation.switch
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
@@ -65,7 +65,7 @@ import scala.jdk.CollectionConverters.*
 class FileManagerController extends AbstractController {
 	override val template: String = "objects/fileManager"
 
-	override def render(req: Request, res: Response): Context = getManager(req, res)
+	override def render(ctx: Context): cz.kamenitxan.jakon.webui.Context = getManager(ctx)
 
 	override def name(): String = "FILES"
 
@@ -85,17 +85,17 @@ object FileManagerController {
 
 	init()
 
-	def getManager(req: Request, res: Response): Context = {
-		new Context(Map[String, Any](), "objects/fileManager")
+	def getManager(ctx: Context): cz.kamenitxan.jakon.webui.Context = {
+		new cz.kamenitxan.jakon.webui.Context(Map[String, Any](), "objects/fileManager")
 	}
 
-	def getManagerFrame(req: Request, res: Response): Context = {
-		new Context(Map[String, Any](), "objects/fileManagerFrame")
+	def getManagerFrame(ctx: Context): cz.kamenitxan.jakon.webui.Context = {
+		new cz.kamenitxan.jakon.webui.Context(Map[String, Any](), "objects/fileManagerFrame")
 	}
 
-	def executeGet(req: Request, res: Response): Response = {
-		val request = req.raw()
-		val response = res.raw()
+	def executeGet(ctx: Context): Unit = {
+		val request = ctx.req()
+		val response = ctx.res()
 
 		val action = request.getParameter("action")
 		if ("download" == action) {
@@ -103,7 +103,7 @@ object FileManagerController {
 			val file = new File(REPOSITORY_BASE_PATH, path)
 			if (!file.isFile) { // if not a file, it is a folder, show this error.
 				response.sendError(HttpServletResponse.SC_NOT_FOUND, "Resource Not Found")
-				return res
+				return
 			}
 			response.setHeader("Content-Type", "application/force-download")
 			response.setHeader("Content-Disposition", "attachment; filename=\"" + MimeUtility.encodeWord(file.getName) + "\"")
@@ -175,26 +175,25 @@ object FileManagerController {
 			output.flush()
 		}
 
-		res
+		
 	}
 
-	def executePost(req: Request, res: Response): Response = {
+	def executePost(ctx: Context): Unit = {
 		try { // if request contains multipart-form-data
-			if (JakartaServletFileUpload.isMultipartContent(req.raw())) {
+			if (ctx.isMultipart) {
 				if (isSupportFeature(FileManagerMode.UPLOAD)) {
-					uploadFile(req.raw(), res.raw())
+					uploadFile(ctx.req(), ctx.res())
 				} else {
-					setError(new IllegalAccessError(notSupportFeature(FileManagerMode.UPLOAD).get("error").getAsString), res.raw())
+					setError(new IllegalAccessError(notSupportFeature(FileManagerMode.UPLOAD).get("error").getAsString), ctx.res())
 				}
 			} else { // all other post request has jspn params in body}
-				fileOperation(req.raw(), res.raw())
+				fileOperation(ctx.req(), ctx.res())
 			}
 		} catch {
 			case ex@(_: ServletException | _: IOException) =>
 				Logger.error(ex.getMessage, ex)
-				setError(ex, res.raw())
+				setError(ex, ctx.res())
 		}
-		res
 	}
 
 	def init(): Unit = {

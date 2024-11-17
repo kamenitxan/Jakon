@@ -4,8 +4,8 @@ import cz.kamenitxan.jakon.core.model.FileType
 
 import java.io.{File, FileInputStream}
 import cz.kamenitxan.jakon.webui.controller.impl.FileManagerController
+import io.javalin.http.Context
 import org.apache.commons.io.IOUtils
-import spark.{Request, Response}
 
 import scala.language.postfixOps
 
@@ -15,24 +15,24 @@ import scala.language.postfixOps
   */
 class UploadFilesController  {
 
-	def doGet(req: Request, res: Response): String = {
-		val fileName = req.pathInfo().replace("/upload", FileManagerController.REPOSITORY_BASE_PATH + "/basePath")
+	def doGet(ctx: Context): String = {
+		val fileName = ctx.path().replace("/upload", FileManagerController.REPOSITORY_BASE_PATH + "/basePath")
 		val file = new File(fileName)
 		if (file.exists()) {
-			res.status(200)
+			ctx.status(200)
 
 			FileManagerController.getFileType(file.toPath) match {
-				case FileType.FILE => res.header("Content-Type", "text/html")
+				case FileType.FILE => ctx.header("Content-Type", "text/html")
 			}
 
-			val os = res.raw().getOutputStream
+			val os = ctx.res().getOutputStream
 			val is = new FileInputStream(file)
 
 			IOUtils.copy(is, os)
 			os.close()
 			is.close()
-			res.header("Content-Length", file.length().toString)
+			ctx.header("Content-Length", file.length().toString)
 		}
-		res.body()
+		ctx.body()
 	}
 }

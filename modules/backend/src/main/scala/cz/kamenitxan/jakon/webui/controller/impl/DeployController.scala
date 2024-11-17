@@ -3,12 +3,11 @@ package cz.kamenitxan.jakon.webui.controller.impl
 import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.deploy.DeployDirector
-import cz.kamenitxan.jakon.webui.Context
+import cz.kamenitxan.jakon.webui.HttpMethod
 import cz.kamenitxan.jakon.webui.controller.{AbstractController, ExecuteFun}
-import spark.route.HttpMethod
-import spark.{Request, Response}
+import io.javalin.http.Context
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 
 class DeployController extends AbstractController {
@@ -16,21 +15,21 @@ class DeployController extends AbstractController {
 	override val icon: String = "fa-server"
 
 	@ExecuteFun(path = "deploy/start", method = HttpMethod.get)
-	def deploy(req: Request, res: Response): Context = {
+	def deploy(ctx: Context): cz.kamenitxan.jakon.webui.Context = {
 		DeployDirector.deploy()
-		res.redirect("/admin/deploy")
-		new Context(Map[String, Any](), template)
+		ctx.redirect("/admin/deploy")
+		new cz.kamenitxan.jakon.webui.Context(Map[String, Any](), template)
 	}
 
 	@ExecuteFun(path = "deploy/generate", method = HttpMethod.get)
-	def generate(req: Request, res: Response): Context = {
+	def generate(ctx: Context): cz.kamenitxan.jakon.webui.Context = {
 		Director.render()
-		res.redirect("/admin/deploy")
-		new Context(Map[String, Any](), template)
+		ctx.redirect("/admin/deploy")
+		new cz.kamenitxan.jakon.webui.Context(Map[String, Any](), template)
 	}
 
-	override def render(req: Request, res: Response): Context = {
-		new Context(Map[String, Any](
+	override def render(ctx: Context): cz.kamenitxan.jakon.webui.Context = {
+		new cz.kamenitxan.jakon.webui.Context(Map[String, Any](
 			"deployMode" -> Settings.getDeployMode,
 			"deployType" -> Settings.getDeployType,
 			"servers" -> DeployDirector.servers.asJava

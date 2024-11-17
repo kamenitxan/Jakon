@@ -1,11 +1,12 @@
 package jakontest.webui
 
-import java.io.DataOutputStream
-import java.net.{HttpURLConnection, URL}
+import cz.kamenitxan.jakon.JakonInit
 import cz.kamenitxan.jakon.core.configuration.Settings
 import org.scalatest.DoNotDiscover
 import org.scalatest.funsuite.AnyFunSuite
 
+import java.io.DataOutputStream
+import java.net.{HttpURLConnection, URL}
 import scala.io.Source
 
 @DoNotDiscover
@@ -55,7 +56,8 @@ class ApiTest extends AnyFunSuite {
 	}
 
 	test("images") {
-		val url = "http://localhost:" + 4566 + "/admin/api/images"
+		val port = JakonInit.javalin.port()
+		val url = s"http://localhost:$port/admin/api/images"
 		val obj = new URL(url)
 		val con = obj.openConnection.asInstanceOf[HttpURLConnection]
 

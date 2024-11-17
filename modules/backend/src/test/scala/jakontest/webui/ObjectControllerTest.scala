@@ -1,9 +1,9 @@
 package jakontest.webui
 
 import cz.kamenitxan.jakon.core.model.Page
+import jakontest.test.TestBase
 import org.openqa.selenium.{By, WebDriver}
 import org.scalatest.DoNotDiscover
-import jakontest.test.TestBase
 
 import scala.jdk.CollectionConverters.*
 
@@ -14,13 +14,13 @@ import scala.jdk.CollectionConverters.*
 class ObjectControllerTest extends TestBase {
 
 	private def checkPageLoad(driver: WebDriver) = {
-		driver.findElements(By.cssSelector(".navbar-brand")).get(0) != null
+		val els = driver.findElements(By.cssSelector(".navbar-brand"))
+		!els.isEmpty && els.get(0) != null
 	}
 
 	test("resetPassword") { f =>
 		val url = adminHost + "resetPassword"
 		f.driver.get(url)
-		//assert(checkPageLoad(f.driver))
 
 		val emailInput = f.driver.findElement(By.cssSelector("input[type=email]"))
 		emailInput.sendKeys("admin@admin.cz")

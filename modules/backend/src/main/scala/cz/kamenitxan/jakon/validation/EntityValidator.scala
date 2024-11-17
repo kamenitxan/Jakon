@@ -3,7 +3,7 @@ package cz.kamenitxan.jakon.validation
 import cz.kamenitxan.jakon.core.dynamic.arguments.ParsedValue
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
-import spark.Request
+import io.javalin.http.Context
 
 import java.lang.annotation.Annotation
 import java.lang.reflect.{Constructor, Field}
@@ -61,18 +61,18 @@ object EntityValidator {
 	}
 
 	// TODO: tohle tu byt nema, neni to cast validatoru
-	def createFormData(req: Request, dataClass: Class[_]): Map[Field, String] = {
+	def createFormData(ctx: Context, dataClass: Class[_]): Map[Field, String] = {
 		dataClass.getDeclaredFields.map(f => {
 			var res: (Field, String) = null
 			try {
 				f.setAccessible(true)
 
-				val value = if (req.raw().getContentType.startsWith("multipart/form-data")) {
-					val is = req.raw().getPart(f.getName).getInputStream
+				val value = if (ctx.isMultipartFormData) {
+					val is = ctx.req().getPart(f.getName).getInputStream
 					Source.fromInputStream(is).mkString
 				} else {
 					val paramName = Option.apply(f.getDeclaredAnnotation(classOf[Name])).map(_.name()).getOrElse(f.getName)
-					req.queryParams(paramName)
+					ctx.formParam(paramName)
 				}
 
 				res = (f, value)

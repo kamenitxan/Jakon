@@ -3,7 +3,7 @@ package cz.kamenitxan.jakon.core.dynamic.arguments
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.TypeReferences.*
 import cz.kamenitxan.jakon.utils.Utils.*
-import spark.Request
+import io.javalin.http.Context
 
 import java.lang.reflect.{Field, Parameter, ParameterizedType}
 import java.time.{LocalDate, ZonedDateTime}
@@ -20,7 +20,7 @@ trait ArgumentParser {
 	 * @param t data case class
 	 * @return Parsed request data
 	 */
-	def parseRequestData(req: Request, t: Class[_]): Map[Field, ParsedValue]
+	def parseRequestData(ctx: Context, t: Class[_]): Map[Field, ParsedValue]
 
 	/**
 	 * @param p case class constructor parameter.

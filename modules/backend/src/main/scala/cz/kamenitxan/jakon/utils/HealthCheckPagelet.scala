@@ -1,7 +1,7 @@
 package cz.kamenitxan.jakon.utils
 
 import cz.kamenitxan.jakon.core.dynamic.{AbstractPagelet, Get, Pagelet}
-import spark.{Request, Response}
+import io.javalin.http.Context
 
 import scala.collection.mutable
 
@@ -12,11 +12,11 @@ import scala.collection.mutable
 class HealthCheckPagelet extends AbstractPagelet {
 
 	@Get(path = "/health", template = "ExamplePagelet")
-	def get(req: Request, res: Response): Unit = {
+	def get(): Unit = {
 		// just render
 	}
 
-	override def render(context: mutable.Map[String, Any], templatePath: String, req: Request): String = {
+	override def render(context: mutable.Map[String, Any], templatePath: String, ctx: Context): String = {
 		"JAKON_OK"
 	}
 }

@@ -12,6 +12,8 @@ import scala.jdk.CollectionConverters.*
 
 
 class TestHttpServletRequest extends HttpServletRequest {
+	var session: HttpSession = _
+
 	override def getAuthType: String = ???
 
 	override def getCookies: Array[Cookie] = ???
@@ -44,14 +46,14 @@ class TestHttpServletRequest extends HttpServletRequest {
 
 	override def getRequestedSessionId: String = ???
 
-	override def getRequestURI: String = ???
+	override def getRequestURI: String = "testRequestURI"
 
 	override def getRequestURL: StringBuffer = ???
 
 	override def getServletPath: String = ???
 
 	override def getSession(create: Boolean): HttpSession = {
-		new HttpSession {
+		session = new HttpSession {
 			private val attributes: mutable.Map[String, Any] = mutable.Map[String, Any]()
 
 			override def getCreationTime: Long = ???
@@ -90,9 +92,16 @@ class TestHttpServletRequest extends HttpServletRequest {
 
 			override def isNew: Boolean = ???
 		}
+		session
 	}
 
-	override def getSession: HttpSession = ???
+	override def getSession: HttpSession = {
+		if (session == null) {
+			getSession(true)
+		} else {
+			session
+		}
+	}
 
 	override def changeSessionId(): String = ???
 

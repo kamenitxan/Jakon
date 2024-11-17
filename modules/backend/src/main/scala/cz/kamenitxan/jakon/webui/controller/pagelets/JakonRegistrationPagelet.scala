@@ -10,7 +10,7 @@ import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplate
 import cz.kamenitxan.jakon.utils.security.AesEncryptor
 import cz.kamenitxan.jakon.webui.controller.pagelets.data.JakonRegistrationData
 import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, Message, MessageSeverity}
-import spark.{Request, Response}
+import io.javalin.http.Context
 
 import java.sql.Connection
 import scala.collection.mutable
@@ -22,18 +22,18 @@ class JakonRegistrationPagelet extends AbstractAdminPagelet {
 	private val SQL_SELECT_EMAIL_TMPL = "SELECT subject FROM EmailTemplateEntity WHERE name = \"REGISTRATION\""
 
 	@Get(path = "",template = "pagelet/registration/register")
-	def registrationGet(response: Response): Unit = {
+	def registrationGet(ctx: Context): Unit = {
 		// just render
 	}
 
 
 	@Post(path = "", template = "")
-	def registrationPost(req: Request, res: Response, data: JakonRegistrationData): mutable.Map[String, Any] = {
-		val email = req.queryParams("email")
-		val password = req.queryParams("password")
-		val password2 = req.queryParams("password2")
-		val firstName = req.queryParams("firstname")
-		val lastName = req.queryParams("lastname")
+	def registrationPost(ctx: Context, data: JakonRegistrationData): mutable.Map[String, Any] = {
+		val email = ctx.queryParam("email")
+		val password = ctx.queryParam("password")
+		val password2 = ctx.queryParam("password2")
+		val firstName = ctx.queryParam("firstname")
+		val lastName = ctx.queryParam("lastname")
 		if (!password.equals(password2)) {
 			PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "REGISTRATION_PASSWORD_NOT_SAME")
 			return null
@@ -49,7 +49,8 @@ class JakonRegistrationPagelet extends AbstractAdminPagelet {
 		sendRegistrationEmail(user)
 
 		PageContext.getInstance().messages += new Message(MessageSeverity.SUCCESS, "REGISTRATION_SUCCESSFUL")
-		redirect(req, res, "/admin")
+		redirect(ctx, "/admin")
+		null
 	}
 
 	def sendRegistrationEmail(user: JakonUser): Unit = {

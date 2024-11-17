@@ -6,6 +6,7 @@ import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.utils.mail.EmailTypeHandler
 import cz.kamenitxan.jakon.webui.util.JakonFileLoader
+import io.javalin.rendering.FileRenderer
 import jakarta.mail.Message
 
 import java.util.*
@@ -18,7 +19,7 @@ import scala.language.postfixOps
 @Configuration
 object Settings {
 	private var engine: TemplateEngine = _
-	private var adminEngine: spark.TemplateEngine = _
+	private var adminEngine: FileRenderer = _
 	private var emailTypeHandler: EmailTypeHandler = new EmailTypeHandler {
 		override def handle(emailType: String): (Message, Predef.Map[String, Any]) => Unit = (_, _) => {}
 
@@ -136,9 +137,9 @@ object Settings {
 
 	def setTemplateEngine(engine: TemplateEngine): Unit = this.engine = engine
 
-	def getAdminEngine: spark.TemplateEngine = adminEngine
+	def getAdminEngine: FileRenderer = adminEngine
 
-	def setAdminEngine(adminEngine: spark.TemplateEngine): Unit = this.adminEngine = adminEngine
+	def setAdminEngine(adminEngine: FileRenderer): Unit = this.adminEngine = adminEngine
 
 	def getStaticDir: String = staticDir
 

@@ -3,9 +3,9 @@ package cz.kamenitxan.jakon.webui.controller.pagelets
 import com.sun.management.HotSpotDiagnosticMXBean
 import cz.kamenitxan.jakon.core.dynamic.{Get, Pagelet}
 import cz.kamenitxan.jakon.logging.*
+import io.javalin.http.Context
 import org.apache.commons.io.IOUtils
 import org.apache.commons.io.output.ByteArrayOutputStream
-import spark.{Request, Response}
 
 import java.io.{File, FileInputStream, IOException}
 import java.lang.management.ManagementFactory
@@ -22,7 +22,7 @@ class LogViewerPagelet extends AbstractAdminPagelet {
 
 
 	@Get(path = "", template = "pagelet/logViewer")
-	def render(req: Request, res: Response): mutable.Map[String, Any] = {
+	def render(ctx: Context): mutable.Map[String, Any] = {
 		mutable.Map[String, Any](
 			"logs" -> LogService.getLogs.reverse.asJava,
 			"severities" -> Seq(Debug, Info, Warning, cz.kamenitxan.jakon.logging.Error, Critical).asJava
@@ -30,7 +30,7 @@ class LogViewerPagelet extends AbstractAdminPagelet {
 	}
 
 	@Get(path = "/heapdump", template = "pagelet/logViewer")
-	def heapdump(req: Request, res: Response): mutable.Map[String, Any] = {
+	def heapdump(ctx: Context): mutable.Map[String, Any] = {
 		val file = new File("heapdump.hprof")
 		if (file.exists()) {
 			file.delete()
@@ -38,12 +38,12 @@ class LogViewerPagelet extends AbstractAdminPagelet {
 		dumpHeap(file.getAbsolutePath, true)
 
 
-		res.raw().setContentType("application/hprof")
-		res.raw().setContentLength(file.length().toInt)
+		ctx.contentType("application/hprof")
+		ctx.res().setContentLength(file.length().toInt)
 
 		val fis = new FileInputStream(file)
-		IOUtils.copy(fis, res.raw().getOutputStream)
-
+		ctx.result(fis)
+		
 		fis.close()
 		file.delete()
 		null

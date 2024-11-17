@@ -1,3 +1,4 @@
+import sbt.Tests.{Group, SubProcess}
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val V = new {
@@ -31,8 +32,9 @@ val Dependencies = new {
 	lazy val backend = Seq(
 		libraryDependencies ++=
 			Seq(
-				"com.intellisrc" % "spark-core" % V.spark,
-				"com.sparkjava" % "spark-template-pebble" % "2.7.1-jakon.3",
+				"io.javalin" % "javalin" % "6.3.0",
+				"io.javalin" % "javalin-rendering" % "6.3.0",
+				"io.pebbletemplates" % "pebble" % "3.1.6",
 				"org.slf4j" % "slf4j-api" % "2.0.16",
 				"org.apache.logging.log4j" % "log4j-api" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-core" % V.log4j,
@@ -70,6 +72,7 @@ val Dependencies = new {
 		libraryDependencies ++= Seq(
 			//"dev.zio" %% "zio-http" % "3.0.0-RC2",
 			"org.scalatest" %% "scalatest" % "3.2.19" % "test",
+			"org.scalamock" %% "scalamock" % "6.0.0" % Test,
 			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.23.0" % "test"
 		)
 	)
@@ -100,6 +103,9 @@ lazy val backend = (project in file("modules/backend"))
 	.settings(
 		name := "jakon",
 		Test / fork := true,
+		Test / testGrouping := (Test / definedTests).value.map { suite =>
+			Group(suite.name, Seq(suite), SubProcess(ForkOptions().withWorkingDirectory(new File("modules/backend"))))
+		},
 		ThisBuild / versionScheme := Some ("strict"),
 		publishTo := Some ("Nexus" at "https://nexus.kamenitxan.eu/repository/jakon/"),
 		credentials += Credentials(Path.userHome / ".sbt" / ".credentials"),

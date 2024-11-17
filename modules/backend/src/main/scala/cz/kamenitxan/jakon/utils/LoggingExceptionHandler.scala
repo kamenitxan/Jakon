@@ -1,11 +1,11 @@
 package cz.kamenitxan.jakon.utils
 
 import cz.kamenitxan.jakon.logging.Logger
-import spark.{ExceptionHandler, Request, Response}
+import io.javalin.http.{Context, ExceptionHandler}
 
 class LoggingExceptionHandler extends ExceptionHandler[Exception] {
 
-	override def handle(e: Exception, request: Request, response: Response): Unit = {
+	override def handle(e: Exception, ctx: Context): Unit = {
 		Logger.error("", e)
 	}
 }

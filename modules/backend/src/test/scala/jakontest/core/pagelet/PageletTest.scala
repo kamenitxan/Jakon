@@ -2,9 +2,9 @@ package jakontest.core.pagelet
 
 import cz.kamenitxan.jakon.core.custom_pages.CustomPageInitializer
 import cz.kamenitxan.jakon.core.dynamic.PageletInitializer
+import jakontest.test.TestBase
 import org.openqa.selenium.By
 import org.scalatest.DoNotDiscover
-import jakontest.test.TestBase
 
 @DoNotDiscover
 class PageletTest extends TestBase {
@@ -19,7 +19,6 @@ class PageletTest extends TestBase {
 	}
 
 	test("example pagelet post") { f =>
-		PageletInitializer.initControllers(Seq(classOf[TestPagelet]))
 
 		val postUrl = host + "/pagelet/get"
 		f.driver.get(postUrl)
@@ -31,7 +30,6 @@ class PageletTest extends TestBase {
 	}
 
 	test("example pagelet post - string") { f =>
-		PageletInitializer.initControllers(Seq(classOf[TestPagelet]))
 
 		val postUrl = host + "/pagelet/get"
 		f.driver.get(postUrl)

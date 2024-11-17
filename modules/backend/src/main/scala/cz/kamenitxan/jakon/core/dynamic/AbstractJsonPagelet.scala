@@ -6,7 +6,7 @@ import cz.kamenitxan.jakon.utils.gson.{GsonLocalDateTimeSerializer, GsonMapSeria
 import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.parser.*
-import spark.Request
+import io.javalin.http.Context
 
 import java.lang.reflect.Field
 import java.time.{LocalDateTime, ZonedDateTime}
@@ -31,8 +31,8 @@ abstract class AbstractJsonPagelet {
 	 */
 	val wrapResponse = true
 	
-	def parseRequestData(req: Request, t: Class[_]): Map[Field, ParsedValue] = {
-		CirceJsonParser.parseRequestData(req, t)
+	def parseRequestData(ctx: Context, t: Class[_]): Map[Field, ParsedValue] = {
+		CirceJsonParser.parseRequestData(ctx, t)
 	}
 
 	def createDataObject(data: Map[Field, ParsedValue], t: Class[_]): Any = {

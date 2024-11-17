@@ -7,7 +7,7 @@ import cz.kamenitxan.jakon.core.service.UserService
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
-import spark.Request
+import io.javalin.http.Context
 
 import scala.util.Random
 
@@ -15,25 +15,25 @@ trait OauthProvider {
 
 	val isEnabled: Boolean
 
-	def authInfo(req: Request, redirectTo : String = null): OauthInfo
+	def authInfo(ctx: Context, redirectTo : String = null): OauthInfo
 
-	def handleAuthResponse(req: Request)(implicit conn: Connection): Boolean
+	def handleAuthResponse(ctx: Context)(implicit conn: Connection): Boolean
 
-	def logIn(req: Request, email: String)(implicit conn: Connection): Boolean = {
+	def logIn(ctx: Context, email: String)(implicit conn: Connection): Boolean = {
 		val user = UserService.getByEmail(email)
 		if (user == null) {
 			PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "WRONG_EMAIL_OR_PASSWORD")
 			false
 		} else {
 			Logger.info("User " + user.username + " logged in")
-			req.session(true).attribute("user", user)
+			ctx.sessionAttribute("user", user)
 			true
 		}
 	}
 
-	protected def setSecretState(req: Request): String = {
+	protected def setSecretState(ctx: Context): String = {
 		val secretState = this.getClass.getSimpleName + new Random().nextInt(99999)
-		req.session().attribute(secretState)
+		ctx.sessionAttribute(secretState) // TODO: tohle dělá co?
 		secretState
 	}
 }

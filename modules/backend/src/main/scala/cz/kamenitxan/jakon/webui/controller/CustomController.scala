@@ -1,11 +1,11 @@
 package cz.kamenitxan.jakon.webui.controller
 
-import cz.kamenitxan.jakon.webui.Context
-import spark.{Request, Response}
+import io.javalin.http.Context
+
 
 @Deprecated
 trait CustomController {
-	def render(req: Request, res: Response): Context
+	def render(ctx: Context): cz.kamenitxan.jakon.webui.Context
 
 	def name(): String
 

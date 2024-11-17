@@ -1,16 +1,18 @@
 package cz.kamenitxan.jakon.core.dynamic
 
-import spark.{Request, Response, TemplateEngine}
+
+import io.javalin.http.Context
+import io.javalin.rendering.FileRenderer
 
 import scala.collection.mutable
 
 trait IPagelet {
 
-	val engine: TemplateEngine
+	val engine: FileRenderer
 
-	def render(context: mutable.Map[String, Any], templatePath: String, req: Request): String
+	def render(context: mutable.Map[String, Any], templatePath: String, ctx: Context): String
 
-	def redirect(req: Request, res: Response, target: String): mutable.Map[String, Any]
+	def redirect(ctx: Context, target: String): Unit
 
-	def redirect(req: Request, res: Response, target: String, requestParams: Map[String, Any]): mutable.Map[String, Any]
+	def redirect(ctx: Context, target: String, requestParams: Map[String, Any]): Unit
 }

@@ -1,5 +1,6 @@
 package cz.kamenitxan.jakon.core.dynamic
 
+import cz.kamenitxan.jakon.JakonInit
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.dynamic.PageletInitializer.{MethodArgs, createMethodArgs}
@@ -10,7 +11,7 @@ import cz.kamenitxan.jakon.utils.I18nUtil
 import cz.kamenitxan.jakon.utils.TypeReferences.*
 import cz.kamenitxan.jakon.validation.EntityValidator
 import cz.kamenitxan.jakon.webui.entity.Message
-import spark.{Request, Response, Spark}
+import io.javalin.http.{Context, Handler}
 
 import java.io.{PrintWriter, StringWriter}
 import java.lang.reflect.{Field, Method}
@@ -34,15 +35,15 @@ object JsonPageletInitializer {
 			}
 
 			c.getDeclaredMethods
-			  .filter(m => m.getAnnotation(classOf[Get]) != null || m.getAnnotation(classOf[Post]) != null)
-			  .foreach(m => {
+				.filter(m => m.getAnnotation(classOf[Get]) != null || m.getAnnotation(classOf[Post]) != null)
+				.foreach(m => {
 					val get = m.getAnnotation(classOf[Get])
 					val post = m.getAnnotation(classOf[Post])
 					if (get != null) {
-					  initGetAnnotation(get, controllerAnn, m, c)
+						initGetAnnotation(get, controllerAnn, m, c)
 					}
 					if (post != null) {
-					  initPostAnnotation(post, controllerAnn, m, c)
+						initPostAnnotation(post, controllerAnn, m, c)
 					}
 					if ((get != null && get.path().endsWith("/")) || (post != null && post.path().endsWith("/"))) {
 						Logger.warn(s"${c.getSimpleName}.${m.getName} path ends with /. This is not recommended.")
@@ -57,33 +58,36 @@ object JsonPageletInitializer {
 	}
 
 	private def initGetAnnotation(get: Get, controllerAnn: JsonPagelet, m: Method, c: Class[_]): Unit = {
-		Spark.get(controllerAnn.path() + get.path(), (req: Request, res: Response) => {
-			res.raw().setContentType(JsonContentType)
-			val pagelet = c.getDeclaredConstructor().newInstance().asInstanceOf[AbstractJsonPagelet]
-			val response: String = DBHelper.withDbConnection(implicit conn => {
-				val methodArgs = createMethodArgs(m, req, res, conn, pagelet)
-				try {
-					val responseData = m.invoke(pagelet, methodArgs.array: _*)
-					createResponse(responseData, pagelet)
-				} catch {
-					case ex: Exception =>
-						Logger.error(s"${pagelet.getClass.getCanonicalName}.${m.getName}() threw exception", ex)
-						createErrorResponse(ex, res, pagelet)
-				}
-			})
-			response
+		JakonInit.javalin.get(controllerAnn.path() + get.path(), new Handler {
+			override def handle(ctx: Context): Unit = {
+				ctx.contentType(JsonContentType)
+				val pagelet = c.getDeclaredConstructor().newInstance().asInstanceOf[AbstractJsonPagelet]
+				val response: String = DBHelper.withDbConnection(implicit conn => {
+					val methodArgs = createMethodArgs(m, ctx, conn, pagelet)
+					try {
+						val responseData = m.invoke(pagelet, methodArgs.array: _*)
+						createResponse(responseData, pagelet)
+					} catch {
+						case ex: Exception =>
+							Logger.error(s"${pagelet.getClass.getCanonicalName}.${m.getName}() threw exception", ex)
+							createErrorResponse(ex, ctx, pagelet)
+					}
+				})
+				ctx.result(response)
+			}
 		})
 	}
 
 	private def initPostAnnotation(post: Post, controllerAnn: JsonPagelet, m: Method, c: Class[_]): Unit = {
-		Spark.post(controllerAnn.path() + post.path(), (req: Request, res: Response) => {
-			res.raw().setContentType(JsonContentType)
-			val controller = c.getDeclaredConstructor().newInstance().asInstanceOf[AbstractJsonPagelet]
+		JakonInit.javalin.post(controllerAnn.path() + post.path(), new Handler {
+			override def handle(ctx: Context): Unit = {
+				ctx.contentType(JsonContentType)
+				val controller = c.getDeclaredConstructor().newInstance().asInstanceOf[AbstractJsonPagelet]
 				var methodArgs: (PageletInitializer.MethodArgs, Option[Connection]) = null
 				try {
 					val dataClass = PageletInitializer.getDataClass(m)
-					if (post.validate() && dataClass.isDefined) {
-						val jsonData = controller.parseRequestData(req, dataClass.get)
+					val response = if (post.validate() && dataClass.isDefined) {
+						val jsonData = controller.parseRequestData(ctx, dataClass.get)
 						EntityValidator.validateJson(dataClass.get.getSimpleName, jsonData) match {
 							case Left(result) =>
 								val translatedErrors = result.map(m => {
@@ -95,28 +99,31 @@ object JsonPageletInitializer {
 									}
 									new Message(m._severity, t, m.params, m.bundle)
 								})
-								createFailResponse(res, controller, translatedErrors)
+								createFailResponse(ctx, controller, translatedErrors)
 							case Right(validatedData) =>
-								methodArgs = parseJsonArgs(m, req, res, controller, validatedData)
+								methodArgs = parseJsonArgs(m, ctx, controller, validatedData)
 								val methodArgsArray = methodArgs._1.array
 								val responseData = m.invoke(controller, methodArgsArray: _*)
 								createResponse(responseData, controller)
 						}
 					} else {
-						methodArgs = parseJsonArgs(m, req, res, controller)
+						methodArgs = parseJsonArgs(m, ctx, controller)
 						val methodArgsArray = methodArgs._1.array
 						val responseData = m.invoke(controller, methodArgsArray: _*)
 						createResponse(responseData, controller)
 					}
+					ctx.result(response)
 				} catch {
 					case ex: Exception =>
 						Logger.error(s"${controller.getClass.getCanonicalName}.${m.getName}() threw exception", ex)
-						createErrorResponse(ex, res, controller)
+						val response = createErrorResponse(ex, ctx, controller)
+						ctx.result(response)
 				} finally {
 					if (methodArgs != null && methodArgs._2.isDefined) {
 						methodArgs._2.get.close()
 					}
 				}
+			}
 		})
 	}
 
@@ -137,19 +144,19 @@ object JsonPageletInitializer {
 			}
 			case rd => if (controller.wrapResponse) {
 				wrap(rd)
-				} else {
+			} else {
 				controller.gson.toJson(rd)
-				}
+			}
 		}
 	}
 
-	private def createFailResponse(res: Response, controller: AbstractJsonPagelet, messages: Seq[Message]): String = {
-		res.status(400)
+	private def createFailResponse(ctx: Context, controller: AbstractJsonPagelet, messages: Seq[Message]): String = {
+		ctx.status(400)
 		val responseData = new JsonFailResponse(messages.asJava)
 		controller.gson.toJson(responseData)
 	}
 
-	private def createErrorResponse(ex: Exception, res: Response, controller: AbstractJsonPagelet): String = {
+	private def createErrorResponse(ex: Exception, ctx: Context, controller: AbstractJsonPagelet): String = {
 		val msg = if (Settings.getDeployMode != DeployMode.PRODUCTION) {
 			val sw = new StringWriter
 			val pw = new PrintWriter(sw)
@@ -158,22 +165,20 @@ object JsonPageletInitializer {
 		} else {
 			null
 		}
-		res.status(500)
+		ctx.status(500)
 		val responseData = new JsonErrorResponse(null, 1, msg)
 		controller.gson.toJson(responseData)
 	}
 
 	private def parseJsonArgs(m: Method,
-														req: Request,
-														res: Response,
+														ctx: Context,
 														controller: AbstractJsonPagelet,
 														validatedData: Map[Field, ParsedValue] = Map.empty
 													 ): (PageletInitializer.MethodArgs, Option[Connection]) = {
 		var dataRef: Any = null
 		var conn: Connection = null
 		val arr: Array[Any] = m.getParameterTypes.map {
-			case REQUEST_CLS => req
-			case RESPONSE_CLS => res
+			case CONTEXT_CLS => ctx
 			case CONNECTION_CLS =>
 				conn = DBHelper.getConnection
 				conn

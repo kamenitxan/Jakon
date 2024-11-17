@@ -2,7 +2,6 @@ package cz.kamenitxan.jakon.webui
 
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.utils.PageContext
-import spark.ModelAndView
 
 import java.util
 import scala.jdk.CollectionConverters.*
