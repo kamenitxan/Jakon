@@ -209,8 +209,12 @@ object PageletInitializer {
 				Logger.debug(s"Creating pagelet data: {${t.getSimpleName}}")
 				t.getDeclaredFields.foreach(f => {
 					try {
-						if (ctx.formParam(f.getName).nonEmpty) {
+						if (ctx.formParam(f.getName) != null && ctx.formParam(f.getName).nonEmpty) {
 							val value = ctx.formParam(f.getName)
+							f.setAccessible(true)
+							f.set(data, value.conform(f))
+						} else if (!ctx.queryParams(f.getName).isEmpty) {
+							val value = ctx.queryParams(f.getName).asScala.mkString("\r\n")
 							f.setAccessible(true)
 							f.set(data, value.conform(f))
 						}

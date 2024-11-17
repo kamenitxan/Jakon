@@ -34,7 +34,11 @@ object Routes {
 	}
 
 	private def render(ctx: Context, modelAndView: ModelAndView): String = {
-		te.render(modelAndView.getViewName, modelAndView.getModel.asInstanceOf[java. util. Map[String, ?]], ctx)
+		if (modelAndView != null) {
+			te.render(modelAndView.getViewName, modelAndView.getModel.asInstanceOf[java. util. Map[String, ?]], ctx)
+		} else {
+			""
+		}
 	}
 
 	private def initRoutes(): Unit = {
