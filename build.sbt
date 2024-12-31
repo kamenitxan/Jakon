@@ -3,9 +3,8 @@ import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val V = new {
 	val Scala = "3.3.4"
-  val jakon = "0.6.1-SNAPSHOT"
-	val spark = "2.9.4-jakon-6"
-	val log4j = "2.24.0"
+  val jakon = "0.7.0-SNAPSHOT"
+	val log4j = "2.24.3"
 	val circeVersion = "0.14.10"
 }
 
@@ -32,31 +31,31 @@ val Dependencies = new {
 	lazy val backend = Seq(
 		libraryDependencies ++=
 			Seq(
-				"io.javalin" % "javalin" % "6.3.0",
-				"io.javalin" % "javalin-rendering" % "6.3.0",
+				"io.javalin" % "javalin" % "6.4.0",
+				"io.javalin" % "javalin-rendering" % "6.4.0",
 				"io.pebbletemplates" % "pebble" % "3.1.6",
 				"org.slf4j" % "slf4j-api" % "2.0.16",
 				"org.apache.logging.log4j" % "log4j-api" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-core" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-slf4j2-impl" % V.log4j,
-				"org.xerial" % "sqlite-jdbc" % "3.46.1.0",
+				"org.xerial" % "sqlite-jdbc" % "3.47.1.0",
 				"mysql" % "mysql-connector-java" % "8.0.33",
-				"com.google.guava" % "guava" % "33.2.1-jre",
-				"commons-io" % "commons-io" % "2.17.0",
+				"com.google.guava" % "guava" % "33.4.0-jre",
+				"commons-io" % "commons-io" % "2.18.0",
 				"org.apache.commons" % "commons-lang3" % "3.17.0",
 				"commons-codec" % "commons-codec" % "1.17.1",
 				"org.apache.commons" % "commons-fileupload2-jakarta" % "2.0.0-M1",
 				"de.svenkubiak" % "jBCrypt" % "0.4.3",
 				"com.sun.mail" % "jakarta.mail" % "2.0.1",
-				"org.commonmark" % "commonmark" % "0.23.0",
+				"org.commonmark" % "commonmark" % "0.24.0",
 				"com.google.code.gson" % "gson" % "2.11.0", // TODO remove
 				"io.circe" %% "circe-core" % V.circeVersion,
 				"io.circe" %% "circe-generic"% V.circeVersion,
 				"io.circe" %% "circe-parser"% V.circeVersion,
 				//"org.apache.lucene" % "lucene-core" % "7.5.0",
 				//"org.apache.lucene" % "lucene-queryparser" % "7.5.0",
-				"io.github.classgraph" % "classgraph" % "4.8.176",
-				"com.zaxxer" % "HikariCP" % "5.1.0",
+				"io.github.classgraph" % "classgraph" % "4.8.179",
+				"com.zaxxer" % "HikariCP" % "6.2.1",
 				"com.github.scribejava" % "scribejava-apis" % "8.3.3",
 				"cz.etn" % "email-validator" % "1.4.0",
 				"com.lihaoyi" %% "sourcecode" % "0.4.2"
@@ -73,7 +72,7 @@ val Dependencies = new {
 			//"dev.zio" %% "zio-http" % "3.0.0-RC2",
 			"org.scalatest" %% "scalatest" % "3.2.19" % "test",
 			"org.scalamock" %% "scalamock" % "6.0.0" % Test,
-			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.23.0" % "test"
+			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.27.0" % "test"
 		)
 	)
 }
