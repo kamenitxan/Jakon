@@ -15,6 +15,7 @@ import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, ResetPasswordEmailE
 import cz.kamenitxan.jakon.webui.{AdminSettings, Routes}
 import io.javalin.Javalin
 import io.javalin.apibuilder.ApiBuilder
+import io.javalin.config.JavalinConfig
 import io.javalin.http.{Context, Handler, HttpStatus}
 
 import java.io.File
@@ -23,7 +24,12 @@ import java.util.concurrent.TimeUnit
 
 
 class JakonInit {
-	def daoSetup(): Unit = {
+
+	protected def javalinConfig(config: JavalinConfig): Unit = {
+		// override to add custom Javalin config
+	}
+
+	protected def daoSetup(): Unit = {
 		// override to add custom DB entities
 	}
 
@@ -75,11 +81,11 @@ class JakonInit {
 
 		val app = Javalin.create(config => {
 			config.jetty.defaultPort = portNumber
-			// config.useVirtualThreads = true TODO: config
 			config.http.defaultContentType = "text/html; charset=utf-8"
 			config.staticFiles.add(Settings.getStaticDir)
 			config.staticFiles.add("/static")
 			config.registerPlugin(new ContextExtension)
+			javalinConfig(config)
 		})
 		JakonInit.javalin = app
 		ApiBuilder.setStaticJavalin(app)
@@ -139,11 +145,12 @@ class JakonInit {
 
 
 		annotationScanner.load()
-		app.start(Settings.getPort)
+		app.start(portNumber)
 		Director.start()
 		afterInit()
 	}
 }
+
 object JakonInit {
 	var javalin: Javalin = _
 }

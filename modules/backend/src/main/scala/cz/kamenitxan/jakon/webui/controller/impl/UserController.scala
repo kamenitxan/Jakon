@@ -7,6 +7,7 @@ import cz.kamenitxan.jakon.webui.conform.FieldConformer
 import cz.kamenitxan.jakon.webui.conform.FieldConformer.*
 import io.javalin.http.Context
 
+import java.lang.reflect.Field
 import scala.jdk.CollectionConverters.*
 import scala.language.postfixOps
 
@@ -41,30 +42,32 @@ object UserController {
 		}
 		val params = ctx.queryParamMap().asScala
 		val user = PageContext.getInstance().getLoggedUser.get
-
+		val userFields = Utils.getFieldsUpTo(user.getClass, classOf[Object])
+		
 		for (p <- params.filter(p => !p.equals("id"))) {
-			//TODO optimalizovat
-			val fieldRefOpt = Utils.getFieldsUpTo(user.getClass, classOf[Object]).find(f => f.getName.equals(p))
+			val fieldRefOpt = userFields.find(f => f.getName.equals(p))
 			if (fieldRefOpt.isDefined) {
 				val fieldRef = fieldRefOpt.get
 				fieldRef.setAccessible(true)
-				val pad = p
-				// val value = ctx.queryParam(p).conform(fieldRef) // TODO JAVALIN FIX
-				val value = "adsasda"
-				if (value != null) {
-					if (p.equals("password")) {
-						if (!value.asInstanceOf[String].startsWith("$2a$")) {
-							fieldRef.set(user, value)
-						}
-					} else {
-						fieldRef.set(user, value)
-					}
-				}
+				val newValue = p._2.asScala.head.conform(fieldRef)
+				setValue(user, fieldRef, p._1, newValue)
 			}
 		}
 
 		user.update()
 		ctx.redirect("/admin/profile")
 		new cz.kamenitxan.jakon.webui.Context(Map[String, Any](), "pages/profile")
+	}
+
+	private def setValue(user: JakonUser, fieldRef: Field, paramName: String,  value: Any): Unit = {
+		if (value != null) {
+			if (paramName.equals("password")) {
+				if (!value.asInstanceOf[String].startsWith("$2a$")) {
+					fieldRef.set(user, value)
+				}
+			} else {
+				fieldRef.set(user, value)
+			}
+		}
 	}
 }
