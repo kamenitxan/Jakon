@@ -44,7 +44,7 @@ abstract class AbstractPagelet extends IPagelet {
 			rp
 		}
 
-		ctx += AbstractPagelet.REQUEST_PARAMS -> rp
+		ctx += AbstractPagelet.REQUEST_PARAMS -> mergedRp
 		engine.render(templatePath, ctx.asJava, javalinCtx)
 	}
 

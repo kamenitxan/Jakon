@@ -51,7 +51,6 @@ object Routes {
 			.registerTypeAdapter(classOf[ZonedDateTime], new GsonZonedDateTimeSerializer)
 			.registerTypeAdapter(classOf[LocalDateTime], new GsonLocalDateTimeSerializer)
 			.create()
-		//val gsonTransformer: ResponseTransformer = (model: Any) => gson.toJson(model)
 
 		JakonInit.javalin.before("*", new Handler {
 			override def handle(ctx: Context): Unit = {
@@ -63,7 +62,7 @@ object Routes {
 		})
 		JakonInit.javalin.before(AdminPrefix, new Handler {
 			override def handle(ctx: Context): Unit = {
-				val user: JakonUser =  ctx.sessionAttribute("user") // request.session.attribute("user")
+				val user: JakonUser =  ctx.sessionAttribute("user")
 				if ((Settings.getDeployMode ne DeployMode.DEVEL)
 				  && user != null
 				  && (user.acl.adminAllowed || user.acl.masterAdmin)) {

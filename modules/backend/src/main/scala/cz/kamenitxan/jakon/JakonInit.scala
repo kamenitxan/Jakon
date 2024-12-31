@@ -123,32 +123,38 @@ class JakonInit {
 				})
 			}
 			routesSetup()
-			if (Settings.getDeployMode != DeployMode.DEVEL) {
-				PageletInitializer.protectedPrefixes.filter(_ != Routes.AdminPrefix).foreach(pp => {
-					app.before(pp + "*", (ctx: Context) => {
-						Logger.debug(s"Adding protected prefix '$pp*'")
-
-						val user: JakonUser = ctx.sessionAttribute("user")
-						if (user == null || (!user.acl.adminAllowed && !user.acl.allowedFrontendPrefixes.contains(pp))) {
-							Logger.debug(s"User $user denied access to '$pp*'")
-							if (ctx.path().startsWith(Routes.AdminPrefix)) {
-								ctx.redirect(Routes.AdminPrefix + s"?redirectTo=${ctx.path()}", HttpStatus.FOUND)
-							} else {
-								ctx.redirect(Settings.getLoginPath + s"?redirectTo=${ctx.path()}", HttpStatus.FOUND)
-							}
-						}
-
-					})
-				})
-			}
+			initDevMode(app)
 		}
 
 
 		annotationScanner.load()
 		app.start(portNumber)
+		Logger.info(s"Jakon started on port $portNumber")
 		Director.start()
 		afterInit()
 	}
+
+	private def initDevMode(app: Javalin): Unit = {
+		if (Settings.getDeployMode != DeployMode.DEVEL) {
+			PageletInitializer.protectedPrefixes.filter(_ != Routes.AdminPrefix).foreach(pp => {
+				app.before(pp + "*", (ctx: Context) => {
+					Logger.debug(s"Adding protected prefix '$pp*'")
+
+					val user: JakonUser = ctx.sessionAttribute("user")
+					if (user == null || (!user.acl.adminAllowed && !user.acl.allowedFrontendPrefixes.contains(pp))) {
+						Logger.debug(s"User $user denied access to '$pp*'")
+						if (ctx.path().startsWith(Routes.AdminPrefix)) {
+							ctx.redirect(Routes.AdminPrefix + s"?redirectTo=${ctx.path()}", HttpStatus.FOUND)
+						} else {
+							ctx.redirect(Settings.getLoginPath + s"?redirectTo=${ctx.path()}", HttpStatus.FOUND)
+						}
+					}
+
+				})
+			})
+		}
+	}
+
 }
 
 object JakonInit {
