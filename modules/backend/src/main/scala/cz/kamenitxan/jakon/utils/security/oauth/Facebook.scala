@@ -34,7 +34,7 @@ object Facebook extends OauthProvider {
 	def createAuthUrl(ctx: Context): String = {
 		if (!isEnabled) return ""
 
-		val secretState = setSecretState(ctx)
+		val secretState = getSecretState(ctx)
 		service.getAuthorizationUrl(secretState)
 	}
 

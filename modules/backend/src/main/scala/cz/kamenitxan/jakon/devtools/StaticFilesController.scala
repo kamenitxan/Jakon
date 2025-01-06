@@ -30,7 +30,7 @@ class StaticFilesController extends ResourceHandler {
 				resourceService.doGet(request, response)
 			}
 		}
-		//res.body() TODO: ???
-		ctx // TODO: ???
+		ctx.status(404)
+		ctx 
 	}
 }

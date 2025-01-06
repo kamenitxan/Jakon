@@ -1,23 +1,25 @@
 package cz.kamenitxan.jakon.webui.controller.impl
 
+import com.google.gson.*
 import cz.kamenitxan.jakon.core.model.{FileType, JakonFile}
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.webui.controller.AbstractController
 import cz.kamenitxan.jakon.webui.controller.impl.FileManagerController.getManager
 import cz.kamenitxan.jakon.webui.entity.FileManagerMode
-import org.apache.commons.fileupload2.core.FileUploadException
-import org.apache.commons.fileupload2.core.DiskFileItemFactory
-import org.apache.commons.fileupload2.jakarta.JakartaServletFileUpload
+import io.javalin.http.Context
+import jakarta.mail.internet.MimeUtility
+import jakarta.servlet.ServletException
+import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
+import org.apache.commons.fileupload2.core.{DiskFileItemFactory, FileUploadException}
 import org.apache.commons.fileupload2.jakarta.JakartaServletDiskFileUpload
 import org.apache.commons.io.FileUtils
 import org.apache.commons.lang3.SystemUtils
-import com.google.gson.{Gson, JsonArray, JsonObject, JsonParser, JsonPrimitive}
-import io.javalin.http.Context
 
 import java.io.*
 import java.net.URI
 import java.nio.ByteBuffer
+import java.nio.charset.Charset
 import java.nio.file.*
 import java.nio.file.attribute.{BasicFileAttributes, PosixFileAttributeView, PosixFilePermissions}
 import java.text.SimpleDateFormat
@@ -25,11 +27,6 @@ import java.time.LocalDateTime
 import java.util
 import java.util.Date
 import java.util.zip.{ZipEntry, ZipOutputStream}
-import jakarta.mail.internet.MimeUtility
-import jakarta.servlet.ServletException
-import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
-
-import scala.annotation.switch
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
@@ -184,7 +181,7 @@ object FileManagerController {
 				if (isSupportFeature(FileManagerMode.UPLOAD)) {
 					uploadFile(ctx.req(), ctx.res())
 				} else {
-					setError(new IllegalAccessError(notSupportFeature(FileManagerMode.UPLOAD).get("error").getAsString), ctx.res())
+					setError(new IllegalAccessError(notSupportFeature(FileManagerMode.UPLOAD).get("result").getAsJsonObject.get("error").getAsString), ctx.res())
 				}
 			} else { // all other post request has jspn params in body}
 				fileOperation(ctx.req(), ctx.res())
@@ -220,7 +217,7 @@ object FileManagerController {
 
 			val params: JsonObject = JsonParser.parseString(str).getAsJsonObject;
 			val mode: FileManagerMode = FileManagerMode.ofAction(params.get("action").getAsString)
-			responseJsonObject = (mode: @switch) match {
+			responseJsonObject = mode match {
 				case FileManagerMode.CREATE_FOLDER =>
 					executeIfSupported(mode, params, p => createFolder(p))
 				case FileManagerMode.CHANGE_PERMISSIONS =>
@@ -508,7 +505,7 @@ object FileManagerController {
 		try {
 			val json = new JsonObject
 			val item: String = params.get("item").getAsString
-			json.add("result", JsonPrimitive(FileUtils.readFileToString(Paths.get(REPOSITORY_BASE_PATH, item).toFile)))
+			json.add("result", JsonPrimitive(FileUtils.readFileToString(Paths.get(REPOSITORY_BASE_PATH, item).toFile, Charset.defaultCharset())))
 			json
 		} catch {
 			case ex: IOException =>
@@ -523,7 +520,7 @@ object FileManagerController {
 			Logger.debug(s"editFile path: $path")
 			val srcFile = new File(REPOSITORY_BASE_PATH, path)
 			val content = params.get("content").getAsString
-			FileUtils.writeStringToFile(srcFile, content)
+			FileUtils.writeStringToFile(srcFile, content, Charset.defaultCharset())
 			success()
 		} catch {
 			case e: IOException =>

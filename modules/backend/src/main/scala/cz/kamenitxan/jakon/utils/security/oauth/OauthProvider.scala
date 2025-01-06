@@ -31,9 +31,8 @@ trait OauthProvider {
 		}
 	}
 
-	protected def setSecretState(ctx: Context): String = {
+	protected def getSecretState(ctx: Context): String = {
 		val secretState = this.getClass.getSimpleName + new Random().nextInt(99999)
-		ctx.sessionAttribute(secretState) // TODO: tohle dělá co?
 		secretState
 	}
 }

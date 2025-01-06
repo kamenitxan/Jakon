@@ -115,10 +115,9 @@ class JakonInit {
 					}
 				})
 
-				app.error(404, new Handler { // TODO
+				app.error(404, new Handler {
 					override def handle(ctx: Context): Unit = {
-						val res = new StaticFilesController().doGet(ctx)
-						//ctx.result(res)
+						new StaticFilesController().doGet(ctx)
 					}
 				})
 			}

@@ -40,7 +40,7 @@ object Google extends OauthProvider {
 	def createAuthUrl(ctx: Context, redirectTo: String): String = {
 		if (!isEnabled) return ""
 
-		val secretState = setSecretState(ctx)
+		val secretState = getSecretState(ctx)
 
 
 		// Obtain the Authorization URL// Obtain the Authorization URL
