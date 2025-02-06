@@ -56,7 +56,6 @@ class LogViewerPagelet extends AbstractAdminPagelet {
 		val fis = new FileInputStream(file)
 		ctx.result(fis)
 		
-		fis.close()
 		file.delete()
 		null
 	}
