@@ -38,17 +38,17 @@ val Dependencies = new {
 				"org.apache.logging.log4j" % "log4j-api" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-core" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-slf4j2-impl" % V.log4j,
-				"org.xerial" % "sqlite-jdbc" % "3.47.1.0",
+				"org.xerial" % "sqlite-jdbc" % "3.48.0.0",
 				"mysql" % "mysql-connector-java" % "8.0.33",
 				"com.google.guava" % "guava" % "33.4.0-jre",
 				"commons-io" % "commons-io" % "2.18.0",
 				"org.apache.commons" % "commons-lang3" % "3.17.0",
-				"commons-codec" % "commons-codec" % "1.17.1",
+				"commons-codec" % "commons-codec" % "1.18.0",
 				"org.apache.commons" % "commons-fileupload2-jakarta" % "2.0.0-M1",
 				"de.svenkubiak" % "jBCrypt" % "0.4.3",
 				"com.sun.mail" % "jakarta.mail" % "2.0.1",
 				"org.commonmark" % "commonmark" % "0.24.0",
-				"com.google.code.gson" % "gson" % "2.11.0", // TODO remove
+				"com.google.code.gson" % "gson" % "2.12.1", // TODO remove
 				"io.circe" %% "circe-core" % V.circeVersion,
 				"io.circe" %% "circe-generic"% V.circeVersion,
 				"io.circe" %% "circe-parser"% V.circeVersion,
@@ -69,10 +69,9 @@ val Dependencies = new {
 	//noinspection SpellCheckingInspection
 	lazy val tests = Def.settings(
 		libraryDependencies ++= Seq(
-			//"dev.zio" %% "zio-http" % "3.0.0-RC2",
 			"org.scalatest" %% "scalatest" % "3.2.19" % "test",
 			"org.scalamock" %% "scalamock" % "6.0.0" % Test,
-			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.27.0" % "test"
+			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.28.0" % "test"
 		)
 	)
 }
