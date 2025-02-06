@@ -1,21 +1,22 @@
 {# @pebvariable name="pageNumber" type="java.lang.Integer" #}
 {# @pebvariable name="pageCount" type="java.lang.Integer" #}
 {# @pebvariable name="path" type="java.lang.String" #}
+{# @pebvariable name="extraParams" type="java.lang.String" #}
 
 <nav>
     <ul class="pagination">
         <li class="page-item{% if 1 == pageNumber %} disabled{% endif %}">
-            <a {% if 1 != pageNumber %}href="{{ path }}?page={{ pageNumber - 1 }}"{% endif %} aria-label="Previous" class="page-link">
+            <a {% if 1 != pageNumber %}href="{{ path }}?page={{ pageNumber - 1 }}{{ extraParams }}"{% endif %} aria-label="Previous" class="page-link">
                 <span aria-hidden="true">&laquo;</span>
             </a>
         </li>
         {% for i in range(1, pageCount) %}
             <li class="page-item{% if i == pageNumber %} active{% endif %}">
-				<a href="{{ path }}?page={{ i }}" class="page-link">{{ i }}</a>
+				<a href="{{ path }}?page={{ i }}{{ extraParams }}" class="page-link">{{ i }}</a>
 			</li>
         {% endfor %}
         <li class="page-item{% if pageNumber == pageCount %} disabled{% endif %}">
-            <a {% if pageNumber != pageCount %}href="{{ path }}?page={{ pageNumber + 1 }}"{% endif %} aria-label="Next" class="page-link">
+            <a {% if pageNumber != pageCount %}href="{{ path }}?page={{ pageNumber + 1 }}{{ extraParams }}"{% endif %} aria-label="Next" class="page-link">
                 <span aria-hidden="true">&raquo;</span>
             </a>
         </li>

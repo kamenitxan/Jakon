@@ -130,6 +130,10 @@
 	overflow-x: auto;
 }
 
+.no-wrap {
+	text-wrap: nowrap;
+}
+
 /* side menu */
 .sidebar #menu_objects, #menu_jakon_objects {
 	padding-left: 15px;

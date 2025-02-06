@@ -1,7 +1,7 @@
 package cz.kamenitxan.jakon.webui.pagelets
 
 import org.scalajs.dom
-import org.scalajs.dom.{Event, HTMLSelectElement, document}
+import org.scalajs.dom.{Event, HTMLSelectElement, URLSearchParams, document, window}
 
 import scala.scalajs.js.annotation.*
 
@@ -19,14 +19,12 @@ object LogViewerPageletJs {
 
 	private def filterSeverity(severity: String): Unit = {
 		val all = severity == "ALL"
+		val params = new URLSearchParams(window.location.search)
 		if (all) {
-			val selected = document.querySelectorAll(".logTable tbody tr")
-			selected.foreach(l => l.classList.remove("hidden"))
+			params.delete("severity")
 		} else {
-			val other = document.querySelectorAll(s".logTable tbody tr:not($severity)")
-			val selected = document.querySelectorAll(s".logTable tbody tr.$severity")
-			other.foreach(l => l.classList.add("hidden"))
-			selected.foreach(l => l.classList.remove("hidden"))
+			params.set("severity", severity)
 		}
+		window.location.search = params.toString
 	}
 }

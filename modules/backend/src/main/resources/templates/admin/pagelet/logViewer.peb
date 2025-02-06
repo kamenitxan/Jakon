@@ -1,5 +1,8 @@
 {# @pebvariable name="log" type="cz.kamenitxan.jakon.logging.Log" #}
 {# @pebvariable name="logs" type="java.util.List" #}
+{# @pebvariable name="severities" type="java.util.List" #}
+{# @pebvariable name="selectedSeverity" type="java.lang.String" #}
+{# @pebvariable name="extraParams" type="java.lang.String" #}
 
 {% extends "core" %}
 
@@ -20,6 +23,10 @@
 			<div class="panel panel-default">
 				<!-- /.panel-heading -->
 				<div class="panel-body logs">
+					{% if selectedSeverity != "ALL" %}
+						{% set extraParams = "&severity=#{selectedSeverity}" %}
+					{% endif %}
+					{% include "includes/pagination" with {"path":"/admin/logs", "extraParams":extraParams} %}
 					<table width="100%" class="table table-bordered table-hover logTable" >
 						<thead>
 						<tr>
@@ -32,9 +39,9 @@
 						<tr>
 							<th></th>
 							<th><select id="logSeverity">
-								<option value="ALL">{{ i18n("common","LOG_ALL") }}</option>
+								<option value="ALL" {% if selectedSeverity == "ALL" %}selected{% endif %}>{{ i18n("common","LOG_ALL") }}</option>
                                 {% for s in severities %}
-									<option value="{{ s }}">{{ s }}</option>
+									<option value="{{ s }}" {% if selectedSeverity == s %}selected{% endif %}>{{ s }}</option>
                                 {% endfor %}
 							</select>
 							</th>
@@ -46,7 +53,7 @@
 						<tbody>
                         {% for log in logs %}
 						<tr class="{{ log.severity }}">
-							<td>{{ log.time | date }}</td>
+							<td class="no-wrap">{{ log.time | date }}</td>
 							<td>{{ log.severity }}</td>
 							<td>{{ log.message }}</td>
 							<td>{{ log.cause }}</td>
@@ -55,6 +62,7 @@
                         {% endfor %}
 						</tbody>
 					</table>
+					{% include "includes/pagination" with {"path":"/admin/logs", "extraParams":extraParams} %}
 					<!-- /.table-responsive -->
 				</div>
 				<!-- /.panel-body -->

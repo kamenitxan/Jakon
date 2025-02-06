@@ -4,8 +4,6 @@ import com.sun.management.HotSpotDiagnosticMXBean
 import cz.kamenitxan.jakon.core.dynamic.{Get, Pagelet}
 import cz.kamenitxan.jakon.logging.*
 import io.javalin.http.Context
-import org.apache.commons.io.IOUtils
-import org.apache.commons.io.output.ByteArrayOutputStream
 
 import java.io.{File, FileInputStream, IOException}
 import java.lang.management.ManagementFactory
@@ -20,12 +18,26 @@ class LogViewerPagelet extends AbstractAdminPagelet {
 	override val name: String = this.getClass.getSimpleName
 	override val icon: String = "fa-exclamation-triangle"
 
+	private val pageSize = 200
 
 	@Get(path = "", template = "pagelet/logViewer")
 	def render(ctx: Context): mutable.Map[String, Any] = {
+		val severity = Option.apply(ctx.queryParam("severity"))
+		val pageNumber = Option.apply(ctx.queryParam("page")).map(_.toInt).getOrElse(1)
+		val from = (pageNumber - 1) * pageSize
+		val to = from + pageSize
+		val logs = LogService.getLogs.filter(l => {
+			severity match {
+				case Some(s) => l.severity.toString == s
+				case None => true
+			}
+		}).reverse
 		mutable.Map[String, Any](
-			"logs" -> LogService.getLogs.reverse.asJava,
-			"severities" -> Seq(Debug, Info, Warning, cz.kamenitxan.jakon.logging.Error, Critical).asJava
+			"logs" -> logs.slice(from, to).asJava,
+			"pageNumber" -> pageNumber,
+			"pageCount" -> Math.max(Math.ceil(logs.size / pageSize.toFloat), 1),
+			"severities" -> Seq(Debug, Info, Warning, cz.kamenitxan.jakon.logging.Error, Critical).map(_.toString).asJava,
+			"selectedSeverity" -> severity.getOrElse("ALL")
 		)
 	}
 
