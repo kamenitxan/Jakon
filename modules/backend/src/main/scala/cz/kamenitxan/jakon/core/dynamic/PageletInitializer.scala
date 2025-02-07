@@ -81,7 +81,7 @@ object PageletInitializer {
 				DBHelper.withDbConnection(conn => {
 					val methodArgs = createMethodArgs(m, ctx, conn, pagelet)
 					var context = m.invoke(pagelet, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
-					if (context != null && ctx.result() == null) {
+					if (ctx.result() == null) {
 						if (notRedirected(ctx)) {
 							if (pagelet.isInstanceOf[AbstractAdminPagelet]) {
 								if (context == null) {
