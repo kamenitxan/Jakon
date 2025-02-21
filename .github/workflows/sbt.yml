@@ -38,19 +38,3 @@ jobs:
         run: sbt compile
       - name: Test
         run: sbt githubTest
-      - name: Replace all working directory paths with sources path
-        run: if [[ -n "modules/backend/target/scala-3.3.4/scoverage-report/scoverage.xml" ]]; then sed -i -e s,`pwd`,/github/workspace,g modules/backend/target/scala-3.3.4/scoverage-report/scoverage.xml; fi
-        shell: bash
-      - name: Analyze with SonarCube
-        uses: sonarsource/sonarqube-scan-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        with:
-          args: >
-            -Dsonar.projectKey=kamenitxan_Jakon_AYX5P6qaok6eoBlpoZHT
-            -Dsonar.sources=modules/backend/src
-            -Dsonar.verbose=false
-            -Dsonar.exclusions=modules/backend/src/main/resources/**,modules/backend/src/test/**
-            -Dsonar.scala.coverage.reportPaths=modules/backend/target/scala-3.3.4/scoverage-report/scoverage.xml
