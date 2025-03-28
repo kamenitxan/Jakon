@@ -20,7 +20,7 @@ import scala.jdk.CollectionConverters.*
 object DeployDirector {
 	private val KV_PREFIX = "SERVER_LAST_DEPLOY_"
 
-	val servers: List[Server] = {
+	val servers: Seq[Server] = {
 		implicit val conn: Connection = DBHelper.getConnection
 		val source = Source.fromFile("servers.json")
 		try {
@@ -40,11 +40,11 @@ object DeployDirector {
 					}
 					new Server(id, s.url, s.path, lastDeployed)
 				})
-			b.toList
+			b.toSeq
 		} catch {
 			case e: Throwable =>
 				Logger.error("Failed to load deploy servers", e)
-				List[Server]()
+				Seq[Server]()
 		} finally {
 			conn.close()
 			source.close()
@@ -54,7 +54,7 @@ object DeployDirector {
 	}
 	val deployer: IDeploy = {
 		val cls = Class.forName(Settings.getDeployType)
-		cls.newInstance().asInstanceOf[IDeploy]
+		cls.getDeclaredConstructor().newInstance().asInstanceOf[IDeploy]
 	}
 
 	def deploy(): Unit = {

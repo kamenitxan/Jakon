@@ -9,8 +9,8 @@ import cz.kamenitxan.jakon.core.service.UserService
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.gson.*
 import cz.kamenitxan.jakon.webui.api.Api
+import cz.kamenitxan.jakon.webui.controller.AbstractController
 import cz.kamenitxan.jakon.webui.controller.impl.{Authentication, FileManagerController, ObjectController, UserController}
-import cz.kamenitxan.jakon.webui.controller.{AbstractController, ExecuteFun}
 import cz.kamenitxan.jakon.webui.util.AdminExceptionHandler
 import io.javalin.apibuilder.ApiBuilder
 import io.javalin.apibuilder.ApiBuilder.*
@@ -241,30 +241,6 @@ object Routes {
 						ctx.result(res)
 					}
 				})
-				val methods = c.getDeclaredMethods
-				for (m <- methods) {
-					val an = m.getAnnotation(classOf[ExecuteFun])
-					if (an != null) {
-						if (!m.isAccessible) m.setAccessible(true)
-						an.method match {
-							case x if x == HttpMethod.get =>
-								get(s"$AdminPrefix/" + an.path, new Handler {
-									override def handle(ctx: Context): Unit = {
-										val res = render(ctx, m.invoke(instance, ctx).asInstanceOf[cz.kamenitxan.jakon.webui.Context])
-										ctx.result(res)
-									}
-								})
-							case HttpMethod.post =>
-								post(s"$AdminPrefix/" + an.path, new Handler {
-									override def handle(ctx: Context): Unit = {
-										val res = render(ctx,  m.invoke(instance, ctx).asInstanceOf[cz.kamenitxan.jakon.webui.Context])
-										ctx.result(res)
-									}
-								})
-							case default => throw new UnsupportedOperationException(default.toString + " is not supported")
-						}
-					}
-				}
 				Logger.info("Custom admin controller registered: " + instance.getClass.getSimpleName)
 			} catch {
 				case e@(_: InstantiationException | _: IllegalAccessException) =>

@@ -21,7 +21,7 @@ import scala.jdk.CollectionConverters.*
 
 
 object PageletInitializer {
-	private val METHOD_VALDIATE = "validate"
+	private val METHOD_VALIDATE = "validate"
 	private val gson = new Gson
 
 	val protectedPrefixes: mutable.Buffer[String] = mutable.Buffer[String]()
@@ -117,7 +117,7 @@ object PageletInitializer {
 					val formData = EntityValidator.createFormData(ctx, dataClass.get)
 					EntityValidator.validate(dataClass.get.getSimpleName, formData) match {
 						case Left(result) =>
-							if ("true".equals(ctx.queryParam(METHOD_VALDIATE))) {
+							if ("true".equals(ctx.queryParam(METHOD_VALIDATE))) {
 								val res = gson.toJson(result)
 								ctx.result(res)
 							} else {
@@ -128,7 +128,7 @@ object PageletInitializer {
 								pagelet.redirect(ctx, path, rp)
 							}
 						case Right(_) =>
-							val result = if ("true".equals(ctx.queryParam(METHOD_VALDIATE))) {
+							val result = if ("true".equals(ctx.queryParam(METHOD_VALIDATE))) {
 								gson.toJson(true)
 							} else {
 								val methodArgs = createMethodArgs(m, ctx, pagelet)
