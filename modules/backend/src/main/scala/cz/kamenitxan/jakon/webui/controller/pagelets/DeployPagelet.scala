@@ -12,7 +12,7 @@ import scala.jdk.CollectionConverters.*
 
 
 @Pagelet(path = "/admin/deploy", showInAdmin = true)
-class DeployController extends AbstractAdminPagelet {
+class DeployPagelet extends AbstractAdminPagelet {
 
 	override val name: String = this.getClass.getSimpleName
 	override val icon: String = "fa-server"

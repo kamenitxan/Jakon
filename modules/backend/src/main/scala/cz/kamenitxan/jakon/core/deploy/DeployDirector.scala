@@ -14,7 +14,7 @@ import java.lang.reflect.Type
 import java.sql.Connection
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import scala.io.Source
+import scala.io.{BufferedSource, Source}
 import scala.jdk.CollectionConverters.*
 
 object DeployDirector {
@@ -22,8 +22,9 @@ object DeployDirector {
 
 	val servers: Seq[Server] = {
 		implicit val conn: Connection = DBHelper.getConnection
-		val source = Source.fromFile("servers.json")
+		var source: BufferedSource = null
 		try {
+			source = Source.fromFile("servers.json")
 			val gson = new Gson()
 			import java.util
 			val listType: Type = new TypeToken[util.ArrayList[Server]]() {}.getType
@@ -47,7 +48,9 @@ object DeployDirector {
 				Seq[Server]()
 		} finally {
 			conn.close()
-			source.close()
+			if (source != null) {
+				source.close()
+			}
 		}
 
 
