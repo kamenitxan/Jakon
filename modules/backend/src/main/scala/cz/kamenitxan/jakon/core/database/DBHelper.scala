@@ -9,7 +9,6 @@ import cz.kamenitxan.jakon.utils.TypeReferences.SEQ
 import cz.kamenitxan.jakon.utils.Utils.*
 import org.sqlite.SQLiteConfig
 
-import java.lang.reflect.ParameterizedType
 import java.sql.*
 import scala.collection.mutable
 
@@ -33,8 +32,6 @@ object DBHelper {
 	def getDaoClasses: mutable.ArrayBuffer[Class[_ <: JakonObject]] = objects
 
 	def getConnection: Connection = {
-		//TODO: single conn for request
-
 		val conn = if (Settings.getDatabaseType == DatabaseType.SQLITE) {
 			Class.forName(Settings.getDatabaseDriver)
 			var connection: Connection = null

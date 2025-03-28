@@ -63,7 +63,7 @@ object JsonPageletInitializer {
 				ctx.contentType(JsonContentType)
 				val pagelet = c.getDeclaredConstructor().newInstance().asInstanceOf[AbstractJsonPagelet]
 				val response: String = DBHelper.withDbConnection(implicit conn => {
-					val methodArgs = createMethodArgs(m, ctx, conn, pagelet)
+					val methodArgs = createMethodArgs(m, ctx, pagelet)
 					try {
 						val responseData = m.invoke(pagelet, methodArgs.array: _*)
 						createResponse(responseData, pagelet)
@@ -71,6 +71,8 @@ object JsonPageletInitializer {
 						case ex: Exception =>
 							Logger.error(s"${pagelet.getClass.getCanonicalName}.${m.getName}() threw exception", ex)
 							createErrorResponse(ex, ctx, pagelet)
+					} finally {
+						methodArgs.connection.foreach(_.close())
 					}
 				})
 				ctx.result(response)
@@ -83,7 +85,7 @@ object JsonPageletInitializer {
 			override def handle(ctx: Context): Unit = {
 				ctx.contentType(JsonContentType)
 				val controller = c.getDeclaredConstructor().newInstance().asInstanceOf[AbstractJsonPagelet]
-				var methodArgs: (PageletInitializer.MethodArgs, Option[Connection]) = null
+				var methodArgs: PageletInitializer.MethodArgs = null
 				try {
 					val dataClass = PageletInitializer.getDataClass(m)
 					val response = if (post.validate() && dataClass.isDefined) {
@@ -102,13 +104,13 @@ object JsonPageletInitializer {
 								createFailResponse(ctx, controller, translatedErrors)
 							case Right(validatedData) =>
 								methodArgs = parseJsonArgs(m, ctx, controller, validatedData)
-								val methodArgsArray = methodArgs._1.array
+								val methodArgsArray = methodArgs.array
 								val responseData = m.invoke(controller, methodArgsArray: _*)
 								createResponse(responseData, controller)
 						}
 					} else {
 						methodArgs = parseJsonArgs(m, ctx, controller)
-						val methodArgsArray = methodArgs._1.array
+						val methodArgsArray = methodArgs.array
 						val responseData = m.invoke(controller, methodArgsArray: _*)
 						createResponse(responseData, controller)
 					}
@@ -119,8 +121,8 @@ object JsonPageletInitializer {
 						val response = createErrorResponse(ex, ctx, controller)
 						ctx.result(response)
 				} finally {
-					if (methodArgs != null && methodArgs._2.isDefined) {
-						methodArgs._2.get.close()
+					if (methodArgs != null) {
+						methodArgs.connection.foreach(_.close())
 					}
 				}
 			}
@@ -174,12 +176,12 @@ object JsonPageletInitializer {
 														ctx: Context,
 														controller: AbstractJsonPagelet,
 														validatedData: Map[Field, ParsedValue] = Map.empty
-													 ): (PageletInitializer.MethodArgs, Option[Connection]) = {
+													 ): PageletInitializer.MethodArgs = {
 		var dataRef: Any = null
 		var conn: Connection = null
 		val arr: Array[Any] = m.getParameterTypes.map {
 			case CONTEXT_CLS => ctx
-			case CONNECTION_CLS =>
+			case CONNECTION_CLS => DBHelper.getConnection
 				conn = DBHelper.getConnection
 				conn
 			case t =>
@@ -188,6 +190,6 @@ object JsonPageletInitializer {
 				Logger.debug(data.toString)
 				data
 		}
-		(new MethodArgs(arr, dataRef), Option.apply(conn))
+		new MethodArgs(arr, dataRef, Option.apply(conn))
 	}
 }

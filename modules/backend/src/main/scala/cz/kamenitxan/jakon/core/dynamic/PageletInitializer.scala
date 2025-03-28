@@ -77,9 +77,8 @@ object PageletInitializer {
 		JakonInit.javalin.get(controllerAnn.path() + get.path(), new Handler {
 			override def handle(ctx: Context): Unit = {
 				val pagelet: IPagelet = c.getDeclaredConstructor().newInstance().asInstanceOf[IPagelet]
-				// TODO: vytvoreni conn pouze pokud je potreba
-				DBHelper.withDbConnection(conn => {
-					val methodArgs = createMethodArgs(m, ctx, conn, pagelet)
+				val methodArgs = createMethodArgs(m, ctx, pagelet)
+				try {
 					var context = m.invoke(pagelet, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
 					if (ctx.result() == null) {
 						if (notRedirected(ctx)) {
@@ -101,7 +100,9 @@ object PageletInitializer {
 							ctx.result("")
 						}
 					}
-				})
+				} finally {
+					methodArgs.connection.foreach(_.close())
+				}
 			}
 		})
 	}
@@ -111,38 +112,43 @@ object PageletInitializer {
 			override def handle(ctx: Context): Unit = {
 				val pagelet = c.getDeclaredConstructor().newInstance().asInstanceOf[IPagelet]
 
-				// TODO: vytvoreni conn pouze pokud je potreba
-				DBHelper.withDbConnection(conn => {
-					val dataClass = getDataClass(m)
-					if (post.validate() && dataClass.isDefined) {
-						val formData = EntityValidator.createFormData(ctx, dataClass.get)
-						EntityValidator.validate(dataClass.get.getSimpleName, formData) match {
-							case Left(result) =>
-								if ("true".equals(ctx.queryParam(METHOD_VALDIATE))) {
-									val res = gson.toJson(result)
-									ctx.result(res)
-								} else {
-									result.foreach(r => PageContext.getInstance().messages += r)
-									val rp = formData.map(kv => (kv._1.getName, kv._2))
+				val dataClass = getDataClass(m)
+				if (post.validate() && dataClass.isDefined) {
+					val formData = EntityValidator.createFormData(ctx, dataClass.get)
+					EntityValidator.validate(dataClass.get.getSimpleName, formData) match {
+						case Left(result) =>
+							if ("true".equals(ctx.queryParam(METHOD_VALDIATE))) {
+								val res = gson.toJson(result)
+								ctx.result(res)
+							} else {
+								result.foreach(r => PageContext.getInstance().messages += r)
+								val rp = formData.map(kv => (kv._1.getName, kv._2))
 
-									val path = replacePathParams(controllerAnn.path() + post.path(), ctx.pathParamMap().asScala)
-									pagelet.redirect(ctx, path, rp)
-								}
-							case Right(_) =>
-								val result = if ("true".equals(ctx.queryParam(METHOD_VALDIATE))) {
-									gson.toJson(true)
-								} else {
-									val methodArgs = createMethodArgs(m, ctx, conn, pagelet)
+								val path = replacePathParams(controllerAnn.path() + post.path(), ctx.pathParamMap().asScala)
+								pagelet.redirect(ctx, path, rp)
+							}
+						case Right(_) =>
+							val result = if ("true".equals(ctx.queryParam(METHOD_VALDIATE))) {
+								gson.toJson(true)
+							} else {
+								val methodArgs = createMethodArgs(m, ctx, pagelet)
+								try {
 									invokePost(ctx, pagelet, m, post, methodArgs)
+								} finally {
+									methodArgs.connection.foreach(_.close())
 								}
-								ctx.result(result)
-						}
-					} else {
-						val methodArgs = createMethodArgs(m, ctx, conn, pagelet)
+							}
+							ctx.result(result)
+					}
+				} else {
+					val methodArgs = createMethodArgs(m, ctx, pagelet)
+					try {
 						val result = invokePost(ctx, pagelet, m, post, methodArgs)
 						ctx.result(result)
+					} finally {
+						methodArgs.connection.foreach(_.close())
 					}
-				})
+				}
 			}
 		})
 	}
@@ -196,11 +202,14 @@ object PageletInitializer {
 		m.getParameterTypes.find(c => c != CONTEXT_CLS && c != CONNECTION_CLS)
 	}
 
-	private[dynamic] def createMethodArgs(m: Method, ctx: Context, conn: Connection, pagelet: AnyRef): MethodArgs = {
+	private[dynamic] def createMethodArgs(m: Method, ctx: Context, pagelet: AnyRef): MethodArgs = {
 		var dataRef: Any = null
+		var conn: Connection = null
 		val arr = m.getParameterTypes.map {
 			case CONTEXT_CLS => ctx
-			case CONNECTION_CLS => conn
+			case CONNECTION_CLS => 
+				conn = DBHelper.getConnection
+				conn
 			case t =>
 				val enclosingCls = t.getEnclosingClass
 				val constructor = if (enclosingCls != null) t.getDeclaredConstructor(enclosingCls) else t.getDeclaredConstructor()
@@ -224,9 +233,9 @@ object PageletInitializer {
 				dataRef = data
 				data
 		}.asInstanceOf[Array[Any]]
-		new MethodArgs(arr, dataRef)
+		new MethodArgs(arr, dataRef, Option.apply(conn))
 	}
 
-	class MethodArgs(val array: Array[Any], val data: Any)
+	class MethodArgs(val array: Array[Any], val data: Any, val connection: Option[Connection])
 
 }
