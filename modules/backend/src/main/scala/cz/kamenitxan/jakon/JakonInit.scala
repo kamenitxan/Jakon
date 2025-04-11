@@ -83,6 +83,7 @@ class JakonInit {
 		val app = Javalin.create(config => {
 			config.jetty.defaultPort = portNumber
 			config.http.defaultContentType = "text/html; charset=utf-8"
+			config.router.treatMultipleSlashesAsSingleSlash = true
 			config.staticFiles.add(Settings.getStaticDir)
 			config.staticFiles.add("/static")
 			config.registerPlugin(new ContextExtension)

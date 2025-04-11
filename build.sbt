@@ -5,7 +5,7 @@ val V = new {
 	val Scala = "3.3.4"
   val jakon = "0.7.0-SNAPSHOT"
 	val log4j = "2.24.3"
-	val circeVersion = "0.14.10"
+	val circeVersion = "0.14.12"
 }
 
 scalaVersion := V.Scala
@@ -31,8 +31,8 @@ val Dependencies = new {
 	lazy val backend = Seq(
 		libraryDependencies ++=
 			Seq(
-				"io.javalin" % "javalin" % "6.4.0",
-				"io.javalin" % "javalin-rendering" % "6.4.0",
+				"io.javalin" % "javalin" % "6.5.0",
+				"io.javalin" % "javalin-rendering" % "6.5.0",
 				"io.pebbletemplates" % "pebble" % "3.1.6",
 				"org.slf4j" % "slf4j-api" % "2.0.17",
 				"org.apache.logging.log4j" % "log4j-api" % V.log4j,
@@ -40,11 +40,11 @@ val Dependencies = new {
 				"org.apache.logging.log4j" % "log4j-slf4j2-impl" % V.log4j,
 				"org.xerial" % "sqlite-jdbc" % "3.49.1.0",
 				"com.mysql" % "mysql-connector-j" % "9.2.0",
-				"com.google.guava" % "guava" % "33.4.0-jre",
+				"com.google.guava" % "guava" % "33.4.7-jre",
 				"commons-io" % "commons-io" % "2.18.0",
 				"org.apache.commons" % "commons-lang3" % "3.17.0",
 				"commons-codec" % "commons-codec" % "1.18.0",
-				"org.apache.commons" % "commons-fileupload2-jakarta" % "2.0.0-M1",
+				"org.apache.commons" % "commons-fileupload2-jakarta" % "2.0.0-M1", // TODO remove
 				"de.svenkubiak" % "jBCrypt" % "0.4.3",
 				"com.sun.mail" % "jakarta.mail" % "2.0.1",
 				"org.commonmark" % "commonmark" % "0.24.0",
@@ -55,7 +55,7 @@ val Dependencies = new {
 				//"org.apache.lucene" % "lucene-core" % "7.5.0",
 				//"org.apache.lucene" % "lucene-queryparser" % "7.5.0",
 				"io.github.classgraph" % "classgraph" % "4.8.179",
-				"com.zaxxer" % "HikariCP" % "6.2.1",
+				"com.zaxxer" % "HikariCP" % "6.3.0",
 				"com.github.scribejava" % "scribejava-apis" % "8.3.3",
 				"cz.etn" % "email-validator" % "1.4.0",
 				"com.lihaoyi" %% "sourcecode" % "0.4.2"
@@ -71,7 +71,7 @@ val Dependencies = new {
 		libraryDependencies ++= Seq(
 			"org.scalatest" %% "scalatest" % "3.2.19" % "test",
 			"org.scalamock" %% "scalamock" % "6.0.0" % Test,
-			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.28.0" % "test"
+			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.30.0" % "test"
 		)
 	)
 }
