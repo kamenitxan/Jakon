@@ -13,6 +13,7 @@ import cz.kamenitxan.jakon.utils.{ContextExtension, LoggingExceptionHandler, Pag
 import cz.kamenitxan.jakon.webui.controller.impl.FileManagerController
 import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, ResetPasswordEmailEntity}
 import cz.kamenitxan.jakon.webui.{AdminSettings, Routes}
+import io.github.classgraph.ScanResult
 import io.javalin.Javalin
 import io.javalin.apibuilder.ApiBuilder
 import io.javalin.config.JavalinConfig
@@ -25,6 +26,7 @@ import java.util.concurrent.TimeUnit
 
 class JakonInit {
 
+	//noinspection ScalaWeakerAccess
 	protected def javalinConfig(config: JavalinConfig): Unit = {
 		// override to add custom Javalin config
 	}
@@ -33,10 +35,21 @@ class JakonInit {
 		// override to add custom DB entities
 	}
 
-	var websocketSetup: () => Unit = () => {}
-	var routesSetup: () => Unit = () => {}
+	protected def classScanHandler(scanResult: ScanResult): Unit = {
+		// override to add class scan handler
+	}
 
-	def adminControllers(): Unit = {
+	//noinspection ScalaWeakerAccess
+	protected def websocketSetup(javalin: Javalin): Unit = {
+		// override to add websocket setup
+	}
+
+	//noinspection ScalaWeakerAccess
+	protected def routesSetup(javalin: Javalin): Unit = {
+		// override to custom routes
+	}
+
+	protected def adminControllers(): Unit = {
 		if (Files.exists(Paths.get("servers.json"))) {
 			// TODO skryvani controleru udelat nejak jinak
 			//AdminSettings.registerCustomController(classOf[DeployController])
@@ -46,7 +59,8 @@ class JakonInit {
 		}
 	}
 
-	def taskSetup(): Unit = {
+	//noinspection ScalaWeakerAccess
+	protected def taskSetup(): Unit = {
 		TaskRunner.registerTask(new RenderTask(10, TimeUnit.MINUTES))
 		if (Settings.isEmailEnabled) {
 			DBHelper.addDao(classOf[EmailEntity])
@@ -60,7 +74,7 @@ class JakonInit {
 		TaskRunner.registerTask(new LogCleanerTask)
 	}
 
-	def afterInit(): Unit = {
+	protected def afterInit(): Unit = {
 		// override to do some stuff after Jakon start
 	}
 
@@ -99,7 +113,7 @@ class JakonInit {
 		taskSetup()
 
 		if (Settings.isInitRoutes) {
-			websocketSetup()
+			websocketSetup(app)
 			app.before((ctx: Context) => {
 				PageContext.init(ctx)
 			})
@@ -123,12 +137,12 @@ class JakonInit {
 					}
 				})
 			}
-			routesSetup()
+			routesSetup(app)
 			initDevMode(app)
 		}
 
 
-		annotationScanner.load()
+		annotationScanner.load(sr => classScanHandler(sr))
 		app.start(portNumber)
 		Logger.info(s"Jakon started on port $portNumber")
 		Director.start()

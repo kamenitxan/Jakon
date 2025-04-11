@@ -7,17 +7,17 @@ import cz.kamenitxan.jakon.webui.controller.objectextension.{ObjectExtension, Ob
 import io.github.classgraph.{ClassGraph, ClassInfoList, ScanResult}
 
 import java.io.File
-import java.nio.file.{Files, Path, StandardCopyOption}
+import java.nio.file.{Files, StandardCopyOption}
 import java.util.regex.Pattern
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 
 class AnnotationScanner {
 
 	private val scanResult = {
 		val cg = new ClassGraph().enableAllInfo()
-		cg.whitelistPaths("/static")
-		Settings.getPackage.foreach(p => cg.whitelistPackages(p))
+		cg.acceptPaths("/static")
+		Settings.getPackage.foreach(p => cg.acceptPackages(p))
 
 		val result = Utils.measured(elapsedTime => "Annotations scanned in " + elapsedTime + " ms") {
 			cg.scan()
@@ -30,13 +30,19 @@ class AnnotationScanner {
 		loadConfiguration(scanResult)
 	}
 
-	def load(): Unit = {
+	/**
+	 * Loads necessary components into the application.
+	 *
+	 * @param extraHandler A callback function that can be used to perform additional actions  after loading the application components.
+	 */
+	def load(extraHandler: (scanResult: ScanResult) => Unit): Unit = {
 		try {
 			if (Settings.isInitRoutes) {
-				loadControllers(scanResult)
+				loadPagelets(scanResult)
 				loadObjectExtensions(scanResult)
 			}
 			loadCustomPages(scanResult)
+			extraHandler(scanResult)
 			copyResources()
 		} finally {
 			scanResult.close()
@@ -54,11 +60,11 @@ class AnnotationScanner {
 		})
 	}
 
-	private def loadControllers(scanResult: ScanResult): Unit = {
-		val controllers = scanResult.getClassesWithAnnotation(classOf[Pagelet].getCanonicalName).loadScalaClasses()
-		val jsonControllers = scanResult.getClassesWithAnnotation(classOf[JsonPagelet].getCanonicalName).loadScalaClasses()
-		PageletInitializer.initControllers(controllers)
-		JsonPageletInitializer.initControllers(jsonControllers)
+	private def loadPagelets(scanResult: ScanResult): Unit = {
+		val pagelets = scanResult.getClassesWithAnnotation(classOf[Pagelet].getCanonicalName).loadScalaClasses()
+		val jsonPagelets = scanResult.getClassesWithAnnotation(classOf[JsonPagelet].getCanonicalName).loadScalaClasses()
+		PageletInitializer.initControllers(pagelets)
+		JsonPageletInitializer.initControllers(jsonPagelets)
 	}
 
 	private def loadCustomPages(scanResult: ScanResult): Unit = {
