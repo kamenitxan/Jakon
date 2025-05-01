@@ -40,12 +40,12 @@ object UserController {
 				"objectName" -> classOf[JakonUser].getSimpleName
 			), "pages/unauthorized")
 		}
-		val params = ctx.queryParamMap().asScala
+		val params = ctx.formParamMap().asScala
 		val user = PageContext.getInstance().getLoggedUser.get
 		val userFields = Utils.getFieldsUpTo(user.getClass, classOf[Object])
 		
-		for (p <- params.filter(p => !p.equals("id"))) {
-			val fieldRefOpt = userFields.find(f => f.getName.equals(p))
+		for (p <- params.filter(p => !p._1.equals("id"))) {
+			val fieldRefOpt = userFields.find(f => f.getName.equals(p._1))
 			if (fieldRefOpt.isDefined) {
 				val fieldRef = fieldRefOpt.get
 				fieldRef.setAccessible(true)

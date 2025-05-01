@@ -161,7 +161,7 @@ object ObjectController {
 	}
 
 	def updateItem(ctx: Context): cz.kamenitxan.jakon.webui.Context = {
-		val params = ctx.queryParamMap().asScala.keySet.toSet
+		val params = ctx.formParamMap().asScala.keySet.toSet
 		val objectName = ctx.pathParam("name")
 		val objectId = ctx.`with`(classOf[ContextExtension]).pathParamOpt("id").map(_.toInt)
 		val objectClass = DBHelper.getDaoClasses.find(c => c.getSimpleName.equals(objectName)).head
@@ -203,12 +203,11 @@ object ObjectController {
 		var formOrder = 0
 		val fields = Utils.getFieldsUpTo(objectClass, classOf[Object])
 		for (p <- params.filter(p => !p.equals("id"))) {
-			//TODO optimalizovat
 			val fieldRefOpt = fields.find(f => f.getName.startsWith(p))
 			if (fieldRefOpt.isDefined) {
 				val fieldRef = fieldRefOpt.get
 				fieldRef.setAccessible(true)
-				val value = ctx.queryParams(p).asScala.map(_.trim).mkString("\r\n").conform(fieldRef)
+				val value = ctx.formParams(p).asScala.map(_.trim).mkString("\r\n").conform(fieldRef)
 				if (value != null) {
 					p match {
 						case "visibleOrder" => formOrder = value.asInstanceOf[Int]
