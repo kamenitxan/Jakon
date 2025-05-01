@@ -30,7 +30,7 @@ class JakonUserEmailExtension extends AbstractObjectExtension {
 			context += "emailTemplates" -> templates.asJava
 			context += "filterParams" -> ctx.queryParamMap().asScala
 			  .filter(kv => kv._1.startsWith("filter_") && kv._2.asScala.head.nonEmpty)
-			  .mapValues(v => v.asScala.mkString)
+			  .view.mapValues(v => v.asScala.mkString)
 			  .asJava
 			super.render(context, templatePath, ctx)
 		} else {

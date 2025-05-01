@@ -38,14 +38,14 @@ class Context(var model: Map[String, Any], viewName: String) extends ModelAndVie
 }
 
 object Context {
-	lazy val objectSettings = DBHelper.getDaoClasses.map(o => (o.getSimpleName, o.newInstance().objectSettings)).toMap.asJava
+	lazy val objectSettings: util.Map[String, ObjectSettings] = DBHelper.getDaoClasses.map(o => (o.getSimpleName, o.getDeclaredConstructor().newInstance().objectSettings)).toMap.asJava
 
 	def getAdminContext: Map[String, Any] = {
 		val user = PageContext.getInstance().getLoggedUser
 		val allModelClasses = DBHelper.getDaoClasses
 			.filter(c => user.nonEmpty && (user.get.acl.masterAdmin || user.get.acl.allowedControllers.contains(c.getCanonicalName)))
 			.groupBy(c => c.getPackage.getName.startsWith("cz.kamenitxan.jakon"))
-			.mapValues(cl => cl.map(c => c.getSimpleName).asJavaCollection)
+			.view.mapValues(cl => cl.map(c => c.getSimpleName).asJavaCollection)
 		val customControllers = AdminSettings.customControllersInfo
 			.filter(c => user.nonEmpty && (user.get.acl.masterAdmin || user.get.acl.allowedControllers.contains(c.cls.getCanonicalName)))
 

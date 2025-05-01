@@ -1,7 +1,5 @@
 package cz.kamenitxan.jakon.webui.controller.pagelets
 
-import java.sql.Connection
-import java.util.Date
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.dynamic.{Get, Pagelet, Post}
 import cz.kamenitxan.jakon.core.model.JakonUser
@@ -12,6 +10,8 @@ import cz.kamenitxan.jakon.webui.controller.pagelets.data.{ForgetPasswordData, S
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity, ResetPasswordEmailEntity}
 import io.javalin.http.Context
 
+import java.sql.Connection
+import java.util.Date
 import scala.collection.mutable
 
 
@@ -60,14 +60,13 @@ class ForgetPasswordPagelet extends AbstractAdminPagelet {
 			val rpe = DBHelper.selectSingleDeep(stmt)(implicitly, classOf[ResetPasswordEmailEntity])
 			if (rpe == null || rpe.expirationDate.before(new Date())) {
 				PageContext.getInstance().addMessage(MessageSeverity.ERROR, "PASSWORD_CHANGE_NOT_FOUND")
-				redirect(ctx, "/")
-				return null
+			} else {
+				rpe.user.password = data.password
+				rpe.user.update()
+				rpe.delete()
+				PageContext.getInstance().addMessage(MessageSeverity.SUCCESS, "PASSWORD_CHANGED")
 			}
-			rpe.user.password = data.password
-			rpe.user.update()
-			rpe.delete()
 		})
-		PageContext.getInstance().addMessage(MessageSeverity.SUCCESS, "PASSWORD_CHANGED")
 		redirect(ctx, "/")
 		null
 	}

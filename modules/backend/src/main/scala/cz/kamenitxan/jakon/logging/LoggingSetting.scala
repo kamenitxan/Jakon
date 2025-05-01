@@ -56,7 +56,7 @@ object LoggingSetting {
 	def getLogRepository: LogRepository = logRepository
 
 	def setLogRepository(cls: String): Unit = {
-		this.logRepository = Class.forName(cls).newInstance().asInstanceOf[LogRepository]
+		this.logRepository = Class.forName(cls).getDeclaredConstructor().newInstance().asInstanceOf[LogRepository]
 		Logger.debug(s"lr = ${logRepository.getClass.getCanonicalName}")
 	}
 }

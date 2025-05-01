@@ -11,9 +11,9 @@ object CustomPageInitializer {
 			Logger.info("Initializing custom page: " + cp.getSimpleName)
 			if (!isChildOf(cp, classOf[AbstractCustomPage])) {
 				Logger.error(cp.getSimpleName + " is not child of AbstractCustomPage")
-				return
+			} else {
+				Director.registerCustomPage(cp.getDeclaredConstructor().newInstance().asInstanceOf[AbstractCustomPage])
 			}
-			Director.registerCustomPage(cp.newInstance().asInstanceOf[AbstractCustomPage])
 		})
 		Logger.info("Initializing custom pages complete")
 	}
@@ -24,9 +24,9 @@ object CustomPageInitializer {
 			Logger.info("Initializing static page: " + cp.getSimpleName)
 			if (!isChildOf(cp, classOf[AbstractStaticPage])) {
 				Logger.error(cp.getSimpleName + " is not child of AbstractStaticPage")
-				return
+			} else {
+				Director.registerCustomPage(cp.getDeclaredConstructor().newInstance().asInstanceOf[AbstractStaticPage])
 			}
-			Director.registerCustomPage(cp.newInstance().asInstanceOf[AbstractStaticPage])
 		})
 		Logger.info("Initializing static pages complete")
 	}
