@@ -5,7 +5,8 @@ val V = new {
 	val Scala = "3.3.4"
   val jakon = "0.7.0-SNAPSHOT"
 	val log4j = "2.24.3"
-	val circeVersion = "0.14.12"
+	val circeVersion = "0.14.13"
+	val javalin = "6.6.0"
 }
 
 scalaVersion := V.Scala
@@ -31,24 +32,24 @@ val Dependencies = new {
 	lazy val backend = Seq(
 		libraryDependencies ++=
 			Seq(
-				"io.javalin" % "javalin" % "6.5.0",
-				"io.javalin" % "javalin-rendering" % "6.5.0",
+				"io.javalin" % "javalin" % V.javalin,
+				"io.javalin" % "javalin-rendering" % V.javalin,
 				"io.pebbletemplates" % "pebble" % "3.1.6",
 				"org.slf4j" % "slf4j-api" % "2.0.17",
 				"org.apache.logging.log4j" % "log4j-api" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-core" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-slf4j2-impl" % V.log4j,
 				"org.xerial" % "sqlite-jdbc" % "3.49.1.0",
-				"com.mysql" % "mysql-connector-j" % "9.2.0",
-				"com.google.guava" % "guava" % "33.4.7-jre",
-				"commons-io" % "commons-io" % "2.18.0",
+				"com.mysql" % "mysql-connector-j" % "9.3.0",
+				"com.google.guava" % "guava" % "33.4.8-jre",
+				"commons-io" % "commons-io" % "2.19.0",
 				"org.apache.commons" % "commons-lang3" % "3.17.0",
 				"commons-codec" % "commons-codec" % "1.18.0",
 				"org.apache.commons" % "commons-fileupload2-jakarta" % "2.0.0-M1", // TODO remove
 				"de.svenkubiak" % "jBCrypt" % "0.4.3",
 				"com.sun.mail" % "jakarta.mail" % "2.0.1",
 				"org.commonmark" % "commonmark" % "0.24.0",
-				"com.google.code.gson" % "gson" % "2.12.1", // TODO remove
+				"com.google.code.gson" % "gson" % "2.13.1", // TODO remove
 				"io.circe" %% "circe-core" % V.circeVersion,
 				"io.circe" %% "circe-generic"% V.circeVersion,
 				"io.circe" %% "circe-parser"% V.circeVersion,
