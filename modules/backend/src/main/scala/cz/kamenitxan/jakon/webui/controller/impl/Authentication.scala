@@ -2,7 +2,6 @@ package cz.kamenitxan.jakon.webui.controller.impl
 
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper
-import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
 import cz.kamenitxan.jakon.core.service.UserService
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.security.oauth.{Facebook, Google}
@@ -35,8 +34,8 @@ object Authentication {
 	}
 
 	def loginPost(ctx: Context): ModelAndView = {
-		val email = ctx.queryParam("email")
-		val password = ctx.queryParam("password")
+		val email = ctx.formParam("email")
+		val password = ctx.formParam("password")
 		val redirectTo = ctx.queryParam("redirect_to")
 		if (email != null && password != null) {
 			implicit val conn: Connection = DBHelper.getConnection
