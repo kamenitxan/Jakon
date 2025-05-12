@@ -5,7 +5,7 @@ import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.dynamic.PageletInitializer.{MethodArgs, createMethodArgs}
 import cz.kamenitxan.jakon.core.dynamic.arguments.ParsedValue
-import cz.kamenitxan.jakon.core.dynamic.entity.{AbstractJsonResponse, JsonErrorResponse, JsonFailResponse, ResponseStatus}
+import cz.kamenitxan.jakon.core.dynamic.entity.*
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.I18nUtil
 import cz.kamenitxan.jakon.utils.TypeReferences.*
@@ -138,7 +138,8 @@ object JsonPageletInitializer {
 			controller.gson.toJson(jr, classOf[AbstractJsonResponse[AnyRef]])
 		}
 		responseData match {
-			case rd: AbstractJsonResponse[AnyRef] => controller.gson.toJson(rd)
+			case rd: AbstractJsonResponse[_] => controller.gson.toJson(rd)
+			case rd: ApiResponse[_] => controller.gson.toJson(rd)
 			case rd: String => if (controller.wrapResponse) {
 				wrap(rd)
 			} else {
