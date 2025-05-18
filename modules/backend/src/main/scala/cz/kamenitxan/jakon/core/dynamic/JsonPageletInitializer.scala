@@ -135,11 +135,11 @@ object JsonPageletInitializer {
 		}
 		val wrap = (data: AnyRef) => {
 			val jr = new AbstractJsonResponse(ResponseStatus.success, data) {}
-			controller.gson.toJson(jr, classOf[AbstractJsonResponse[AnyRef]])
+			controller.encodeToJson(jr)
 		}
 		responseData match {
-			case rd: AbstractJsonResponse[_] => controller.gson.toJson(rd)
-			case rd: ApiResponse[_] => controller.gson.toJson(rd)
+			case rd: AbstractJsonResponse[_] => controller.encodeToJson(rd)
+			case rd: ApiResponse[_] => controller.encodeToJson(rd)
 			case rd: String => if (controller.wrapResponse) {
 				wrap(rd)
 			} else {
@@ -148,7 +148,7 @@ object JsonPageletInitializer {
 			case rd => if (controller.wrapResponse) {
 				wrap(rd)
 			} else {
-				controller.gson.toJson(rd)
+				controller.encodeToJson(rd)
 			}
 		}
 	}
@@ -156,7 +156,7 @@ object JsonPageletInitializer {
 	private def createFailResponse(ctx: Context, controller: AbstractJsonPagelet, messages: Seq[Message]): String = {
 		ctx.status(400)
 		val responseData = new JsonFailResponse(messages.asJava)
-		controller.gson.toJson(responseData)
+		controller.encodeToJson(responseData)
 	}
 
 	private def createErrorResponse(ex: Exception, ctx: Context, controller: AbstractJsonPagelet): String = {
@@ -170,7 +170,7 @@ object JsonPageletInitializer {
 		}
 		ctx.status(500)
 		val responseData = new JsonErrorResponse(null, 1, msg)
-		controller.gson.toJson(responseData)
+		controller.encodeToJson(responseData)
 	}
 
 	private def parseJsonArgs(m: Method,

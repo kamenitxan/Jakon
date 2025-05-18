@@ -2,10 +2,7 @@ package cz.kamenitxan.jakon.core.dynamic
 
 import com.google.gson.{Gson, GsonBuilder}
 import cz.kamenitxan.jakon.core.dynamic.arguments.{CirceJsonParser, ParsedValue}
-import cz.kamenitxan.jakon.utils.gson.{GsonLocalDateTimeSerializer, GsonMapSerializer, GsonOptionSerializer, GsonSeqSerializer, GsonZonedDateTimeDeserializer, GsonZonedDateTimeSerializer, IntegerTypeAdapter}
-import io.circe.*
-import io.circe.generic.auto.*
-import io.circe.parser.*
+import cz.kamenitxan.jakon.utils.gson.*
 import io.javalin.http.Context
 
 import java.lang.reflect.Field
@@ -41,5 +38,9 @@ abstract class AbstractJsonPagelet {
 		})
 
 		t.getDeclaredConstructors.head.newInstance(constructorParams: _*)
+	}
+
+	def encodeToJson(responseDate: AnyRef): String = {
+		gson.toJson(responseDate)
 	}
 }
