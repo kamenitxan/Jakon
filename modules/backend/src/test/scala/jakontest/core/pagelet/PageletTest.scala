@@ -46,7 +46,9 @@ class PageletTest extends TestBase {
 			val cls = Seq(classOf[Object], classOf[Integer])
 			CustomPageInitializer.initCustomPages(cls)
 		} catch {
-			case _: Throwable => fail("Exception not excepted")
+			case ex: Throwable =>
+				ex.printStackTrace()
+				fail("Exception not excepted")
 		}
 	}
 
@@ -55,7 +57,9 @@ class PageletTest extends TestBase {
 			val cls = Seq(classOf[Object], classOf[Integer])
 			CustomPageInitializer.initStaticPages(cls)
 		} catch {
-			case _: Throwable => fail("Exception not excepted")
+			case ex: Throwable =>
+				ex.printStackTrace()
+				fail("Exception not excepted")
 		}
 	}
 

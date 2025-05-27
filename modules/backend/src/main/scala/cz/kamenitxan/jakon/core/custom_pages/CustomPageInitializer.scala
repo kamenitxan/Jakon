@@ -35,9 +35,10 @@ object CustomPageInitializer {
 	private def isChildOf(child: Class[_], parent: Class[_]): Boolean = {
 		val supperClass = child.getSuperclass
 		if (supperClass == null) {
-			return false
-		}
-		if (supperClass.isAssignableFrom(parent)) {
+			false
+		} else if (classOf[Object] == supperClass) {
+			false
+		} else if (supperClass.isAssignableFrom(parent)) {
 			true
 		} else {
 			isChildOf(supperClass, parent)
