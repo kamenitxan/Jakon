@@ -49,7 +49,7 @@ object DBInitializer {
 
 	def createTables(): Unit = {
 		val dbobj = mutable.ArrayBuffer[Class[_ <: JakonObject]]()
-		DBHelper.objects.copyToBuffer(dbobj)
+		dbobj ++= DBHelper.objects
 		dbobj.+=:(classOf[JakonObject])
 		val conn = getConnection
 		for (o <- dbobj) {

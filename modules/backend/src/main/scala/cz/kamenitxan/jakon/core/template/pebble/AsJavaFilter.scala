@@ -17,9 +17,9 @@ class AsJavaFilter extends Filter {
 	override def apply(input: Any, args: util.Map[String, AnyRef], self: PebbleTemplate, context: EvaluationContext, lineNumber: Int): Any = {
 		if (input == null) return null
 		input match {
-			case value: Seq[Any] =>
+			case value: Seq[_] =>
 				value.asJava
-			case value: Map[Any, Any] =>
+			case value: Map[_, _] =>
 				value.asJava
 			case _ =>
 				input

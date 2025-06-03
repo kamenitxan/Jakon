@@ -20,7 +20,7 @@ import java.io.*
 import java.net.URI
 import java.nio.ByteBuffer
 import java.nio.charset.Charset
-import java.nio.file.*
+import java.nio.file.{FileAlreadyExistsException, FileSystems, FileVisitResult, Files, Path, Paths, SimpleFileVisitor, StandardCopyOption}
 import java.nio.file.attribute.{BasicFileAttributes, PosixFileAttributeView, PosixFilePermissions}
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -29,36 +29,38 @@ import java.util.Date
 import java.util.zip.{ZipEntry, ZipOutputStream}
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
+import scala.util.boundary
+import boundary.break
 
 /**
- * This controller serve angular-filemanager call<br>
- *
- * that catch all request to path /fm&#47;*<br>
- * in angular-filemanager-master/index.html uncomment links to js files<br>
- * in my assest/config.js I have :
- *
- * <pre>
- * listUrl : "/fm/listUrl",
- * uploadUrl : "/fm/uploadUrl",
- * renameUrl : "/fm/renameUrl",
- * copyUrl : "/fm/copyUrl",
- * removeUrl : "/fm/removeUrl",
- * editUrl : "/fm/editUrl",
- * getContentUrl : "/fm/getContentUrl",
- * createFolderUrl : "/fm/createFolderUrl",
- * downloadFileUrl : "/fm/downloadFileUrl",
- * compressUrl : "/fm/compressUrl",
- * extractUrl : "/fm/extractUrl",
- * permissionsUrl : "/fm/permissionsUrl",
- * </pre>
- *
- * <b>NOTE:</b><br>
- * Does NOT manage 'preview' parameter in download<br>
- * Compress and expand are NOT implemented<br>
- *
- * @author Paolo Biavati https://github.com/paolobiavati (java servlet version)
- * @author Kamenitxan this implementation
- */
+	* This controller serve angular-filemanager call<br>
+	*
+	* that catch all request to path /fm&#47;*<br>
+	* in angular-filemanager-master/index.html uncomment links to js files<br>
+	* in my assest/config.js I have :
+	*
+	* <pre>
+	* listUrl : "/fm/listUrl",
+	* uploadUrl : "/fm/uploadUrl",
+	* renameUrl : "/fm/renameUrl",
+	* copyUrl : "/fm/copyUrl",
+	* removeUrl : "/fm/removeUrl",
+	* editUrl : "/fm/editUrl",
+	* getContentUrl : "/fm/getContentUrl",
+	* createFolderUrl : "/fm/createFolderUrl",
+	* downloadFileUrl : "/fm/downloadFileUrl",
+	* compressUrl : "/fm/compressUrl",
+	* extractUrl : "/fm/extractUrl",
+	* permissionsUrl : "/fm/permissionsUrl",
+	* </pre>
+	*
+	* <b>NOTE:</b><br>
+	* Does NOT manage 'preview' parameter in download<br>
+	* Compress and expand are NOT implemented<br>
+	*
+	* @author Paolo Biavati https://github.com/paolobiavati (java servlet version)
+	* @author Kamenitxan this implementation
+	*/
 class FileManagerController extends AbstractController {
 	override val template: String = "objects/fileManager"
 
@@ -172,7 +174,7 @@ object FileManagerController {
 			output.flush()
 		}
 
-		
+
 	}
 
 	def executePost(ctx: Context): Unit = {
@@ -276,10 +278,10 @@ object FileManagerController {
 
 
 	/**
-	 * URL: $config.uploadUrl, Method: POST, Content-Type: multipart/form-data
-	 * Unlimited file upload, each item will be enumerated as file-1, file-2, etc.
-	 * [$config.uploadUrl]?destination=/public_html/image.jpg&file-1={..}&file-2={...}
-	 */
+		* URL: $config.uploadUrl, Method: POST, Content-Type: multipart/form-data
+		* Unlimited file upload, each item will be enumerated as file-1, file-2, etc.
+		* [$config.uploadUrl]?destination=/public_html/image.jpg&file-1={..}&file-2={...}
+		*/
 	@throws[ServletException]
 	private def uploadFile(request: HttpServletRequest, response: HttpServletResponse): Unit = {
 		if (isSupportFeature(FileManagerMode.UPLOAD)) {
@@ -427,25 +429,31 @@ object FileManagerController {
 	}*/
 
 	// TODO: presunout i v DB
-	private def move(params: JsonObject): JsonObject = try {
-		val paths = params.get("items").asInstanceOf[JsonArray].asScala
-		val newpath = Paths.get(REPOSITORY_BASE_PATH, params.get("newPath").getAsString)
-		paths.foreach(obj => {
-			val path = Paths.get(REPOSITORY_BASE_PATH, obj.getAsString)
-			val mpath = newpath.resolve(path.getFileName)
-			Logger.debug(s"mv $path to $mpath exists? ${Files.exists(mpath)}")
-			if (Files.exists(mpath)) return error(mpath.toString + AlreadyExists)
-		})
-		paths.foreach(obj => {
-			val path = Paths.get(REPOSITORY_BASE_PATH, obj.getAsString)
-			val mpath = newpath.resolve(path.getFileName)
-			Files.move(path, mpath, StandardCopyOption.REPLACE_EXISTING)
-		})
-		success()
-	} catch {
-		case e: IOException =>
-			Logger.error("move:" + e.getMessage, e)
-			error(e.getMessage)
+	private def move(params: JsonObject): JsonObject = {
+		boundary {
+			try {
+				val paths = params.get("items").asInstanceOf[JsonArray].asScala
+				val newpath = Paths.get(REPOSITORY_BASE_PATH, params.get("newPath").getAsString)
+				paths.foreach(obj => {
+					val path = Paths.get(REPOSITORY_BASE_PATH, obj.getAsString)
+					val mpath = newpath.resolve(path.getFileName)
+					Logger.debug(s"mv $path to $mpath exists? ${Files.exists(mpath)}")
+					if (Files.exists(mpath)) {
+						break(error(mpath.toString + AlreadyExists))
+					}
+				})
+				paths.foreach(obj => {
+					val path = Paths.get(REPOSITORY_BASE_PATH, obj.getAsString)
+					val mpath = newpath.resolve(path.getFileName)
+					Files.move(path, mpath, StandardCopyOption.REPLACE_EXISTING)
+				})
+				success()
+			} catch {
+				case e: IOException =>
+					Logger.error("move:" + e.getMessage, e)
+					error(e.getMessage)
+			}
+		}
 	}
 
 	// TODO: prejmenovat i v DB
@@ -530,33 +538,37 @@ object FileManagerController {
 	}
 
 	private def copy(params: JsonObject): JsonObject = {
-		try {
-			val paths = params.get("items").asInstanceOf[JsonArray].asScala
-			val newpath = Paths.get(REPOSITORY_BASE_PATH, params.get("newPath").getAsString)
-			val newFileName = params.get("singleFilename").getAsString
-			paths.foreach(obj => {
-				val path = if (newFileName == null) {
-					Paths.get(REPOSITORY_BASE_PATH, obj.getAsString)
-				} else {
-					Paths.get(".", newFileName)
-				}
-				val mpath = newpath.resolve(path.getFileName)
-				Logger.debug(s"mv $path to $mpath exists? ${Files.exists(mpath)}")
-				if (Files.exists(mpath)) {
-					return error(mpath.toString + AlreadyExists)
-				}
-			})
-			paths.foreach(obj => {
-				val path = Paths.get(REPOSITORY_BASE_PATH, obj.getAsString)
-				val mpath = newpath.resolve(if (newFileName == null) path.getFileName
-				else Paths.get(".", newFileName).getFileName)
-				Files.copy(path, mpath, StandardCopyOption.REPLACE_EXISTING)
-			})
-			success()
-		} catch {
-			case e: IOException =>
-				Logger.error("copy:" + e.getMessage, e)
-				error(e.getMessage)
+		boundary {
+			try {
+				val paths = params.get("items").asInstanceOf[JsonArray].asScala
+				val newpath = Paths.get(REPOSITORY_BASE_PATH, params.get("newPath").getAsString)
+
+				val newFileName = params.get("singleFilename").getAsString
+				paths.foreach(obj => {
+					val path = if (newFileName == null) {
+						Paths.get(REPOSITORY_BASE_PATH, obj.getAsString)
+					} else {
+						Paths.get(".", newFileName)
+					}
+					val mpath = newpath.resolve(path.getFileName)
+					Logger.debug(s"mv $path to $mpath exists? ${Files.exists(mpath)}")
+					if (Files.exists(mpath)) {
+						break(error(mpath.toString + AlreadyExists))
+					}
+				})
+				paths.foreach(obj => {
+					val path = Paths.get(REPOSITORY_BASE_PATH, obj.getAsString)
+					val mpath = newpath.resolve(if (newFileName == null) path.getFileName
+					else Paths.get(".", newFileName).getFileName)
+					Files.copy(path, mpath, StandardCopyOption.REPLACE_EXISTING)
+				})
+				success()
+			}
+			catch {
+				case e: IOException =>
+					Logger.error("copy:" + e.getMessage, e)
+					error(e.getMessage)
+			}
 		}
 	}
 
@@ -680,8 +692,8 @@ object FileManagerController {
 	}
 
 	/**
-	 * http://www.programcreek.com/java-api-examples/index.php?api=java.nio.file.attribute.PosixFileAttributes
-	 */
+		* http://www.programcreek.com/java-api-examples/index.php?api=java.nio.file.attribute.PosixFileAttributes
+		*/
 	/*@throws[IOException]
 	private def setPermissions(file: File, permsCode: String, recursive: Boolean): String = {
 		val fileAttributeView = Files.getFileAttributeView(file.toPath, classOf[PosixFileAttributeView])
@@ -704,8 +716,8 @@ object FileManagerController {
 	}
 
 	/**
-	 * { "result": { "success": false, "error": "msg" } }
-	 */
+		* { "result": { "success": false, "error": "msg" } }
+		*/
 	private def error(msg: String): JsonObject = {
 		val result = new JsonObject
 		result.add("success", JsonPrimitive(java.lang.Boolean.FALSE))
@@ -716,8 +728,8 @@ object FileManagerController {
 	}
 
 	/**
-	 * { "result": { "success": true, "error": null } }
-	 */
+		* { "result": { "success": true, "error": null } }
+		*/
 	private def success(): JsonObject = {
 		val result = new JsonObject
 		result.add("success", JsonPrimitive(java.lang.Boolean.TRUE))
