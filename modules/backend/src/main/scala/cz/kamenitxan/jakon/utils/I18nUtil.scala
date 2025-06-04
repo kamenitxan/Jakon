@@ -47,7 +47,8 @@ object I18nUtil {
 		val urls = Array(file.toURI.toURL)
 		val loader = new URLClassLoader(urls, null)
 		val jarLoader = this.getClass.getClassLoader
-		val enLocale = new Locale("en", "US")
+		val enLocale = Locale.US
+
 		Seq(
 			(bundleName, locale, loader),
 			(templateDir + bundleName, locale, jarLoader),

@@ -214,7 +214,7 @@ object FileManagerController {
 		var responseJsonObject: JsonObject = null
 		try {
 			val br = request.getReader
-			val str = Stream.continually(br.readLine()).takeWhile(_ != null).mkString("\n")
+			val str = LazyList.continually(br.readLine()).takeWhile(_ != null).mkString("\n")
 			br.close()
 
 			val params: JsonObject = JsonParser.parseString(str).getAsJsonObject;

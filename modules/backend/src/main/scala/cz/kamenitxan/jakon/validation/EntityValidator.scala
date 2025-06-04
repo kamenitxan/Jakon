@@ -103,8 +103,9 @@ object EntityValidator {
 														validators: Seq[Annotation],
 														fieldValue: String,
 														validatedData: Map[Field, String]): Seq[Message] = {
-		if (!f.isAccessible) {
-			f.setAccessible(true)
+
+		if (!f.trySetAccessible()) {
+			throw new IllegalStateException(s"Can´t set access for field ${f.getName}")
 		}
 
 		validators.map(an => {

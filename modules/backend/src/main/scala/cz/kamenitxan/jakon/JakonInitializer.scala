@@ -41,7 +41,7 @@ object JakonInitializer {
 				user.enabled = true
 				user.emailConfirmed = true
 				user.acl = acl
-				user.locale = new Locale("en", "us")
+				user.locale = Locale.US
 				user.create()
 			}
 

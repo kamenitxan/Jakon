@@ -207,9 +207,10 @@ object DBHelper {
 			val i18nStmt = conn.prepareStatement(sql)
 			i18nStmt.setInt(1, res.entity.asInstanceOf[JakonObject].id)
 			val i18nRes = select(i18nStmt, cls).map(_.entity)
-			if (!i18nF.isAccessible) {
-				i18nF.setAccessible(true)
+			if (!i18nF.trySetAccessible()) {
+				throw new IllegalStateException(s"Can´t set access for field ${i18nF.getName}")
 			}
+
 			i18nF.set(res.entity, i18nRes)
 		}
 	}
