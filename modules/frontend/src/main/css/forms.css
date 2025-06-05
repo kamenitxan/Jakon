@@ -117,3 +117,8 @@ textarea {
 .extension_holder {
 	margin-bottom: 5px;
 }
+
+/** common form styles */
+.jakon_form input {
+	margin-bottom: 10px;
+}

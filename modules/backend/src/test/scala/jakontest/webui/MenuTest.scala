@@ -1,8 +1,8 @@
 package jakontest.webui
 
+import jakontest.test.TestBase
 import org.openqa.selenium.By
 import org.scalatest.DoNotDiscover
-import jakontest.test.TestBase
 
 @DoNotDiscover
 class MenuTest extends TestBase {
@@ -84,6 +84,16 @@ class MenuTest extends TestBase {
 
 	test("logs page") { f =>
 		f.driver.get(adminHost + "logs")
+		assert(checkPageLoad()(f.driver))
+	}
+
+	test("logs page with severity") { f =>
+		f.driver.get(adminHost + "logs?severity=Error")
+		assert(checkPageLoad()(f.driver))
+	}
+
+	test("logs page heapdump") { f =>
+		f.driver.get(adminHost + "logs?severity=Error")
 		assert(checkPageLoad()(f.driver))
 	}
 
