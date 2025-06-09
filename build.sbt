@@ -71,8 +71,8 @@ val Dependencies = new {
 	lazy val tests = Def.settings(
 		libraryDependencies ++= Seq(
 			"org.scalatest" %% "scalatest" % "3.2.19" % "test",
-			"org.scalamock" %% "scalamock" % "6.0.0" % Test,
-			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.30.0" % "test"
+			"org.scalamock" %% "scalamock" % "7.3.2" % Test,
+			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.32.0" % "test"
 		)
 	)
 }
