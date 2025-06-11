@@ -93,7 +93,7 @@ class MenuTest extends TestBase {
 	}
 
 	test("logs page heapdump") { f =>
-		f.driver.get(adminHost + "logs?severity=Error")
+		f.driver.get(adminHost + "logs/heapdump")
 		assert(checkPageLoad()(f.driver))
 	}
 
