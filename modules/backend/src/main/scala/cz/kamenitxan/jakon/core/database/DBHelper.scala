@@ -104,14 +104,14 @@ object DBHelper {
 		res
 	}
 
-	def selectSingleDeep[T <: JakonObject](stmt: Statement, sql: String)(implicit conn: Connection, cls: Class[T]): T = {
+	def selectSingleDeep[T <: JakonObject](stmt: Statement, sql: String)(implicit conn: Connection, cls: Class[T]): Option[T] = {
 		val res = selectSingle(stmt, sql, cls)
 		if (res.foreignIds != null && res.foreignIds.nonEmpty) {
 			res.foreignIds.values.foreach(fki => {
 				selectForeignEntity(fki, res)(implicitly, cls)
 			})
 		}
-		res.entity
+		Option(res.entity)
 	}
 
 	def selectSingleDeep[T <: JakonObject](stmt: PreparedStatement)(implicit conn: Connection, cls: Class[T]): T = {
@@ -147,7 +147,7 @@ object DBHelper {
 		}
 	}
 
-	def selectDeep[T <: JakonObject](stmt: Statement, sql: String)(implicit conn: Connection, cls: Class[T]): List[T] = {
+	def selectDeep[T <: JakonObject](stmt: Statement, sql: String)(implicit conn: Connection, cls: Class[T]): Seq[T] = {
 		val res = select(stmt, sql, cls)
 		fetchForeignObjects(res)
 		res.map(r => r.entity)

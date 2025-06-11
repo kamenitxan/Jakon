@@ -81,7 +81,7 @@ trait Ordered {
 
 object Ordered {
 
-	def fetchVisibleOrder(objects: List[JakonObject], objectClass: Class[_])(implicit conn: Connection): List[JakonObject] = {
+	def fetchVisibleOrder(objects: Seq[JakonObject], objectClass: Class[_])(implicit conn: Connection): Seq[JakonObject] = {
 		val stmt = conn.createStatement()
 		val result = DBHelper.select(stmt, "SELECT id FROM " + objectClass.getSimpleName + " ORDER BY objectOrder ASC", classOf[BasicJakonObject])
 		var i = 0

@@ -49,7 +49,10 @@ object UserService {
 	def getMasterAdmin()(implicit conn: Connection): JakonUser = {
 		val sql = "SELECT * FROM JakonUser JOIN AclRule AR ON JakonUser.acl_id = AR.id WHERE AR.masterAdmin = 1 ORDER BY AR.id LIMIT 1;"
 		val stmt = conn.createStatement()
-		DBHelper.selectSingleDeep(stmt, sql)
+		DBHelper.selectSingleDeep(stmt, sql) match {
+			case Some(value) => value
+			case None => throw new IllegalStateException("No master admin found")
+		}
 	}
 
 	/**
