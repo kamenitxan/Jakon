@@ -49,7 +49,7 @@ object DBInitializer {
 
 	def createTables(): Unit = {
 		val dbobj = mutable.ArrayBuffer[Class[_ <: JakonObject]]()
-		DBHelper.objects.copyToBuffer(dbobj)
+		dbobj ++= DBHelper.objects
 		dbobj.+=:(classOf[JakonObject])
 		val conn = getConnection
 		for (o <- dbobj) {
@@ -95,8 +95,8 @@ object DBInitializer {
 		implicit val conn: Connection = getConnection
 		try {
 			checkCharacterSet
-			checkChilds
-			checkCollumns
+			checkChildren
+			checkColumns
 		} catch {
 			case ex: Exception => Logger.error("Exception occurred when checking DB consistency", ex)
 		} finally {
@@ -114,7 +114,7 @@ object DBInitializer {
 		}
 	}
 
-	private def checkChilds(implicit conn: Connection): Unit = {
+	private def checkChildren(implicit conn: Connection): Unit = {
 		val joSql = "SELECT id, childClass FROM JakonObject"
 		val stmt = conn.createStatement()
 		val rs = stmt.executeQuery(joSql)
@@ -137,7 +137,7 @@ object DBInitializer {
 		})
 	}
 
-	private def checkCollumns(implicit conn: Connection): Unit = {
+	private def checkColumns(implicit conn: Connection): Unit = {
 		DBHelper.objects.foreach(jo => {
 			val tableName = jo.getSimpleName
 			val stmt = conn.createStatement()
@@ -145,11 +145,11 @@ object DBInitializer {
 				case DatabaseType.SQLITE =>
 					val sql = s"PRAGMA table_info($tableName)"
 					val rs = stmt.executeQuery(sql)
-					Iterator.from(0).takeWhile(_ => rs.next()).map(_ => TableCollumnInfo(rs.getString(2), rs.getString(3))).toSeq
+					Iterator.from(0).takeWhile(_ => rs.next()).map(_ => TableColumnInfo(rs.getString(2), rs.getString(3))).toSeq
 				case DatabaseType.MYSQL =>
 					val sql = s"DESCRIBE $tableName"
 					val rs = stmt.executeQuery(sql)
-					Iterator.from(0).takeWhile(_ => rs.next()).map(_ => TableCollumnInfo(rs.getString(1), rs.getString(2))).toSeq
+					Iterator.from(0).takeWhile(_ => rs.next()).map(_ => TableColumnInfo(rs.getString(1), rs.getString(2))).toSeq
 			}
 			jo.getDeclaredFields
 				.filter(f => f.getAnnotation(classOf[JakonField]) != null && f.getAnnotation(classOf[Transient]) == null)
@@ -170,7 +170,7 @@ object DBInitializer {
 		})
 	}
 
-	case class TableCollumnInfo(
+	case class TableColumnInfo(
 															 name: String,
 															 dataType: String,
 														 )

@@ -76,7 +76,7 @@ object ObjectController {
 				val stmt2 = conn.createStatement()
 				val resultList = DBHelper.selectDeep(stmt2, listSql)
 				// TODO: nacist foreign key objekty
-				val pageItems: List[JakonObject] = if (ocls.getInterfaces.contains(classOf[Ordered])) {
+				val pageItems: Seq[JakonObject] = if (ocls.getInterfaces.contains(classOf[Ordered])) {
 					Ordered.fetchVisibleOrder(resultList, ocls)
 				} else {
 					resultList

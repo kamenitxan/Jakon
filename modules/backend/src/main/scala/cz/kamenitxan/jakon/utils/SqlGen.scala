@@ -127,7 +127,9 @@ object SqlGen {
 					.getDeclaredFields
 					.filter(_.getDeclaredAnnotation(classOf[JakonField]) != null)
 					.foreach(f => {
-						if (!field.isAccessible) field.setAccessible(true)
+						if (!field.trySetAccessible()) {
+							throw new IllegalStateException(s"Can´t set access for field ${field.getName}")
+						}
 						val value = field.get(instance)
 						setValue(stmt, f, counter, value)
 						counter += 1
@@ -151,7 +153,9 @@ object SqlGen {
 	}
 
 	private def setValue(stmt: PreparedStatement, f: Field, i: Int, inst: Any): Unit = {
-		if (!f.isAccessible) f.setAccessible(true)
+		if (!f.trySetAccessible()) {
+			throw new IllegalStateException(s"Can´t set access for field ${f.getName}")
+		}
 
 		val value = if (inst != null) {
 			f.get(inst)

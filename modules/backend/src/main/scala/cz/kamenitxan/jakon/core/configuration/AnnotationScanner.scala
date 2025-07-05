@@ -2,6 +2,7 @@ package cz.kamenitxan.jakon.core.configuration
 
 import cz.kamenitxan.jakon.core.custom_pages.{CustomPage, CustomPageInitializer, StaticPage}
 import cz.kamenitxan.jakon.core.dynamic.{JsonPagelet, JsonPageletInitializer, Pagelet, PageletInitializer}
+import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.controller.objectextension.{ObjectExtension, ObjectExtensionInitializer}
 import io.github.classgraph.{ClassGraph, ClassInfoList, ScanResult}
@@ -43,6 +44,7 @@ class AnnotationScanner {
 			}
 			loadCustomPages(scanResult)
 			extraHandler(scanResult)
+			checkProjectPackages(scanResult)
 			copyResources()
 		} finally {
 			scanResult.close()
@@ -82,6 +84,14 @@ class AnnotationScanner {
 	private def loadObjectExtensions(scanResult: ScanResult): Unit = {
 		val config = scanResult.getClassesWithAnnotation(classOf[ObjectExtension].getCanonicalName).loadScalaClasses()
 		ObjectExtensionInitializer.initObjectExtensions(config)
+	}
+
+	private def checkProjectPackages(scanResult: ScanResult): Unit = {
+		Settings.getPackage.foreach(p => {
+			if (scanResult.getPackageInfo(p) == null) {
+				Logger.critical("Package " + p + " not found. Check Jakon settings.")
+			}
+		})
 	}
 
 	implicit class ClassInfoListExtensions(val cil: ClassInfoList) {

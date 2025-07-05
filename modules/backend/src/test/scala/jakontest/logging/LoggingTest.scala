@@ -47,6 +47,14 @@ class LoggingTest extends TestBase{
 		}
 	}
 
+	test("LogService criticalCount") { _ =>
+		assert(LogService.criticalCount > 0)
+	}
+
+	test("LogService errorCount") { _ =>
+		assert(LogService.errorCount > 0)
+	}
+
 	test("Log toString") { _ =>
 		val log = new Log(Debug, "test_msg", null, "test:00")
 		assert("Log(Debug, test_msg, test:00)" == log.toString)

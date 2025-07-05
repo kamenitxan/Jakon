@@ -1,8 +1,9 @@
 package jakontest.webui
 
+import cz.kamenitxan.jakon.logging.LogService
+import jakontest.test.TestBase
 import org.openqa.selenium.By
 import org.scalatest.DoNotDiscover
-import jakontest.test.TestBase
 
 @DoNotDiscover
 class MenuTest extends TestBase {
@@ -85,6 +86,18 @@ class MenuTest extends TestBase {
 	test("logs page") { f =>
 		f.driver.get(adminHost + "logs")
 		assert(checkPageLoad()(f.driver))
+	}
+
+	test("logs page with severity") { f =>
+		f.driver.get(adminHost + "logs?severity=Error")
+		assert(checkPageLoad()(f.driver))
+	}
+
+	test("logs page heapdump") { f =>
+		val before = LogService.errorCount + LogService.criticalCount
+		f.driver.get(adminHost + "logs/heapdump")
+		val after = LogService.errorCount + LogService.criticalCount
+		assert(before == after)
 	}
 
 	test("dbconsole page") { f =>

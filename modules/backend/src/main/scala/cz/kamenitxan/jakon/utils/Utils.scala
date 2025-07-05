@@ -106,7 +106,7 @@ object Utils {
 	def stringToLocale(s: String): Locale = {
 		if (s == null) return null
 		val split = s.split("_")
-		new Locale(split(0), split(1))
+		new Locale.Builder().setLanguage(split(0)).setRegion(split(1)).build()
 	}
 
 	def isEmpty(s: String): Boolean = {

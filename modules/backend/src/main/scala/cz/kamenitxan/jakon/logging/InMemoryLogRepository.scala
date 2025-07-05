@@ -44,11 +44,12 @@ class InMemoryLogRepository extends LogRepository {
 			Thread.sleep(1_000)
 		}
 		try {
-			lazy val debugTime = LocalDateTime.now().minusMinutes(LoggingSetting.getMaxDebugAge)
-			lazy val infoTime = LocalDateTime.now().minusMinutes(LoggingSetting.getMaxInfoAge)
-			lazy val warningTime = LocalDateTime.now().minusMinutes(LoggingSetting.getMaxWarningAge)
-			lazy val errorTime = LocalDateTime.now().minusMinutes(LoggingSetting.getMaxErrorAge)
-			lazy val criticalTime = LocalDateTime.now().minusMinutes(LoggingSetting.getMaxCriticalAge)
+			val now = LocalDateTime.now()
+			val debugTime = now.minusMinutes(LoggingSetting.getMaxDebugAge)
+			val infoTime = now.minusMinutes(LoggingSetting.getMaxInfoAge)
+			val warningTime = now.minusMinutes(LoggingSetting.getMaxWarningAge)
+			val errorTime = now.minusMinutes(LoggingSetting.getMaxErrorAge)
+			val criticalTime = now.minusMinutes(LoggingSetting.getMaxCriticalAge)
 			logs = logs.filter(l => if (l == null) {
 				false
 			} else {

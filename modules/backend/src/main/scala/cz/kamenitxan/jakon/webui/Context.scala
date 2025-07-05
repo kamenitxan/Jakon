@@ -25,9 +25,9 @@ class Context(var model: Map[String, Any], viewName: String) extends ModelAndVie
 		if (model != null) {
 			model.foreach { p => {
 				map.put(p._1, p._2 match {
-					case list: List[Any] => list.asJava
-					case list: Seq[Any] => list.asJava
-					case map: Map[Any, Any] => map.asJava
+					case list: List[_] => list.asJava
+					case list: Seq[_] => list.asJava
+					case map: Map[_, _] => map.asJava
 					case _ => p._2
 				})
 			}

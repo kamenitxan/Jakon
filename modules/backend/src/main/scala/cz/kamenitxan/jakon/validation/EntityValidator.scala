@@ -103,10 +103,12 @@ object EntityValidator {
 														validators: Seq[Annotation],
 														fieldValue: String,
 														validatedData: Map[Field, String]): Seq[Message] = {
-		if (!f.isAccessible) {
-			f.setAccessible(true)
+
+		if (!f.trySetAccessible()) {
+			throw new IllegalStateException(s"Can´t set access for field ${f.getName}")
 		}
-		for (an <- validators) {
+
+		validators.map(an => {
 			val by: ValidatedBy = an.annotationType().getAnnotation(classOf[ValidatedBy])
 			val validator: Validator = by.value().getDeclaredConstructor().newInstance()
 			val result = validator.isValid(fieldValue, an, f, validatedData)
@@ -120,9 +122,10 @@ object EntityValidator {
 					MessageSeverity.ERROR
 				}
 				val key = if (!validator.fullKeys) prefix + "_" + f.getName + "_" + result.get.error else result.get.error
-				return Seq(new Message(severity, key, bundle = "validations", params = result.get.params))
-			}
-		}
-		Seq()
+				Seq(new Message(severity, key, bundle = "validations", params = result.get.params))
+			} else (
+				Seq.empty
+			)
+		}).find(_.nonEmpty).getOrElse(Seq.empty)
 	}
 }
