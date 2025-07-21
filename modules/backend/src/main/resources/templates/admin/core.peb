@@ -7,11 +7,9 @@
 
     <title>JakonUI{% block title %}{% endblock %}</title>
 
-	<script src="/jakon/js/manifest.js"></script>
-    <script src="/jakon/js/vendor.js"></script>
-    <script src="/jakon/js/jakon.js"></script>
+    <script src="/jakon/jakon.js"></script>
     <script src="/jakon/js/scalajs.js"></script>
-    <link href="/jakon/css/jakon.css" rel="stylesheet">
+    <link href="/jakon/jakon.css" rel="stylesheet">
 
 	<link rel="icon" type="image/png" sizes="32x32" href="/jakon/img/favicon/favicon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="/jakon/img/favicon/favicon-16x16.png">
