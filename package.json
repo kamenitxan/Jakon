@@ -6,7 +6,7 @@
   "version": "0.0.1",
   "repository": "",
   "scripts": {
-    "mix": "npx mix",
+    "build": "vite build",
     "update-browserslist-dby": "npx update-browserslist-db@latest"
   },
   "dependencies": {
@@ -19,6 +19,6 @@
     "woofmark": "^4.2.6"
   },
   "devDependencies": {
-    "laravel-mix": "^6.0.49"
+    "vite": "^7.0.4"
   }
 }
