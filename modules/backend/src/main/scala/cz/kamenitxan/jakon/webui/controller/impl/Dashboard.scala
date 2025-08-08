@@ -1,5 +1,6 @@
 package cz.kamenitxan.jakon.webui.controller.impl
 
+import cz.kamenitxan.jakon.logging.LogService
 import io.javalin.http.Context
 
 /**
@@ -8,7 +9,8 @@ import io.javalin.http.Context
 object Dashboard {
 	def getDashboard(ctx: Context): cz.kamenitxan.jakon.webui.Context = {
 		new cz.kamenitxan.jakon.webui.Context(Map[String, Any](
-			"pathInfo" -> "/admin/index"
+			"pathInfo" -> "/admin/index",
+			"errorCount" -> (LogService.errorCount + LogService.criticalCount)
 		), "logged")
 	}
 }

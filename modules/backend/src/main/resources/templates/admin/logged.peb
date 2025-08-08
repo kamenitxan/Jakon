@@ -1,3 +1,5 @@
+{# @pebvariable name="errorCount" type="java.lang.Integer" #}
+
 {% extends "core" %}
 
 {% block content %}
@@ -16,32 +18,28 @@
         <!-- /.row -->
         <div class="row">
 			{% include "includes/components/dashboardCard" with {
-				"icon" : "fa-comments",
+                "url" : "/admin/object/JakonUser",
+				"icon" : "fa-user",
 				"text" : "View Details",
-				"count" : "26",
-				"countText" : "New Comments!",
+				"count" : "",
+				"countText" : "Users",
 				"color" : "bg-light"
 			} %}
 			{% include "includes/components/dashboardCard" with {
-				"icon" : "fa-tasks",
-				"text" : "View Details",
-				"count" : "12",
-				"countText" : "New Tasks!",
-				"color" : "bg-success text-white"
+                "url" : "/admin/files",
+                "icon" : "fa-files-o",
+                "text" : "View Details",
+                "count" : "",
+                "countText" : "Files",
+                "color" : "bg-warning text-white"
 			} %}
 			{% include "includes/components/dashboardCard" with {
-			"icon" : "fa-shopping-cart",
-			"text" : "View Details",
-			"count" : "124",
-			"countText" : "New Orders!",
-			"color" : "bg-warning text-white"
-			} %}
-			{% include "includes/components/dashboardCard" with {
-			"icon" : "fa-support",
-			"text" : "View Details",
-			"count" : "13",
-			"countText" : "Support Tickets!",
-			"color" : "bg-danger text-white"
+                "url" : "/admin/logs",
+                "icon" : "fa-exclamation-triangle",
+                "text" : "View Details",
+                "count" : errorCount,
+                "countText" : "Logs",
+                "color" : "bg-danger text-white"
 			} %}
 
         </div>
