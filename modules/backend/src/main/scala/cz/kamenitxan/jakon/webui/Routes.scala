@@ -10,21 +10,20 @@ import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.gson.*
 import cz.kamenitxan.jakon.webui.api.Api
 import cz.kamenitxan.jakon.webui.controller.AbstractController
-import cz.kamenitxan.jakon.webui.controller.impl.{Authentication, FileManagerController, ObjectController, UserController}
+import cz.kamenitxan.jakon.webui.controller.impl.{FileManagerController, ObjectController, UserController}
 import cz.kamenitxan.jakon.webui.util.AdminExceptionHandler
 import io.javalin.apibuilder.ApiBuilder
 import io.javalin.apibuilder.ApiBuilder.*
 import io.javalin.http.{Context, Handler, HttpStatus}
 
 import java.time.{LocalDateTime, ZonedDateTime}
-import scala.jdk.CollectionConverters.*
 
 
 /**
  * Created by TPa on 03.09.16.
  */
 object Routes {
-	val AdminPrefix = "/admin"
+	final val AdminPrefix = "/admin"
 	private val te = Settings.getAdminEngine
 
 	def init(): Unit = {
@@ -93,18 +92,18 @@ object Routes {
 		})
 
 
-		JakonInit.javalin.get(AdminPrefix, new Handler {
+		/*JakonInit.javalin.get(AdminPrefix, new Handler {
 			override def handle(ctx: Context): Unit = {
 				val res = render(ctx, Authentication.loginGet(ctx))
 				ctx.result(res)
 			}
-		})
-		JakonInit.javalin.post(AdminPrefix, new Handler {
+		})*/
+		/*JakonInit.javalin.post(AdminPrefix, new Handler {
 			override def handle(ctx: Context): Unit = {
 				val res = render(ctx, Authentication.loginPost(ctx))
 				ctx.result(res)
 			}
-		})
+		})*/
 
 		ApiBuilder.path(s"$AdminPrefix", () => {
 			if (Settings.getDeployMode == DeployMode.PRODUCTION) {
@@ -117,12 +116,12 @@ object Routes {
 					ctx.result(res)
 				}
 			})
-			get("/logout", new Handler {
+			/*get("/logout", new Handler {
 				override def handle(ctx: Context): Unit = {
 					val res = render(ctx, Authentication.logoutPost(ctx))
 					ctx.result(res)
 				}
-			})
+			})*/
 			get("/profile", new Handler {
 				override def handle(ctx: Context): Unit = {
 					val res = render(ctx, UserController.render(ctx))

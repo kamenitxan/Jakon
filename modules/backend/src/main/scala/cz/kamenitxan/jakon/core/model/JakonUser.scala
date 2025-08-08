@@ -1,15 +1,14 @@
 package cz.kamenitxan.jakon.core.model
 
 import cz.kamenitxan.jakon.core.configuration.Settings
-
-import java.sql.{Connection, Statement, Types}
 import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.core.database.annotation.ManyToOne
 import cz.kamenitxan.jakon.core.database.converters.LocaleConverter
+import cz.kamenitxan.jakon.utils.security.AuthUtils
 import cz.kamenitxan.jakon.validation.validators.{Email, NotEmpty, Unique}
 import cz.kamenitxan.jakon.webui.ObjectSettings
-import cz.kamenitxan.jakon.webui.controller.impl.Authentication
 
+import java.sql.{Connection, Statement, Types}
 import java.util.Locale
 
 
@@ -48,7 +47,7 @@ class JakonUser extends JakonObject with Serializable {
 	override val objectSettings: ObjectSettings = JakonUser.objectSettings
 
 	override def createObject(jid: Int, conn: Connection): Int = {
-		this.password = Authentication.hashPassword(this.password)
+		this.password = AuthUtils.hashPassword(this.password)
 		// language=SQL
 		val sql = "INSERT INTO JakonUser (id, username, email, emailConfirmed, firstName, lastName, password, enabled, acl_id, locale) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
@@ -79,7 +78,7 @@ class JakonUser extends JakonObject with Serializable {
 
 	override def updateObject(jid: Int, conn: Connection): Unit = {
 		if (!this.password.startsWith("$2a$")) {
-			this.password = Authentication.hashPassword(this.password)
+			this.password = AuthUtils.hashPassword(this.password)
 		}
 
 		// language=SQL

@@ -6,7 +6,6 @@ import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.utils.Utils.StringImprovements
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask}
 import cz.kamenitxan.jakon.utils.security.AesEncryptor
-import cz.kamenitxan.jakon.webui.controller.impl.Authentication
 import cz.kamenitxan.jakon.webui.entity.ResetPasswordEmailEntity
 import io.javalin.http.Context
 

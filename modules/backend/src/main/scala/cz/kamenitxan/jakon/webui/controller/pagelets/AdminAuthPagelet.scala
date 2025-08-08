@@ -1,39 +1,42 @@
-package cz.kamenitxan.jakon.webui.controller.impl
+package cz.kamenitxan.jakon.webui.controller.pagelets
 
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper
+import cz.kamenitxan.jakon.core.dynamic.{Get, Pagelet, Post}
 import cz.kamenitxan.jakon.core.service.UserService
 import cz.kamenitxan.jakon.logging.Logger
+import cz.kamenitxan.jakon.utils.security.AuthUtils
 import cz.kamenitxan.jakon.utils.security.oauth.{Facebook, Google}
 import cz.kamenitxan.jakon.utils.{PageContext, Utils}
-import cz.kamenitxan.jakon.webui.ModelAndView
+import cz.kamenitxan.jakon.webui.Routes
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import io.javalin.http.Context
-import org.mindrot.jbcrypt.BCrypt
 
 import java.sql.Connection
-import scala.language.postfixOps
+import scala.collection.mutable
+import scala.jdk.CollectionConverters.*
 
 /**
-  * Created by TPa on 03.09.16.
-  */
-object Authentication {
+ * Created by Kamenitxan on 05.08.2025
+ */
+@Pagelet(path = Routes.AdminPrefix, showInAdmin = false)
+class AdminAuthPagelet extends AbstractAdminPagelet {
 
+	override val name: String = classOf[AdminAuthPagelet].getSimpleName
 
-	// language=SQL
-	val SQL_FIND_ACL = "SELECT * FROM AclRule WHERE id = ?"
-
-	def loginGet(ctx: Context): ModelAndView = {
+	@Get(path = "", template = "login")
+	def loginGet(ctx: Context): mutable.Map[String, Any] = {
 		val oauthProviders = {
 			Google :: Facebook :: Nil
 		}.filter(p => p.isEnabled).map(p => p.authInfo(ctx))
 
-		new cz.kamenitxan.jakon.webui.Context(Map[String, Any](
-			"oauthProviders" -> oauthProviders
-		), "login")
+		mutable.Map[String, Any](
+			"oauthProviders" -> oauthProviders.asJava
+		)
 	}
 
-	def loginPost(ctx: Context): ModelAndView = {
+	@Post(path = "", template = "login")
+	def loginPost(ctx: Context): mutable.Map[String, Any] = {
 		val email = ctx.formParam("email")
 		val password = ctx.formParam("password")
 		val redirectTo = ctx.queryParam("redirect_to")
@@ -44,13 +47,13 @@ object Authentication {
 				if (user == null) {
 					Logger.info("User " + email + " not found when logging in")
 					PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "WRONG_EMAIL_OR_PASSWORD")
-					return new cz.kamenitxan.jakon.webui.Context(null, "login")
+					return mutable.Map.empty
 				}
 
 				if (!user.enabled) {
 					PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "USER_NOT_ENABLED")
 					Logger.debug("User " + user.username + " is not enabled")
-				} else if (checkPassword(password, user.password)) {
+				} else if (AuthUtils.checkPassword(password, user.password)) {
 					if (Settings.getDeployMode == DeployMode.PRODUCTION && user.acl.masterAdmin && password == "admin") {
 						PageContext.getInstance().addMessage(MessageSeverity.WARNING, "DEFAULT_ADMIN_PASSWORD")
 						ctx.sessionAttribute(PageContext.MESSAGES_KEY, PageContext.getInstance().messages)
@@ -61,7 +64,7 @@ object Authentication {
 
 					if (user.acl.adminAllowed) {
 						if (Utils.isEmpty(redirectTo)) {
-							ctx.redirect("/admin/index")
+							ctx.redirect(Routes.AdminPrefix + "/index")
 						} else {
 							ctx.redirect(redirectTo)
 						}
@@ -77,43 +80,20 @@ object Authentication {
 				conn.close()
 			}
 		}
-		new cz.kamenitxan.jakon.webui.Context(null, "login")
+		mutable.Map.empty
 	}
 
-	def logoutPost(ctx: Context): ModelAndView = {
-		// pri vytvareni contextu se vytahuje uzivatel ze session, takze to musi byt pred invalidaci
-		val jakonCtx = new cz.kamenitxan.jakon.webui.Context(null, "login")
+	@Get(path = "/logout", template = "login")
+	def logout(ctx: Context): mutable.Map[String, Any] = {
 		ctx.req().getSession.invalidate()
 		ctx.redirect("/admin")
-		jakonCtx
+		mutable.Map.empty
 	}
 
 
-	def confirmEmailGet(ctx: Context): ModelAndView = {
+	/*def confirmEmailGet(ctx: Context): ModelAndView = {
 		PageContext.getInstance().messages += new Message(MessageSeverity.SUCCESS, "REGISTRATION_EMAIL_CONFIRMED")
 		new cz.kamenitxan.jakon.webui.Context(null, "login")
-	}
+	}*/
 
-	/**
-	 * Hash a password using the OpenBSD bcrypt scheme
-	 * @param passwordPlaintext the password to hash
-	 * @return the hashed password
-	 */
-	def hashPassword(passwordPlaintext: String): String = {
-		val salt = BCrypt.gensalt(12)
-		BCrypt.hashpw(passwordPlaintext, salt)
-	}
-
-	/**
-	 * Check that a plaintext password matches a previously hashed one
-	 * @param passwordPlaintext the plaintext password to verify
-	 * @param storedHash the previously-hashed password
-	 * @return true if the passwords match, false otherwise
-	 */
-	def checkPassword(passwordPlaintext: String, storedHash: String): Boolean = {
-		if (null == storedHash || !storedHash.startsWith("$2a$"))
-			throw new java.lang.IllegalArgumentException("Invalid hash provided for comparison")
-
-		BCrypt.checkpw(passwordPlaintext, storedHash)
-	}
 }

@@ -4,7 +4,7 @@ import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.core.service.AclRuleService
-import cz.kamenitxan.jakon.webui.controller.impl.Authentication
+import cz.kamenitxan.jakon.utils.security.AuthUtils
 import org.openqa.selenium.htmlunit.HtmlUnitDriver
 import org.openqa.selenium.{By, WebDriver}
 import org.scalatest.funsuite.FixtureAnyFunSuite
@@ -64,7 +64,7 @@ class AuthTest extends FixtureAnyFunSuite {
 			result.entity
 		})
 
-		assert(Authentication.checkPassword(password, user.password))
+		assert(AuthUtils.checkPassword(password, user.password))
 	}
 
 	test("login ok") { f =>
