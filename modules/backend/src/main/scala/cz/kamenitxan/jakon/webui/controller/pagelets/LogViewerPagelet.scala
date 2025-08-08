@@ -51,6 +51,7 @@ class LogViewerPagelet extends AbstractAdminPagelet {
 
 
 		ctx.contentType("application/hprof")
+		ctx.header("Content-Disposition", "attachment; filename=heapdump.hprof")
 		ctx.res().setContentLength(file.length().toInt)
 
 		val fis = new FileInputStream(file)
