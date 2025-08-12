@@ -14,7 +14,7 @@
     <link href="/jakon/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
     <!-- jQuery -->
-    <script src="/jakon/js/vendor.js"></script>
+    <script src="/jakon/vite/jakon.js"></script>
 
     <!-- angular-filemanager -->
     <script src="/jakon/js/fm/angular.min.js"></script>
@@ -65,7 +65,5 @@
         }]);
     </script>
 </div>
-    <!-- Bootstrap Core JavaScript -->
-    <script src="/jakon/vendor/bootstrap/js/bootstrap.min.js"></script>
     </body>
 </html>

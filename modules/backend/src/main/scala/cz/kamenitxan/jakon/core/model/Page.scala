@@ -19,8 +19,6 @@ class Page extends JakonObject with Ordered {
 	var parent: Page = _
 	@JakonField
 	var showComments: Boolean = false
-	@JakonField
-	var fiel: JakonFile = _
 	@JakonField(listOrder = -96, shownInEdit = false, shownInList = false)
 	var objectOrder: Double = _
 	@Transient

@@ -53,28 +53,36 @@ class AdminAuthPagelet extends AbstractAdminPagelet {
 				if (!user.enabled) {
 					PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "USER_NOT_ENABLED")
 					Logger.debug("User " + user.username + " is not enabled")
-				} else if (AuthUtils.checkPassword(password, user.password)) {
-					if (Settings.getDeployMode == DeployMode.PRODUCTION && user.acl.masterAdmin && password == "admin") {
-						PageContext.getInstance().addMessage(MessageSeverity.WARNING, "DEFAULT_ADMIN_PASSWORD")
-						ctx.sessionAttribute(PageContext.MESSAGES_KEY, PageContext.getInstance().messages)
-					}
-
-					Logger.info("User " + user.username + " logged in")
-					ctx.sessionAttribute("user", user)
-
-					if (user.acl.adminAllowed) {
-						if (Utils.isEmpty(redirectTo)) {
-							ctx.redirect(Routes.AdminPrefix + "/index")
-						} else {
-							ctx.redirect(redirectTo)
+				} else if (AuthUtils.isUnderLoginAttemptLimit(user.id)) {
+					if (AuthUtils.checkPassword(password, user.password)) {
+						if (Settings.getDeployMode == DeployMode.PRODUCTION && user.acl.masterAdmin && password == "admin") {
+							PageContext.getInstance().addMessage(MessageSeverity.WARNING, "DEFAULT_ADMIN_PASSWORD")
+							ctx.sessionAttribute(PageContext.MESSAGES_KEY, PageContext.getInstance().messages)
 						}
-					} else {
-						PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "ADMIN_NOT_ALLOWED")
-					}
+						AuthUtils.resetLoginAttempts(user.id)
 
+						Logger.info("User " + user.username + " logged in")
+						ctx.sessionAttribute("user", user)
+
+						if (user.acl.adminAllowed) {
+							if (Utils.isEmpty(redirectTo)) {
+								ctx.redirect(Routes.AdminPrefix + "/index")
+							} else {
+								ctx.redirect(redirectTo)
+							}
+						} else {
+							PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "ADMIN_NOT_ALLOWED")
+						}
+					} else { // wrong password
+						AuthUtils.incrementLoginAttempts(user.id)
+						PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "WRONG_EMAIL_OR_PASSWORD")
+						Logger.info("User " + user.username + " failed to provide correct password")
+					}
 				} else {
-					PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "WRONG_EMAIL_OR_PASSWORD")
-					Logger.info("User " + user.username + " failed to provide correct password")
+					// too many login attempts
+					AuthUtils.incrementLoginAttempts(user.id)
+					Logger.info("User " + user.username + " failed to login because of too many login attempts")
+					PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "TOO_MANY_LOGIN_ATTEMPTS")
 				}
 			} finally {
 				conn.close()
