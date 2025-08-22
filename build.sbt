@@ -33,8 +33,8 @@ val Dependencies = new {
 		libraryDependencies ++=
 			Seq(
 				"io.javalin" % "javalin" % V.javalin,
-				"io.javalin" % "javalin-rendering" % V.javalin,
-				"io.pebbletemplates" % "pebble" % "3.1.6",
+				"io.javalin" % "javalin-rendering" % "6.1.1-SNAPSHOT",
+				"io.pebbletemplates" % "pebble" % "3.2.4",
 				"org.slf4j" % "slf4j-api" % "2.0.17",
 				"org.apache.logging.log4j" % "log4j-api" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-core" % V.log4j,

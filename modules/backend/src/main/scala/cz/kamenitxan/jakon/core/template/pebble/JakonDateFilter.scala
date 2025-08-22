@@ -1,8 +1,8 @@
 package cz.kamenitxan.jakon.core.template.pebble
 
 import cz.kamenitxan.jakon.utils.TypeReferences.*
-import com.mitchellbosecke.pebble.extension.core.DateFilter
-import com.mitchellbosecke.pebble.template.{EvaluationContext, PebbleTemplate}
+import io.pebbletemplates.pebble.extension.core.DateFilter
+import io.pebbletemplates.pebble.template.{EvaluationContext, PebbleTemplate}
 
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, LocalDateTime}
