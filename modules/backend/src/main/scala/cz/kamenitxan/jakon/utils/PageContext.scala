@@ -3,6 +3,7 @@ package cz.kamenitxan.jakon.utils
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import io.javalin.http.Context
+import jakarta.servlet.DispatcherType
 
 import scala.collection.mutable
 
@@ -16,7 +17,7 @@ object PageContext {
 	val excludedPaths = List("/favicon.ico", "/css", "/js", "/jakon", "/vendor")
 
 	def init(javalinContext: Context): PageContext = {
-		if (PageContext.context.get() != null) {
+		if (PageContext.context.get() != null && javalinContext.req.getDispatcherType != DispatcherType.FORWARD) {
 			throw new IllegalStateException("PageContext already initialized")
 		}
 		if (javalinContext == null || excludedPaths.exists(path => javalinContext.path().startsWith(path))) {
