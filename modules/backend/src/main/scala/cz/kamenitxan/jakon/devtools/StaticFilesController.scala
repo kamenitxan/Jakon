@@ -29,8 +29,9 @@ class StaticFilesController extends ResourceHandler {
 			if (HttpMethod.GET.is(request.getMethod)) { // try another handler
 				resourceService.doGet(request, response)
 			}
+		} else {
+			ctx.status(404)
 		}
-		ctx.status(404)
-		ctx 
+		ctx
 	}
 }
