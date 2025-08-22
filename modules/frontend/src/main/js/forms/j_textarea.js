@@ -1,28 +1,17 @@
-import $ from 'jquery';
-window.$ = window.jQuery = $;
+//import { Crepe } from "@milkdown/crepe";
+import "@milkdown/crepe/theme/common/style.css";
+import "@milkdown/crepe/theme/frame.css";
 
 export default class JTextarea {
+
 	init(fieldHash) {
-		const megamark = require('megamark');
-		const domador = require('domador');
-		const woofmark = require('woofmark');
-		const punycode = require('punycode'); // brunch issue
-		const wmi = woofmark(document.querySelector("#editor-container" + fieldHash),
-			{
-				parseMarkdown: megamark,
-				defaultMode: 'wysiwyg',
-				parseHTML: domador,
-				classes: {
-					wysiwyg: ["form-control", "wk-textfield"]
-				}
-			});
-		// removes default woofmark image button
-		Array.from(document.querySelectorAll(".wk-command")).filter(e => e.innerHTML === "Image")[0].remove()
-		// adds custom one
-		wmi.addCommandButton("Image", function insertImage(e, mode, chunks) {
-			const done = this.async();
-			new ImageSelector(chunks, done).init();
+
+		const crepe = new Crepe({
+			root: "#editor-container" + fieldHash,
+			defaultValue: "Hello, Milkdown!",
 		});
+
+		crepe.create();
 	}
 }
 

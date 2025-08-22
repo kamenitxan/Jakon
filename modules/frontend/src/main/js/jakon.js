@@ -9,3 +9,5 @@ window.jakon.JTextarea = JTextarea;
 
 window.$ = jQuery;
 window.jQuery = jQuery;
+
+console.log('Jakon loaded');
