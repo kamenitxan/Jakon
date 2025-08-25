@@ -49,14 +49,14 @@ val Dependencies = new {
 				"de.svenkubiak" % "jBCrypt" % "0.4.3",
 				"com.sun.mail" % "jakarta.mail" % "2.0.2",
 				"org.commonmark" % "commonmark" % "0.25.1",
-				"com.google.code.gson" % "gson" % "2.13.1", // TODO remove
+				"com.google.code.gson" % "gson" % "2.13.1",
 				"io.circe" %% "circe-core" % V.circeVersion,
 				"io.circe" %% "circe-generic"% V.circeVersion,
 				"io.circe" %% "circe-parser"% V.circeVersion,
 				//"org.apache.lucene" % "lucene-core" % "7.5.0",
 				//"org.apache.lucene" % "lucene-queryparser" % "7.5.0",
 				"io.github.classgraph" % "classgraph" % "4.8.181",
-				"com.zaxxer" % "HikariCP" % "7.0.1",
+				"com.zaxxer" % "HikariCP" % "7.0.2",
 				"com.github.scribejava" % "scribejava-apis" % "8.3.3",
 				"cz.etn" % "email-validator" % "1.4.0",
 				"com.lihaoyi" %% "sourcecode" % "0.4.2"
@@ -71,8 +71,8 @@ val Dependencies = new {
 	lazy val tests = Def.settings(
 		libraryDependencies ++= Seq(
 			"org.scalatest" %% "scalatest" % "3.2.19" % "test",
-			"org.scalamock" %% "scalamock" % "7.4.0" % Test,
-			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.33.0" % "test"
+			"org.scalamock" %% "scalamock" % "7.4.1" % Test,
+			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.35.0" % "test"
 		)
 	)
 }
