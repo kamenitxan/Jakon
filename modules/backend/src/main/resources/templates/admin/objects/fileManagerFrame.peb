@@ -14,7 +14,7 @@
     <link href="/jakon/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
     <!-- jQuery -->
-    <script src="/jakon/vite/jakon.js"></script>
+    <script src="/jakon/parcel/jakon.js"></script>
 
     <!-- angular-filemanager -->
     <script src="/jakon/js/fm/angular.min.js"></script>

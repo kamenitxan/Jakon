@@ -24,13 +24,14 @@ libraryDependencies += "cz.kamenitxan" %% "jakon" % "0.7.0"
         <artifactId>jakon_3</artifactId>
         <version>0.7.0</version>
     </dependency>
-<dependencies>
+</dependencies>
 ```
 
 # Build
 - Scala is build by SBT
-- Administration frontend is build by [Vite](https://https://vite.dev/)
+- Administration frontend is built by Parcel
     - build run by ```npm run build```
+    - dev run by ```npm run dev```
 
 # Features
 ## Static Site Generation
