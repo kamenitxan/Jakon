@@ -1,7 +1,7 @@
 package cz.kamenitxan.jakon.core.dynamic
 
-import com.mitchellbosecke.pebble.PebbleEngine
-import com.mitchellbosecke.pebble.loader.FileLoader
+import io.pebbletemplates.pebble.PebbleEngine
+import io.pebbletemplates.pebble.loader.FileLoader
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.template.pebble.PebbleExtension
 import cz.kamenitxan.jakon.utils.PageContext

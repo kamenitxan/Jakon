@@ -1,8 +1,8 @@
 package cz.kamenitxan.jakon.core.template.pebble
 
 import cz.kamenitxan.jakon.core.template.function.FunctionHelper
-import com.mitchellbosecke.pebble.extension.Filter
-import com.mitchellbosecke.pebble.template.{EvaluationContext, PebbleTemplate}
+import io.pebbletemplates.pebble.extension.Filter
+import io.pebbletemplates.pebble.template.{EvaluationContext, PebbleTemplate}
 import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
 

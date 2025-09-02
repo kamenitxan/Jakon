@@ -1,8 +1,8 @@
 package cz.kamenitxan.jakon.core.template.utils
 
-import com.mitchellbosecke.pebble.PebbleEngine
-import com.mitchellbosecke.pebble.error.PebbleException
-import com.mitchellbosecke.pebble.loader.Loader
+import io.pebbletemplates.pebble.PebbleEngine
+import io.pebbletemplates.pebble.error.PebbleException
+import io.pebbletemplates.pebble.loader.Loader
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.template.pebble.JakonMethodAccessValidator
 import cz.kamenitxan.jakon.webui.ModelAndView

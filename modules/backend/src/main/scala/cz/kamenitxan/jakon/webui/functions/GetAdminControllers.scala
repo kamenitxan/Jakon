@@ -2,8 +2,8 @@ package cz.kamenitxan.jakon.webui.functions
 
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.webui.AdminSettings
-import com.mitchellbosecke.pebble.extension.Function
-import com.mitchellbosecke.pebble.template.{EvaluationContext, PebbleTemplate}
+import io.pebbletemplates.pebble.extension.Function
+import io.pebbletemplates.pebble.template.{EvaluationContext, PebbleTemplate}
 
 import java.util
 import scala.jdk.CollectionConverters.*

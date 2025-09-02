@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon.core.template.pebble
 
-import com.mitchellbosecke.pebble.attributes.methodaccess.MethodAccessValidator
+import io.pebbletemplates.pebble.attributes.methodaccess.MethodAccessValidator
 
 import java.lang.reflect.{AccessibleObject, Method}
 

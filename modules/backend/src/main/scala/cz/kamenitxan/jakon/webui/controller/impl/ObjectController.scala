@@ -352,12 +352,13 @@ object ObjectController {
 				if (fieldRefOpt.isDefined) {
 					val fieldRef = fieldRefOpt.get
 					fieldRef.setAccessible(true)
-					val value = ctx.queryParam(p).conform(fieldRef)
+					val value = ctx.formParam(p).conform(fieldRef)
 					if (value != null) {
 						fieldRef.set(i18nData, value)
 					}
 				}
 			})
+			// TODO: create tests for this
 			if (isUpdate) {
 				i18nData.update()
 			} else {

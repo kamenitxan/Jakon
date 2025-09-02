@@ -2,8 +2,8 @@ package cz.kamenitxan.jakon.core.template.pebble
 
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.utils.{I18nUtil, PageContext}
-import com.mitchellbosecke.pebble.extension.i18n.i18nFunction
-import com.mitchellbosecke.pebble.template.{EvaluationContext, PebbleTemplate}
+import io.pebbletemplates.pebble.extension.i18n.i18nFunction
+import io.pebbletemplates.pebble.template.{EvaluationContext, PebbleTemplate}
 
 import java.text.MessageFormat
 import java.util
