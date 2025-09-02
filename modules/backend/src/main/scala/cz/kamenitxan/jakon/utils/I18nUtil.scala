@@ -2,7 +2,7 @@ package cz.kamenitxan.jakon.utils
 
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.Utils.*
-import com.mitchellbosecke.pebble.extension.i18n.UTF8Control
+import io.pebbletemplates.pebble.extension.i18n.UTF8Control
 
 import java.io.File
 import java.net.URLClassLoader

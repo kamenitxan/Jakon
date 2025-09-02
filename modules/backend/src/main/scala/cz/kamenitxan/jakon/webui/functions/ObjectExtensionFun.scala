@@ -4,8 +4,8 @@ import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.utils.PageContext
 import cz.kamenitxan.jakon.webui.AdminSettings
 import cz.kamenitxan.jakon.webui.controller.objectextension.{ExtensionType, ObjectExtension}
-import com.mitchellbosecke.pebble.extension.Function
-import com.mitchellbosecke.pebble.template.{EvaluationContext, PebbleTemplate}
+import io.pebbletemplates.pebble.extension.Function
+import io.pebbletemplates.pebble.template.{EvaluationContext, PebbleTemplate}
 
 import java.util
 import scala.collection.mutable
