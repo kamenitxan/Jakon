@@ -6,8 +6,8 @@
   "version": "0.0.1",
   "repository": "",
   "scripts": {
-    "build": "vite build",
-    "watch": "vite build --watch",
+    "dev": "parcel modules/frontend/src/main/js/jakon.js --no-hmr",
+    "build": "parcel build modules/frontend/src/main/js/jakon.js --dist-dir modules/backend/src/main/resources/static/jakon/parcel --public-url /jakon/parcel --no-content-hash",
     "update-browserslist-dby": "npx update-browserslist-db@latest"
   },
   "dependencies": {
@@ -15,6 +15,6 @@
     "jquery": "3.7.1"
   },
   "devDependencies": {
-    "vite": "^7.0.4"
+    "parcel": "^2.12.0"
   }
 }
