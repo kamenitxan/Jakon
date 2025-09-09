@@ -19,6 +19,6 @@
     "woofmark": "^4.2.6"
   },
   "devDependencies": {
-    "vite": "^7.0.4"
+    "vite": "^7.0.7"
   }
 }
