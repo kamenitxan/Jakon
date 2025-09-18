@@ -1,17 +1,39 @@
-//import { Crepe } from "@milkdown/crepe";
-import "@milkdown/crepe/theme/common/style.css";
-import "@milkdown/crepe/theme/frame.css";
+import {Crepe} from "@milkdown/crepe";
+import { listener, listenerCtx } from '@milkdown/kit/plugin/listener';
+// Milkdown styles are disabled to avoid bundling issues with Parcel.
+import "../../css/milkdown.css";
 
 export default class JTextarea {
 
 	init(fieldHash) {
-
+		console.log("Initializing editor for field: " + fieldHash);
 		const crepe = new Crepe({
 			root: "#editor-container" + fieldHash,
-			defaultValue: "Hello, Milkdown!",
+			defaultValue: document.querySelector("#ta-" + fieldHash).value,
+		});
+
+		crepe.on((listener) => {
+			listener.markdownUpdated((markdown) => {
+				console.log("Markdown updated:", crepe.getMarkdown());
+				document.querySelector("#ta-" + fieldHash).value = crepe.getMarkdown();
+			});
+
+			listener.updated((doc) => {
+				console.log("Document updated");
+			});
+
+			listener.focus(() => {
+				console.log("Editor focused");
+			});
+
+			listener.blur(() => {
+				console.log("Editor blurred");
+			});
 		});
 
 		crepe.create();
+
+
 	}
 }
 
@@ -55,28 +77,28 @@ class ImageSelector {
 
 	changeFolder(path) {
 		this.Ajax.post(this.endPoint, {
-			path : path
+			path: path
 		})
-		.then(data => {
-			console.log(data);
-			const target = this.holder.querySelector(".modal-body");
-			target.innerHTML = "";
-			this.createList(data, target);
+			.then(data => {
+				console.log(data);
+				const target = this.holder.querySelector(".modal-body");
+				target.innerHTML = "";
+				this.createList(data, target);
 
-			const parentPath = path.substring(0, path.lastIndexOf("/"));
-			const hasParent = parentPath !== "";
-			const parentArrow = hasParent ? `<i class="fas fa-arrow-up pointer"></i>` : "";
+				const parentPath = path.substring(0, path.lastIndexOf("/"));
+				const hasParent = parentPath !== "";
+				const parentArrow = hasParent ? `<i class="fas fa-arrow-up pointer"></i>` : "";
 
-			this.holder.querySelector(".modal-title").innerHTML = `
+				this.holder.querySelector(".modal-title").innerHTML = `
 				<h4 class="modal-title" id="gridSystemModalLabel">${parentArrow} Aktuální složka: ${path}</h4>
 			`;
-			if (hasParent) {
-				this.holder.querySelector(".modal-title i").addEventListener("click", (e) => {
-					this.changeFolder(path.substring(0, path.lastIndexOf("/")));
-				});
-			}
-		})
-		.catch(error => console.error(error));
+				if (hasParent) {
+					this.holder.querySelector(".modal-title i").addEventListener("click", (e) => {
+						this.changeFolder(path.substring(0, path.lastIndexOf("/")));
+					});
+				}
+			})
+			.catch(error => console.error(error));
 	}
 
 	createList(data, target) {

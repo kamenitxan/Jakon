@@ -53,3 +53,4 @@ jakon_config.properties
 /modules/backend/src/test/test.iml
 /project/project/
 /.parcel-cache/
+/dist/

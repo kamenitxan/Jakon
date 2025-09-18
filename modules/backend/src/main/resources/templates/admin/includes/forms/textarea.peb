@@ -1,7 +1,8 @@
 {# @pebvariable name="field" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
 
 <div>
-	<textarea class="form-control" name="{{ field.name }}" cols="80" rows="5" id="editor-container{{ fieldHash }}">{{ field.value | raw }}</textarea>
+	<textarea class="form-control" name="{{ field.name }}" cols="80" rows="5" id="ta-{{ fieldHash }}">{{ field.value | raw }}</textarea>
+	<div class="form-control" id="editor-container{{ fieldHash }}"></div>
 </div>
 <div id="image_selector"></div>
 
