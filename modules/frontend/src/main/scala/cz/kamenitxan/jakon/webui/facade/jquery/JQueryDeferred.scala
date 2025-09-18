@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.webui.facade
+package cz.kamenitxan.jakon.webui.facade.jquery
 
 import scala.scalajs.js
 import js.UndefOr

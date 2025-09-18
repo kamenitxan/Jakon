@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.webui.facade
+package cz.kamenitxan.jakon.webui.facade.jquery
 
 import cz.kamenitxan.jakon.webui.facade.jquery.ElementDesc
 
