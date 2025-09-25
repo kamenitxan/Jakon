@@ -1,6 +1,8 @@
 import sbt.Tests.{Group, SubProcess}
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
+import scala.sys.process.Process
+
 val V = new {
 	val Scala = "3.3.6"
   val jakon = "0.7.1-SNAPSHOT"
@@ -20,13 +22,6 @@ ThisBuild / resolvers += "Artifactory" at "https://nexus.kamenitxan.eu/repositor
 
 
 val Dependencies = new {
-
-	lazy val frontend = Seq(
-		libraryDependencies ++=
-			Seq(
-				"org.scala-js" %%% "scalajs-dom" % "2.8.0"
-			)
-	)
 
 	//noinspection SpellCheckingInspection
 	lazy val backend = Seq(
@@ -67,6 +62,14 @@ val Dependencies = new {
 
 	)
 
+	lazy val frontend = Seq(
+		libraryDependencies ++=
+			Seq(
+				"org.scala-js" %%% "scalajs-dom" % "2.8.0",
+				"org.scalablytyped" %%%  "lexical" % "0.35.0-7db44f",
+			)
+	)
+
 	//noinspection SpellCheckingInspection
 	lazy val tests = Def.settings(
 		libraryDependencies ++= Seq(
@@ -81,17 +84,24 @@ lazy val root = (project in file(".")).aggregate(frontend, backend, shared.js, s
 
 lazy val frontend = (project in file("modules/frontend"))
 	.dependsOn(shared.js)
-	.enablePlugins(ScalaJSPlugin)
+	.enablePlugins(ScalaJSPlugin, ScalablyTypedConverterPlugin, ScalaJSBundlerPlugin)
 	.settings(scalaJSUseMainModuleInitializer := false)
 	.settings(
 		Dependencies.frontend,
+		Compile / npmDependencies ++= Seq(
+			"@lexical/dragon" -> "0.35.0",
+			"@lexical/history" -> "0.35.0",
+			"@lexical/rich-text" -> "0.35.0",
+			"@lexical/utils" -> "0.35.0",
+			"lexical" -> "0.35.0"
+		),
 		Dependencies.tests//,
 		//Test / jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()
 	)
 	.settings(
 		commonBuildSettings,
-		name := "jakon-fe"
-		//scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) }
+		name := "jakon-fe",
+		scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
 	)
 
 lazy val backend = (project in file("modules/backend"))
@@ -153,7 +163,7 @@ Test / logBuffered := false
 
 lazy val fastOptCompileCopy = taskKey[Unit]("")
 
-val jsPath = "modules/backend/src/main/resources/static/jakon/js"
+val jsPath = "modules/frontend/src/main/js"
 fastOptCompileCopy := {
 	val source = (frontend / Compile / fastOptJS).value.data
 	IO.copyFile(
@@ -172,7 +182,7 @@ fullOptCompileCopy := {
 	)
 	IO.copyFile(
 		new File(source.getAbsolutePath + ".map"),
-		baseDirectory.value / jsPath / "jakon-fe-opt.js.map"
+		baseDirectory.value / jsPath / "scalajs.js.map"
 	)
 }
 
@@ -183,6 +193,9 @@ lazy val commonBuildSettings: Seq[Def.Setting[_]] = Seq(
 	version := V.jakon,
 	startYear := Some(2015)
 )
+
+lazy val npmBuild = taskKey[Unit]("Build npm package")
+npmBuild := Process("C:\\Program Files\\nodejs\\npm.cmd run build", baseDirectory.value).!
 
 addCommandAlias("runDev", ";fastOptCompileCopy; backend/reStart --mode dev")
 addCommandAlias("runProd", ";fullOptCompileCopy; backend/reStart --mode prod")
@@ -211,6 +224,7 @@ val PrepareCICommands = Seq(
 addCommandAlias("ci", CICommands)
 addCommandAlias("preCI", PrepareCICommands)
 addCommandAlias("jar", "clean; fullOptCompileCopy; coverageOff; assembly")
+addCommandAlias("buildFe", "fastOptCompileCopy; npmBuild")
 addCommandAlias("testJar", "clean; coverageOff; fullOptCompileCopy; set assembly / mainClass := Some(\"cz.kamenitxan.jakon.Main\"); assembly")
 addCommandAlias("githubTest", "coverageOn; coverage; backend/test; coverageReport; coverageOff;")
 addCommandAlias("outdated", "dependencyUpdates")

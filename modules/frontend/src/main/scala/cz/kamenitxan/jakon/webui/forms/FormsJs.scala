@@ -24,4 +24,9 @@ object FormsJs {
 		FileSelectJs.init(holder)
 	}
 
+	@JSExport
+	def initTextarea(fieldHash: Int): Unit = {
+		TextareaJs.init(fieldHash)
+	}
+
 }

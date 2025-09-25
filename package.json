@@ -11,8 +11,14 @@
     "update-browserslist-dby": "npx update-browserslist-db@latest"
   },
   "dependencies": {
-    "@milkdown/crepe": "^7.15.3",
-    "jquery": "3.7.1"
+    "@lexical/code": "^0.35.0",
+    "@lexical/dragon": "0.35.0",
+    "@lexical/history": "0.35.0",
+    "@lexical/markdown": "^0.35.0",
+    "@lexical/rich-text": "0.35.0",
+    "@lexical/utils": "0.35.0",
+    "jquery": "3.7.1",
+    "lexical": "0.35.0"
   },
   "devDependencies": {
     "parcel": "^2.12.0"
@@ -20,5 +26,4 @@
   "@parcel/resolver-default": {
     "packageExports": true
   }
-
 }

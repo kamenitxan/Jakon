@@ -1,5 +1,6 @@
 @import "logs.css";
 @import "forms.css";
+@import "lexical.css";
 
 .hidden {
 	display: none;
