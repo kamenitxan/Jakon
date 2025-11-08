@@ -63,10 +63,6 @@ val Dependencies = new {
 			)
 	)
 
-	lazy val shared = Def.settings(
-
-	)
-
 	//noinspection SpellCheckingInspection
 	lazy val tests = Def.settings(
 		libraryDependencies ++= Seq(
@@ -77,10 +73,9 @@ val Dependencies = new {
 	)
 }
 
-lazy val root = (project in file(".")).aggregate(frontend, backend, shared.js, shared.jvm)
+lazy val root = (project in file(".")).aggregate(frontend, backend)
 
 lazy val frontend = (project in file("modules/frontend"))
-	.dependsOn(shared.js)
 	.enablePlugins(ScalaJSPlugin)
 	.settings(scalaJSUseMainModuleInitializer := false)
 	.settings(
@@ -95,7 +90,6 @@ lazy val frontend = (project in file("modules/frontend"))
 	)
 
 lazy val backend = (project in file("modules/backend"))
-	//.dependsOn(shared.jvm)
 	.settings(Dependencies.backend)
 	.settings(Dependencies.tests)
 	.settings(commonBuildSettings)
@@ -122,21 +116,6 @@ lazy val backend = (project in file("modules/backend"))
 		)
 	)
 
-lazy val shared = crossProject(JSPlatform, JVMPlatform)
-	.crossType(CrossType.Pure)
-	.in(file("modules/shared"))
-	.jvmSettings(Dependencies.shared)
-	.jsSettings(Dependencies.shared)
-	.jsSettings(commonBuildSettings)
-	.jvmSettings(commonBuildSettings)
-	.settings(
-		name := "jakon-shared",
-
-		ThisBuild / versionScheme := Some("strict"),
-		publishTo := Some("Nexus" at "https://nexus.kamenitxan.eu/repository/jakon/"),
-		credentials += Credentials(Path.userHome / ".sbt" / ".credentials"),
-		publishMavenStyle := true
-	)
 
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 ThisBuild / semanticdbEnabled := false
@@ -176,7 +155,7 @@ fullOptCompileCopy := {
 	)
 }
 
-lazy val commonBuildSettings: Seq[Def.Setting[_]] = Seq(
+lazy val commonBuildSettings: Seq[Def.Setting[?]] = Seq(
 	scalaVersion := V.Scala,
 	organization := "cz.kamenitxan",
 	name := "jakon",
