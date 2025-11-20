@@ -1,20 +1,20 @@
 {# @pebvariable name="field" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
 
-<div class="editor-wrapper">
+<div class="jakon-editor-wrapper" data-editorId="{{ fieldHash }}">
 	<textarea class="form-control" name="{{ field.name }}" cols="80" rows="5" id="ta-{{ fieldHash }}">{{ field.value | raw }}</textarea>
-	<div class="form-control" id="lexical-editor{{ fieldHash }}" contenteditable>
+	<div class="form-control" id="lexical-editor-{{ fieldHash }}" contenteditable>
 
 	</div>
 	<div class="actions">
 		<button class="action-button" title="Convert From Markdown" aria-label="Convert from markdown"><i class="markdown">markdown</i></button>
 	</div>
-	<textarea id="lexical-state{{ fieldHash }}"></textarea>
+	<textarea id="lexical-state-{{ fieldHash }}"></textarea>
 </div>
 <div id="image_selector"></div>
 
 <script type="module">
 	(() => {
-		new jakon.JTextarea().init({{ fieldHash }})
+		//new jakon.JTextarea().init({{ fieldHash }})
 	}).apply();
 
 	(() => {

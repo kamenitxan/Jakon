@@ -17,6 +17,7 @@ import io.github.classgraph.ScanResult
 import io.javalin.Javalin
 import io.javalin.apibuilder.ApiBuilder
 import io.javalin.config.JavalinConfig
+import io.javalin.http.staticfiles.Location
 import io.javalin.http.{Context, Handler, HttpStatus}
 
 import java.io.File

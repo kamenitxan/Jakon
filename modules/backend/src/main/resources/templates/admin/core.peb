@@ -8,6 +8,7 @@
     <title>JakonUI{% block title %}{% endblock %}</title>
 
     <script src="/jakon/parcel/jakon.js"></script>
+
     <!--script src="/jakon/js/scalajs.js"></script-->
     <link href="/jakon/parcel/jakon.css" rel="stylesheet">
 
@@ -36,5 +37,6 @@
     <!-- Custom Theme JavaScript -->
     <script src="/jakon/js/sb-admin-2.js"></script>
 
+	<script type="module" src="/jakon/js/jakon-editor.js"></script>
 </body>
 </html>
