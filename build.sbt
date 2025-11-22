@@ -29,7 +29,7 @@ val Dependencies = new {
 	)
 
 	//noinspection SpellCheckingInspection
-	lazy val backend = Seq(
+	lazy val core = Seq(
 		libraryDependencies ++=
 			Seq(
 				"io.javalin" % "javalin" % V.javalin,
@@ -73,7 +73,7 @@ val Dependencies = new {
 	)
 }
 
-lazy val root = (project in file(".")).aggregate(frontend, backend)
+lazy val root = (project in file(".")).aggregate(frontend, core)
 
 lazy val frontend = (project in file("modules/frontend"))
 	.enablePlugins(ScalaJSPlugin)
@@ -89,15 +89,15 @@ lazy val frontend = (project in file("modules/frontend"))
 		//scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) }
 	)
 
-lazy val backend = (project in file("modules/backend"))
-	.settings(Dependencies.backend)
+lazy val core = (project in file("modules/core"))
+	.settings(Dependencies.core)
 	.settings(Dependencies.tests)
 	.settings(commonBuildSettings)
 	.settings(
 		name := "jakon",
 		Test / fork := true,
 		Test / testGrouping := (Test / definedTests).value.map { suite =>
-			Group(suite.name, Seq(suite), SubProcess(ForkOptions().withWorkingDirectory(new File("modules/backend"))))
+			Group(suite.name, Seq(suite), SubProcess(ForkOptions().withWorkingDirectory(new File("modules/core"))))
 		},
 		ThisBuild / versionScheme := Some ("strict"),
 		publishTo := Some ("Nexus" at "https://nexus.kamenitxan.eu/repository/jakon/"),
@@ -132,7 +132,7 @@ Test / logBuffered := false
 
 lazy val fastOptCompileCopy = taskKey[Unit]("")
 
-val jsPath = "modules/backend/src/main/resources/static/jakon/js"
+val jsPath = "modules/core/src/main/resources/static/jakon/js"
 fastOptCompileCopy := {
 	val source = (frontend / Compile / fastOptJS).value.data
 	IO.copyFile(
@@ -163,8 +163,8 @@ lazy val commonBuildSettings: Seq[Def.Setting[?]] = Seq(
 	startYear := Some(2015)
 )
 
-addCommandAlias("runDev", ";fastOptCompileCopy; backend/reStart --mode dev")
-addCommandAlias("runProd", ";fullOptCompileCopy; backend/reStart --mode prod")
+addCommandAlias("runDev", ";fastOptCompileCopy; core/reStart --mode dev")
+addCommandAlias("runProd", ";fullOptCompileCopy; core/reStart --mode prod")
 
 val scalafixRules = Seq(
 	"OrganizeImports",
@@ -175,8 +175,8 @@ val scalafixRules = Seq(
 
 val CICommands = Seq(
 	"clean",
-	"backend/compile",
-	"backend/test",
+	"core/compile",
+	"core/test",
 	"frontend/compile",
 	"frontend/fastOptJS",
 	"frontend/test",
@@ -191,5 +191,5 @@ addCommandAlias("ci", CICommands)
 addCommandAlias("preCI", PrepareCICommands)
 addCommandAlias("jar", "clean; fullOptCompileCopy; coverageOff; assembly")
 addCommandAlias("testJar", "clean; coverageOff; fullOptCompileCopy; set assembly / mainClass := Some(\"cz.kamenitxan.jakon.Main\"); assembly")
-addCommandAlias("githubTest", "coverageOn; coverage; backend/test; coverageReport; coverageOff;")
+addCommandAlias("githubTest", "coverageOn; coverage; core/test; coverageReport; coverageOff;")
 addCommandAlias("outdated", "dependencyUpdates")
