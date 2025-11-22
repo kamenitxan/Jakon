@@ -1,6 +1,5 @@
 package cz.kamenitxan.jakon.webui.api
 
-import java.io.File
 import com.google.gson.Gson
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{FileType, JakonFile, JakonObject}
@@ -8,6 +7,7 @@ import cz.kamenitxan.jakon.webui.api.objects.{GetFilesRequest, GetFilesResponse,
 import cz.kamenitxan.jakon.webui.controller.impl.FileManagerController
 import io.javalin.http.Context
 
+import java.io.File
 import java.sql.Connection
 import scala.language.postfixOps
 

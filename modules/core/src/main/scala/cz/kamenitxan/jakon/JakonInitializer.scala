@@ -1,6 +1,5 @@
 package cz.kamenitxan.jakon
 
-import java.sql.Connection
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
@@ -8,6 +7,7 @@ import cz.kamenitxan.jakon.core.service.EmailTemplateService
 import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.utils.mail.EmailTemplateEntity
 
+import java.sql.Connection
 import java.util.Locale
 
 object JakonInitializer {
