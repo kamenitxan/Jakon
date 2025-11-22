@@ -42,8 +42,8 @@ val Dependencies = new {
 				"org.xerial" % "sqlite-jdbc" % "3.51.0.0",
 				"com.mysql" % "mysql-connector-j" % "9.4.0",
 				"com.google.guava" % "guava" % "33.5.0-jre",
-				"commons-io" % "commons-io" % "2.20.0",
-				"org.apache.commons" % "commons-lang3" % "3.19.0",
+				"commons-io" % "commons-io" % "2.21.0",
+				"org.apache.commons" % "commons-lang3" % "3.20.0",
 				"commons-codec" % "commons-codec" % "1.20.0",
 				"org.apache.commons" % "commons-fileupload2-jakarta" % "2.0.0-M1", // TODO remove
 				"de.svenkubiak" % "jBCrypt" % "0.4.3",
@@ -67,8 +67,8 @@ val Dependencies = new {
 	lazy val tests = Def.settings(
 		libraryDependencies ++= Seq(
 			"org.scalatest" %% "scalatest" % "3.2.19" % "test",
-			"org.scalamock" %% "scalamock" % "7.4.1" % Test,
-			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.35.0" % "test"
+			"org.scalamock" %% "scalamock" % "7.5.2" % Test,
+			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.38.0" % "test"
 		)
 	)
 }
