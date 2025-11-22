@@ -18,10 +18,12 @@ import io.javalin.Javalin
 import io.javalin.apibuilder.ApiBuilder
 import io.javalin.config.JavalinConfig
 import io.javalin.http.{Context, Handler, HttpStatus}
+import io.javalin.plugin.bundled.CorsPluginConfig
 
 import java.io.File
 import java.nio.file.{Files, Paths}
 import java.util.concurrent.TimeUnit
+import java.util.function.Consumer
 
 
 class JakonInit {
@@ -47,6 +49,20 @@ class JakonInit {
 	//noinspection ScalaWeakerAccess
 	protected def routesSetup(javalin: Javalin): Unit = {
 		// override to custom routes
+	}
+
+	//noinspection ScalaWeakerAccess
+	protected def corsSetup(): Consumer[CorsPluginConfig] | Null = {
+		// override to add custom CORS setup
+		if (Settings.getDeployMode == DeployMode.DEVEL) {
+			cors => {
+				cors.addRule(it => {
+					it.reflectClientOrigin = true
+				})
+			}
+		} else {
+			 null
+		}
 	}
 
 	protected def adminControllers(): Unit = {
@@ -101,7 +117,12 @@ class JakonInit {
 			config.staticFiles.add(Settings.getStaticDir)
 			config.staticFiles.add("/static")
 			config.registerPlugin(new ContextExtension)
+			corsSetup() match {
+				case null => // do nothing
+				case corsConfig: Consumer[CorsPluginConfig] => config.bundledPlugins.enableCors(corsConfig)
+			}
 			javalinConfig(config)
+
 		})
 		JakonInit.javalin = app
 		ApiBuilder.setStaticJavalin(app)
