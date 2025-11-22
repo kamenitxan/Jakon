@@ -1,5 +1,7 @@
 # .github/workflows/dependency-graph.yml
 name: Update Dependency Graph
+permissions:
+  contents: write
 on:
   push:
     branches:
