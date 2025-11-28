@@ -67,7 +67,7 @@
 
 	</div>
 
-	<div class="linkEditorModal modal " id="linkEditorModal-{{ fieldHash }}" tabindex="-1" aria-labelledby="linkEditorModalLabel" aria-hidden="true">
+	<div class="linkEditorModal modal " id="linkEditorModal-{{ fieldHash }}" tabindex="-1" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="modal-header">

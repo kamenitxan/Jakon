@@ -4,7 +4,7 @@ package cz.kamenitxan.jakon.webui.entity;
  * Created by TPa on 31.03.18.
  */
 public enum HtmlType {
-	TEXT("test"),
+	TEXT("text"),
 	DATE("date"),
 	TIME("time"),
 	DATETIME("datetime-local"),
