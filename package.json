@@ -7,18 +7,13 @@
   "repository": "",
   "scripts": {
     "build": "vite build",
-    "update-browserslist-dby": "npx update-browserslist-db@latest"
+    "update-browserslist-dby": "npx update-browserslist-db@latest",
+    "outdated": "npm outdated"
   },
   "dependencies": {
-    "awesomplete": "^1.1.7",
-    "domador": "^2.4.4",
-    "jquery": "3.7.1",
-    "megamark": "^3.3.0",
-    "npm": "^11.6.3",
-    "punycode": "^2.3.1",
-    "woofmark": "^4.2.6"
+    "jquery": "3.7.1"
   },
   "devDependencies": {
-    "vite": "^7.0.8"
+    "vite": "^7.2.4"
   }
 }

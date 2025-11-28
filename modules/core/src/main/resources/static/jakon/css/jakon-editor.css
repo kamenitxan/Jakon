@@ -1,0 +1,808 @@
+.editor-paragraph {
+  margin: 0;
+  position: relative;
+}
+
+.editor-quote {
+  color: #65676b;
+  border-left: 4px solid #ced0d4;
+  margin: 0 0 10px 20px;
+  padding-left: 16px;
+  font-size: 15px;
+}
+
+.editor-h1 {
+  color: #050505;
+  margin: 0;
+  font-size: 24px;
+  font-weight: 400;
+}
+
+.editor-h2 {
+  color: #65676b;
+  text-transform: uppercase;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.editor-h3 {
+  text-transform: uppercase;
+  margin: 0;
+  font-size: 12px;
+}
+
+.editor-indent {
+  --lexical-indent-base-value: 40px;
+}
+
+.editor-textBold {
+  font-weight: bold;
+}
+
+.editor-paragraph mark {
+  background-color: unset;
+}
+
+.editor-textHighlight {
+  background: #ffd40024;
+  border-bottom: 2px solid #ffd4004d;
+}
+
+.editor-textItalic {
+  font-style: italic;
+}
+
+.editor-textUnderline {
+  text-decoration: underline;
+}
+
+.editor-textStrikethrough {
+  text-decoration: line-through;
+}
+
+.editor-textUnderlineStrikethrough {
+  text-decoration: underline line-through;
+}
+
+.editor-tabNode {
+  text-decoration: none;
+  position: relative;
+}
+
+.editor-tabNode.editor-textUnderline:after {
+  content: "";
+  border-bottom: .1em solid;
+  position: absolute;
+  bottom: .15em;
+  left: 0;
+  right: 0;
+}
+
+.editor-tabNode.editor-textStrikethrough:before {
+  content: "";
+  border-top: .1em solid;
+  position: absolute;
+  top: .69em;
+  left: 0;
+  right: 0;
+}
+
+.editor-tabNode.editor-textUnderlineStrikethrough:before, .editor-tabNode.editor-textUnderlineStrikethrough:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+.editor-tabNode.editor-textUnderlineStrikethrough:before {
+  border-top: .1em solid;
+  top: .69em;
+}
+
+.editor-tabNode.editor-textUnderlineStrikethrough:after {
+  border-bottom: .1em solid;
+  bottom: .05em;
+}
+
+.editor-textSubscript {
+  font-size: .8em;
+  vertical-align: sub !important;
+}
+
+.editor-textSuperscript {
+  vertical-align: super;
+  font-size: .8em;
+}
+
+.editor-textCode {
+  background-color: #f0f2f5;
+  padding: 1px .25rem;
+  font-family: Menlo, Consolas, Monaco, monospace;
+  font-size: 94%;
+}
+
+.editor-textLowercase {
+  text-transform: lowercase;
+}
+
+.editor-textUppercase {
+  text-transform: uppercase;
+}
+
+.editor-textCapitalize {
+  text-transform: capitalize;
+}
+
+.editor-hashtag {
+  background-color: #5890ff26;
+  border-bottom: 1px solid #5890ff4d;
+}
+
+.editor-link {
+  color: #216fdb;
+  text-decoration: none;
+}
+
+.editor-link:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.editor-blockCursor {
+  pointer-events: none;
+  display: block;
+  position: absolute;
+}
+
+.editor-blockCursor:after {
+  content: "";
+  border-top: 1px solid #000;
+  width: 20px;
+  animation: 1.1s steps(2, start) infinite CursorBlink;
+  display: block;
+  position: absolute;
+  top: -2px;
+}
+
+@keyframes CursorBlink {
+  to {
+    visibility: hidden;
+  }
+}
+
+.editor-code {
+  tab-size: 2;
+  background-color: #f0f2f5;
+  margin: 8px 0;
+  padding: 8px 8px 8px 52px;
+  font-family: Menlo, Consolas, Monaco, monospace;
+  font-size: 13px;
+  line-height: 1.53;
+  display: block;
+  position: relative;
+  overflow-x: auto;
+}
+
+.editor-code:before {
+  content: attr(data-gutter);
+  color: #777;
+  white-space: pre-wrap;
+  text-align: right;
+  background-color: #eee;
+  border-right: 1px solid #ccc;
+  min-width: 25px;
+  padding: 8px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.editor-tableScrollableWrapper {
+  margin: 0 25px 30px 0;
+  overflow-x: auto;
+}
+
+.editor-tableScrollableWrapper > .editor-table {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.editor-tableAlignmentCenter {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.editor-tableAlignmentRight {
+  margin-left: auto;
+}
+
+.editor-table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  table-layout: fixed;
+  width: fit-content;
+  margin-top: 25px;
+  margin-bottom: 30px;
+  overflow: scroll;
+}
+
+.editor-tableScrollableWrapper.editor-tableFrozenRow {
+  overflow-x: clip;
+}
+
+.editor-tableFrozenRow tr:first-of-type > td {
+  z-index: 2;
+  background-color: #fff;
+  position: sticky;
+  top: 44px;
+  overflow: clip;
+}
+
+.editor-tableFrozenRow tr:first-of-type > th {
+  z-index: 2;
+  background-color: #f2f3f5;
+  position: sticky;
+  top: 44px;
+  overflow: clip;
+}
+
+.editor-tableFrozenRow tr:first-of-type > th:after, .editor-tableFrozenRow tr:first-of-type > td:after {
+  content: "";
+  border-bottom: 1px solid #bbb;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.editor-tableFrozenColumn tr > td:first-child {
+  z-index: 2;
+  background-color: #fff;
+  position: sticky;
+  left: 0;
+}
+
+.editor-tableFrozenColumn tr > th:first-child {
+  z-index: 2;
+  background-color: #f2f3f5;
+  position: sticky;
+  left: 0;
+}
+
+.editor-tableFrozenColumn tr > :first-child:after {
+  content: "";
+  border-right: 1px solid #bbb;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.editor-tableRowStriping tr:nth-child(2n), .editor-tableFrozenColumn .editor-table.editor-tableRowStriping tr:nth-child(2n) > td:first-child {
+  background-color: #f2f5fb;
+}
+
+.editor-tableSelection ::selection {
+  background-color: #0000;
+}
+
+.editor-tableSelected {
+  outline: 2px solid #3c84f4;
+}
+
+.editor-tableCell {
+  vertical-align: top;
+  text-align: start;
+  border: 1px solid #bbb;
+  outline: none;
+  width: 75px;
+  padding: 6px 8px;
+  position: relative;
+  overflow: auto;
+}
+
+.editor-tableCell > * {
+  overflow: inherit;
+}
+
+.editor-tableCellResizer {
+  cursor: ew-resize;
+  z-index: 10;
+  width: 8px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  right: -4px;
+}
+
+.editor-tableCellHeader {
+  text-align: start;
+  background-color: #f2f3f5;
+}
+
+.editor-tableCellSelected {
+  caret-color: #0000;
+}
+
+.editor-tableCellSelected:after {
+  mix-blend-mode: multiply;
+  content: "";
+  pointer-events: none;
+  background-color: highlight;
+  position: absolute;
+  inset: 0;
+}
+
+.editor-tableAddColumns {
+  cursor: pointer;
+  background-color: #eee;
+  border: 0;
+  height: 100%;
+  animation: .2s table-controls;
+  position: absolute;
+}
+
+.editor-tableAddColumns:after {
+  content: " ";
+  opacity: .4;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  width: 100%;
+  height: 100%;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.editor-tableAddColumns:hover, .editor-tableAddRows:hover {
+  background-color: #c9dbf0;
+}
+
+.editor-tableAddRows {
+  cursor: pointer;
+  background-color: #eee;
+  border: 0;
+  width: calc(100% - 25px);
+  animation: .2s table-controls;
+  position: absolute;
+}
+
+.editor-tableAddRows:after {
+  content: " ";
+  opacity: .4;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  width: 100%;
+  height: 100%;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+@keyframes table-controls {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.editor-tableCellResizeRuler {
+  background-color: #3c84f4;
+  width: 1px;
+  height: 100%;
+  display: block;
+  position: absolute;
+  top: 0;
+}
+
+.editor-tableCellActionButtonContainer {
+  z-index: 4;
+  width: 20px;
+  height: 20px;
+  display: block;
+  position: absolute;
+  top: 6px;
+  right: 5px;
+}
+
+.editor-tableCellActionButton {
+  color: #222;
+  cursor: pointer;
+  background-color: #eee;
+  border: 0;
+  border-radius: 20px;
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.editor-tableCellActionButton:hover {
+  background-color: #ddd;
+}
+
+.editor-characterLimit {
+  display: inline;
+  background-color: #fbb !important;
+}
+
+.editor-ol1 {
+  margin: 0;
+  padding: 0;
+  list-style-position: outside;
+}
+
+.editor-ol2 {
+  margin: 0;
+  padding: 0;
+  list-style-type: upper-alpha;
+  list-style-position: outside;
+}
+
+.editor-ol3 {
+  margin: 0;
+  padding: 0;
+  list-style-type: lower-alpha;
+  list-style-position: outside;
+}
+
+.editor-ol4 {
+  margin: 0;
+  padding: 0;
+  list-style-type: upper-roman;
+  list-style-position: outside;
+}
+
+.editor-ol5 {
+  margin: 0;
+  padding: 0;
+  list-style-type: lower-roman;
+  list-style-position: outside;
+}
+
+.editor-ul {
+  margin: 0;
+  padding: 0;
+  list-style-position: outside;
+}
+
+.editor-listItem {
+  margin: 0 32px;
+}
+
+.editor-listItemChecked, .editor-listItemUnchecked {
+  outline: none;
+  min-height: 1.5em;
+  margin-left: .5em;
+  margin-right: .5em;
+  padding-left: 1.5em;
+  padding-right: 1.5em;
+  list-style-type: none;
+  display: block;
+  position: relative;
+}
+
+.editor-listItemChecked > *, .editor-listItemUnchecked > * {
+  margin-left: .01em;
+}
+
+.editor-listItemUnchecked:before, .editor-listItemChecked:before {
+  content: "​";
+  cursor: pointer;
+  background-size: cover;
+  width: .9em;
+  height: .9em;
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+.editor-listItemChecked {
+  text-decoration: line-through;
+}
+
+.editor-listItemUnchecked:focus:before, .editor-listItemChecked:focus:before {
+  border-radius: 2px;
+  box-shadow: 0 0 0 2px #a6cdfe;
+}
+
+.editor-listItemUnchecked:before {
+  border: 1px solid #999;
+  border-radius: 2px;
+}
+
+.editor-listItemChecked:before {
+  background-color: #3d87f5;
+  background-repeat: no-repeat;
+  border: 1px solid #3d87f5;
+  border-radius: 2px;
+}
+
+.editor-listItemChecked:after {
+  content: "";
+  cursor: pointer;
+  border: .1em solid #fff;
+  border-width: 0 .1em .1em 0;
+  width: .2em;
+  height: .4em;
+  display: block;
+  position: absolute;
+  top: 45%;
+  left: .35em;
+  transform: translateY(-50%)rotate(45deg);
+}
+
+.editor-nestedListItem {
+  list-style-type: none;
+}
+
+.editor-nestedListItem:before, .editor-nestedListItem:after {
+  display: none;
+}
+
+.editor-tokenComment {
+  color: #708090;
+}
+
+.editor-tokenDeleted {
+  border-image: linear-gradient(to right, #ffcecb 50%, #ffebe9 50%) 0 fill / 0 / 0 100vw;
+}
+
+.editor-tokenInserted {
+  border-image: linear-gradient(to right, #aceebb 50%, #dafbe1 50%) 0 fill / 0 / 0 100vw;
+}
+
+.editor-tokenUnchanged {
+  border-image: linear-gradient(to right, #ddd 50%, #f0f2f5 50%) 0 fill / 0 / 0 100vw;
+}
+
+.editor-tokenPunctuation {
+  color: #999;
+}
+
+.editor-tokenProperty {
+  color: #905;
+}
+
+.editor-tokenSelector {
+  color: #690;
+}
+
+.editor-tokenOperator {
+  color: #9a6e3a;
+}
+
+.editor-tokenAttr {
+  color: #07a;
+}
+
+.editor-tokenVariable {
+  color: #e90;
+}
+
+.editor-tokenFunction {
+  color: #dd4a68;
+}
+
+.editor-mark {
+  background: #ffd40024;
+  border-bottom: 2px solid #ffd4004d;
+  padding-bottom: 2px;
+}
+
+.editor-markOverlap {
+  background: #ffd4004d;
+  border-bottom: 2px solid #ffd400b3;
+}
+
+.editor-mark.selected {
+  background: #ffd40080;
+  border-bottom: 2px solid #ffd400;
+}
+
+.editor-markOverlap.selected {
+  background: #ffd400b3;
+  border-bottom: 2px solid #ffd400b3;
+}
+
+.editor-embedBlock {
+  user-select: none;
+}
+
+.editor-embedBlockFocus {
+  outline: 2px solid #3c84f4;
+}
+
+.editor-layoutContainer {
+  gap: 10px;
+  margin: 10px 0;
+  display: grid;
+}
+
+.editor-layoutItem {
+  border: 1px dashed #ddd;
+  min-width: 0;
+  max-width: 100%;
+  padding: 8px 16px;
+}
+
+.editor-autocomplete {
+  color: #ccc;
+}
+
+.editor-hr {
+  cursor: pointer;
+  border: none;
+  margin: 1em 0;
+  padding: 2px;
+}
+
+.editor-hr:after {
+  content: "";
+  background-color: #ccc;
+  height: 2px;
+  line-height: 2px;
+  display: block;
+}
+
+.editor-hr.editor-hrSelected {
+  user-select: none;
+  outline: 2px solid #3c84f4;
+}
+
+.editor-specialText {
+  background-color: #ff0;
+  font-weight: bold;
+}
+
+.editor-contextMenu {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: 0;
+  box-shadow: 0 5px 10px #0000004d;
+}
+
+.editor-contextMenu button:first-child {
+  border-radius: 8px 8px 0 0;
+}
+
+.editor-contextMenu button:last-child {
+  border-radius: 0 0 8px 8px;
+}
+
+.editor-contextMenuItem {
+  color: #050505;
+  text-align: left;
+  cursor: pointer;
+  background-color: #fff;
+  border: 0;
+  border-radius: 0;
+  outline: 0;
+  justify-content: left;
+  width: 100%;
+  padding: 8px 14px 8px 8px;
+  font-size: 15px;
+  line-height: 20px;
+  display: flex;
+}
+
+.editor-contextMenuItem.open {
+  background: #ddd;
+}
+
+.editor-contextMenuItem:focus, .editor-contextMenuItem:not([disabled]):active {
+  background: #eee;
+}
+
+.editor-contextMenuItem:disabled {
+  color: #aaa;
+  cursor: not-allowed;
+  background: #fff;
+}
+
+.editor-contextMenuItemIcon {
+  background-repeat: no-repeat;
+  background-size: contain;
+  width: 20px;
+  margin-right: 8px;
+}
+
+.jakon-editor-wrapper {
+
+  & textarea.form-control {
+    display: none;
+  }
+
+  & .lexical-editor {
+      min-height: 150px;
+  }
+
+  & .jakon-editor-toolbar {
+    align-items: center;
+    gap: .5rem;
+    display: flex;
+    margin-bottom: 5px;
+  }
+
+  & .dropdown-toggle {
+    width: 100px;
+  }
+
+  & .dropdown-item {
+    flex-direction: row;
+    display: flex;
+  }
+
+  & .dropdown .shortcut {
+    color: #939393;
+    align-self: flex-end;
+  }
+
+  & .jakon-editor-toolbar .markdown-toggle {
+    margin-left: auto;
+  }
+
+  & .image-node-wrapper {
+    max-width: 100%;
+    display: inline-block;
+    position: relative;
+  }
+
+  & .image-node-wrapper img {
+    max-width: 100%;
+  }
+
+  & .image-node-alt-tooltip {
+    color: #fff;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 10;
+    background: #000c;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 14px;
+    transition: opacity .2s;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  & .image-node-wrapper:hover .image-node-alt-tooltip {
+    opacity: 1;
+  }
+
+  & .image-node-delete-icon {
+    color: #fff;
+    cursor: pointer;
+    opacity: 0;
+    background: #dc3545e6;
+    border-radius: 4px;
+    padding: 5px 8px;
+    font-size: 16px;
+    transition: opacity .2s;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+  }
+
+  & .image-node-wrapper:hover .image-node-delete-icon {
+    opacity: 1;
+  }
+
+  & .image-node-delete-icon:hover {
+    background: #dc3545;
+  }
+}

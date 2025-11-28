@@ -1,0 +1,97 @@
+{# @pebvariable name="field" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
+{# @pebvariable name="fieldHash" type="java.lang.Integer" #}
+
+<div class="jakon-editor-wrapper" id="jakon-editor-wrapper-{{ fieldHash }}" data-editorId="{{ fieldHash }}">
+	<textarea class="form-control" name="{{ field.name }}" cols="80" rows="5" id="ta-{{ fieldHash }}">{{ field.value | raw }}</textarea>
+
+	<div class="jakon-editor-toolbar">
+
+		<div class="dropdown block-type-dropdown">
+			<button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Dropdown button</button>
+			<ul class="dropdown-menu">
+				<li class="text-type-normal">
+					<div class="dropdown-item"><i class="fa-solid fa-paragraph"></i> <span class="text">Normal</span>
+						<span class="shortcut">Ctrl+Alt+0</span>
+					</div>
+				</li>
+				<li class="text-type-h1">
+					<div class="dropdown-item"><i class="fa-solid fa-heading"></i> <span class="text">Heading 1</span>
+						<span class="shortcut">Ctrl+Alt+1</span>
+					</div>
+				</li>
+				<li class="text-type-h2">
+					<div class="dropdown-item"><i class="fa-solid fa-heading"></i> <span class="text">Heading 2</span>
+						<span class="shortcut">Ctrl+Alt+2</span>
+					</div>
+				</li>
+				<li class="text-type-h3">
+					<div class="dropdown-item"><i class="fa-solid fa-heading"></i> <span class="text">Heading 3</span>
+						<span class="shortcut">Ctrl+Alt+3</span>
+					</div>
+				</li>
+				<li class="text-type-bullet">
+					<div class="dropdown-item"><i class="fa-solid fa-list-ul"></i> <span class="text">Bullet List</span>
+						<span class="shortcut">TODO</span>
+					</div>
+				</li>
+			</ul>
+		</div>
+
+		<button class="jakon-editor-toolbar-button btn btn-light bold" title="Bold (Ctrl+B)" aria-label="Bold">
+			<i class="fa-solid fa-bold"></i>
+		</button>
+		<button class="jakon-editor-toolbar-button btn btn-light italic" title="Italic (Ctrl+I)" aria-label="Italic">
+			<i class="fa-solid fa-italic"></i>
+		</button>
+		<button class="jakon-editor-toolbar-button btn btn-light strikethrough" title="Strikethrough" aria-label="Strikethrough">
+			<i class="fa-solid fa-strikethrough"></i>
+		</button>
+		<button class="jakon-editor-toolbar-button btn btn-light link" title="Link (Ctrl+K)" aria-label="Link">
+			<i class="fa-solid fa-link"></i>
+		</button>
+		<button class="jakon-editor-toolbar-button btn btn-light image" title="Insert Image" aria-label="Insert Image">
+			<i class="fa-solid fa-image"></i>
+		</button>
+		<button class="jakon-editor-toolbar-button btn btn-light hr" title="Horizontal rule" aria-label="Horizontal rule">
+			<i class="fa-solid fa-minus"></i>
+		</button>
+
+		<button
+				class="markdown-toggle action-button btn btn-light"
+				title="Convert From Markdown"
+				aria-label="Convert from markdown">
+			<i class="fa-brands fa-markdown"></i>
+		</button>
+	</div>
+	<div class="form-control lexical-editor" id="lexical-editor-{{ fieldHash }}" contenteditable>
+
+	</div>
+
+	<div class="linkEditorModal modal " id="linkEditorModal-{{ fieldHash }}" tabindex="-1" aria-labelledby="linkEditorModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="linkEditorModalLabel">Edit Link</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="mb-3">
+						<label for="link-text-{{ fieldHash }}" class="col-form-label">Link text:</label>
+						<input type="text" class="form-control linkText" id="link-text-{{ fieldHash }}">
+					</div>
+					<div class="mb-3">
+						<label for="link-url-{{ fieldHash }}" class="col-form-label">URL:</label>
+						<input type="text" class="form-control linkUrl" id="link-url-{{ fieldHash }}">
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-danger remove-link-{{ fieldHash }}">Remove Link</button>
+					<button type="button" class="btn btn-primary save-link-{{ fieldHash }}">Save Link</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="image_selector"></div>
+</div>
+

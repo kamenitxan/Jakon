@@ -10,6 +10,7 @@
     <script src="/jakon/vite/jakon.js"></script>
     <script src="/jakon/js/scalajs.js"></script>
     <link href="/jakon/vite/jakon.css" rel="stylesheet">
+    <link href="/jakon/css/jakon-editor.css" rel="stylesheet">
 
 	<link rel="icon" type="image/png" sizes="32x32" href="/jakon/img/favicon/favicon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="/jakon/img/favicon/favicon-16x16.png">
@@ -35,6 +36,7 @@
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     <!-- Custom Theme JavaScript -->
     <script src="/jakon/js/sb-admin-2.js"></script>
+	<script src="/jakon/js/jakon-editor.js"></script>
 
 </body>
 </html>
