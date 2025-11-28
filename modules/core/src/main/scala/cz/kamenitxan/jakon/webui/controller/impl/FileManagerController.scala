@@ -1,11 +1,11 @@
 package cz.kamenitxan.jakon.webui.controller.impl
 
 import com.google.gson.*
+import cz.kamenitxan.jakon.core.dynamic.{Get, Pagelet, Post}
 import cz.kamenitxan.jakon.core.model.{FileType, JakonFile}
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.PageContext
-import cz.kamenitxan.jakon.webui.controller.AbstractController
-import cz.kamenitxan.jakon.webui.controller.impl.FileManagerController.getManager
+import cz.kamenitxan.jakon.webui.controller.pagelets.AbstractAdminPagelet
 import cz.kamenitxan.jakon.webui.entity.FileManagerMode
 import io.javalin.http.Context
 import jakarta.mail.internet.MimeUtility
@@ -61,16 +61,35 @@ import scala.util.boundary.break
 	* @author Paolo Biavati https://github.com/paolobiavati (java servlet version)
 	* @author Kamenitxan this implementation
 	*/
-class FileManagerController extends AbstractController {
-	override val template: String = "objects/fileManager"
+@Pagelet(path = "/admin/files", showInAdmin = true)
+class FileManagerController extends AbstractAdminPagelet {
 
-	override def render(ctx: Context): cz.kamenitxan.jakon.webui.Context = getManager(ctx)
-
-	override def name(): String = "FILES"
-
-	override def path(): String = "files"
+	override val name: String = this.getClass.getSimpleName
 
 	override val icon: String = "fa-files-o"
+
+	@Get(path = "", template = "objects/fileManager")
+	def render(): mutable.Map[String, Any] = {
+		mutable.Map[String, Any]()
+	}
+
+	@Get(path = "frame", template = "objects/fileManagerFrame")
+	def frame(): mutable.Map[String, Any] = {
+		mutable.Map[String, Any]()
+	}
+
+	@Get(path = "{method}", template = "objects/fileManager")
+	def methodGet(ctx: Context): mutable.Map[String, Any] = {
+		FileManagerController.executeGet(ctx)
+		mutable.Map[String, Any]()
+	}
+
+	@Post(path = "{method}", template = "objects/fileManager")
+	def methodPost(ctx: Context): mutable.Map[String, Any] = {
+		FileManagerController.executeGet(ctx)
+		mutable.Map[String, Any]()
+	}
+
 }
 
 object FileManagerController {

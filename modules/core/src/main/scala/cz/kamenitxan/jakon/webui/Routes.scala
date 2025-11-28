@@ -9,7 +9,6 @@ import cz.kamenitxan.jakon.core.service.UserService
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.gson.*
 import cz.kamenitxan.jakon.webui.api.Api
-import cz.kamenitxan.jakon.webui.controller.AbstractController
 import cz.kamenitxan.jakon.webui.controller.impl.{FileManagerController, ObjectController, UserController}
 import cz.kamenitxan.jakon.webui.util.AdminExceptionHandler
 import io.javalin.apibuilder.ApiBuilder
@@ -91,20 +90,6 @@ object Routes {
 			}
 		})
 
-
-		/*JakonInit.javalin.get(AdminPrefix, new Handler {
-			override def handle(ctx: Context): Unit = {
-				val res = render(ctx, Authentication.loginGet(ctx))
-				ctx.result(res)
-			}
-		})*/
-		/*JakonInit.javalin.post(AdminPrefix, new Handler {
-			override def handle(ctx: Context): Unit = {
-				val res = render(ctx, Authentication.loginPost(ctx))
-				ctx.result(res)
-			}
-		})*/
-
 		ApiBuilder.path(s"$AdminPrefix", () => {
 			if (Settings.getDeployMode == DeployMode.PRODUCTION) {
 				JakonInit.javalin.exception(classOf[Exception], new AdminExceptionHandler)
@@ -116,12 +101,6 @@ object Routes {
 					ctx.result(res)
 				}
 			})
-			/*get("/logout", new Handler {
-				override def handle(ctx: Context): Unit = {
-					val res = render(ctx, Authentication.logoutPost(ctx))
-					ctx.result(res)
-				}
-			})*/
 			get("/profile", new Handler {
 				override def handle(ctx: Context): Unit = {
 					val res = render(ctx, UserController.render(ctx))
@@ -231,21 +210,7 @@ object Routes {
 				}
 			})
 		})
-		AdminSettings.customControllers.foreach((c: Class[_ <: AbstractController]) => {
-			try {
-				val instance = c.getDeclaredConstructor().newInstance()
-				get(s"$AdminPrefix/" + instance.path(), new Handler {
-					override def handle(ctx: Context): Unit = {
-						val res = render(ctx, instance.doRender(ctx))
-						ctx.result(res)
-					}
-				})
-				Logger.info("Custom admin controller registered: " + instance.getClass.getSimpleName)
-			} catch {
-				case e@(_: InstantiationException | _: IllegalAccessException) =>
-					Logger.error("Failed to register custom controller", e)
-			}
-		})
+
 		get(s"$AdminPrefix/*", new Handler {
 			override def handle(ctx: Context): Unit = {
 				Logger.warn("Unknown page requested - " + ctx.url())

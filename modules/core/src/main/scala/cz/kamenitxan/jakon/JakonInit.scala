@@ -10,7 +10,6 @@ import cz.kamenitxan.jakon.devtools.{DevRender, StaticFilesController, UploadFil
 import cz.kamenitxan.jakon.logging.{LogCleanerTask, Logger}
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.utils.{ContextExtension, LoggingExceptionHandler, PageContext}
-import cz.kamenitxan.jakon.webui.controller.impl.FileManagerController
 import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, ResetPasswordEmailEntity}
 import cz.kamenitxan.jakon.webui.{AdminSettings, Routes}
 import io.github.classgraph.ScanResult
@@ -72,7 +71,8 @@ class JakonInit {
 			//AdminSettings.registerCustomController(classOf[DeployController])
 		}
 		if (AdminSettings.enableFiles) {
-			AdminSettings.registerCustomController(classOf[FileManagerController])
+			// TODO skryvani controleru udelat nejak jinak
+			//AdminSettings.registerCustomController(classOf[FileManagerController])
 		}
 	}
 
