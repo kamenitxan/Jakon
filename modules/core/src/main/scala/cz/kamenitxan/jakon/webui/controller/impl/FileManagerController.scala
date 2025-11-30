@@ -11,8 +11,6 @@ import io.javalin.http.Context
 import jakarta.mail.internet.MimeUtility
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
-import org.apache.commons.fileupload2.core.{DiskFileItemFactory, FileUploadException}
-import org.apache.commons.fileupload2.jakarta.JakartaServletDiskFileUpload
 import org.apache.commons.io.FileUtils
 import org.apache.commons.lang3.SystemUtils
 
@@ -200,7 +198,7 @@ object FileManagerController {
 		try { // if request contains multipart-form-data
 			if (ctx.isMultipart) {
 				if (isSupportFeature(FileManagerMode.UPLOAD)) {
-					uploadFile(ctx.req(), ctx.res())
+					uploadFile(ctx)
 				} else {
 					setError(new IllegalAccessError(notSupportFeature(FileManagerMode.UPLOAD).get("result").getAsJsonObject.get("error").getAsString), ctx.res())
 				}
@@ -302,58 +300,37 @@ object FileManagerController {
 		* [$config.uploadUrl]?destination=/public_html/image.jpg&file-1={..}&file-2={...}
 		*/
 	@throws[ServletException]
-	private def uploadFile(request: HttpServletRequest, response: HttpServletResponse): Unit = {
+	private def uploadFile(ctx: Context): Unit = {
 		if (isSupportFeature(FileManagerMode.UPLOAD)) {
 			Logger.debug("upload now")
 			try {
-				var destination: String = null
+				val destination: String = ctx.formParam("destination")
 				val files = new util.HashMap[String, InputStream]
 
-				val factory = DiskFileItemFactory.builder().get()
+				ctx.uploadedFiles().forEach(uploadedFile => {
+					val path = Paths.get(REPOSITORY_BASE_PATH + destination, uploadedFile.filename())
+					if (!write(uploadedFile.content(), path)) {
+						Logger.debug("write error")
+						throw new Exception("write error")
+					}
+					val jf = new JakonFile()
+					jf.fileType = FileManagerController.getFileType(path)
+					jf.name = path.getFileName.toString
+					jf.path = path.getParent.toString
+					jf.created = LocalDateTime.now()
+					jf.author = PageContext.getInstance().getLoggedUser.orNull
+					jf.create()
+					Logger.info(s"JakonFile(id=${jf.id}, name=${jf.name}) created in DB")
+				})
 
-				val sfu: JakartaServletDiskFileUpload = new JakartaServletDiskFileUpload(factory)
-				//sfu.setHeaderEncoding("UTF-8")
-				val items = sfu.parseRequest(request).asScala
-				for (item <- items) {
-					if (item.isFormField) { // Process regular form field (input type="text|radio|checkbox|etc", select, etc).
-						if ("destination" == item.getFieldName) {
-							destination = item.getString()
-						}
-					}
-					else { // Process form file field (input type="file").
-						files.put(item.getName, item.getInputStream)
-					}
-				}
-				if (files.isEmpty) {
-					Logger.debug("file size  = 0")
-					throw new Exception("file size  = 0")
-				} else {
-					files.entrySet.forEach(fileEntry => {
-						val path = Paths.get(REPOSITORY_BASE_PATH + destination, fileEntry.getKey)
-						if (!write(fileEntry.getValue, path)) {
-							Logger.debug("write error")
-							throw new Exception("write error")
-						}
-						val jf = new JakonFile()
-						jf.fileType = FileManagerController.getFileType(path)
-						jf.name = path.getFileName.toString
-						jf.path = path.getParent.toString
-						jf.created = LocalDateTime.now()
-						jf.author = PageContext.getInstance().getLoggedUser.orNull
-						jf.create()
-						Logger.info(s"JakonFile(id=${jf.id}, name=${jf.name}) created in DB")
-					})
-					var responseJsonObject: JsonObject = null
-					responseJsonObject = this.success()
-					response.setContentType(JSON_RESPONSE_TYPE)
-					val out: PrintWriter = response.getWriter
-					out.print(responseJsonObject)
-					out.flush()
-				}
+				var responseJsonObject: JsonObject = null
+				responseJsonObject = this.success()
+				ctx.res().setContentType(JSON_RESPONSE_TYPE)
+				val out: PrintWriter = ctx.res().getWriter
+				out.print(responseJsonObject)
+				out.flush()
+
 			} catch {
-				case e: FileUploadException =>
-					Logger.error("Cannot parse multipart request: DiskFileItemFactory.parseRequest", e)
-					throw new ServletException("Cannot parse multipart request: DiskFileItemFactory.parseRequest", e)
 				case e: IOException =>
 					Logger.error("Cannot parse multipart request: item.getInputStream")
 					throw new ServletException("Cannot parse multipart request: item.getInputStream", e)
