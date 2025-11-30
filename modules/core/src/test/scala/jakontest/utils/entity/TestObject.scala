@@ -46,6 +46,7 @@ class TestObject extends JakonObject {
 	@JakonField
 	var oneToMany: Seq[JakonUser] = _
 	@Embedded
+	@JakonField
 	var embedded: TestEmbeddedObject = _
 	@JakonField
 	@I18n(classOf[TestObjectI18n])

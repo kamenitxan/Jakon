@@ -82,14 +82,14 @@ class ModelTest extends TestBase {
 	var eoid = 0
 	test("Create TestEmbeddedObject") { _ =>
 		val obj = new TestObject
+		obj.string = "TestEmbeddedObject"
 		val embedded = new TestEmbeddedObject
 		embedded.int = eoid
 		embedded.string = "42"
 		obj.embedded = embedded
 		eoid = obj.create()
 	}
-/*
-// TODO
+
 	test("Fetch TestEmbeddedObject") { _ =>
 		DBHelper.withDbConnection(implicit conn => {
 			val sql = "SELECT * From TestObject WHERE id = ?"
@@ -99,7 +99,6 @@ class ModelTest extends TestBase {
 			assert(entity.embedded != null)
 		})
 	}
-*/
 
 	var otmid = 0
 	test("Create OneToMany") { _ =>

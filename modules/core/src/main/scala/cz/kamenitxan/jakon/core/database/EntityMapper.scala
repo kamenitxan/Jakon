@@ -2,7 +2,7 @@ package cz.kamenitxan.jakon.core.database
 
 import cz.kamenitxan.jakon.core.database.annotation.{Column, Embedded, ManyToOne, OneToMany}
 import cz.kamenitxan.jakon.core.database.converters.AbstractConverter
-import cz.kamenitxan.jakon.core.model.{BaseEntity, JakonObject}
+import cz.kamenitxan.jakon.core.model.BaseEntity
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.TypeReferences.*
 import cz.kamenitxan.jakon.utils.Utils
@@ -24,12 +24,15 @@ object EntityMapper {
 		var foreignIds: Map[String, ForeignKeyInfo] = Map[String, ForeignKeyInfo]()
 		val columnCount = rsmd.getColumnCount
 		val fields = Utils.getFieldsUpTo(cls, classOf[Object])
-
+		val embeddedFields = fields.filter(_.getDeclaredAnnotation(classOf[Embedded]) != null)
 
 		Iterator.from(1).takeWhile(i => i <= columnCount).foreach(i => {
 			var columnName = rsmd.getColumnName(i)
+			val embeddedField = embeddedFields.find(e => columnName.startsWith(e.getName + "_"))
 			val fieldName = if (columnName.endsWith("_id")) {
 				columnName.substring(0, columnName.length - 3)
+			} else if (embeddedField.isDefined) {
+				embeddedField.get.getName
 			} else {
 				columnName
 			}
@@ -66,7 +69,7 @@ object EntityMapper {
 		new QueryResult(obj, foreignIds, i18nField)
 	}
 
-	private def setFieldValue[T <: BaseEntity](obj: BaseEntity, cls: Class[T],
+	private def setFieldValue(obj: Object, cls: Class[?],
 																						 field: Field,
 																						 columnName: String,
 																						 rs: ResultSet): Option[(String, ForeignKeyInfo)] = {
@@ -109,6 +112,17 @@ object EntityMapper {
 					} else {
 						field.set(obj, Seq.empty)
 					}
+				} else if (embedded != null) {
+					val embeddedObj = field.getType.getDeclaredConstructor().newInstance()
+
+					val fields = field.getType.getDeclaredFields.filter(_.getDeclaredAnnotation(classOf[JakonField]) != null).toSeq
+					fields.foreach(f => {
+						f.setAccessible(true)
+						val fieldType = f.getType
+						setFieldValue(embeddedObj, fieldType, f, field.getName + "_" + getColumnName(f), rs)
+					})
+
+					field.set(obj, embeddedObj)
 				} else if (jakonField != null) {
 					val converter = jakonField.converter()
 					if (converter.getName != classOf[AbstractConverter[_]].getName) {
@@ -116,17 +130,7 @@ object EntityMapper {
 					} else {
 						Logger.error(s"Converter not specified for data type on ${obj.getClass.getSimpleName}.${field.getName}")
 					}
-				} else if (embedded != null) {
-					val embeddedObj = field.getType.getDeclaredConstructor().newInstance()
-
-					val fields = field.getType.getDeclaredFields.filter(_.getDeclaredAnnotation(classOf[JakonField]) != null).toSeq
-					fields.foreach(f => {
-						val fieldType = f.getType.asSubclass(classOf[JakonObject])
-						setFieldValue(embeddedObj.asInstanceOf[JakonObject], fieldType, f, field.getName + "_" + getColumnName(f), rs)
-					})
-
-					field.set(obj, embeddedObj)
-				} else {
+				}  else {
 					Logger.warn("Unknown data type on " + cls.getSimpleName + s".${field.getName}")
 				}
 		}
