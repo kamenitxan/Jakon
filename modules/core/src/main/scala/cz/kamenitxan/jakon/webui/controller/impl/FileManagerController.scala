@@ -305,7 +305,6 @@ object FileManagerController {
 			Logger.debug("upload now")
 			try {
 				val destination: String = ctx.formParam("destination")
-				val files = new util.HashMap[String, InputStream]
 
 				ctx.uploadedFiles().forEach(uploadedFile => {
 					val path = Paths.get(REPOSITORY_BASE_PATH + destination, uploadedFile.filename())

@@ -2,7 +2,7 @@ import sbt.Tests.{Group, SubProcess}
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val V = new {
-	val Scala = "3.3.6"
+	val Scala = "3.3.7"
   val jakon = "0.7.2-SNAPSHOT"
 	val log4j = "2.25.2"
 	val circeVersion = "0.14.15"
@@ -39,8 +39,8 @@ val Dependencies = new {
 				"org.apache.logging.log4j" % "log4j-api" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-core" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-slf4j2-impl" % V.log4j,
-				"org.xerial" % "sqlite-jdbc" % "3.51.0.0",
-				"com.mysql" % "mysql-connector-j" % "9.4.0",
+				"org.xerial" % "sqlite-jdbc" % "3.51.1.0",
+				"com.mysql" % "mysql-connector-j" % "9.5.0" % Optional,
 				"com.google.guava" % "guava" % "33.5.0-jre",
 				"commons-io" % "commons-io" % "2.21.0",
 				"org.apache.commons" % "commons-lang3" % "3.20.0",
