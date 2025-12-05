@@ -62,17 +62,23 @@ val Dependencies = new {
 			)
 	)
 
+	lazy val shop = Seq(
+		libraryDependencies ++=
+			Seq(
+			)
+	)
+
 	//noinspection SpellCheckingInspection
 	lazy val tests = Def.settings(
 		libraryDependencies ++= Seq(
-			"org.scalatest" %% "scalatest" % "3.2.19" % "test",
+			"org.scalatest" %% "scalatest" % "3.2.19" % Test,
 			"org.scalamock" %% "scalamock" % "7.5.2" % Test,
-			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.38.0" % "test"
+			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.38.0" % Test
 		)
 	)
 }
 
-lazy val root = (project in file(".")).aggregate(frontend, core)
+lazy val root = (project in file(".")).aggregate(frontend, core, shop)
 
 lazy val frontend = (project in file("modules/frontend"))
 	.enablePlugins(ScalaJSPlugin)
@@ -92,27 +98,27 @@ lazy val core = (project in file("modules/core"))
 	.settings(Dependencies.core)
 	.settings(Dependencies.tests)
 	.settings(commonBuildSettings)
+	.settings(scalaBuildSettings)
 	.settings(
 		name := "jakon",
 		Test / fork := true,
 		Test / testGrouping := (Test / definedTests).value.map { suite =>
 			Group(suite.name, Seq(suite), SubProcess(ForkOptions().withWorkingDirectory(new File("modules/core"))))
-		},
-		ThisBuild / versionScheme := Some ("strict"),
-		publishTo := Some ("Nexus" at "https://nexus.kamenitxan.eu/repository/jakon/"),
-		credentials += Credentials(Path.userHome / ".sbt" / ".credentials"),
-		publishMavenStyle :=true,
-		scalacOptions ++= Seq(
-			"-deprecation", // emit warning and location for usages of deprecated APIs
-			//"-explain", // explain errors in more detail
-			"-explain-types", // explain type errors in more detail
-			"-feature", // emit warning and location for usages of features that should be imported explicitly
-			"-no-indent", // do not allow significant indentation.
-			"-print-lines", // show source code line numbers.
-			"-unchecked", // enable additional warnings where generated code depends on assumptions
-			//"-Xfatal-warnings", // fail the compilation if there are any warnings
-			//"-Yexplicit-nulls"
-		)
+		}
+	)
+
+lazy val shop = (project in file("modules/shop"))
+	.dependsOn(core)
+	.settings(Dependencies.core)
+	.settings(Dependencies.tests)
+	.settings(commonBuildSettings)
+	.settings(scalaBuildSettings)
+	.settings(
+		name := "jakon-shop",
+		Test / fork := true,
+		Test / testGrouping := (Test / definedTests).value.map { suite =>
+			Group(suite.name, Seq(suite), SubProcess(ForkOptions().withWorkingDirectory(new File("modules/shop"))))
+		}
 	)
 
 
@@ -160,6 +166,24 @@ lazy val commonBuildSettings: Seq[Def.Setting[?]] = Seq(
 	name := "jakon",
 	version := V.jakon,
 	startYear := Some(2015)
+)
+
+lazy val scalaBuildSettings: Seq[Def.Setting[?]] = Seq(
+	ThisBuild / versionScheme := Some ("strict"),
+	publishTo := Some ("Nexus" at "https://nexus.kamenitxan.eu/repository/jakon/"),
+	credentials += Credentials(Path.userHome / ".sbt" / ".credentials"),
+	publishMavenStyle :=true,
+	scalacOptions ++= Seq(
+		"-deprecation", // emit warning and location for usages of deprecated APIs
+		//"-explain", // explain errors in more detail
+		"-explain-types", // explain type errors in more detail
+		"-feature", // emit warning and location for usages of features that should be imported explicitly
+		"-no-indent", // do not allow significant indentation.
+		"-print-lines", // show source code line numbers.
+		"-unchecked", // enable additional warnings where generated code depends on assumptions
+		//"-Xfatal-warnings", // fail the compilation if there are any warnings
+		//"-Yexplicit-nulls"
+	)
 )
 
 addCommandAlias("runDev", ";fastOptCompileCopy; core/reStart --mode dev")
