@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.shop.model
+package cz.kamenitxan.jakon.shop.entity
 
 import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.core.database.annotation.ManyToOne
@@ -12,7 +12,7 @@ import java.sql.{Connection, Statement, Types}
 /**
  * Produkt v e-shopu
  */
-class Product extends JakonObject with Serializable {
+class ShopProduct extends JakonObject with Serializable {
 
 	@NotEmpty
 	@JakonField(searched = true)
@@ -52,7 +52,7 @@ class Product extends JakonObject with Serializable {
 	var featured: Boolean = false
 	
 
-	override val objectSettings: ObjectSettings = Product.objectSettings
+	override val objectSettings: ObjectSettings = ShopProduct.objectSettings
 
 	override def createObject(jid: Int, conn: Connection): Int = {
 		// language=SQL
@@ -118,7 +118,7 @@ class Product extends JakonObject with Serializable {
 	}
 }
 
-object Product {
-	val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-shopping-bag")
+object ShopProduct {
+	val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-shopping-bag", standAlone = true)
 }
 

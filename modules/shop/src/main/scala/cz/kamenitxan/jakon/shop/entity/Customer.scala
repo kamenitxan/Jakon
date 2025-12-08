@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.shop.model
+package cz.kamenitxan.jakon.shop.entity
 
 import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.core.model.JakonUser
@@ -103,6 +103,6 @@ class Customer extends JakonUser with Serializable {
 }
 
 object Customer {
-	val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-user-circle")
+	val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-user-circle", standAlone = true)
 }
 

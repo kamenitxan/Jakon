@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.shop.model
+package cz.kamenitxan.jakon.shop.entity
 
 import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.core.database.annotation.ManyToOne
@@ -22,7 +22,7 @@ class OrderItem extends JakonObject with Serializable {
 	@NotEmpty
 	@ManyToOne
 	@JakonField(required = true, searched = true)
-	var product: Product = _
+	var product: ShopProduct = _
 	
 	@JakonField(searched = true)
 	var productName: String = ""
@@ -101,6 +101,6 @@ class OrderItem extends JakonObject with Serializable {
 }
 
 object OrderItem {
-	val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-list")
+	val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-list", standAlone = true)
 }
 

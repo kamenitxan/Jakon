@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.shop.model
+package cz.kamenitxan.jakon.shop.entity
 
 import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.core.model.JakonObject

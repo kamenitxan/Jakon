@@ -1,4 +1,4 @@
-package cz.kamenitxan.jakon.shop.model
+package cz.kamenitxan.jakon.shop.entity
 
 import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.core.database.annotation.ManyToOne
@@ -14,6 +14,8 @@ import java.time.LocalDateTime
  * Objednávka
  */
 class Order extends JakonObject with Serializable {
+
+	override val objectSettings: ObjectSettings = Order.objectSettings
 
 	@NotEmpty
 	@JakonField(searched = true)
@@ -89,9 +91,7 @@ class Order extends JakonObject with Serializable {
 	
 	@JakonField(searched = true)
 	var isPaid: Boolean = false
-
-	override val objectSettings: ObjectSettings = Order.objectSettings
-
+	
 	override def createObject(jid: Int, conn: Connection): Int = {
 		// language=SQL
 		val sql = "INSERT INTO `Order` (id, orderNumber, customer_id, orderDate, status, totalPrice, shippingPrice, paymentPrice, paymentMethod_id, shippingMethod_id, customerNote, adminNote, billingName, billingStreet, billingCity, billingZip, billingCountry, deliveryName, deliveryStreet, deliveryCity, deliveryZip, deliveryCountry, isPaid, url, published) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
@@ -135,10 +135,6 @@ class Order extends JakonObject with Serializable {
 		stmt.setBoolean(25, published)
 
 		executeInsert(stmt)
-	}
-
-	override def toString: String = {
-		s"Order(id: $id, $orderNumber, total: $totalPrice)"
 	}
 
 	override def updateObject(jid: Int, conn: Connection): Unit = {
@@ -187,6 +183,6 @@ class Order extends JakonObject with Serializable {
 }
 
 object Order {
-	val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-shopping-cart")
+	val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-shopping-cart", standAlone = true)
 }
 
