@@ -11,27 +11,26 @@ import java.sql.{Connection, Statement, Types}
 class ShopCategory extends JakonObject with Serializable {
 
 	@JakonField(searched = true)
-	var displayOrder: Int = 0
-
-	@JakonField(required = false)
-	var image: String = ""
-
-	@JakonField(required = false)
-	var description: String = ""
-
-	@JakonField(searched = true)
 	@NotEmpty
 	var name: String = ""
-
+	@JakonField(required = false)
+	var description: String = ""
+	@JakonField(searched = true)
+	var displayOrder: Int = 0
+	@JakonField(required = false)
+	var image: String = ""
 	@ManyToOne
 	@JakonField(required = false, searched = true)
 	var parentCategory: ShopCategory = _
+	
+	/** not saved in a database */
+	var children: Seq[ShopCategory] = Seq.empty
 
 	override val objectSettings: ObjectSettings = ShopCategory.objectSettings
 
 	override def createObject(jid: Int, conn: Connection): Int = {
 		// language=SQL
-		val sql = "INSERT INTO ShopCategory (id, name, description, image, displayOrder, parentCategory_id, url, published) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+		val sql = "INSERT INTO ShopCategory (id, name, description, image, displayOrder, parentCategory_id) VALUES (?, ?, ?, ?, ?, ?)"
 		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
 		stmt.setInt(1, jid)
 		stmt.setString(2, name)
@@ -43,8 +42,6 @@ class ShopCategory extends JakonObject with Serializable {
 		} else {
 			stmt.setNull(6, Types.INTEGER)
 		}
-		stmt.setString(7, url)
-		stmt.setBoolean(8, published)
 
 		executeInsert(stmt)
 	}
@@ -55,7 +52,7 @@ class ShopCategory extends JakonObject with Serializable {
 
 	override def updateObject(jid: Int, conn: Connection): Unit = {
 		// language=SQL
-		val sql = "UPDATE ShopCategory SET name = ?, description = ?, image = ?, displayOrder = ?, parentCategory_id = ?, url = ?, published = ? WHERE id = ?"
+		val sql = "UPDATE ShopCategory SET name = ?, description = ?, image = ?, displayOrder = ?, parentCategory_id = ? WHERE id = ?"
 		val stmt = conn.prepareStatement(sql)
 		stmt.setString(1, name)
 		stmt.setString(2, description)
@@ -66,9 +63,7 @@ class ShopCategory extends JakonObject with Serializable {
 		} else {
 			stmt.setNull(5, Types.INTEGER)
 		}
-		stmt.setString(6, url)
-		stmt.setBoolean(7, published)
-		stmt.setInt(8, jid)
+		stmt.setInt(6, jid)
 		stmt.executeUpdate()
 	}
 	

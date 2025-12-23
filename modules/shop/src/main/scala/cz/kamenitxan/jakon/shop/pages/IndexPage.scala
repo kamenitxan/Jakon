@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.shop.pages
 
 import cz.kamenitxan.jakon.core.custom_pages.{AbstractCustomPage, CustomPage}
+import cz.kamenitxan.jakon.shop.ShopUtils
 
 /**
  * Created by Kamenitxan on 21.12.2025
@@ -10,8 +11,9 @@ import cz.kamenitxan.jakon.core.custom_pages.{AbstractCustomPage, CustomPage}
 class IndexPage extends AbstractCustomPage {
 
 	override protected def generate(): Unit = {
-		engine.render("index", "index.html", Map(
+		val data = ShopUtils.commonPageData ++ Map(
 			"title" -> "Index"
-		))
+		)
+		engine.render("index", "index.html", data)
 	}
 }

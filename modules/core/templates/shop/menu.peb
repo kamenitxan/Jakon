@@ -1,4 +1,9 @@
+{# @pebvariable name="categories" type="java.util.List" #}
+
 <ul class="menu bg-base-200 rounded-box w-56">
+	{% for cat in categories %}
+		<li><a href="/categories/{{ cat.url }}">{{ cat.name }}</a></li>
+	{% endfor %}
 	<li><a>Item 1</a></li>
 	<li>
 		<details open>

@@ -1,0 +1,27 @@
+package cz.kamenitxan.jakon.shop
+
+import cz.kamenitxan.jakon.core.database.DBHelper
+import cz.kamenitxan.jakon.shop.entity.ShopCategory
+import cz.kamenitxan.jakon.shop.service.ShopCategoryService
+
+import scala.jdk.CollectionConverters.*
+
+/**
+ * Created by Kamenitxan on 21.12.2025
+ */
+object ShopUtils {
+
+	private val categories = ShopCategoryService.getAll()(DBHelper.getConnection)
+
+	def categoryTree(): Seq[ShopCategory] = {
+		val roots = categories.filter(_.parentCategory == null)
+		roots
+	}
+
+	val commonPageData: Map[String, AnyRef] = {
+		Map(
+			"categories" -> categoryTree().asJava
+		)
+	}
+
+}

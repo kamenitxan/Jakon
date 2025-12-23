@@ -53,3 +53,4 @@ jakon_config.properties
 /modules/core/src/test/test.iml
 /project/project/
 /modules/shop/target
+/modules/backend/src/main/resources/static/jakon/vite/

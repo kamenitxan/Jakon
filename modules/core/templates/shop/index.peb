@@ -1,5 +1,9 @@
 {% extends "core" %}
 
+{% block title %}
+	{{ title }}
+{% endblock %}
+
 {% block content %}
 	{% include "menu" %}
 
