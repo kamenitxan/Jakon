@@ -1,0 +1,18 @@
+{
+  "name": "jakon-shop",
+  "description": "Jakon shop application",
+  "private": true,
+  "author": "Kamenitxan",
+  "version": "0.0.1",
+  "repository": "",
+  "scripts": {
+    "shop-watch": "npx @tailwindcss/cli -i ./src/css/jakon-shop.css -o ../core/static/shop/jakon-shop.css --watch",
+    "shop-build": "npx @tailwindcss/cli -i ./src/css/jakon-shop.css -o ../core/static/shop/jakon-shop.css",
+    "outdated": "npm outdated"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.18",
+    "daisyui": "^5.5.14",
+    "tailwindcss": "^4.1.18"
+  }
+}

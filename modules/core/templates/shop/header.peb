@@ -1,5 +1,5 @@
 <div class="bg-base-100 shadow-sm mb-[10px]">
-	<div class="max-w-4xl mx-auto navbar">
+	<div class="{{ max_w }} mx-auto navbar">
 		<div class="flex-1">
 			<a href="/index.html" class="btn btn-ghost text-xl">daisyUI</a>
 		</div>
@@ -44,6 +44,7 @@
 					<li><a>Logout</a></li>
 				</ul>
 			</div>
+			{% include "components/themeSwitcher" %}
 		</div>
 	</div>
 

@@ -1,20 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8"/>
 	<title>{% block title %}My Shop{% endblock %}</title>
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-	<link rel="stylesheet" href="/shop/shop.css"/>
+	<link rel="stylesheet" href="/shop/jakon-shop.css"/>
 
-	<link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
-	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 <body>
 <div class="">
-	{% include "header" %}
-	<div id="bg-yellow-200 grid grid-cols-2 gap-4">
+	{% set max_w = "max-w-6xl" %}
+	{% include "header" with { "max_w" : max_w } %}
+	<div class="bg-red-200 {{ max_w }} mx-auto grid grid-cols-2 gap-4">
 		{% block content %}{% endblock %}
 	</div>
 </div>

@@ -12,9 +12,9 @@ export default defineConfig({
 		manifest: true,
 		rollupOptions: {
 			// overwrite default .html entry
-			input: 'modules/frontend/src/main/js/jakon.js',
+			input: 'src/main/js/jakon.js',
 			output: {
-				dir: 'modules/backend/src/main/resources/static/jakon/vite',
+				dir: '../backend/src/main/resources/static/jakon/vite',
 				entryFileNames: 'jakon.js',
 				assetFileNames: (assetInfo) => {
 					if (assetInfo.name === 'style.css') return 'jakon.css';

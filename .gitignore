@@ -54,3 +54,5 @@ jakon_config.properties
 /project/project/
 /modules/shop/target
 /modules/backend/src/main/resources/static/jakon/vite/
+/modules/frontend/node_modules/
+/modules/shop/node_modules/
