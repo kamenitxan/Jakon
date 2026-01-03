@@ -56,7 +56,7 @@ class ShopProduct extends JakonObject with Serializable {
 
 	override def createObject(jid: Int, conn: Connection): Int = {
 		// language=SQL
-		val sql = "INSERT INTO Product (id, name, description, shortDescription, price, discountPrice, stockQuantity, sku, image, images, category_id, featured, displayOrder, url, published) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+		val sql = "INSERT INTO ShopProduct (id, name, description, shortDescription, price, discountPrice, stockQuantity, sku, image, images, category_id, featured, displayOrder, url, published) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
 		stmt.setInt(1, jid)
 		stmt.setString(2, name)
@@ -78,19 +78,18 @@ class ShopProduct extends JakonObject with Serializable {
 			stmt.setNull(11, Types.INTEGER)
 		}
 		stmt.setBoolean(12, featured)
-		stmt.setString(13, url)
-		stmt.setBoolean(14, published)
+		stmt.setBoolean(13, published)
 
 		executeInsert(stmt)
 	}
 
 	override def toString: String = {
-		s"Product(id: $id, $name, price: $price)"
+		s"ShopProduct(id: $id, $name, price: $price)"
 	}
 
 	override def updateObject(jid: Int, conn: Connection): Unit = {
 		// language=SQL
-		val sql = "UPDATE Product SET name = ?, description = ?, shortDescription = ?, price = ?, discountPrice = ?, stockQuantity = ?, sku = ?, image = ?, images = ?, category_id = ?, featured = ?, displayOrder = ?, url = ?, published = ? WHERE id = ?"
+		val sql = "UPDATE ShopProduct SET name = ?, description = ?, shortDescription = ?, price = ?, discountPrice = ?, stockQuantity = ?, sku = ?, image = ?, images = ?, category_id = ?, featured = ?, displayOrder = ?, published = ? WHERE id = ?"
 		val stmt = conn.prepareStatement(sql)
 		stmt.setString(1, name)
 		stmt.setString(2, description)
@@ -111,9 +110,8 @@ class ShopProduct extends JakonObject with Serializable {
 			stmt.setNull(10, Types.INTEGER)
 		}
 		stmt.setBoolean(11, featured)
-		stmt.setString(12, url)
-		stmt.setBoolean(13, published)
-		stmt.setInt(14, jid)
+		stmt.setBoolean(12, published)
+		stmt.setInt(13, jid)
 		stmt.executeUpdate()
 	}
 }

@@ -5,11 +5,19 @@
 {% endblock %}
 
 {% block content %}
-	{% include "menu" %}
 
-	<h1>Welcome to Our Shop</h1>
-	<p>Browse our collection of amazing products!</p>
-	<div class="product-list">
-
+	<div>
+		<h1>Welcome to Our Shop</h1>
+		<p>Browse our collection of amazing products!</p>
+		<div class="product-list">
+				{% include "components/productCard" %}
+				{% include "components/productCard" %}
+				{% include "components/productCard" %}
+				{% include "components/productCard" %}
+				{% include "components/productCard" %}
+				{% include "components/productCard" %}
+				{% include "components/productCard" %}
+		</div>
 	</div>
+	{% include "menu" %}
 {% endblock %}

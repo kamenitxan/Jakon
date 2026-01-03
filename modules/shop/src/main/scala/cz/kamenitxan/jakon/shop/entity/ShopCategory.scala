@@ -3,6 +3,7 @@ package cz.kamenitxan.jakon.shop.entity
 import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.core.database.annotation.ManyToOne
 import cz.kamenitxan.jakon.core.model.JakonObject
+import cz.kamenitxan.jakon.utils.Utils.StringImprovements
 import cz.kamenitxan.jakon.validation.validators.NotEmpty
 import cz.kamenitxan.jakon.webui.ObjectSettings
 
@@ -28,6 +29,10 @@ class ShopCategory extends JakonObject with Serializable {
 
 	override val objectSettings: ObjectSettings = ShopCategory.objectSettings
 
+	override def createUrl: String = {
+		s"/category/$id-${name.urlEncode}.html"
+	}
+
 	override def createObject(jid: Int, conn: Connection): Int = {
 		// language=SQL
 		val sql = "INSERT INTO ShopCategory (id, name, description, image, displayOrder, parentCategory_id) VALUES (?, ?, ?, ?, ?, ?)"
@@ -46,10 +51,6 @@ class ShopCategory extends JakonObject with Serializable {
 		executeInsert(stmt)
 	}
 
-	override def toString: String = {
-		s"ShopCategory(id: $id, $name)"
-	}
-
 	override def updateObject(jid: Int, conn: Connection): Unit = {
 		// language=SQL
 		val sql = "UPDATE ShopCategory SET name = ?, description = ?, image = ?, displayOrder = ?, parentCategory_id = ? WHERE id = ?"
@@ -66,14 +67,13 @@ class ShopCategory extends JakonObject with Serializable {
 		stmt.setInt(6, jid)
 		stmt.executeUpdate()
 	}
+
+	override def toString: String = {
+		s"ShopCategory(id: $id, $name)"
+	}
 	
 }
 
 object ShopCategory {
 	val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-folder")
 }
-
-
-
-
-

@@ -11,10 +11,10 @@ import scala.jdk.CollectionConverters.*
  */
 object ShopUtils {
 
-	private val categories = ShopCategoryService.getAll()(DBHelper.getConnection)
+	private def categories() = ShopCategoryService.getAll()(DBHelper.getConnection)
 
 	def categoryTree(): Seq[ShopCategory] = {
-		val roots = categories.filter(_.parentCategory == null)
+		val roots = categories().filter(_.parentCategory == null)
 		roots
 	}
 

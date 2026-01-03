@@ -1,0 +1,15 @@
+{% extends "core" %}
+
+{% block title %}
+	{{ title }}
+{% endblock %}
+
+{% block content %}
+	{% include "menu" %}
+
+	<h1>{{ category.name }}</h1>
+	<p>Browse our collection of amazing products!</p>
+	<div class="product-list">
+
+	</div>
+{% endblock %}
