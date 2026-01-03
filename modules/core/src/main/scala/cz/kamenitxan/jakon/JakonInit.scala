@@ -6,7 +6,7 @@ import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.dynamic.PageletInitializer
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.core.task.{FileManagerConsistencyTestTask, RenderTask, ResetPasswordRequestCleanerTask, TaskRunner}
-import cz.kamenitxan.jakon.devtools.{DevRender, StaticFilesController, UploadFilesController}
+import cz.kamenitxan.jakon.devtools.{DevRender, DevStaticFilesController, StaticFilesController, UploadFilesController}
 import cz.kamenitxan.jakon.logging.{LogCleanerTask, Logger}
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.utils.{ContextExtension, LoggingExceptionHandler, PageContext}
@@ -154,7 +154,12 @@ class JakonInit {
 					}
 				})
 
-				app.error(404, new Handler {
+				app.error(404, new Handler { // from static dir
+					override def handle(ctx: Context): Unit = {
+						new DevStaticFilesController().doGet(ctx)
+					}
+				})
+				app.error(404, new Handler { // from out dir
 					override def handle(ctx: Context): Unit = {
 						new StaticFilesController().doGet(ctx)
 					}
