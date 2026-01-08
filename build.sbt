@@ -6,7 +6,7 @@ val V = new {
   val jakon = "0.7.2-SNAPSHOT"
 	val log4j = "2.25.2"
 	val circeVersion = "0.14.15"
-	val javalin = "6.7.0"
+	val javalin = "7.0.0-beta.1"
 }
 
 scalaVersion := V.Scala
@@ -33,8 +33,7 @@ val Dependencies = new {
 		libraryDependencies ++=
 			Seq(
 				"io.javalin" % "javalin" % V.javalin,
-				"io.javalin" % "javalin-rendering" % "6.1.1-SNAPSHOT",
-				"io.pebbletemplates" % "pebble" % "3.2.4",
+				"io.javalin" % "javalin-rendering-pebble" % V.javalin,
 				"org.slf4j" % "slf4j-api" % "2.0.17",
 				"org.apache.logging.log4j" % "log4j-api" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-core" % V.log4j,

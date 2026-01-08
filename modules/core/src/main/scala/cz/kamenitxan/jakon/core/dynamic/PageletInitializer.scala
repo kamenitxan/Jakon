@@ -74,7 +74,7 @@ object PageletInitializer {
 
 	private def initGetAnnotation(get: Get, controllerAnn: Pagelet, m: Method, c: Class[_]): Unit = {
 		//TODO m.getReturnType.is
-		JakonInit.javalin.get(controllerAnn.path() + get.path(), new Handler {
+		JakonInit.javalinConfig.routes.get(controllerAnn.path() + get.path(), new Handler {
 			override def handle(ctx: Context): Unit = {
 				val pagelet: IPagelet = c.getDeclaredConstructor().newInstance().asInstanceOf[IPagelet]
 				val methodArgs = createMethodArgs(m, ctx, pagelet)
@@ -108,7 +108,7 @@ object PageletInitializer {
 	}
 
 	private def initPostAnnotation(post: Post, controllerAnn: Pagelet, m: Method, c: Class[_]): Unit = {
-		JakonInit.javalin.post(controllerAnn.path() + post.path(), new Handler {
+		JakonInit.javalinConfig.routes.post(controllerAnn.path() + post.path(), new Handler {
 			override def handle(ctx: Context): Unit = {
 				val pagelet = c.getDeclaredConstructor().newInstance().asInstanceOf[IPagelet]
 

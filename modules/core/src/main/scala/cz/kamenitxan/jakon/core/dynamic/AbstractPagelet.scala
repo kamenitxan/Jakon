@@ -16,8 +16,7 @@ import scala.jdk.CollectionConverters.*
   * Created by tomaspavel on 29.5.17.
   */
 abstract class AbstractPagelet extends IPagelet {
-	val loader = new FileLoader
-	loader.setPrefix(Settings.getTemplateDir)
+	val loader = new FileLoader(System.getProperty("user.dir") + "/" + Settings.getTemplateDir)
 	loader.setSuffix(".peb")
 	private val builder = new PebbleEngine.Builder()
 	builder.loader(loader)

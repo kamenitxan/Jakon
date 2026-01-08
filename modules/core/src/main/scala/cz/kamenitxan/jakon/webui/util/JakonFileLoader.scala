@@ -6,7 +6,7 @@ import io.pebbletemplates.pebble.loader.FileLoader
 import java.io.*
 
 
-class JakonFileLoader(templateDir: String, loadFromJar: Boolean = false) extends FileLoader {
+class JakonFileLoader(templateDir: String, loadFromJar: Boolean = false) extends FileLoader(templateDir) {
 	val ADMIN_TMPL_DIR = "templates/admin"
 
 	override def getReader(tmpl: String): Reader = {
