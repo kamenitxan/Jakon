@@ -4,7 +4,7 @@ import sbtassembly.AssemblyPlugin.autoImport.assembly
 val V = new {
 	val Scala = "3.3.7"
   val jakon = "0.7.2-SNAPSHOT"
-	val log4j = "2.25.2"
+	val log4j = "2.25.3"
 	val circeVersion = "0.14.15"
 	val javalin = "6.7.0"
 }
@@ -65,6 +65,7 @@ val Dependencies = new {
 	lazy val shop = Seq(
 		libraryDependencies ++=
 			Seq(
+				"com.stripe" % "stripe-java" % "31.1.0"
 			)
 	)
 
@@ -72,8 +73,8 @@ val Dependencies = new {
 	lazy val tests = Def.settings(
 		libraryDependencies ++= Seq(
 			"org.scalatest" %% "scalatest" % "3.2.19" % Test,
-			"org.scalamock" %% "scalamock" % "7.5.2" % Test,
-			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.38.0" % Test
+			"org.scalamock" %% "scalamock" % "7.5.3" % Test,
+			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.39.0" % Test
 		)
 	)
 }
