@@ -1,0 +1,181 @@
+{% extends "core" %}
+
+{% block title %}{{ product.name | default("Detail produktu") }} - My Shop{% endblock %}
+
+{% block content %}
+<div class="w-full px-4 py-8">
+  <!-- Breadcrumbs -->
+  <div class="text-sm breadcrumbs mb-6">
+    <ul>
+      <li><a href="/" class="link link-hover">Domů</a></li>
+      <li><a href="/produkty" class="link link-hover">Produkty</a></li>
+      <li>{{ product.name | default("Produkt") }}</li>
+    </ul>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Levý sloupec - Galerie obrázků -->
+    <div>
+      <!-- Hlavní obrázek -->
+      <div class="mb-4 bg-base-300 rounded-lg overflow-hidden">
+        <img id="mainImage" src="{{ product.imageUrl | default("https://placehold.co/600x600") }}" alt="{{ product.name | default("") }}" class="w-full h-auto object-cover">
+      </div>
+
+      <!-- Thumbnaily -->
+      <div class="grid grid-cols-4 gap-2">
+        {% set images = product.images | default(["https://placehold.co/150", "https://placehold.co/150", "https://placehold.co/150", "https://placehold.co/150"]) %}
+        {% for image in images %}
+        <div class="bg-base-300 rounded-lg overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary transition-all" onclick="changeMainImage('{{ image }}')">
+          <img src="{{ image }}" alt="Thumbnail {{ loop.index }}" class="w-full h-auto object-cover">
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Pravý sloupec - Informace o produktu -->
+    <div>
+      <!-- Název produktu -->
+      <h1 class="text-3xl font-bold mb-4">{{ product.name | default("Název produktu") }}</h1>
+
+      <!-- Hodnocení (volitelně) -->
+      <div class="flex items-center gap-2 mb-4">
+        <div class="rating rating-sm">
+          <input type="radio" class="mask mask-star-2 bg-orange-400" />
+          <input type="radio" class="mask mask-star-2 bg-orange-400" />
+          <input type="radio" class="mask mask-star-2 bg-orange-400" />
+          <input type="radio" class="mask mask-star-2 bg-orange-400" checked />
+          <input type="radio" class="mask mask-star-2 bg-orange-400" />
+        </div>
+        <span class="text-sm opacity-70">({{ product.reviewCount | default("15") }} hodnocení)</span>
+      </div>
+
+      <!-- Cena -->
+      <div class="mb-6">
+        <div class="text-4xl font-bold text-primary mb-2">
+          {{ product.price | default("1 299") }} Kč
+        </div>
+        {% if product.oldPrice | default("") %}
+        <div class="text-xl line-through opacity-60">
+          {{ product.oldPrice | default("") }} Kč
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Skladem -->
+      <div class="mb-6">
+        {% set stock = product.stock | default(5) %}
+        {% if stock > 0 %}
+        <div class="badge badge-success gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          Skladem ({{ stock }} ks)
+        </div>
+        {% else %}
+        <div class="badge badge-error gap-2">
+          Není skladem
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Krátký popis -->
+      <div class="prose mb-6">
+        <p class="text-base opacity-90">
+          {{ product.shortDescription | default("Kvalitní produkt s výborným poměrem ceny a výkonu. Ideální pro každodenní použití.") }}
+        </p>
+      </div>
+
+      <!-- Množství a tlačítko do košíku -->
+      <div class="flex gap-4 mb-6">
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Množství</span>
+          </label>
+          <input type="number" value="1" min="1" max="{{ stock }}" class="input input-bordered w-24" />
+        </div>
+        <div class="flex-1 flex items-end">
+          <button class="btn btn-primary btn-lg w-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            Přidat do košíku
+          </button>
+        </div>
+      </div>
+
+      <!-- Doprava a platba -->
+      <div class="bg-base-300 rounded-lg p-4 mb-6">
+        <h3 class="font-bold mb-3">Doprava a platba</h3>
+        <ul class="space-y-2 text-sm">
+          <li class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Doprava zdarma nad 1000 Kč
+          </li>
+          <li class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Doručení do 2-3 pracovních dnů
+          </li>
+          <li class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Záruka vrácení peněz do 14 dnů
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Taby s podrobnostmi -->
+  <div class="mt-12">
+    <div role="tablist" class="tabs tabs-bordered">
+      <input type="radio" name="detail_tabs" role="tab" class="tab" aria-label="Popis" checked />
+      <div role="tabpanel" class="tab-content bg-base-200 p-6 rounded-b-lg">
+        <div class="prose max-w-none">
+          <h3>Popis produktu</h3>
+          <p>{{ product.description | default("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.") }}</p>
+        </div>
+      </div>
+
+      <input type="radio" name="detail_tabs" role="tab" class="tab" aria-label="Parametry" />
+      <div role="tabpanel" class="tab-content bg-base-200 p-6 rounded-b-lg">
+        <table class="table">
+          <tbody>
+            <tr>
+              <td class="font-bold">Hmotnost</td>
+              <td>{{ product.weight | default("500 g") }}</td>
+            </tr>
+            <tr>
+              <td class="font-bold">Rozměry</td>
+              <td>{{ product.dimensions | default("20 x 15 x 5 cm") }}</td>
+            </tr>
+            <tr>
+              <td class="font-bold">Materiál</td>
+              <td>{{ product.material | default("Plast, kov") }}</td>
+            </tr>
+            <tr>
+              <td class="font-bold">Výrobce</td>
+              <td>{{ product.manufacturer | default("Example Corp.") }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <input type="radio" name="detail_tabs" role="tab" class="tab" aria-label="Hodnocení" />
+      <div role="tabpanel" class="tab-content bg-base-200 p-6 rounded-b-lg">
+        <p class="opacity-70">Zatím žádné hodnocení.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function changeMainImage(imageSrc) {
+    document.getElementById('mainImage').src = imageSrc;
+  }
+</script>
+{% endblock %}

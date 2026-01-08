@@ -1,5 +1,6 @@
 package cz.kamenitxan.jakon.core.template.pebble
 
+import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.TypeReferences.*
 import io.pebbletemplates.pebble.extension.core.DateFilter
 import io.pebbletemplates.pebble.template.{EvaluationContext, PebbleTemplate}
@@ -24,6 +25,9 @@ class JakonDateFilter extends DateFilter {
 			case DATETIME =>
 				val date = input.asInstanceOf[LocalDateTime]
 				date.format(formatter)
+			case _ =>
+				Logger.warn(s"Unsupported date type: ${input.getClass}. Template: ${self.getName}:$lineNumber")
+				input.toString
 		}
 
 

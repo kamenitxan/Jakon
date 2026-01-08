@@ -9,8 +9,8 @@
 	<link rel="stylesheet" href="/shop/jakon-shop.css"/>
 
 </head>
-<body>
-<div class="">
+<body class="flex flex-col min-h-screen">
+<div class="flex-grow">
 	{% set max_w = "max-w-7xl" %}
 	{% include "header" with { "max_w" : max_w } %}
 	<div class="{{ max_w }} mx-auto ">
@@ -19,6 +19,8 @@
 		</div>
 	</div>
 </div>
+
+{% include "components/footer" with { "max_w" : max_w } %}
 
 </body>
 </html>

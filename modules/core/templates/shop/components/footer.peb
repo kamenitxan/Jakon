@@ -1,0 +1,40 @@
+<footer class="bg-base-300 mt-auto">
+  <div class="{{ max_w }} mx-auto px-4 py-10">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- O nás -->
+      <div>
+        <h3 class="font-bold text-lg mb-4">O nás</h3>
+        <p class="text-sm opacity-80">
+          Váš online obchod s kvalitními produkty a rychlým doručením.
+        </p>
+      </div>
+
+      <!-- Odkazy -->
+      <div>
+        <h3 class="font-bold text-lg mb-4">Užitečné odkazy</h3>
+        <ul class="text-sm space-y-2">
+          <li><a href="/obchodni-podminky" class="link link-hover">Obchodní podmínky</a></li>
+          <li><a href="/reklamacni-rad" class="link link-hover">Reklamační řád</a></li>
+          <li><a href="/ochrana-osobnich-udaju" class="link link-hover">Ochrana osobních údajů</a></li>
+          <li><a href="/kontakt" class="link link-hover">Kontakt</a></li>
+        </ul>
+      </div>
+
+      <!-- Kontakt -->
+      <div>
+        <h3 class="font-bold text-lg mb-4">Kontakt</h3>
+        <ul class="text-sm space-y-2">
+          <li>Email: info@example.com</li>
+          <li>Telefon: +420 123 456 789</li>
+          <li>Adresa: Ulice 123, Praha</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Copyright -->
+    <div class="border-t border-base-content/10 mt-8 pt-6 text-center text-sm opacity-70">
+      <p>&copy; {{ "now" | date("Y") }} My Shop. Všechna práva vyhrazena.</p>
+    </div>
+  </div>
+</footer>
+
