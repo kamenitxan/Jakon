@@ -1,0 +1,9 @@
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
+	{% include "components/productCard" %}
+	{% include "components/productCard" %}
+	{% include "components/productCard" %}
+	{% include "components/productCard" %}
+	{% include "components/productCard" %}
+	{% include "components/productCard" %}
+	{% include "components/productCard" %}
+</div>

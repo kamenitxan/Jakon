@@ -11,10 +11,12 @@
 </head>
 <body>
 <div class="">
-	{% set max_w = "max-w-6xl" %}
+	{% set max_w = "max-w-7xl" %}
 	{% include "header" with { "max_w" : max_w } %}
-	<div class="bg-red-200 {{ max_w }} mx-auto grid grid-cols-2 gap-4">
-		{% block content %}{% endblock %}
+	<div class="{{ max_w }} mx-auto ">
+		<div class="flex gap-4 flex-nowrap">
+				{% block content %}{% endblock %}
+		</div>
 	</div>
 </div>
 

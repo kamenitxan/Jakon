@@ -6,17 +6,9 @@
 
 {% block content %}
 	{% include "menu" %}
-	<div>
-		<h1>Welcome to Our Shop</h1>
-		<p>Browse our collection of amazing products!</p>
-		<div class="product-list">
-				{% include "components/productCard" %}
-				{% include "components/productCard" %}
-				{% include "components/productCard" %}
-				{% include "components/productCard" %}
-				{% include "components/productCard" %}
-				{% include "components/productCard" %}
-				{% include "components/productCard" %}
-		</div>
+	<div class="flex-1">
+		<h1 class="text-4xl font-bold mb-4">Welcome to Our Shop</h1>
+		<p class="text-lg text-gray-400 mb-8">Browse our collection of amazing products!</p>
+		{% include "components/productList" %}
 	</div>
 {% endblock %}
