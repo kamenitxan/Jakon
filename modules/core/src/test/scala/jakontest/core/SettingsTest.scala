@@ -10,7 +10,7 @@ import org.scalatest.DoNotDiscover
 class SettingsTest extends TestBase {
 
 	test("setters") { _ =>
-		val loader = new JakonFileLoader("templates/admin", true)
+		val loader = new JakonFileLoader(System.getProperty("user.dir") + "/" + "templates/admin", true)
 		loader.setSuffix(".peb")
 		Settings.setAdminEngine(new JakonPebbleTemplateEngine(loader))
 		Settings.setEmailTypeHandler(new TestEmailTypeHandler)

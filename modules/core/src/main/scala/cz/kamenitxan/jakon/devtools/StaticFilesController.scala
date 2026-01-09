@@ -18,20 +18,16 @@ class StaticFilesController {
 
 		if (file.exists() && file.isFile) {
 			ctx.status(200)
-			
+
 			// Set content type based on file extension
 			val contentType = Files.probeContentType(Paths.get(filePath))
 			if (contentType != null) {
 				ctx.contentType(contentType)
 			}
-			
+
 			// Stream file content
 			val inputStream = new FileInputStream(file)
-			try {
-				ctx.result(inputStream)
-			} finally {
-				inputStream.close()
-			}
+			ctx.result(inputStream)
 		} else {
 			ctx.status(404)
 		}

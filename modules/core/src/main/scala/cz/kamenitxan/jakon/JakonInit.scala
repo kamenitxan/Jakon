@@ -127,6 +127,7 @@ class JakonInit {
 
 			setupJavalin(config, annotationScanner)
 		})
+		JakonInit.javalin = app
 		
 		app.start(portNumber)
 		Logger.info(s"Jakon started on port $portNumber")
@@ -201,5 +202,6 @@ class JakonInit {
 }
 
 object JakonInit {
+	var javalin: Javalin = _
 	var javalinConfig: JavalinConfig = _
 }

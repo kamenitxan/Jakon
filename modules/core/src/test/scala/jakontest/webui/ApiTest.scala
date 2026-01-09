@@ -56,7 +56,7 @@ class ApiTest extends AnyFunSuite {
 	}
 
 	test("images") {
-		val port = JakonInit.javalinConfig.port()
+		val port = JakonInit.javalin.port()
 		val url = s"http://localhost:$port/admin/api/images"
 		val obj = new URL(url)
 		val con = obj.openConnection.asInstanceOf[HttpURLConnection]

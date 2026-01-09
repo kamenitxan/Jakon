@@ -84,7 +84,7 @@ class TestRunner extends Suites(
 
 	override protected def afterAll(): Unit = {
 		super.afterAll()
-		JakonInit.javalinConfig.stop()
+		JakonInit.javalin.stop()
 	}
 }
 
