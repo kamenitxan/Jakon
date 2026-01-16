@@ -4,7 +4,7 @@ import sbtassembly.AssemblyPlugin.autoImport.assembly
 val V = new {
 	val Scala = "3.3.7"
   val jakon = "0.7.2-SNAPSHOT"
-	val log4j = "2.25.2"
+	val log4j = "2.25.3"
 	val circeVersion = "0.14.15"
 	val javalin = "7.0.0-beta.1"
 }
@@ -46,7 +46,7 @@ val Dependencies = new {
 				"commons-codec" % "commons-codec" % "1.20.0",
 				"de.svenkubiak" % "jBCrypt" % "0.4.3",
 				"com.sun.mail" % "jakarta.mail" % "2.0.2",
-				"org.commonmark" % "commonmark" % "0.27.0",
+				"org.commonmark" % "commonmark" % "0.27.1",
 				"com.google.code.gson" % "gson" % "2.13.2",
 				"io.circe" %% "circe-core" % V.circeVersion,
 				"io.circe" %% "circe-generic"% V.circeVersion,
@@ -65,8 +65,8 @@ val Dependencies = new {
 	lazy val tests = Def.settings(
 		libraryDependencies ++= Seq(
 			"org.scalatest" %% "scalatest" % "3.2.19" % "test",
-			"org.scalamock" %% "scalamock" % "7.5.2" % Test,
-			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.38.0" % "test"
+			"org.scalamock" %% "scalamock" % "7.5.3" % Test,
+			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.39.0" % "test"
 		)
 	)
 }
