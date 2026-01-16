@@ -30,7 +30,8 @@ object Settings {
 	private var databaseType: DatabaseType = _
 
 	def doAfterLoad(): Unit = {
-		val loader = new JakonFileLoader("templates/admin", true)
+		System.getProperty("user.dir")
+		val loader = new JakonFileLoader(System.getProperty("user.dir") + "/" + "templates/admin", true)
 		loader.setSuffix(".peb")
 		adminEngine = new JakonPebbleTemplateEngine(loader)
 		setTemplateEngine(new Pebble)

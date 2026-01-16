@@ -50,7 +50,7 @@ object Routes {
 			.registerTypeAdapter(classOf[LocalDateTime], new GsonLocalDateTimeSerializer)
 			.create()
 
-		JakonInit.javalin.before("*", new Handler {
+		JakonInit.javalinConfig.routes.before("*", new Handler {
 			override def handle(ctx: Context): Unit = {
 				// also prepares page context
 				if (!ctx.path().startsWith("/jakon/")) {
@@ -58,7 +58,7 @@ object Routes {
 				}
 			}
 		})
-		JakonInit.javalin.before(AdminPrefix, new Handler {
+		JakonInit.javalinConfig.routes.before(AdminPrefix, new Handler {
 			override def handle(ctx: Context): Unit = {
 				val user: JakonUser =  ctx.sessionAttribute("user")
 				if ((Settings.getDeployMode ne DeployMode.DEVEL)
@@ -69,7 +69,7 @@ object Routes {
 			}
 		})
 
-		JakonInit.javalin.before(s"$AdminPrefix/*", new Handler {
+		JakonInit.javalinConfig.routes.before(s"$AdminPrefix/*", new Handler {
 			override def handle(ctx: Context): Unit = {
 				if (ctx.path() != s"$AdminPrefix/register"
 				  && ctx.path() != s"$AdminPrefix/logout"
@@ -92,7 +92,7 @@ object Routes {
 
 		ApiBuilder.path(s"$AdminPrefix", () => {
 			if (Settings.getDeployMode == DeployMode.PRODUCTION) {
-				JakonInit.javalin.exception(classOf[Exception], new AdminExceptionHandler)
+				JakonInit.javalinConfig.routes.exception(classOf[Exception], new AdminExceptionHandler)
 			}
 
 			get("/index", new Handler {

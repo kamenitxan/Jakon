@@ -15,7 +15,7 @@ import cz.kamenitxan.jakon.webui.{AdminSettings, Routes}
 import io.github.classgraph.ScanResult
 import io.javalin.Javalin
 import io.javalin.apibuilder.ApiBuilder
-import io.javalin.config.JavalinConfig
+import io.javalin.config.{JavalinConfig, RoutesConfig}
 import io.javalin.http.{Context, Handler, HttpStatus}
 import io.javalin.plugin.bundled.CorsPluginConfig
 
@@ -42,12 +42,12 @@ class JakonInit {
 	}
 
 	//noinspection ScalaWeakerAccess
-	protected def websocketSetup(javalin: Javalin): Unit = {
+	protected def websocketSetup(config: JavalinConfig): Unit = {
 		// override to add websocket setup
 	}
 
 	//noinspection ScalaWeakerAccess
-	protected def routesSetup(javalin: Javalin): Unit = {
+	protected def routesSetup(routes: RoutesConfig): Unit = {
 		// override to custom routes
 	}
 
@@ -125,9 +125,19 @@ class JakonInit {
 			}
 			javalinConfig(config)
 
+			setupJavalin(config, annotationScanner)
 		})
 		JakonInit.javalin = app
-		ApiBuilder.setStaticJavalin(app)
+
+		app.start(portNumber)
+		Logger.info(s"Jakon started on port $portNumber")
+		Director.start()
+		afterInit()
+	}
+
+	private def setupJavalin(config: JavalinConfig, annotationScanner: AnnotationScanner): Unit = {
+		JakonInit.javalinConfig = config
+		ApiBuilder.setStaticJavalin(config.routes)
 
 		Logger.info("Starting in " + Settings.getDeployMode + " mode")
 
@@ -136,25 +146,25 @@ class JakonInit {
 		taskSetup()
 
 		if (Settings.isInitRoutes) {
-			websocketSetup(app)
-			app.before((ctx: Context) => {
+			websocketSetup(config)
+			config.routes.before((ctx: Context) => {
 				PageContext.init(ctx)
 			})
-			app.after((ctx: Context) => PageContext.destroy())
+			config.routes.after((ctx: Context) => PageContext.destroy())
 			if (Settings.getDeployMode != DeployMode.PRODUCTION) {
-				app.before((ctx: Context) => {
+				config.routes.before((ctx: Context) => {
 					DevRender.rerender(ctx.path())
 				})
-				app.exception(classOf[Exception], new LoggingExceptionHandler)
+				config.routes.exception(classOf[Exception], new LoggingExceptionHandler)
 
-				app.get("/upload/*", new Handler {
+				config.routes.get("/upload/*", new Handler {
 					override def handle(ctx: Context): Unit = {
 						val res = new UploadFilesController().doGet(ctx)
 						ctx.result(res)
 					}
 				})
 
-				app.error(404, new Handler { // from static dir
+				config.routes.error(404, new Handler { // from static dir
 					override def handle(ctx: Context): Unit = {
 						new DevStaticFilesController().doGet(ctx)
 					}
@@ -165,22 +175,18 @@ class JakonInit {
 					}
 				})
 			}
-			routesSetup(app)
-			initDevMode(app)
+			routesSetup(config.routes)
+			initDevMode(config)
 		}
 
 
 		annotationScanner.load(sr => classScanHandler(sr))
-		app.start(portNumber)
-		Logger.info(s"Jakon started on port $portNumber")
-		Director.start()
-		afterInit()
 	}
 
-	private def initDevMode(app: Javalin): Unit = {
+	private def initDevMode(config: JavalinConfig): Unit = {
 		if (Settings.getDeployMode != DeployMode.DEVEL) {
 			PageletInitializer.protectedPrefixes.filter(_ != Routes.AdminPrefix).foreach(pp => {
-				app.before(pp + "*", (ctx: Context) => {
+				config.routes.before(pp + "*", (ctx: Context) => {
 					Logger.debug(s"Adding protected prefix '$pp*'")
 
 					val user: JakonUser = ctx.sessionAttribute("user")
@@ -202,4 +208,5 @@ class JakonInit {
 
 object JakonInit {
 	var javalin: Javalin = _
+	var javalinConfig: JavalinConfig = _
 }

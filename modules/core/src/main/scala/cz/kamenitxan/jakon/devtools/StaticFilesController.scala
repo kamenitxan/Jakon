@@ -2,33 +2,32 @@ package cz.kamenitxan.jakon.devtools
 
 import cz.kamenitxan.jakon.core.configuration.Settings
 import io.javalin.http.Context
-import org.eclipse.jetty.http.HttpMethod
-import org.eclipse.jetty.server.ResourceService
-import org.eclipse.jetty.server.handler.ResourceHandler
 
-import java.io.File
+import java.io.{File, FileInputStream}
+import java.nio.file.{Files, Paths}
 import scala.language.postfixOps
 
 /**
   * Created by TPa on 07.07.18.
   */
-class StaticFilesController extends ResourceHandler {
-	setResourceBase(Settings.getOutputDir)
-	doStart()
-
-	private val resF = this.getClass.getSuperclass.getDeclaredField("_resourceService")
-	resF.setAccessible(true)
-	private val resourceService = resF.get(this).asInstanceOf[ResourceService]
+class StaticFilesController {
 
 	def doGet(ctx: Context): AnyRef = {
-		val request = ctx.req()
-		val response = ctx.res()
+		val filePath = Settings.getOutputDir + ctx.path()
+		val file = new File(filePath)
 
-		if (new File(Settings.getOutputDir + ctx.path()).exists()) {
+		if (file.exists() && file.isFile) {
 			ctx.status(200)
-			if (HttpMethod.GET.is(request.getMethod)) { // try another handler
-				resourceService.doGet(request, response)
+
+			// Set content type based on file extension
+			val contentType = Files.probeContentType(Paths.get(filePath))
+			if (contentType != null) {
+				ctx.contentType(contentType)
 			}
+
+			// Stream file content
+			val inputStream = new FileInputStream(file)
+			ctx.result(inputStream)
 		} else {
 			ctx.status(404)
 		}

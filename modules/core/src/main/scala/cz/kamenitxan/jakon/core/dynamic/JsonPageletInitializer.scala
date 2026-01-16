@@ -58,7 +58,7 @@ object JsonPageletInitializer {
 	}
 
 	private def initGetAnnotation(get: Get, controllerAnn: JsonPagelet, m: Method, c: Class[_]): Unit = {
-		JakonInit.javalin.get(controllerAnn.path() + get.path(), new Handler {
+		JakonInit.javalinConfig.routes.get(controllerAnn.path() + get.path(), new Handler {
 			override def handle(ctx: Context): Unit = {
 				ctx.contentType(JsonContentType)
 				val pagelet = c.getDeclaredConstructor().newInstance().asInstanceOf[AbstractJsonPagelet]
@@ -81,7 +81,7 @@ object JsonPageletInitializer {
 	}
 
 	private def initPostAnnotation(post: Post, controllerAnn: JsonPagelet, m: Method, c: Class[_]): Unit = {
-		JakonInit.javalin.post(controllerAnn.path() + post.path(), new Handler {
+		JakonInit.javalinConfig.routes.post(controllerAnn.path() + post.path(), new Handler {
 			override def handle(ctx: Context): Unit = {
 				ctx.contentType(JsonContentType)
 				val controller = c.getDeclaredConstructor().newInstance().asInstanceOf[AbstractJsonPagelet]

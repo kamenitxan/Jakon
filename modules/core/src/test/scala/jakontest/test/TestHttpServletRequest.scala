@@ -67,27 +67,17 @@ class TestHttpServletRequest extends HttpServletRequest {
 			override def setMaxInactiveInterval(interval: Int): Unit = ???
 
 			override def getMaxInactiveInterval: Int = ???
-
-			override def getSessionContext: HttpSessionContext = ???
-
+			
 			override def getAttribute(name: String): AnyRef = attributes.get(name).orNull.asInstanceOf[AnyRef]
-
-			override def getValue(name: String): AnyRef = ???
-
+			
 			override def getAttributeNames: util.Enumeration[String] = {
 				Collections.enumeration(attributes.keySet.asJava)
 			}
-
-			override def getValueNames: Array[String] = ???
-
+			
 			override def setAttribute(name: String, value: Any): Unit = attributes.put(name, value)
-
-			override def putValue(name: String, value: Any): Unit = ???
-
+			
 			override def removeAttribute(name: String): Unit = ???
-
-			override def removeValue(name: String): Unit = ???
-
+			
 			override def invalidate(): Unit = ???
 
 			override def isNew: Boolean = ???
@@ -110,9 +100,7 @@ class TestHttpServletRequest extends HttpServletRequest {
 	override def isRequestedSessionIdFromCookie: Boolean = ???
 
 	override def isRequestedSessionIdFromURL: Boolean = ???
-
-	override def isRequestedSessionIdFromUrl: Boolean = ???
-
+	
 	override def authenticate(response: HttpServletResponse): Boolean = ???
 
 	override def login(username: String, password: String): Unit = ???
@@ -174,9 +162,7 @@ class TestHttpServletRequest extends HttpServletRequest {
 	override def isSecure: Boolean = ???
 
 	override def getRequestDispatcher(path: String): RequestDispatcher = ???
-
-	override def getRealPath(path: String): String = ???
-
+	
 	override def getRemotePort: Int = ???
 
 	override def getLocalName: String = ???
@@ -198,4 +184,10 @@ class TestHttpServletRequest extends HttpServletRequest {
 	override def getAsyncContext: AsyncContext = ???
 
 	override def getDispatcherType: DispatcherType = ???
+
+	override def getRequestId: String = ???
+
+	override def getProtocolRequestId: String = ???
+
+	override def getServletConnection: ServletConnection = ???
 }
