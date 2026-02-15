@@ -57,18 +57,23 @@ abstract class JakonObject(implicit s: sourcecode.FullName) extends BaseEntity {
 		val conn = DBHelper.getConnection
 		conn.setAutoCommit(false)
 		try {
-			val joSQL = "INSERT INTO JakonObject (url, published, childClass) VALUES (?, ?, ?)"
-			val stmt = conn.prepareStatement(joSQL, Statement.RETURN_GENERATED_KEYS)
-			url = createUrl
-			stmt.setString(1, url)
-			stmt.setBoolean(2, published)
-			stmt.setString(3, childClass)
-			val jid = executeInsert(stmt)
-			this.id = jid
-			val id = createObject(jid, conn)
-			if (id != jid) {
-				throw new SQLNonTransientException(s"Child object id($id) is not same as parent id($jid)")
+			if (objectSettings != null && objectSettings.standAlone) {
+				createObject(conn)
+			} else {
+				val joSQL = "INSERT INTO JakonObject (url, published, childClass) VALUES (?, ?, ?)"
+				val stmt = conn.prepareStatement(joSQL, Statement.RETURN_GENERATED_KEYS)
+				url = createUrl
+				stmt.setString(1, url)
+				stmt.setBoolean(2, published)
+				stmt.setString(3, childClass)
+				val jid = executeInsert(stmt)
+				this.id = jid
+				val id = createObject(jid, conn)
+				if (id != jid) {
+					throw new SQLNonTransientException(s"Child object id($id) is not same as parent id($jid)")
+				}
 			}
+
 			afterCreate()
 			afterAll()
 			conn.commit()
@@ -87,9 +92,15 @@ abstract class JakonObject(implicit s: sourcecode.FullName) extends BaseEntity {
 		this.id
 	}
 
+	def createObject(conn: Connection): Int = {
+		Logger.warn(s"createObject method is not overridden for $childClass")
+		val stmt = SqlGen.insertStmt(this, conn, null, true)
+		executeInsert(stmt)
+	}
+
 	def createObject(jid: Int, conn: Connection): Int = {
 		Logger.warn(s"createObject method is not overridden for $childClass")
-		val stmt = SqlGen.insertStmt(this, conn, jid)
+		val stmt = SqlGen.insertStmt(this, conn, jid, false)
 		executeInsert(stmt)
 	}
 

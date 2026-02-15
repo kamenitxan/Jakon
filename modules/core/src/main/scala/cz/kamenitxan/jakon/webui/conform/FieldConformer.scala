@@ -49,6 +49,7 @@ object FieldConformer {
 				case DOUBLE | DOUBLE_j => s toDouble
 				case FLOAT => s toFloat
 				case INTEGER | INTEGER_j => s toInt
+				case BIG_DECIMAL_j => java.math.BigDecimal(s)
 				case DATE =>
 					val formatter = DateTimeFormatter.ofPattern(DATE_FORMAT)
 					LocalDate.parse(s, formatter)

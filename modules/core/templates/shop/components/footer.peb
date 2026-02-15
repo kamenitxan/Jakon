@@ -1,3 +1,5 @@
+{# @pebvariable name="currentDate" type="java.time.LocalDate" #}
+{# @pebvariable name="max_w" type="java.lang.Integer" #}
 <footer class="bg-base-300 mt-auto">
   <div class="{{ max_w }} mx-auto px-4 py-10">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -33,7 +35,7 @@
 
     <!-- Copyright -->
     <div class="border-t border-base-content/10 mt-8 pt-6 text-center text-sm opacity-70">
-      <p>&copy; {{ "now" | date("Y") }} My Shop. Všechna práva vyhrazena.</p>
+      <p>&copy; {{ currentDate | date("YYYY") }} My Shop. Všechna práva vyhrazena.</p>
     </div>
   </div>
 </footer>

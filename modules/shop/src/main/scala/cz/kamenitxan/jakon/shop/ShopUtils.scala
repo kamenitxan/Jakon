@@ -4,6 +4,7 @@ import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.shop.entity.ShopCategory
 import cz.kamenitxan.jakon.shop.service.ShopCategoryService
 
+import java.time.LocalDate
 import scala.jdk.CollectionConverters.*
 
 /**
@@ -20,7 +21,8 @@ object ShopUtils {
 
 	val commonPageData: Map[String, AnyRef] = {
 		Map(
-			"categories" -> categoryTree().asJava
+			"categories" -> categoryTree().asJava,
+			"currentDate" -> LocalDate.now
 		)
 	}
 

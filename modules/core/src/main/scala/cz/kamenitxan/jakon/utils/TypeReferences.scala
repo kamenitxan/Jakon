@@ -17,6 +17,7 @@ object TypeReferences {
 	val DOUBLE = classOf[Double]
 	val DOUBLE_j = classOf[java.lang.Double]
 	val INTEGER_j = classOf[java.lang.Integer]
+	val BIG_DECIMAL_j = classOf[java.math.BigDecimal]
 	val LIST_j = classOf[java.util.List[Any]]
 	val ARRAY_LIST_j = classOf[java.util.ArrayList[Any]]
 	val MAP = classOf[Map[Any, Any]]

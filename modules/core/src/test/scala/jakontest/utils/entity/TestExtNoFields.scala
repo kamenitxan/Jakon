@@ -13,7 +13,7 @@ class TestExtNoFields extends JakonUser {
 
 	override def createObject(jid: Int, conn: Connection): Int = {
 		super.createObject(jid, conn)
-		val stmt = SqlGen.insertStmt(this, conn, jid)
+		val stmt = SqlGen.insertStmt(this, conn, jid, false)
 		executeInsert(stmt)
 	}
 

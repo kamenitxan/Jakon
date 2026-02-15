@@ -14,7 +14,7 @@ class SqlGenTest extends TestBase {
 
 	test("insertStmt") { _ =>
 		val obj = new JakonUser()
-		val tc = SqlGen.insertStmt(obj, DBHelper.getConnection, 0)
+		val tc = SqlGen.insertStmt(obj, DBHelper.getConnection, 0, false)
 		assert(tc != null)
 	}
 
@@ -26,7 +26,7 @@ class SqlGenTest extends TestBase {
 
 	test("insertStmt with TestObject") { _ =>
 		val obj = new TestObject()
-		val tc = SqlGen.insertStmt(obj, DBHelper.getConnection, 0)
+		val tc = SqlGen.insertStmt(obj, DBHelper.getConnection, 0, false)
 		assert(tc != null)
 	}
 

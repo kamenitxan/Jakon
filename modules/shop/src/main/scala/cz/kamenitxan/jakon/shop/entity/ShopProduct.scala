@@ -54,30 +54,30 @@ class ShopProduct extends JakonObject with Serializable {
 
 	override val objectSettings: ObjectSettings = ShopProduct.objectSettings
 
-	override def createObject(jid: Int, conn: Connection): Int = {
+	override def createObject(conn: Connection): Int = {
 		// language=SQL
-		val sql = "INSERT INTO ShopProduct (id, name, description, shortDescription, price, discountPrice, stockQuantity, sku, image, images, category_id, featured, displayOrder, url, published) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+		val sql = "INSERT INTO ShopProduct (name, description, shortDescription, price, discountPrice, stockQuantity, sku, image, images, category_id, featured, url, published) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
-		stmt.setInt(1, jid)
-		stmt.setString(2, name)
-		stmt.setString(3, description)
-		stmt.setString(4, shortDescription)
-		stmt.setBigDecimal(5, price)
+		stmt.setString(1, name)
+		stmt.setString(2, description)
+		stmt.setString(3, shortDescription)
+		stmt.setBigDecimal(4, price)
 		if (discountPrice != null) {
-			stmt.setBigDecimal(6, discountPrice)
+			stmt.setBigDecimal(5, discountPrice)
 		} else {
-			stmt.setNull(6, Types.DECIMAL)
+			stmt.setNull(5, Types.DECIMAL)
 		}
-		stmt.setInt(7, stockQuantity)
-		stmt.setString(8, sku)
-		stmt.setString(9, image)
-		stmt.setString(10, images)
+		stmt.setInt(6, stockQuantity)
+		stmt.setString(7, sku)
+		stmt.setString(8, image)
+		stmt.setString(9, images)
 		if (category != null) {
-			stmt.setInt(11, category.id)
+			stmt.setInt(10, category.id)
 		} else {
-			stmt.setNull(11, Types.INTEGER)
+			stmt.setNull(10, Types.INTEGER)
 		}
-		stmt.setBoolean(12, featured)
+		stmt.setBoolean(11, featured)
+		stmt.setString(12, url)
 		stmt.setBoolean(13, published)
 
 		executeInsert(stmt)

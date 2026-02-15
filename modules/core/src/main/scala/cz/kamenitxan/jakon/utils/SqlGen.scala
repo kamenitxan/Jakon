@@ -22,9 +22,12 @@ object SqlGen {
 	private val NumberTypes = classOf[Int] :: classOf[Integer] :: classOf[Double] :: classOf[Float] :: Nil
 	private val BoolTypes = classOf[Boolean] :: classOf[java.lang.Boolean] :: Nil
 
-	private def createSql(cls: Class[_ <: JakonObject], annotatedFields: Seq[Field]): String = {
+	private def createSql(cls: Class[_ <: JakonObject], annotatedFields: Seq[Field], standalone: Boolean): String = {
 		val sb = new StringBuilder
-		sb.append(s"INSERT INTO ${cls.getSimpleName} (id")
+		sb.append(s"INSERT INTO ${cls.getSimpleName} ")
+		if (!standalone) {
+			sb.append("(id ")
+		}
 		if (annotatedFields.nonEmpty) {
 			sb.append(", ")
 			sb.append(if (annotatedFields.head.getType.getGenericSuperclass != null &&
@@ -63,12 +66,16 @@ object SqlGen {
 		sb.toString()
 	}
 
-	def insertStmt[T <: JakonObject](instance: T, conn: Connection, jid: Int): PreparedStatement = {
+	def insertStmt[T <: JakonObject](instance: T, conn: Connection, jid: Int | Null, standalone: Boolean): PreparedStatement = {
 		val annotatedFields = getJakonFields(instance.getClass)
-		val sql = createSql(instance.getClass, annotatedFields)
+		val sql = createSql(instance.getClass, annotatedFields, standalone)
 		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
 
-		stmt.setInt(1, jid)
+		if (!standalone) {
+			jid match {
+				case x: Int => stmt.setInt(1, x)
+			}
+		}
 		filterAndSetValues(instance, annotatedFields, stmt, 2)
 
 		stmt

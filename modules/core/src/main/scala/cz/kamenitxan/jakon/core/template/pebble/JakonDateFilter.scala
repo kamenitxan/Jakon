@@ -18,13 +18,7 @@ class JakonDateFilter extends DateFilter {
 			return null
 		}
 		input.getClass match {
-			case DATE_o | SQL_DATE => super.apply(input, args, self, context, lineNumber)
-			case DATE =>
-				val date = input.asInstanceOf[LocalDate]
-				date.format(DateTimeFormatter.ISO_DATE)
-			case DATETIME =>
-				val date = input.asInstanceOf[LocalDateTime]
-				date.format(formatter)
+			case DATE_o | SQL_DATE | DATE | DATETIME=> super.apply(input, args, self, context, lineNumber)
 			case _ =>
 				Logger.warn(s"Unsupported date type: ${input.getClass}. Template: ${self.getName}:$lineNumber")
 				input.toString

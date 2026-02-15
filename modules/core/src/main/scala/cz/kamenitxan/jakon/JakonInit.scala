@@ -169,7 +169,7 @@ class JakonInit {
 						new DevStaticFilesController().doGet(ctx)
 					}
 				})
-				app.error(404, new Handler { // from out dir
+				config.routes.error(404, new Handler { // from out dir
 					override def handle(ctx: Context): Unit = {
 						new StaticFilesController().doGet(ctx)
 					}
