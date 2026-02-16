@@ -6,7 +6,7 @@ val V = new {
   val jakon = "0.7.2-SNAPSHOT"
 	val log4j = "2.25.3"
 	val circeVersion = "0.14.15"
-	val javalin = "7.0.0-beta.1"
+	val javalin = "7.0.0-beta.2"
 }
 
 scalaVersion := V.Scala
@@ -16,6 +16,7 @@ version := V.jakon
 
 
 ThisBuild / resolvers += Resolver.mavenLocal
+ThisBuild / resolvers += "Artifactory" at "https://nexus.kamenitxan.eu/repository/maven-central/"
 ThisBuild / resolvers += "Artifactory" at "https://nexus.kamenitxan.eu/repository/jakon/"
 
 
@@ -38,15 +39,17 @@ val Dependencies = new {
 				"org.apache.logging.log4j" % "log4j-api" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-core" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-slf4j2-impl" % V.log4j,
-				"org.xerial" % "sqlite-jdbc" % "3.51.1.0",
-				"com.mysql" % "mysql-connector-j" % "9.5.0" % Optional,
+				"org.xerial" % "sqlite-jdbc" % "3.51.2.0",
+				"com.mysql" % "mysql-connector-j" % "9.6.0" % Optional,
 				"com.google.guava" % "guava" % "33.5.0-jre",
 				"commons-io" % "commons-io" % "2.21.0",
 				"org.apache.commons" % "commons-lang3" % "3.20.0",
-				"commons-codec" % "commons-codec" % "1.20.0",
+				"commons-codec" % "commons-codec" % "1.21.0",
 				"de.svenkubiak" % "jBCrypt" % "0.4.3",
 				"com.sun.mail" % "jakarta.mail" % "2.0.2",
 				"org.commonmark" % "commonmark" % "0.27.1",
+				"org.commonmark" % "commonmark-ext-gfm-tables" % "0.27.1",
+				"org.commonmark" % "commonmark-ext-gfm-strikethrough" % "0.27.1",
 				"com.google.code.gson" % "gson" % "2.13.2",
 				"io.circe" %% "circe-core" % V.circeVersion,
 				"io.circe" %% "circe-generic"% V.circeVersion,
@@ -72,8 +75,8 @@ val Dependencies = new {
 	lazy val tests = Def.settings(
 		libraryDependencies ++= Seq(
 			"org.scalatest" %% "scalatest" % "3.2.19" % Test,
-			"org.scalamock" %% "scalamock" % "7.5.3" % Test,
-			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.39.0" % Test
+			"org.scalamock" %% "scalamock" % "7.5.5" % Test,
+			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.40.0" % Test
 		)
 	)
 }
