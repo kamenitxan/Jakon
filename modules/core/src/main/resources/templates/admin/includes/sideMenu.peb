@@ -3,6 +3,7 @@
 {# @pebvariable name="objectName" type="java.lang.String" #}
 {# @pebvariable name="modelClasses" type="java.util.List" #}
 {# @pebvariable name="jakonModelClasses" type="java.util.List" #}
+{# @pebvariable name="shopModelClasses" type="java.util.List" #}
 {# @pebvariable name="pathInfo" type="java.lang.String" #}
 
 
@@ -23,12 +24,23 @@
 				<a href="/admin/index" class="nav-link{% if "/admin/index" == pathInfo %} active{% endif %}"><i class="fa fa-dashboard fa-fw"></i> {{ i18n("common","DASHBOARD") }}</a>
 			</div>
 			<a href="#" class="nav-link " data-bs-toggle="collapse" data-bs-target="#menu_objects"><i class="fa fa-edit fa-fw"></i> {{ i18n("common","JAKON_OBJECTS") }}<span class="fa arrow"></span></a>
-			<div id="menu_objects" class="accordion-collapse collapse{% if modelClasses contains objectName or jakonModelClasses contains objectName %} show{% endif %}"  data-bs-parent="#menuAccordion">
+			<div id="menu_objects" class="accordion-collapse collapse{% if modelClasses contains objectName or jakonModelClasses contains objectName or shopModelClasses contains objectName %} show{% endif %}"  data-bs-parent="#menuAccordion">
 				<div id="sub-menuAccordion">
 					<div>
 						<a href="#" class="nav-link" data-bs-toggle="collapse" data-bs-target="#menu_jakon_objects">{{ i18n("common","JAKON_CORE_OBJECTS") }} <span class="fa arrow"></span></a>
 						<div id="menu_jakon_objects" class="accordion-collapse collapse{% if jakonModelClasses contains objectName %} show{% endif %}" data-bs-parent="#sub-menuAccordion">
 								{% for model in jakonModelClasses %}
+								<div class="nav-item">
+									<a href="/admin/object/{{ model }}" class="nav-link{% if objectName == model %} active{% endif %}"><i
+											class="fa {{ objectSettings[model].icon }}"></i> {{ i18n("objects", model) }}</a>
+								</div>
+								{% endfor %}
+						</div>
+					</div>
+					<div>
+						<a href="#" class="nav-link" data-bs-toggle="collapse" data-bs-target="#menu_shop_objects">{{ i18n("common","JAKON_SHOP_OBJECTS") }} <span class="fa arrow"></span></a>
+						<div id="menu_shop_objects" class="accordion-collapse collapse{% if shopModelClasses contains objectName %} show{% endif %}" data-bs-parent="#sub-menuAccordion">
+								{% for model in shopModelClasses %}
 								<div class="nav-item">
 									<a href="/admin/object/{{ model }}" class="nav-link{% if objectName == model %} active{% endif %}"><i
 											class="fa {{ objectSettings[model].icon }}"></i> {{ i18n("objects", model) }}</a>

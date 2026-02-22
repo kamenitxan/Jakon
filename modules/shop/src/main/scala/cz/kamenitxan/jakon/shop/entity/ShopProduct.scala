@@ -38,7 +38,7 @@ class ShopProduct extends JakonObject with Serializable {
 	var sku: String = ""
 	
 	@JakonField(required = false)
-	var image: String = ""
+	var mainImage: String = ""
 	
 	@JakonField(required = false)
 	var images: String = ""
@@ -69,7 +69,7 @@ class ShopProduct extends JakonObject with Serializable {
 		}
 		stmt.setInt(6, stockQuantity)
 		stmt.setString(7, sku)
-		stmt.setString(8, image)
+		stmt.setString(8, mainImage)
 		stmt.setString(9, images)
 		if (category != null) {
 			stmt.setInt(10, category.id)
@@ -102,7 +102,7 @@ class ShopProduct extends JakonObject with Serializable {
 		}
 		stmt.setInt(6, stockQuantity)
 		stmt.setString(7, sku)
-		stmt.setString(8, image)
+		stmt.setString(8, mainImage)
 		stmt.setString(9, images)
 		if (category != null) {
 			stmt.setInt(10, category.id)

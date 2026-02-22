@@ -44,15 +44,21 @@ object Context {
 		val user = PageContext.getInstance().getLoggedUser
 		val allModelClasses = DBHelper.getDaoClasses
 			.filter(c => user.nonEmpty && (user.get.acl.masterAdmin || user.get.acl.allowedControllers.contains(c.getCanonicalName)))
-			.groupBy(c => c.getPackage.getName.startsWith("cz.kamenitxan.jakon"))
+			.groupBy(c => {
+				val packageName = c.getPackage.getName
+				if (packageName.startsWith("cz.kamenitxan.jakon.shop")) "shop"
+				else if (packageName.startsWith("cz.kamenitxan.jakon")) "jakon"
+				else "custom"
+			})
 			.view.mapValues(cl => cl.map(c => c.getSimpleName).asJavaCollection)
 		val customControllers = AdminSettings.customControllersInfo
 			.filter(c => user.nonEmpty && (user.get.acl.masterAdmin || user.get.acl.allowedControllers.contains(c.cls.getCanonicalName)))
 
 		val context = Map[String, Any](
 			"user" -> user.orNull,
-			"modelClasses" -> allModelClasses.getOrElse(false, new java.util.ArrayList[String]()),
-			"jakonModelClasses" -> allModelClasses.getOrElse(true, new java.util.ArrayList[String]()),
+			"modelClasses" -> allModelClasses.getOrElse("custom", new java.util.ArrayList[String]()),
+			"jakonModelClasses" -> allModelClasses.getOrElse("jakon", new java.util.ArrayList[String]()),
+			"shopModelClasses" -> allModelClasses.getOrElse("shop", new java.util.ArrayList[String]()),
 			"objectSettings" -> DBHelper.getDaoClasses.map(o => (o.getSimpleName, o.getDeclaredConstructor().newInstance().objectSettings)).toMap.asJava,
 			"enableFiles" -> AdminSettings.enableFiles,
 			"customControllers" -> customControllers.asJava,
