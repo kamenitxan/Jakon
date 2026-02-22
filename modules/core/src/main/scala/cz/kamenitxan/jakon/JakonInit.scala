@@ -113,7 +113,7 @@ class JakonInit {
 		val portNumber: Int = arguments.find(a => a._1 == "port").map(a => a._2.toInt).getOrElse(Settings.getPort)
 
 		val app = Javalin.create(config => {
-			config.jetty.defaultPort = portNumber
+			config.jetty.port = portNumber
 			config.http.defaultContentType = "text/html; charset=utf-8"
 			config.router.treatMultipleSlashesAsSingleSlash = true
 			config.staticFiles.add(Settings.getStaticDir)
