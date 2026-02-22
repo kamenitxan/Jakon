@@ -3,10 +3,10 @@ import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val V = new {
 	val Scala = "3.3.7"
-  val jakon = "0.7.2-SNAPSHOT"
+  val jakon = "0.7.3-SNAPSHOT"
 	val log4j = "2.25.3"
 	val circeVersion = "0.14.15"
-	val javalin = "7.0.0-beta.2"
+	val javalin = "7.0.0"
 }
 
 scalaVersion := V.Scala
@@ -16,8 +16,8 @@ version := V.jakon
 
 
 ThisBuild / resolvers += Resolver.mavenLocal
-ThisBuild / resolvers += "Artifactory" at "https://nexus.kamenitxan.eu/repository/maven-central/"
-ThisBuild / resolvers += "Artifactory" at "https://nexus.kamenitxan.eu/repository/jakon/"
+ThisBuild / resolvers += "Central Proxy" at "https://nexus.kamenitxan.eu/repository/maven-central/"
+ThisBuild / resolvers += "Nexus" at "https://nexus.kamenitxan.eu/repository/jakon/"
 
 
 val Dependencies = new {
@@ -25,7 +25,7 @@ val Dependencies = new {
 	lazy val frontend = Seq(
 		libraryDependencies ++=
 			Seq(
-				"org.scala-js" %%% "scalajs-dom" % "2.8.0"
+				"org.scala-js" %%% "scalajs-dom" % "2.8.1"
 			)
 	)
 
@@ -67,7 +67,7 @@ val Dependencies = new {
 	lazy val shop = Seq(
 		libraryDependencies ++=
 			Seq(
-				"com.stripe" % "stripe-java" % "31.1.0"
+				"com.stripe" % "stripe-java" % "31.3.0"
 			)
 	)
 
@@ -76,7 +76,7 @@ val Dependencies = new {
 		libraryDependencies ++= Seq(
 			"org.scalatest" %% "scalatest" % "3.2.19" % Test,
 			"org.scalamock" %% "scalamock" % "7.5.5" % Test,
-			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.40.0" % Test
+			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.41.0" % Test
 		)
 	)
 }
