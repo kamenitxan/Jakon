@@ -19,19 +19,30 @@ import scala.jdk.CollectionConverters.*
   * Created by Kamenitxan (kamenitxan@me.com) on 05.12.15.
   */
 class Pebble extends TemplateEngine {
-	private val loader = new JakonFileLoader(System.getProperty("user.dir") + "/" + Settings.getTemplateDir)
+	protected val loader = new JakonFileLoader(System.getProperty("user.dir") + "/" + Settings.getTemplateDir)
 	loader.setSuffix(".peb")
-	private val builder = new PebbleEngine.Builder()
-	builder.loader(loader)
-	builder.extension(new PebbleExtension)
-	builder.strictVariables(true)
-	if (DeployMode.PRODUCTION != Settings.getDeployMode) {
-		builder.templateCache(null)
-		builder.tagCache(null)
-		builder.cacheActive(false)
+
+	protected val engine: PebbleEngine = buildEngine()
+	protected val stringEngine: PebbleEngine = buildStringEngine()
+
+	protected def configureBuilder(builder: PebbleEngine.Builder): PebbleEngine.Builder = {
+		builder.extension(new PebbleExtension)
+		builder.strictVariables(true)
+		if (DeployMode.PRODUCTION != Settings.getDeployMode) {
+			builder.templateCache(null)
+			builder.tagCache(null)
+			builder.cacheActive(false)
+		}
+		builder
 	}
-	private val engine = builder.build()
-	private val stringEngine = builder.loader(new StringLoader()).build()
+
+	protected def buildEngine(): PebbleEngine = {
+		configureBuilder(new PebbleEngine.Builder().loader(loader)).build()
+	}
+
+	protected def buildStringEngine(): PebbleEngine = {
+		configureBuilder(new PebbleEngine.Builder().loader(new StringLoader())).build()
+	}
 
 	def render(templateName: String, path: String, context: Map[String, AnyRef])(implicit caller: IController): Unit = {
 

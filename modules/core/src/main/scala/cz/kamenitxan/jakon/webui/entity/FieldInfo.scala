@@ -53,7 +53,8 @@ object FieldInfo {
 		field.getType match {
 			case t if Utils.isJakonObject(t) => "linked"
 			case BOOLEAN => "boolean"
-			case DATETIME | DATE | DATE_o => "date"
+			case DATETIME | DATE_o => "dateTime"
+			case DATE | DATE_o => "date"
 			case SEQ | LIST_j => "list"
 			case _ => "none"
 		}
