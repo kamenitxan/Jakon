@@ -112,7 +112,6 @@ lazy val core = (project in file("modules/core"))
 
 lazy val shop = (project in file("modules/shop"))
 	.dependsOn(core)
-	.settings(Dependencies.core)
 	.settings(Dependencies.tests)
 	.settings(commonBuildSettings)
 	.settings(scalaBuildSettings)
@@ -121,6 +120,17 @@ lazy val shop = (project in file("modules/shop"))
 		Test / fork := true,
 		Test / testGrouping := (Test / definedTests).value.map { suite =>
 			Group(suite.name, Seq(suite), SubProcess(ForkOptions().withWorkingDirectory(new File("modules/shop"))))
+		},
+		assembly / assemblyMergeStrategy := {
+			case PathList("module-info.class") => MergeStrategy.discard
+			case x if x.endsWith("module-info.class") => MergeStrategy.discard
+			case PathList("templates", rest @ _*) =>
+				val shopResourcePath = (baseDirectory.value / "src" / "main" / "resources" / "templates").toPath.resolve(rest.mkString("/"))
+				if (shopResourcePath.toFile.exists()) MergeStrategy.preferProject
+				else MergeStrategy.deduplicate
+			case x =>
+				val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
+				oldStrategy(x)
 		}
 	)
 
