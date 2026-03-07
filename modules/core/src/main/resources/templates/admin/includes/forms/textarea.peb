@@ -1,8 +1,9 @@
 {# @pebvariable name="field" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
 {# @pebvariable name="fieldHash" type="java.lang.Integer" #}
+{# @pebvariable name="lng" type="java.lang.String" #}
 
 <div class="jakon-editor-wrapper" id="jakon-editor-wrapper-{{ fieldHash }}" data-editorId="{{ fieldHash }}">
-	<textarea class="form-control" name="{{ field.name }}" cols="80" rows="5" id="ta-{{ fieldHash }}">{{ field.value | raw }}</textarea>
+	<textarea class="form-control" name="{{ field.name }}{{ lng }}" cols="80" rows="5" id="ta-{{ fieldHash }}">{{ field.value | raw }}</textarea>
 
 	<div class="jakon-editor-toolbar">
 
