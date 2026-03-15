@@ -39,6 +39,8 @@ class EmailSendTask(period: Long, unit: TimeUnit) extends AbstractTask(period, u
 			}
 			prop.put("mail.smtp.host", Settings.getEmailHost)
 			prop.put("mail.smtp.port", Settings.getEmailPort)
+			prop.put("mail.smtp.timeout", "2000");
+			prop.put("mail.smtp.connectiontimeout", "2000");
 			val mailSession = Session.getInstance(prop, new Authenticator() {
 				override protected def getPasswordAuthentication = new PasswordAuthentication(Settings.getEmailUserName, Settings.getEmailPassword)
 			})

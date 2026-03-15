@@ -34,8 +34,8 @@
                         {% for task in tasks %}
 						<tr>
 							<td>{{ task.name.value }}</td>
-							<td>{{ task.lastRun | date }}</td>
-							<td>{{ task.nextRun | date }}</td>
+							<td>{{ task.lastRun | date("dd.MM.yyyy HH:mm:ss") }}</td>
+							<td>{{ task.nextRun | date("dd.MM.yyyy HH:mm:ss") }}</td>
 							<td>{% if task.lastExecutionTime < 1000 %}
                             {{ task.lastExecutionTime}} ms
                             {% else %}
