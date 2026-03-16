@@ -67,7 +67,7 @@ val Dependencies = new {
 	lazy val shop = Seq(
 		libraryDependencies ++=
 			Seq(
-				"com.stripe" % "stripe-java" % "31.3.0"
+				"com.stripe" % "stripe-java" % "31.4.1"
 			)
 	)
 
@@ -112,6 +112,7 @@ lazy val core = (project in file("modules/core"))
 
 lazy val shop = (project in file("modules/shop"))
 	.dependsOn(core)
+	.settings(Dependencies.shop)
 	.settings(Dependencies.tests)
 	.settings(commonBuildSettings)
 	.settings(scalaBuildSettings)

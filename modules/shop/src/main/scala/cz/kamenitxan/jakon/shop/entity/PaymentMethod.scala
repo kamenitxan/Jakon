@@ -32,11 +32,14 @@ class PaymentMethod extends JakonObject with Serializable {
 	@JakonField(required = false)
 	var icon: String = ""
 
+	@JakonField(searched = true)
+	var gatewayCode: String = "manual"
+
 	override val objectSettings: ObjectSettings = PaymentMethod.objectSettings
 
 	override def createObject(jid: Int, conn: Connection): Int = {
 		// language=SQL
-		val sql = "INSERT INTO PaymentMethod (id, name, description, price, enabled, displayOrder, icon, url, published) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+		val sql = "INSERT INTO PaymentMethod (id, name, description, price, enabled, displayOrder, icon, gatewayCode, url, published) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
 		stmt.setInt(1, jid)
 		stmt.setString(2, name)
@@ -45,8 +48,9 @@ class PaymentMethod extends JakonObject with Serializable {
 		stmt.setBoolean(5, enabled)
 		stmt.setInt(6, displayOrder)
 		stmt.setString(7, icon)
-		stmt.setString(8, url)
-		stmt.setBoolean(9, published)
+		stmt.setString(8, gatewayCode)
+		stmt.setString(9, url)
+		stmt.setBoolean(10, published)
 
 		executeInsert(stmt)
 	}
@@ -57,7 +61,7 @@ class PaymentMethod extends JakonObject with Serializable {
 
 	override def updateObject(jid: Int, conn: Connection): Unit = {
 		// language=SQL
-		val sql = "UPDATE PaymentMethod SET name = ?, description = ?, price = ?, enabled = ?, displayOrder = ?, icon = ?, url = ?, published = ? WHERE id = ?"
+		val sql = "UPDATE PaymentMethod SET name = ?, description = ?, price = ?, enabled = ?, displayOrder = ?, icon = ?, gatewayCode = ?, url = ?, published = ? WHERE id = ?"
 		val stmt = conn.prepareStatement(sql)
 		stmt.setString(1, name)
 		stmt.setString(2, description)
@@ -65,9 +69,10 @@ class PaymentMethod extends JakonObject with Serializable {
 		stmt.setBoolean(4, enabled)
 		stmt.setInt(5, displayOrder)
 		stmt.setString(6, icon)
-		stmt.setString(7, url)
-		stmt.setBoolean(8, published)
-		stmt.setInt(9, jid)
+		stmt.setString(7, gatewayCode)
+		stmt.setString(8, url)
+		stmt.setBoolean(9, published)
+		stmt.setInt(10, jid)
 		stmt.executeUpdate()
 	}
 }
