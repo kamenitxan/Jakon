@@ -18,7 +18,7 @@
     <div>
       <!-- Hlavní obrázek -->
       <div class="mb-4 bg-base-300 rounded-lg overflow-hidden">
-        <img id="mainImage" src="{{ product.imageUrl | default("https://placehold.co/600x600") }}" alt="{{ product.name | default("") }}" class="w-full h-auto object-cover">
+        <img id="mainImage" src="{{ product.mainImage | default("https://placehold.co/600x600") }}" alt="{{ product.name | default("") }}" class="w-full h-auto object-cover">
       </div>
 
       <!-- Thumbnaily -->
@@ -54,16 +54,16 @@
         <div class="text-4xl font-bold text-primary mb-2">
           {{ product.price | default("1 299") }} Kč
         </div>
-        {% if product.oldPrice | default("") %}
+        {% if product.discountPrice is not null %}
         <div class="text-xl line-through opacity-60">
-          {{ product.oldPrice | default("") }} Kč
+          {{ product.discountPrice }} Kč
         </div>
         {% endif %}
       </div>
 
       <!-- Skladem -->
       <div class="mb-6">
-        {% set stock = product.stock | default(5) %}
+        {% set stock = product.stockQuantity | default(0) %}
         {% if stock > 0 %}
         <div class="badge badge-success gap-2">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -86,22 +86,25 @@
       </div>
 
       <!-- Množství a tlačítko do košíku -->
-      <div class="flex gap-4 mb-6">
-        <div class="form-control">
-          <label class="label">
-            <span class="label-text">Množství</span>
-          </label>
-          <input type="number" value="1" min="1" max="{{ stock }}" class="input input-bordered w-24" />
+      <form method="post" action="/cart/add">
+        <input type="hidden" name="productId" value="{{ product.id }}" />
+        <div class="flex gap-4 mb-6">
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Množství</span>
+            </label>
+            <input type="number" name="quantity" value="1" min="1" max="{{ product.stockQuantity | default(99) }}" class="input input-bordered w-24" />
+          </div>
+          <div class="flex-1 flex items-end">
+            <button type="submit" class="btn btn-primary btn-lg w-full">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              Přidat do košíku
+            </button>
+          </div>
         </div>
-        <div class="flex-1 flex items-end">
-          <button class="btn btn-primary btn-lg w-full">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-            Přidat do košíku
-          </button>
-        </div>
-      </div>
+      </form>
 
       <!-- Doprava a platba -->
       <div class="bg-base-300 rounded-lg p-4 mb-6">

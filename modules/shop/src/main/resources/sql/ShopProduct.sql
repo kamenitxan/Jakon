@@ -1,5 +1,5 @@
 CREATE TABLE ShopProduct (
-    id               ROWID,
+    id               INTEGER NOT NULL REFERENCES JakonObject (id) ON DELETE CASCADE,
     name             VARCHAR(255)   NOT NULL,
     description      TEXT,
     shortDescription VARCHAR(255),
@@ -11,8 +11,7 @@ CREATE TABLE ShopProduct (
     images           VARCHAR(255),
     category_id      INT            NOT NULL,
     featured         BOOLEAN        NOT NULL DEFAULT FALSE,
-    displayOrder     INT,
-    url              VARCHAR(255),
-    published        BOOLEAN        NOT NULL DEFAULT FALSE,
+    
+    PRIMARY KEY (id),
     FOREIGN KEY (category_id) REFERENCES ShopCategory (id)
 );

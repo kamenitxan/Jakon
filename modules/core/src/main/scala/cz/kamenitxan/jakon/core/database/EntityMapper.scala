@@ -81,6 +81,7 @@ object EntityMapper {
 			case INTEGER_j => field.set(obj, rs.getInt(columnName))
 			case FLOAT => field.set(obj, rs.getFloat(columnName))
 			case DOUBLE => field.set(obj, rs.getDouble(columnName))
+			case BIG_DECIMAL_j => field.set(obj, rs.getBigDecimal(columnName))
 			case DATE_o => field.set(obj, rs.getDate(columnName))
 			case DATE => field.set(obj, Option(rs.getDate(columnName)).map(_.toLocalDate).orNull)
 			case TIME =>

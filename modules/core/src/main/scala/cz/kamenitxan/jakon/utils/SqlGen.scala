@@ -180,6 +180,7 @@ object SqlGen {
 			case INTEGER => stmt.setInt(i, value.asInstanceOf[Int])
 			case FLOAT => stmt.setFloat(i, value.asInstanceOf[Float])
 			case DOUBLE => stmt.setDouble(i, value.asInstanceOf[Double])
+			case BIG_DECIMAL_j => stmt.setBigDecimal(i, value.asInstanceOf[java.math.BigDecimal])
 			case TIME => stmt.setString(i, value.asInstanceOf[LocalTime].format(DateTimeFormatter.ofPattern(FieldConformer.TIME_FORMAT)))
 			case DATE => stmt.setDate(i, java.sql.Date.valueOf(value.asInstanceOf[LocalDate]))
 			case DATE_o => stmt.setDate(i, new java.sql.Date(value.asInstanceOf[Date].getTime))
@@ -223,6 +224,7 @@ object SqlGen {
 			case INTEGER => JDBCType.INTEGER.getVendorTypeNumber
 			case FLOAT => JDBCType.FLOAT.getVendorTypeNumber
 			case DOUBLE => JDBCType.DOUBLE.getVendorTypeNumber
+			case BIG_DECIMAL_j => JDBCType.DECIMAL.getVendorTypeNumber
 			case DATE_o | DATE => JDBCType.DATE.getVendorTypeNumber
 			case DATETIME => JDBCType.TIMESTAMP.getVendorTypeNumber
 			case MAP => JDBCType.VARCHAR.getVendorTypeNumber
