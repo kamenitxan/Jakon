@@ -44,6 +44,32 @@ class OrderItem extends JakonObject with Serializable {
 
 	override val objectSettings: ObjectSettings = OrderItem.objectSettings
 
+	override def createObject(conn: Connection): Int = {
+		// language=SQL
+		val sql = "INSERT INTO OrderItem (order_id, product_id, productName, quantity, unitPrice, totalPrice, note, url, published) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+		if (order != null) {
+			stmt.setInt(1, order.id)
+		} else {
+			stmt.setNull(1, Types.INTEGER)
+		}
+		if (product != null) {
+			stmt.setInt(2, product.id)
+		} else {
+			stmt.setNull(2, Types.INTEGER)
+		}
+		stmt.setString(3, productName)
+		stmt.setInt(4, quantity)
+		stmt.setBigDecimal(5, unitPrice)
+		stmt.setBigDecimal(6, totalPrice)
+		stmt.setString(7, note)
+		stmt.setString(8, url)
+		stmt.setBoolean(9, published)
+		val generatedId = executeInsert(stmt)
+		this.id = generatedId
+		generatedId
+	}
+
 	override def createObject(jid: Int, conn: Connection): Int = {
 		// language=SQL
 		val sql = "INSERT INTO OrderItem (id, order_id, product_id, productName, quantity, unitPrice, totalPrice, note, url, published) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"

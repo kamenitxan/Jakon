@@ -1,0 +1,150 @@
+{% extends "core" %}
+
+{% block title %}Stav objednávky - My Shop{% endblock %}
+
+{% block content %}
+<div class="w-full px-4 py-8">
+  <div class="max-w-3xl mx-auto">
+
+    <h1 class="text-2xl font-bold mb-6">Stav objednávky</h1>
+
+    {% if error %}
+    <div class="alert alert-error">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span>{{ error }}</span>
+    </div>
+    {% else %}
+
+    <!-- Hlavička objednávky -->
+    <div class="card bg-base-200 mb-6">
+      <div class="card-body">
+        <div class="flex flex-wrap justify-between items-start gap-4">
+          <div>
+            <p class="text-sm opacity-60">Číslo objednávky</p>
+            <p class="text-xl font-bold">{{ order.orderNumber }}</p>
+          </div>
+          <div>
+            <p class="text-sm opacity-60">Datum objednávky</p>
+            <p class="font-medium">{{ order.orderDate | date("d.M.yyyy HH:mm") }}</p>
+          </div>
+          <div>
+            <p class="text-sm opacity-60 mb-1">Stav</p>
+            {% if order.status == "NEW" %}
+              <span class="badge badge-info badge-lg">Nová</span>
+            {% elseif order.status == "PROCESSING" %}
+              <span class="badge badge-warning badge-lg">Zpracovává se</span>
+            {% elseif order.status == "SHIPPED" %}
+              <span class="badge badge-primary badge-lg">Odesláno</span>
+            {% elseif order.status == "DELIVERED" %}
+              <span class="badge badge-success badge-lg">Doručeno</span>
+            {% elseif order.status == "CANCELLED" %}
+              <span class="badge badge-error badge-lg">Zrušeno</span>
+            {% else %}
+              <span class="badge badge-neutral badge-lg">{{ order.status }}</span>
+            {% endif %}
+          </div>
+          <div>
+            <p class="text-sm opacity-60">Zaplaceno</p>
+            {% if order.isPaid %}
+              <span class="badge badge-success">Ano</span>
+            {% else %}
+              <span class="badge badge-warning">Ne</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Položky -->
+    <div class="card bg-base-200 mb-6">
+      <div class="card-body">
+        <h2 class="card-title mb-4">Položky objednávky</h2>
+        <div class="overflow-x-auto">
+          <table class="table table-zebra">
+            <thead>
+              <tr>
+                <th>Produkt</th>
+                <th class="text-center">Množství</th>
+                <th class="text-right">Cena/ks</th>
+                <th class="text-right">Celkem</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in orderItems %}
+              <tr>
+                <td>{{ item.productName }}</td>
+                <td class="text-center">{{ item.quantity }}</td>
+                <td class="text-right">{{ item.unitPrice }} Kč</td>
+                <td class="text-right font-bold">{{ item.totalPrice }} Kč</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              {% if order.shippingPrice %}
+              <tr>
+                <td colspan="3" class="text-right opacity-70">Doprava ({{ order.shippingMethod.name }}):</td>
+                <td class="text-right">{{ order.shippingPrice }} Kč</td>
+              </tr>
+              {% endif %}
+              {% if order.paymentPrice %}
+              <tr>
+                <td colspan="3" class="text-right opacity-70">Platba ({{ order.paymentMethod.name }}):</td>
+                <td class="text-right">{{ order.paymentPrice }} Kč</td>
+              </tr>
+              {% endif %}
+              <tr class="font-bold text-lg">
+                <td colspan="3" class="text-right">Celkem:</td>
+                <td class="text-right text-primary">{{ order.totalPrice }} Kč</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Adresy -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="card bg-base-200">
+        <div class="card-body">
+          <h2 class="card-title text-base">Fakturační adresa</h2>
+          <address class="not-italic opacity-80 leading-relaxed">
+            {{ order.billingName }}<br/>
+            {{ order.billingStreet }}<br/>
+            {{ order.billingZip }} {{ order.billingCity }}<br/>
+            {{ order.billingCountry }}
+          </address>
+        </div>
+      </div>
+      <div class="card bg-base-200">
+        <div class="card-body">
+          <h2 class="card-title text-base">Dodací adresa</h2>
+          <address class="not-italic opacity-80 leading-relaxed">
+            {{ order.deliveryName }}<br/>
+            {{ order.deliveryStreet }}<br/>
+            {{ order.deliveryZip }} {{ order.deliveryCity }}<br/>
+            {{ order.deliveryCountry }}
+          </address>
+        </div>
+      </div>
+    </div>
+
+    {% if order.customerNote %}
+    <div class="card bg-base-200 mt-6">
+      <div class="card-body">
+        <h2 class="card-title text-base">Poznámka</h2>
+        <p class="opacity-80">{{ order.customerNote }}</p>
+      </div>
+    </div>
+    {% endif %}
+
+    {% endif %}
+
+    <div class="mt-8">
+      <a href="/" class="btn btn-ghost">← Zpět do obchodu</a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

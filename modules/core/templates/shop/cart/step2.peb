@@ -1,0 +1,114 @@
+{% extends "core" %}
+
+{% block title %}Doprava a platba - My Shop{% endblock %}
+
+{% block content %}
+<div class="w-full px-4 py-8">
+
+  <!-- Indikátor kroků -->
+  <ul class="steps steps-horizontal w-full mb-8">
+    <li class="step step-primary"><a href="/cart">Košík</a></li>
+    <li class="step step-primary">Doprava a platba</li>
+    <li class="step">Doručovací údaje</li>
+  </ul>
+
+  <h1 class="text-2xl font-bold mb-6">Doprava a platba</h1>
+
+  <form method="post" action="/cart/checkout">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+      <!-- Doprava -->
+      <div class="card bg-base-200">
+        <div class="card-body">
+          <h2 class="card-title mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2 2h10l2-2zM13 10h4l2 4" />
+            </svg>
+            Způsob dopravy
+          </h2>
+          {% for method in shippingMethods %}
+          <label class="flex items-center gap-4 p-4 rounded-lg cursor-pointer hover:bg-base-300 transition-colors border border-transparent has-[:checked]:border-primary has-[:checked]:bg-base-300">
+            <input type="radio" name="shippingMethodId" value="{{ method.id }}"
+                   class="radio radio-primary"
+                   {% if cart.selectedShippingMethod and cart.selectedShippingMethod.id == method.id %}checked{% endif %}
+                   required />
+            <div class="flex-1">
+              <div class="font-bold">
+                {% if method.icon %}<i class="{{ method.icon }} mr-1"></i>{% endif %}
+                {{ method.name }}
+              </div>
+              {% if method.description %}
+              <div class="text-sm opacity-70">{{ method.description }}</div>
+              {% endif %}
+              {% if method.estimatedDeliveryDays > 0 %}
+              <div class="text-xs opacity-50">Dodání za {{ method.estimatedDeliveryDays }} pracovních dnů</div>
+              {% endif %}
+            </div>
+            <div class="font-bold text-primary">
+              {% if method.price == 0 %}Zdarma{% else %}{{ method.price }} Kč{% endif %}
+            </div>
+          </label>
+          {% else %}
+          <p class="opacity-50">Žádné dostupné způsoby dopravy.</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Platba -->
+      <div class="card bg-base-200">
+        <div class="card-body">
+          <h2 class="card-title mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+            </svg>
+            Způsob platby
+          </h2>
+          {% for method in paymentMethods %}
+          <label class="flex items-center gap-4 p-4 rounded-lg cursor-pointer hover:bg-base-300 transition-colors border border-transparent has-[:checked]:border-primary has-[:checked]:bg-base-300">
+            <input type="radio" name="paymentMethodId" value="{{ method.id }}"
+                   class="radio radio-primary"
+                   {% if cart.selectedPaymentMethod and cart.selectedPaymentMethod.id == method.id %}checked{% endif %}
+                   required />
+            <div class="flex-1">
+              <div class="font-bold">
+                {% if method.icon %}<i class="{{ method.icon }} mr-1"></i>{% endif %}
+                {{ method.name }}
+              </div>
+              {% if method.description %}
+              <div class="text-sm opacity-70">{{ method.description }}</div>
+              {% endif %}
+            </div>
+            <div class="font-bold text-primary">
+              {% if method.price == 0 %}Zdarma{% else %}+ {{ method.price }} Kč{% endif %}
+            </div>
+          </label>
+          {% else %}
+          <p class="opacity-50">Žádné dostupné způsoby platby.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Souhrn + tlačítka -->
+    <div class="flex justify-between items-center mt-8">
+      <a href="/cart" class="btn btn-ghost">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Zpět do košíku
+      </a>
+      <div class="text-right">
+        <div class="text-sm opacity-60 mb-2">Celkem za zboží: <strong>{{ total }} Kč</strong></div>
+        <button type="submit" class="btn btn-primary">
+          Pokračovat k doručení
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </form>
+
+</div>
+{% endblock %}

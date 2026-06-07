@@ -1,0 +1,169 @@
+{% extends "core" %}
+
+{% block title %}Doručovací údaje - My Shop{% endblock %}
+
+{% block content %}
+<div class="w-full px-4 py-8">
+
+  <!-- Indikátor kroků -->
+  <ul class="steps steps-horizontal w-full mb-8">
+    <li class="step step-primary"><a href="/cart">Košík</a></li>
+    <li class="step step-primary"><a href="/cart/checkout">Doprava a platba</a></li>
+    <li class="step step-primary">Doručovací údaje</li>
+  </ul>
+
+  <h1 class="text-2xl font-bold mb-6">Doručovací údaje</h1>
+
+  <!-- Souhrn objednávky -->
+  <div class="card bg-base-200 mb-6">
+    <div class="card-body py-4">
+      <div class="flex flex-wrap gap-6 text-sm">
+        <div>
+          <span class="opacity-60">Doprava:</span>
+          <strong>{{ cart.selectedShippingMethod.name }}</strong>
+          ({% if cart.selectedShippingMethod.price == 0 %}zdarma{% else %}{{ cart.selectedShippingMethod.price }} Kč{% endif %})
+        </div>
+        <div>
+          <span class="opacity-60">Platba:</span>
+          <strong>{{ cart.selectedPaymentMethod.name }}</strong>
+          ({% if cart.selectedPaymentMethod.price == 0 %}zdarma{% else %}+ {{ cart.selectedPaymentMethod.price }} Kč{% endif %})
+        </div>
+        <div class="ml-auto font-bold text-primary">
+          Celkem: {{ grandTotal }} Kč
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <form method="post" action="/cart/submit">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+      <!-- Kontaktní informace -->
+      <div class="card bg-base-200">
+        <div class="card-body">
+          <h2 class="card-title mb-4">Kontaktní informace</h2>
+
+          <div class="form-control mb-3">
+            <label class="label"><span class="label-text">E-mail *</span></label>
+            <input type="email" name="guestEmail" value="{{ prefillEmail | default('') }}"
+                   class="input input-bordered" required placeholder="vas@email.cz" />
+          </div>
+
+          <div class="form-control mb-3">
+            <label class="label"><span class="label-text">Telefon</span></label>
+            <input type="tel" name="guestPhone" value="{{ prefillPhone | default('') }}"
+                   class="input input-bordered" placeholder="+420 123 456 789" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Fakturační adresa -->
+      <div class="card bg-base-200">
+        <div class="card-body">
+          <h2 class="card-title mb-4">Fakturační adresa</h2>
+
+          <div class="form-control mb-3">
+            <label class="label"><span class="label-text">Jméno a příjmení *</span></label>
+            <input type="text" name="billingName" value="{{ prefillName | default('') }}"
+                   class="input input-bordered" required placeholder="Jan Novák" />
+          </div>
+
+          <div class="form-control mb-3">
+            <label class="label"><span class="label-text">Ulice a číslo *</span></label>
+            <input type="text" name="billingStreet" value="{{ prefillStreet | default('') }}"
+                   class="input input-bordered" required placeholder="Hlavní 1" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div class="form-control mb-3">
+              <label class="label"><span class="label-text">Město *</span></label>
+              <input type="text" name="billingCity" value="{{ prefillCity | default('') }}"
+                     class="input input-bordered" required placeholder="Praha" />
+            </div>
+            <div class="form-control mb-3">
+              <label class="label"><span class="label-text">PSČ *</span></label>
+              <input type="text" name="billingZip" value="{{ prefillZip | default('') }}"
+                     class="input input-bordered" required placeholder="110 00" />
+            </div>
+          </div>
+
+          <div class="form-control mb-3">
+            <label class="label"><span class="label-text">Stát *</span></label>
+            <input type="text" name="billingCountry" value="{{ prefillCountry | default('Česká republika') }}"
+                   class="input input-bordered" required />
+          </div>
+        </div>
+      </div>
+
+      <!-- Dodací adresa -->
+      <div class="card bg-base-200 lg:col-span-2">
+        <div class="card-body">
+          <div class="flex items-center gap-3 mb-4">
+            <h2 class="card-title">Dodací adresa</h2>
+            <span class="text-sm opacity-60">(prázdné = stejná jako fakturační)</span>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <div class="form-control mb-3">
+                <label class="label"><span class="label-text">Jméno a příjmení</span></label>
+                <input type="text" name="deliveryName" value="{{ prefillName | default('') }}"
+                       class="input input-bordered" placeholder="Jan Novák" />
+              </div>
+              <div class="form-control mb-3">
+                <label class="label"><span class="label-text">Ulice a číslo</span></label>
+                <input type="text" name="deliveryStreet" value="{{ prefillDeliveryStreet | default('') }}"
+                       class="input input-bordered" placeholder="Hlavní 1" />
+              </div>
+            </div>
+            <div>
+              <div class="grid grid-cols-2 gap-3">
+                <div class="form-control mb-3">
+                  <label class="label"><span class="label-text">Město</span></label>
+                  <input type="text" name="deliveryCity" value="{{ prefillDeliveryCity | default('') }}"
+                         class="input input-bordered" placeholder="Praha" />
+                </div>
+                <div class="form-control mb-3">
+                  <label class="label"><span class="label-text">PSČ</span></label>
+                  <input type="text" name="deliveryZip" value="{{ prefillDeliveryZip | default('') }}"
+                         class="input input-bordered" placeholder="110 00" />
+                </div>
+              </div>
+              <div class="form-control mb-3">
+                <label class="label"><span class="label-text">Stát</span></label>
+                <input type="text" name="deliveryCountry" value="{{ prefillDeliveryCountry | default('') }}"
+                       class="input input-bordered" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Poznámka -->
+      <div class="card bg-base-200 lg:col-span-2">
+        <div class="card-body">
+          <h2 class="card-title mb-4">Poznámka k objednávce</h2>
+          <textarea name="customerNote" class="textarea textarea-bordered w-full" rows="3"
+                    placeholder="Upřesnění, speciální požadavky..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-between items-center mt-8">
+      <a href="/cart/checkout" class="btn btn-ghost">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Zpět k dopravě
+      </a>
+      <button type="submit" class="btn btn-primary btn-lg">
+        Odeslat objednávku
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+      </button>
+    </div>
+  </form>
+
+</div>
+{% endblock %}

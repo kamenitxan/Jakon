@@ -7,12 +7,13 @@ import java.sql.Connection
 
 object OrderItemService {
 
-	implicit val cls: Class[OrderItem] = classOf[OrderItem]
-
 	def getByOrder(orderId: Int)(implicit conn: Connection): Seq[OrderItem] = {
-		val sql = "SELECT * FROM OrderItem JOIN JakonObject ON JakonObject.id = OrderItem.id WHERE order_id = ? ORDER BY OrderItem.id"
+		// Direct query without JakonObject JOIN — OrderItem is standAlone
+		val sql = "SELECT * FROM OrderItem WHERE order_id = ? ORDER BY id"
 		val stmt = conn.prepareStatement(sql)
 		stmt.setInt(1, orderId)
-		DBHelper.selectDeep(stmt)
+		val items = DBHelper.select(stmt, classOf[OrderItem]).map(_.entity)
+		stmt.close()
+		items
 	}
 }
