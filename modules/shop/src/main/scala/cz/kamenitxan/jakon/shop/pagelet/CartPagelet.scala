@@ -104,7 +104,7 @@ class CartPagelet extends AbstractPagelet {
 			"shippingMethods" -> shippingMethods.asJava,
 			"paymentMethods" -> paymentMethods.asJava,
 			"step" -> 2
-		)
+		) ++ ShopUtils.commonPageData
 	}
 
 	class CheckoutData {
@@ -151,7 +151,7 @@ class CartPagelet extends AbstractPagelet {
 			"itemsTotal" -> total,
 			"grandTotal" -> grandTotal,
 			"step" -> 3
-		) ++ prefill
+		) ++ prefill ++ ShopUtils.commonPageData
 	}
 
 	class DeliveryData {

@@ -31,7 +31,7 @@
           <label class="flex items-center gap-4 p-4 rounded-lg cursor-pointer hover:bg-base-300 transition-colors border border-transparent has-[:checked]:border-primary has-[:checked]:bg-base-300">
             <input type="radio" name="shippingMethodId" value="{{ method.id }}"
                    class="radio radio-primary"
-                   {% if cart.selectedShippingMethod and cart.selectedShippingMethod.id == method.id %}checked{% endif %}
+                   {% if cart.selectedShippingMethod is not null and cart.selectedShippingMethod.id == method.id %}checked{% endif %}
                    required />
             <div class="flex-1">
               <div class="font-bold">
@@ -68,7 +68,7 @@
           <label class="flex items-center gap-4 p-4 rounded-lg cursor-pointer hover:bg-base-300 transition-colors border border-transparent has-[:checked]:border-primary has-[:checked]:bg-base-300">
             <input type="radio" name="paymentMethodId" value="{{ method.id }}"
                    class="radio radio-primary"
-                   {% if cart.selectedPaymentMethod and cart.selectedPaymentMethod.id == method.id %}checked{% endif %}
+                   {% if cart.selectedPaymentMethod is not null and cart.selectedPaymentMethod.id == method.id %}checked{% endif %}
                    required />
             <div class="flex-1">
               <div class="font-bold">

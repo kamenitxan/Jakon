@@ -6,7 +6,6 @@ import cz.kamenitxan.jakon.core.database.annotation.OneToMany
 import cz.kamenitxan.jakon.core.model.*
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.TypeReferences.SEQ
-import cz.kamenitxan.jakon.utils.Utils.*
 import org.sqlite.SQLiteConfig
 
 import java.sql.*
@@ -164,7 +163,7 @@ object DBHelper {
 			if (r.foreignIds.nonEmpty) {
 				r.foreignIds.foreach(fki => {
 					val field = fki._2.field
-					if (fki._2.ids.size == 1 && r.entity.id == fki._2.ids.head) {
+					if (fki._2.ids.size == 1 && r.entity.id == fki._2.ids.head && field.getType.isAssignableFrom(r.entity.getClass)) {
 						field.set(r.entity, r.entity)
 					} else {
 						val oneToManyAnn = field.getDeclaredAnnotation(classOf[OneToMany])

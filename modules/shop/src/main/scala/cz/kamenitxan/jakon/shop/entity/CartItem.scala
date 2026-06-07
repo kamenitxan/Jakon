@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.shop.entity
 
 import cz.kamenitxan.jakon.core.database.JakonField
+import cz.kamenitxan.jakon.core.database.annotation.ManyToOne
 import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.webui.ObjectSettings
 
@@ -11,10 +12,12 @@ import java.sql.{Connection, Statement}
  */
 class CartItem extends JakonObject with Serializable {
 
-	@JakonField(required = true)
+	@JakonField()
+	@ManyToOne
 	var cart: Cart = _
 
-	@JakonField(required = true)
+	@JakonField()
+	@ManyToOne
 	var product: ShopProduct = _
 
 	@JakonField

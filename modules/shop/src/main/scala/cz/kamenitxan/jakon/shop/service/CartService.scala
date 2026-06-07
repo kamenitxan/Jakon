@@ -5,7 +5,7 @@ import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.shop.entity.{Cart, CartItem, ShopProduct}
 
 import java.math.BigDecimal
-import java.sql.{Connection, Timestamp}
+import java.sql.Connection
 import java.time.LocalDateTime
 
 object CartService {
@@ -94,19 +94,11 @@ object CartService {
 	}
 
 	def getItems(cartId: Int)(implicit conn: Connection): Seq[CartItem] = {
-		val sql = "SELECT * FROM CartItem JOIN ShopProduct sp ON sp.id = CartItem.product_id WHERE cart_id = ? ORDER BY id"
+		val sql = "SELECT * FROM CartItem JOIN ShopProduct sp ON sp.id = CartItem.product_id JOIN Cart c ON c.id = CartItem.cart_id WHERE cart_id = ? ORDER BY id"
 		val stmt = conn.prepareStatement(sql)
 		stmt.setInt(1, cartId)
 		val items = DBHelper.selectDeep(stmt)(conn, classOf[CartItem])
 		stmt.close()
-		// Load ShopProduct for each item (direct query, no JakonObject JOIN needed)
-		items.foreach { item =>
-			val ps = conn.prepareStatement("SELECT * FROM ShopProduct WHERE id = ?")
-			ps.setInt(1, item.product.id)
-			val products = DBHelper.select(ps, classOf[ShopProduct]).map(_.entity)
-			ps.close()
-			item.product = products.headOption.orNull
-		}
 		items
 	}
 
@@ -135,7 +127,7 @@ object CartService {
 		val stmt = conn.prepareStatement(sql)
 		stmt.setInt(1, shippingMethodId)
 		stmt.setInt(2, paymentMethodId)
-		stmt.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()))
+		stmt.setObject(3, LocalDateTime.now())
 		stmt.setInt(4, cartId)
 		stmt.executeUpdate()
 	}
