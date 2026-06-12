@@ -12,12 +12,12 @@ import java.sql.{Connection, Statement, Types}
 /**
  * Položka objednávky
  */
-class OrderItem extends JakonObject with Serializable {
+class ShopOrderItem extends JakonObject with Serializable {
 
 	@NotEmpty
 	@ManyToOne
 	@JakonField(required = true, searched = true)
-	var order: Order = _
+	var shopOrder: ShopOrder = _
 	
 	@NotEmpty
 	@ManyToOne
@@ -42,14 +42,14 @@ class OrderItem extends JakonObject with Serializable {
 	@JakonField(required = false)
 	var note: String = ""
 
-	override val objectSettings: ObjectSettings = OrderItem.objectSettings
+	override val objectSettings: ObjectSettings = ShopOrderItem.objectSettings
 
 	override def createObject(conn: Connection): Int = {
 		// language=SQL
-		val sql = "INSERT INTO OrderItem (order_id, product_id, productName, quantity, unitPrice, totalPrice, note, url, published) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+		val sql = "INSERT INTO ShopOrderItem (order_id, product_id, productName, quantity, unitPrice, totalPrice, note, url, published) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
 		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
-		if (order != null) {
-			stmt.setInt(1, order.id)
+		if (shopOrder != null) {
+			stmt.setInt(1, shopOrder.id)
 		} else {
 			stmt.setNull(1, Types.INTEGER)
 		}
@@ -70,42 +70,16 @@ class OrderItem extends JakonObject with Serializable {
 		generatedId
 	}
 
-	override def createObject(jid: Int, conn: Connection): Int = {
-		// language=SQL
-		val sql = "INSERT INTO OrderItem (id, order_id, product_id, productName, quantity, unitPrice, totalPrice, note, url, published) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
-		stmt.setInt(1, jid)
-		if (order != null) {
-			stmt.setInt(2, order.id)
-		} else {
-			stmt.setNull(2, Types.INTEGER)
-		}
-		if (product != null) {
-			stmt.setInt(3, product.id)
-		} else {
-			stmt.setNull(3, Types.INTEGER)
-		}
-		stmt.setString(4, productName)
-		stmt.setInt(5, quantity)
-		stmt.setBigDecimal(6, unitPrice)
-		stmt.setBigDecimal(7, totalPrice)
-		stmt.setString(8, note)
-		stmt.setString(9, url)
-		stmt.setBoolean(10, published)
-
-		executeInsert(stmt)
-	}
-
 	override def toString: String = {
 		s"OrderItem(id: $id, product: $productName, qty: $quantity)"
 	}
 
 	override def updateObject(jid: Int, conn: Connection): Unit = {
 		// language=SQL
-		val sql = "UPDATE OrderItem SET order_id = ?, product_id = ?, productName = ?, quantity = ?, unitPrice = ?, totalPrice = ?, note = ?, url = ?, published = ? WHERE id = ?"
+		val sql = "UPDATE ShopOrderItem SET order_id = ?, product_id = ?, productName = ?, quantity = ?, unitPrice = ?, totalPrice = ?, note = ?, url = ?, published = ? WHERE id = ?"
 		val stmt = conn.prepareStatement(sql)
-		if (order != null) {
-			stmt.setInt(1, order.id)
+		if (shopOrder != null) {
+			stmt.setInt(1, shopOrder.id)
 		} else {
 			stmt.setNull(1, Types.INTEGER)
 		}
@@ -126,7 +100,7 @@ class OrderItem extends JakonObject with Serializable {
 	}
 }
 
-object OrderItem {
+object ShopOrderItem {
 	val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-list", standAlone = true)
 }
 

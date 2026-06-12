@@ -13,9 +13,9 @@ import java.time.LocalDateTime
 /**
  * Objednávka v e-shopu.
  */
-class Order extends JakonObject with Serializable {
+class ShopOrder extends JakonObject with Serializable {
 
-	override val objectSettings: ObjectSettings = Order.objectSettings
+	override val objectSettings: ObjectSettings = ShopOrder.objectSettings
 
 	/** Unikátní číslo objednávky (generované při vytvoření). */
 	@NotEmpty
@@ -128,7 +128,7 @@ class Order extends JakonObject with Serializable {
 
 	override def createObject(conn: Connection): Int = {
 		// language=SQL
-		val sql = "INSERT INTO `Order` (orderNumber, customer_id, orderDate, status, totalPrice, shippingPrice, paymentPrice, paymentMethod_id, shippingMethod_id, customerNote, adminNote, billingName, billingStreet, billingCity, billingZip, billingCountry, deliveryName, deliveryStreet, deliveryCity, deliveryZip, deliveryCountry, isPaid, guestEmail, guestPhone, token, url, published) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+		val sql = "INSERT INTO ShopOrder (orderNumber, customer_id, orderDate, status, totalPrice, shippingPrice, paymentPrice, paymentMethod_id, shippingMethod_id, customerNote, adminNote, billingName, billingStreet, billingCity, billingZip, billingCountry, deliveryName, deliveryStreet, deliveryCity, deliveryZip, deliveryCountry, isPaid, guestEmail, guestPhone, token, url, published) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
 		stmt.setString(1, orderNumber)
 		if (customer != null) {
@@ -177,7 +177,7 @@ class Order extends JakonObject with Serializable {
 
 	override def updateObject(jid: Int, conn: Connection): Unit = {
 		// language=SQL
-		val sql = "UPDATE `Order` SET orderNumber = ?, customer_id = ?, orderDate = ?, status = ?, totalPrice = ?, shippingPrice = ?, paymentPrice = ?, paymentMethod_id = ?, shippingMethod_id = ?, customerNote = ?, adminNote = ?, billingName = ?, billingStreet = ?, billingCity = ?, billingZip = ?, billingCountry = ?, deliveryName = ?, deliveryStreet = ?, deliveryCity = ?, deliveryZip = ?, deliveryCountry = ?, isPaid = ?, guestEmail = ?, guestPhone = ?, token = ?, url = ?, published = ? WHERE id = ?"
+		val sql = "UPDATE ShopOrder SET orderNumber = ?, customer_id = ?, orderDate = ?, status = ?, totalPrice = ?, shippingPrice = ?, paymentPrice = ?, paymentMethod_id = ?, shippingMethod_id = ?, customerNote = ?, adminNote = ?, billingName = ?, billingStreet = ?, billingCity = ?, billingZip = ?, billingCountry = ?, deliveryName = ?, deliveryStreet = ?, deliveryCity = ?, deliveryZip = ?, deliveryCountry = ?, isPaid = ?, guestEmail = ?, guestPhone = ?, token = ?, url = ?, published = ? WHERE id = ?"
 		val stmt = conn.prepareStatement(sql)
 		stmt.setString(1, orderNumber)
 		if (customer != null) {
@@ -223,7 +223,7 @@ class Order extends JakonObject with Serializable {
 	}
 }
 
-object Order {
+object ShopOrder {
 	val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-shopping-cart", standAlone = true)
 }
 

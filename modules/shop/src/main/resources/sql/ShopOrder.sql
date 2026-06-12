@@ -1,4 +1,4 @@
-CREATE TABLE `Order` (
+CREATE TABLE ShopOrder (
     id              INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     orderNumber     VARCHAR(100),
     customer_id     INT         NULL,

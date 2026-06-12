@@ -17,6 +17,8 @@ class ShopInit extends JakonInit {
 		DBHelper.addDao(classOf[ShopProduct])
 		DBHelper.addDao(classOf[Cart])
 		DBHelper.addDao(classOf[CartItem])
+		DBHelper.addDao(classOf[ShopOrder])
+		DBHelper.addDao(classOf[ShopOrderItem])
 	}
 
 	override protected def afterInit(): Unit = {

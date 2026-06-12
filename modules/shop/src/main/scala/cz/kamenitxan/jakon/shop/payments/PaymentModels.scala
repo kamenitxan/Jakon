@@ -1,6 +1,6 @@
 package cz.kamenitxan.jakon.shop.payments
 
-import cz.kamenitxan.jakon.shop.entity.Order
+import cz.kamenitxan.jakon.shop.entity.ShopOrder
 
 import java.math.BigDecimal
 
@@ -22,7 +22,7 @@ case class PaymentLineItem(
 /**
  * Encapsulates all data required to initiate a payment through any gateway.
  *
- * @param order         the order being paid
+ * @param shopOrder         the order being paid
  * @param lineItems     individual items, fees and charges that make up the total
  * @param successUrl    URL the customer is redirected to after a successful payment
  * @param cancelUrl     URL the customer is redirected to when the payment is cancelled
@@ -31,13 +31,13 @@ case class PaymentLineItem(
  * @param customerEmail optional customer e-mail address passed to the gateway
  */
 case class PaymentRequest(
-	order: Order,
-	lineItems: Seq[PaymentLineItem],
-	successUrl: String,
-	cancelUrl: String,
-	currency: String,
-	metadata: Map[String, String],
-	customerEmail: Option[String]
+													 shopOrder: ShopOrder,
+	                         lineItems: Seq[PaymentLineItem],
+	                         successUrl: String,
+	                         cancelUrl: String,
+	                         currency: String,
+	                         metadata: Map[String, String],
+	                         customerEmail: Option[String]
 )
 
 /**

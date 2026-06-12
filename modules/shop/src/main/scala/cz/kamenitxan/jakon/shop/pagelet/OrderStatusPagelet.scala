@@ -2,7 +2,7 @@ package cz.kamenitxan.jakon.shop.pagelet
 
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.dynamic.{AbstractPagelet, Get, Pagelet}
-import cz.kamenitxan.jakon.shop.entity.Order
+import cz.kamenitxan.jakon.shop.entity.ShopOrder
 import cz.kamenitxan.jakon.shop.service.OrderItemService
 import io.javalin.http.Context
 
@@ -33,11 +33,11 @@ class OrderStatusPagelet extends AbstractPagelet {
 		}
 	}
 
-	private def loadOrderByToken(token: String)(implicit conn: Connection): Option[Order] = {
-		implicit val cls: Class[Order] = classOf[Order]
+	private def loadOrderByToken(token: String)(implicit conn: Connection): Option[ShopOrder] = {
+		implicit val cls: Class[ShopOrder] = classOf[ShopOrder]
 		val sql = "SELECT * FROM `Order` WHERE token = ?"
 		val stmt = conn.prepareStatement(sql)
 		stmt.setString(1, token)
-		DBHelper.selectDeep[Order](stmt).headOption
+		DBHelper.selectDeep[ShopOrder](stmt).headOption
 	}
 }

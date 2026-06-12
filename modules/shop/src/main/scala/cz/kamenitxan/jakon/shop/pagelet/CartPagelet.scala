@@ -197,7 +197,7 @@ class CartPagelet extends AbstractPagelet {
 		val orderNumber = generateOrderNumber
 		val orderToken = UUID.randomUUID().toString
 
-		val order = new Order
+		val order = new ShopOrder
 		order.orderNumber = orderNumber
 		order.token = orderToken
 		order.orderDate = LocalDateTime.now()
@@ -230,8 +230,8 @@ class CartPagelet extends AbstractPagelet {
 		order.create()
 
 		items.foreach { item =>
-			val orderItem = new OrderItem
-			orderItem.order = order
+			val orderItem = new ShopOrderItem
+			orderItem.shopOrder = order
 			orderItem.product = item.product
 			orderItem.productName = if (item.product != null) item.product.name else ""
 			orderItem.quantity = item.quantity
@@ -258,7 +258,7 @@ class CartPagelet extends AbstractPagelet {
 		val orderNumber = Option(ctx.queryParam("orderNumber")).getOrElse("")
 		mutable.Map(
 			"orderNumber" -> orderNumber
-		)
+		) ++ ShopUtils.commonPageData
 	}
 
 	private def generateOrderNumber: String = {
@@ -308,24 +308,24 @@ class CartPagelet extends AbstractPagelet {
 		DBHelper.selectDeep[PaymentMethod](stmt, sql)
 	}
 
-	private def sendConfirmationEmail(order: Order, items: Seq[CartItem])(implicit conn: Connection): Unit = {
+	private def sendConfirmationEmail(shopOrder: ShopOrder, items: Seq[CartItem])(implicit conn: Connection): Unit = {
 		try {
 			val email = new EmailEntity(
 				"shop/email/orderConfirmation",
-				order.guestEmail,
-				s"Potvrzení objednávky ${order.orderNumber}",
+				shopOrder.guestEmail,
+				s"Potvrzení objednávky ${shopOrder.orderNumber}",
 				Map(
-					"orderNumber" -> order.orderNumber,
-					"orderToken" -> order.token,
-					"billingName" -> order.billingName,
-					"totalPrice" -> order.totalPrice.toString,
-					"shippingMethod" -> Option(order.shippingMethod).map(_.name).getOrElse(""),
-					"paymentMethod" -> Option(order.paymentMethod).map(_.name).getOrElse("")
+					"orderNumber" -> shopOrder.orderNumber,
+					"orderToken" -> shopOrder.token,
+					"billingName" -> shopOrder.billingName,
+					"totalPrice" -> shopOrder.totalPrice.toString,
+					"shippingMethod" -> Option(shopOrder.shippingMethod).map(_.name).getOrElse(""),
+					"paymentMethod" -> Option(shopOrder.paymentMethod).map(_.name).getOrElse("")
 				)
 			)
 			email.create()
 		} catch {
-			case ex: Exception => Logger.error(s"Failed to create confirmation email for order ${order.orderNumber}", ex)
+			case ex: Exception => Logger.error(s"Failed to create confirmation email for order ${shopOrder.orderNumber}", ex)
 		}
 	}
 }

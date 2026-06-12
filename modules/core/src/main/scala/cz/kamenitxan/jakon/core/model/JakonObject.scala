@@ -92,12 +92,14 @@ abstract class JakonObject(implicit s: sourcecode.FullName) extends BaseEntity {
 		this.id
 	}
 
+	/** create a standalone object */
 	def createObject(conn: Connection): Int = {
 		Logger.warn(s"createObject method is not overridden for $childClass")
 		val stmt = SqlGen.insertStmt(this, conn, null, true)
 		executeInsert(stmt)
 	}
 
+	/** create regular object with JakonObject parent */
 	def createObject(jid: Int, conn: Connection): Int = {
 		Logger.warn(s"createObject method is not overridden for $childClass")
 		val stmt = SqlGen.insertStmt(this, conn, jid, false)

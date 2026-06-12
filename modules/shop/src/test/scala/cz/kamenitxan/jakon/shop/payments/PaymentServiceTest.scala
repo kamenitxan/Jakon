@@ -22,7 +22,7 @@ class PaymentServiceTest extends AnyFunSuite {
 		val customer = new Customer()
 		customer.email = "shopper@example.com"
 
-		val order = new Order()
+		val order = new ShopOrder()
 		order.id = 55
 		order.orderNumber = "2026-001"
 		order.customer = customer
@@ -31,18 +31,18 @@ class PaymentServiceTest extends AnyFunSuite {
 		order.shippingPrice = new BigDecimal("89.00")
 		order.paymentPrice = new BigDecimal("19.00")
 
-		val orderItem = new OrderItem()
+		val orderItem = new ShopOrderItem()
 		orderItem.productName = "Coffee beans"
 		orderItem.quantity = 2
 		orderItem.totalPrice = new BigDecimal("250.00")
 		orderItem.note = "Dark roast"
 
 		val request = PaymentService.createPaymentRequest(
-			order = order,
+			shopOrder = order,
 			successUrl = "https://example.com/success",
 			cancelUrl = "https://example.com/cancel",
 			currency = "CZK",
-			orderItems = Seq(orderItem)
+			shopOrderItems = Seq(orderItem)
 		)
 
 		assert(request.currency == "czk")
@@ -69,11 +69,11 @@ class PaymentServiceTest extends AnyFunSuite {
 				StripeCheckoutSessionResponse("cs_test_123", "https://checkout.stripe.com/pay/cs_test_123")
 			})
 
-			val order = new Order()
+			val order = new ShopOrder()
 			order.orderNumber = "2026-002"
 
 			val request = PaymentRequest(
-				order = order,
+				shopOrder = order,
 				lineItems = Seq(PaymentLineItem("Order 2026-002", unitPrice = new BigDecimal("100.00"))),
 				successUrl = "https://example.com/payment/success",
 				cancelUrl = "https://example.com/payment/cancel",
