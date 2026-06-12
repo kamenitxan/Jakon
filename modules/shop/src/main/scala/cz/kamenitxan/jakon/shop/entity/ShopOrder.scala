@@ -7,7 +7,7 @@ import cz.kamenitxan.jakon.validation.validators.NotEmpty
 import cz.kamenitxan.jakon.webui.ObjectSettings
 
 import java.math.BigDecimal
-import java.sql.{Connection, Statement, Timestamp, Types}
+import java.sql.{Connection, Statement, Types}
 import java.time.LocalDateTime
 
 /**
@@ -136,7 +136,7 @@ class ShopOrder extends JakonObject with Serializable {
 		} else {
 			stmt.setNull(2, Types.INTEGER)
 		}
-		stmt.setTimestamp(3, Timestamp.valueOf(orderDate))
+		stmt.setObject(3, orderDate)
 		stmt.setString(4, status)
 		stmt.setBigDecimal(5, totalPrice)
 		stmt.setBigDecimal(6, shippingPrice)
@@ -185,7 +185,7 @@ class ShopOrder extends JakonObject with Serializable {
 		} else {
 			stmt.setNull(2, Types.INTEGER)
 		}
-		stmt.setTimestamp(3, Timestamp.valueOf(orderDate))
+		stmt.setObject(3, orderDate)
 		stmt.setString(4, status)
 		stmt.setBigDecimal(5, totalPrice)
 		stmt.setBigDecimal(6, shippingPrice)

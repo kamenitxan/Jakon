@@ -8,7 +8,7 @@
 
     <h1 class="text-2xl font-bold mb-6">Stav objednávky</h1>
 
-    {% if error %}
+    {% if error is defined and error != "" %}
     <div class="alert alert-error">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -82,15 +82,15 @@
               {% endfor %}
             </tbody>
             <tfoot>
-              {% if order.shippingPrice %}
+              {% if order.shippingPrice is not null and order.shippingPrice != 0 %}
               <tr>
-                <td colspan="3" class="text-right opacity-70">Doprava ({{ order.shippingMethod.name }}):</td>
+                <td colspan="3" class="text-right opacity-70">Doprava{% if shippingMethod is not null %} ({{ shippingMethod.name }}){% endif %}:</td>
                 <td class="text-right">{{ order.shippingPrice }} Kč</td>
               </tr>
               {% endif %}
-              {% if order.paymentPrice %}
+              {% if order.paymentPrice is not null and order.paymentPrice != 0 %}
               <tr>
-                <td colspan="3" class="text-right opacity-70">Platba ({{ order.paymentMethod.name }}):</td>
+                <td colspan="3" class="text-right opacity-70">Platba{% if paymentMethod is not null %} ({{ paymentMethod.name }}){% endif %}:</td>
                 <td class="text-right">{{ order.paymentPrice }} Kč</td>
               </tr>
               {% endif %}
@@ -135,6 +135,75 @@
       <div class="card-body">
         <h2 class="card-title text-base">Poznámka</h2>
         <p class="opacity-80">{{ order.customerNote }}</p>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Doprava a platba -->
+    {% if order.shippingMethod is not null or order.paymentMethod is not null %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+      {% if order.shippingMethod is not null %}
+      <div class="card bg-base-200">
+        <div class="card-body">
+          <h2 class="card-title text-base">Způsob dopravy</h2>
+          <div class="flex items-center gap-3">
+            {% if order.shippingMethod.icon is not null and order.shippingMethod.icon != "" %}
+            <i class="{{ order.shippingMethod.icon }} text-xl"></i>
+            {% endif %}
+            <div>
+              <p class="font-bold">{{ order.shippingMethod.name }}</p>
+              {% if order.shippingMethod.description is not null and order.shippingMethod.description != "" %}
+              <p class="text-sm opacity-70">{{ order.shippingMethod.description }}</p>
+              {% endif %}
+            </div>
+            <div class="ml-auto font-bold text-primary">
+              {% if order.shippingPrice == 0 %}Zdarma{% else %}{{ order.shippingPrice }} Kč{% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      {% if order.paymentMethod is not null %}
+      <div class="card bg-base-200">
+        <div class="card-body">
+          <h2 class="card-title text-base">Způsob platby</h2>
+          <div class="flex items-center gap-3">
+            {% if order.paymentMethod.icon is not null and order.paymentMethod.icon != "" %}
+            <i class="{{ order.paymentMethod.icon }} text-xl"></i>
+            {% endif %}
+            <div>
+              <p class="font-bold">{{ order.paymentMethod.name }}</p>
+              {% if order.paymentMethod.description is not null and order.paymentMethod.description != "" %}
+              <p class="text-sm opacity-70">{{ order.paymentMethod.description }}</p>
+              {% endif %}
+            </div>
+            <div class="ml-auto font-bold text-primary">
+              {% if order.paymentPrice == 0 %}Zdarma{% else %}+ {{ order.paymentPrice }} Kč{% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Tlačítko pro online platbu -->
+    {% if not order.isPaid and order.paymentMethod is not null and order.paymentMethod.gatewayCode != "manual" %}
+    <div class="card bg-warning/10 border border-warning mt-6">
+      <div class="card-body flex flex-row items-center justify-between gap-4">
+        <div>
+          <p class="font-bold text-warning">Objednávka čeká na zaplacení</p>
+          <p class="text-sm opacity-70">Kliknutím na tlačítko budete přesměrováni na platební bránu.</p>
+        </div>
+        {% if paymentError is defined and paymentError == "1" %}
+        <div class="alert alert-error mb-2 text-sm">Platbu se nepodařilo inicializovat. Zkuste to prosím znovu.</div>
+        {% endif %}
+        <a href="/order/pay?token={{ order.token }}" class="btn btn-warning whitespace-nowrap">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+          </svg>
+          Zaplatit nyní
+        </a>
       </div>
     </div>
     {% endif %}

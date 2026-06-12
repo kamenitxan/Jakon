@@ -73,11 +73,21 @@ object PaymentGatewayRegistry {
 			.scan()
 
 		try {
-			scanResult.getClassesImplementing(classOf[PaymentGateway].getName)
+			val allClasses = scanResult.getClassesImplementing(classOf[PaymentGateway].getName)
 				.loadClasses()
 				.asScala
 				.toSeq
 				.filterNot(clazz => clazz.isInterface || Modifier.isAbstract(clazz.getModifiers))
+
+			// If both a class and its Scala companion object (ClassName$) are found,
+			// prefer the companion object — plain classes may lack a no-arg constructor.
+			val companionNames = allClasses
+				.filter(_.getName.endsWith("$"))
+				.map(_.getName.stripSuffix("$"))
+				.toSet
+
+			allClasses
+				.filterNot(clazz => !clazz.getName.endsWith("$") && companionNames.contains(clazz.getName))
 				.map(instantiateGateway)
 		} finally {
 			scanResult.close()
