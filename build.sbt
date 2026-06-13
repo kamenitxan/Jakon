@@ -4,9 +4,10 @@ import sbtassembly.AssemblyPlugin.autoImport.assembly
 val V = new {
 	val Scala = "3.3.7"
   val jakon = "0.7.3-SNAPSHOT"
-	val log4j = "2.25.3"
+	val log4j = "2.26.0"
 	val circeVersion = "0.14.15"
-	val javalin = "7.0.0"
+	val javalin = "7.2.2"
+	val commonmark = "0.28.0"
 }
 
 scalaVersion := V.Scala
@@ -35,22 +36,22 @@ val Dependencies = new {
 			Seq(
 				"io.javalin" % "javalin" % V.javalin,
 				"io.javalin" % "javalin-rendering-pebble" % V.javalin,
-				"org.slf4j" % "slf4j-api" % "2.0.17",
+				"org.slf4j" % "slf4j-api" % "2.0.18",
 				"org.apache.logging.log4j" % "log4j-api" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-core" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-slf4j2-impl" % V.log4j,
-				"org.xerial" % "sqlite-jdbc" % "3.51.2.0",
-				"com.mysql" % "mysql-connector-j" % "9.6.0" % Optional,
-				"com.google.guava" % "guava" % "33.5.0-jre",
-				"commons-io" % "commons-io" % "2.21.0",
+				"org.xerial" % "sqlite-jdbc" % "3.53.2.0",
+				"com.mysql" % "mysql-connector-j" % "9.7.0" % Optional,
+				"com.google.guava" % "guava" % "33.6.0-jre",
+				"commons-io" % "commons-io" % "2.22.0",
 				"org.apache.commons" % "commons-lang3" % "3.20.0",
-				"commons-codec" % "commons-codec" % "1.21.0",
+				"commons-codec" % "commons-codec" % "1.22.0",
 				"de.svenkubiak" % "jBCrypt" % "0.4.3",
 				"com.sun.mail" % "jakarta.mail" % "2.0.2",
-				"org.commonmark" % "commonmark" % "0.27.1",
-				"org.commonmark" % "commonmark-ext-gfm-tables" % "0.27.1",
-				"org.commonmark" % "commonmark-ext-gfm-strikethrough" % "0.27.1",
-				"com.google.code.gson" % "gson" % "2.13.2",
+				"org.commonmark" % "commonmark" % V.commonmark,
+				"org.commonmark" % "commonmark-ext-gfm-tables" % V.commonmark,
+				"org.commonmark" % "commonmark-ext-gfm-strikethrough" % V.commonmark,
+				"com.google.code.gson" % "gson" % "2.14.0",
 				"io.circe" %% "circe-core" % V.circeVersion,
 				"io.circe" %% "circe-generic"% V.circeVersion,
 				"io.circe" %% "circe-parser"% V.circeVersion,
@@ -67,16 +68,16 @@ val Dependencies = new {
 	lazy val shop = Seq(
 		libraryDependencies ++=
 			Seq(
-				"com.stripe" % "stripe-java" % "31.4.1"
+				"com.stripe" % "stripe-java" % "33.0.0"
 			)
 	)
 
 	//noinspection SpellCheckingInspection
 	lazy val tests = Def.settings(
 		libraryDependencies ++= Seq(
-			"org.scalatest" %% "scalatest" % "3.2.19" % Test,
+			"org.scalatest" %% "scalatest" % "3.2.20" % Test,
 			"org.scalamock" %% "scalamock" % "7.5.5" % Test,
-			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.41.0" % Test
+			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.44.0" % Test
 		)
 	)
 }
