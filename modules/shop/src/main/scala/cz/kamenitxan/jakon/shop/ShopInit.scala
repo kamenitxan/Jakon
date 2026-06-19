@@ -2,11 +2,14 @@ package cz.kamenitxan.jakon.shop
 
 import cz.kamenitxan.jakon.JakonInit
 import cz.kamenitxan.jakon.core.database.DBHelper
+import cz.kamenitxan.jakon.core.task.TaskRunner
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.shop.entity.*
+import cz.kamenitxan.jakon.shop.task.PaymentStatusSyncTask
 
 import java.math.BigDecimal
 import java.sql.Connection
+import java.util.concurrent.TimeUnit
 
 class ShopInit extends JakonInit {
 
@@ -20,6 +23,13 @@ class ShopInit extends JakonInit {
 		DBHelper.addDao(classOf[ShopOrder])
 		DBHelper.addDao(classOf[ShopOrderItem])
 		DBHelper.addDao(classOf[OrderPayment])
+		DBHelper.addDao(classOf[OrderReturn])
+		DBHelper.addDao(classOf[OrderReturnItem])
+	}
+
+	override def taskSetup(): Unit = {
+		super.taskSetup()
+		TaskRunner.registerTask(new PaymentStatusSyncTask(5, TimeUnit.MINUTES))
 	}
 
 	override protected def afterInit(): Unit = {

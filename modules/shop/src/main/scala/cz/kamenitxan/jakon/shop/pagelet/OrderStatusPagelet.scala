@@ -5,8 +5,8 @@ import cz.kamenitxan.jakon.core.dynamic.{AbstractPagelet, Get, Pagelet}
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.shop.ShopUtils
 import cz.kamenitxan.jakon.shop.entity.ShopOrder
-import cz.kamenitxan.jakon.shop.payments.{PaymentFlow, PaymentGatewayCode, PaymentService}
-import cz.kamenitxan.jakon.shop.service.OrderItemService
+import cz.kamenitxan.jakon.shop.payments.{PaymentFlow, PaymentGatewayCode, PaymentService, PaymentStatus}
+import cz.kamenitxan.jakon.shop.service.{OrderItemService, OrderPaymentService}
 import io.javalin.http.{Context, HttpStatus}
 
 import java.sql.Connection
@@ -28,11 +28,13 @@ class OrderStatusPagelet extends AbstractPagelet {
 						mutable.Map("error" -> "Objednávka nenalezena nebo neplatný odkaz.") ++ ShopUtils.commonPageData
 					case Some(order) =>
 						val orderItems = OrderItemService.getByOrder(order.id)
-						mutable.Map(
-							"order" -> order,
-							"orderItems" -> orderItems.asJava,
-							"paymentError" -> Option(ctx.queryParam("paymentError")).getOrElse("")
-						) ++ ShopUtils.commonPageData
+							val isPaid = OrderPaymentService.getByOrder(order.id).exists(_.status == PaymentStatus.Completed)
+							mutable.Map(
+								"order" -> order,
+								"orderItems" -> orderItems.asJava,
+								"isPaid" -> isPaid,
+								"paymentError" -> Option(ctx.queryParam("paymentError")).getOrElse("")
+							) ++ ShopUtils.commonPageData
 				}
 		}
 	}
@@ -47,7 +49,7 @@ class OrderStatusPagelet extends AbstractPagelet {
 				loadOrderByToken(t) match {
 					case None =>
 						ctx.redirect("/", HttpStatus.FOUND)
-					case Some(order) if order.isPaid =>
+					case Some(order) if OrderPaymentService.getByOrder(order.id).exists(_.status == PaymentStatus.Completed) =>
 						ctx.redirect(s"/order/status?token=$t", HttpStatus.FOUND)
 					case Some(order) if order.paymentMethod == null || order.paymentMethod.gatewayCode == PaymentGatewayCode.Manual =>
 						ctx.redirect(s"/order/status?token=$t", HttpStatus.FOUND)

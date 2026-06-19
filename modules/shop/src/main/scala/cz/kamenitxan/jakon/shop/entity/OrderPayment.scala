@@ -11,53 +11,53 @@ import java.sql.{Connection, Statement, Types}
 import java.time.LocalDateTime
 
 /**
- * Záznam o platbě přiřazené k objednávce.
+ * A payment record associated with a shop order.
  *
- * Každé volání platební brány vytvoří jeden záznam. Entita umožňuje:
- * - evidovat stav manuálních plateb (admin mění status ručně),
- * - dotazovat se brány (např. Stripe) na aktuální stav odeslané platby,
- * - sledovat historii pokusů o platbu pro jednu objednávku.
+ * Each payment gateway invocation creates one record, allowing the application to:
+ * - track the status of manual (offline) payments (admin updates the status manually),
+ * - poll gateways such as Stripe for the current status of a submitted payment,
+ * - keep a full history of payment attempts for a single order.
  */
 class OrderPayment extends JakonObject with Serializable {
 
 	override val objectSettings: ObjectSettings = OrderPayment.objectSettings
 
-	/** Objednávka, ke které tato platba patří. */
+	/** The order this payment belongs to. */
 	@ManyToOne
 	@JakonField(required = true, searched = true)
 	var order: ShopOrder = _
 
-	/** Kód platební brány (např. "stripe", "manual"). Odpovídá [[cz.kamenitxan.jakon.shop.payments.PaymentGatewayCode]]. */
+	/** Gateway code (e.g. {@code "stripe"}, {@code "manual"}). Matches [[cz.kamenitxan.jakon.shop.payments.PaymentGatewayCode]]. */
 	@JakonField(searched = true)
 	var provider: String = ""
 
 	/**
-	 * Identifikátor platby na straně brány (např. Stripe Checkout Session ID).
-	 * U manuálních plateb může být prázdný.
+	 * Gateway-side payment or session identifier (e.g. Stripe Checkout Session ID).
+	 * May be empty for manual payments.
 	 */
 	@JakonField(searched = true)
 	var externalPaymentId: String = ""
 
 	/**
-	 * Aktuální stav platby. Možné hodnoty viz [[cz.kamenitxan.jakon.shop.payments.PaymentStatus]]:
+	 * Current payment status. See [[cz.kamenitxan.jakon.shop.payments.PaymentStatus]] for possible values:
 	 * PENDING, COMPLETED, FAILED, CANCELLED, REFUNDED.
 	 */
 	@JakonField(searched = true)
 	var status: String = PaymentStatus.Pending
 
-	/** Částka platby. */
+	/** Payment amount. */
 	@JakonField(searched = true)
 	var amount: BigDecimal = BigDecimal.ZERO
 
-	/** Měna platby (ISO 4217, např. "CZK", "EUR"). */
+	/** ISO 4217 currency code (e.g. {@code "CZK"}, {@code "EUR"}). */
 	@JakonField(searched = true)
 	var currency: String = ""
 
-	/** Datum a čas vytvoření záznamu. */
+	/** Timestamp when this record was created. */
 	@JakonField(required = false)
 	var createdAt: LocalDateTime = LocalDateTime.now()
 
-	/** Datum a čas poslední aktualizace stavu. */
+	/** Timestamp of the last status update. */
 	@JakonField(required = false)
 	var updatedAt: LocalDateTime = LocalDateTime.now()
 

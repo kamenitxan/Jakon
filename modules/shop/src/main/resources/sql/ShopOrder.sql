@@ -21,7 +21,6 @@ CREATE TABLE ShopOrder (
     deliveryCity    VARCHAR(255),
     deliveryZip     VARCHAR(50),
     deliveryCountry VARCHAR(100),
-    isPaid          BOOLEAN     NOT NULL DEFAULT FALSE,
     guestEmail      VARCHAR(255),
     guestPhone      VARCHAR(50),
     token           VARCHAR(36) NOT NULL DEFAULT '',

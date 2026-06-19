@@ -110,11 +110,7 @@ class ShopOrder extends JakonObject with Serializable {
 	@JakonField(required = false)
 	var deliveryCountry: String = ""
 
-	/** Příznak, zda byla objednávka zaplacena. */
-	@JakonField(searched = true)
-	var isPaid: Boolean = false
-
-	/** E-mailová adresa hosta pro objednávky bez registrace. */
+	/** E-mail address for guest orders (without registration). */
 	@JakonField(required = false, searched = true)
 	var guestEmail: String = ""
 
@@ -128,7 +124,7 @@ class ShopOrder extends JakonObject with Serializable {
 
 	override def createObject(conn: Connection): Int = {
 		// language=SQL
-		val sql = "INSERT INTO ShopOrder (orderNumber, customer_id, orderDate, status, totalPrice, shippingPrice, paymentPrice, paymentMethod_id, shippingMethod_id, customerNote, adminNote, billingName, billingStreet, billingCity, billingZip, billingCountry, deliveryName, deliveryStreet, deliveryCity, deliveryZip, deliveryCountry, isPaid, guestEmail, guestPhone, token, url, published) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+		val sql = "INSERT INTO ShopOrder (orderNumber, customer_id, orderDate, status, totalPrice, shippingPrice, paymentPrice, paymentMethod_id, shippingMethod_id, customerNote, adminNote, billingName, billingStreet, billingCity, billingZip, billingCountry, deliveryName, deliveryStreet, deliveryCity, deliveryZip, deliveryCountry, guestEmail, guestPhone, token, url, published) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
 		stmt.setString(1, orderNumber)
 		if (customer != null) {
@@ -163,12 +159,11 @@ class ShopOrder extends JakonObject with Serializable {
 		stmt.setString(19, deliveryCity)
 		stmt.setString(20, deliveryZip)
 		stmt.setString(21, deliveryCountry)
-		stmt.setBoolean(22, isPaid)
-		stmt.setString(23, guestEmail)
-		stmt.setString(24, guestPhone)
-		stmt.setString(25, token)
-		stmt.setString(26, url)
-		stmt.setBoolean(27, published)
+		stmt.setString(22, guestEmail)
+		stmt.setString(23, guestPhone)
+		stmt.setString(24, token)
+		stmt.setString(25, url)
+		stmt.setBoolean(26, published)
 
 		val generatedId = executeInsert(stmt)
 		this.id = generatedId
@@ -177,7 +172,7 @@ class ShopOrder extends JakonObject with Serializable {
 
 	override def updateObject(jid: Int, conn: Connection): Unit = {
 		// language=SQL
-		val sql = "UPDATE ShopOrder SET orderNumber = ?, customer_id = ?, orderDate = ?, status = ?, totalPrice = ?, shippingPrice = ?, paymentPrice = ?, paymentMethod_id = ?, shippingMethod_id = ?, customerNote = ?, adminNote = ?, billingName = ?, billingStreet = ?, billingCity = ?, billingZip = ?, billingCountry = ?, deliveryName = ?, deliveryStreet = ?, deliveryCity = ?, deliveryZip = ?, deliveryCountry = ?, isPaid = ?, guestEmail = ?, guestPhone = ?, token = ?, url = ?, published = ? WHERE id = ?"
+		val sql = "UPDATE ShopOrder SET orderNumber = ?, customer_id = ?, orderDate = ?, status = ?, totalPrice = ?, shippingPrice = ?, paymentPrice = ?, paymentMethod_id = ?, shippingMethod_id = ?, customerNote = ?, adminNote = ?, billingName = ?, billingStreet = ?, billingCity = ?, billingZip = ?, billingCountry = ?, deliveryName = ?, deliveryStreet = ?, deliveryCity = ?, deliveryZip = ?, deliveryCountry = ?, guestEmail = ?, guestPhone = ?, token = ?, url = ?, published = ? WHERE id = ?"
 		val stmt = conn.prepareStatement(sql)
 		stmt.setString(1, orderNumber)
 		if (customer != null) {
@@ -212,15 +207,17 @@ class ShopOrder extends JakonObject with Serializable {
 		stmt.setString(19, deliveryCity)
 		stmt.setString(20, deliveryZip)
 		stmt.setString(21, deliveryCountry)
-		stmt.setBoolean(22, isPaid)
-		stmt.setString(23, guestEmail)
-		stmt.setString(24, guestPhone)
-		stmt.setString(25, token)
-		stmt.setString(26, url)
-		stmt.setBoolean(27, published)
-		stmt.setInt(28, jid)
+		stmt.setString(22, guestEmail)
+		stmt.setString(23, guestPhone)
+		stmt.setString(24, token)
+		stmt.setString(25, url)
+		stmt.setBoolean(26, published)
+		stmt.setInt(27, jid)
 		stmt.executeUpdate()
 	}
+
+
+	override def toString = s"ShopOrder($orderNumber)"
 }
 
 object ShopOrder {

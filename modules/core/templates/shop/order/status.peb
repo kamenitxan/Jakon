@@ -47,7 +47,7 @@
           </div>
           <div>
             <p class="text-sm opacity-60">Zaplaceno</p>
-            {% if order.isPaid %}
+            {% if isPaid is defined and isPaid %}
               <span class="badge badge-success">Ano</span>
             {% else %}
               <span class="badge badge-warning">Ne</span>
@@ -188,7 +188,7 @@
     {% endif %}
 
     <!-- Tlačítko pro online platbu -->
-    {% if not order.isPaid and order.paymentMethod is not null and order.paymentMethod.gatewayCode != "manual" %}
+    {% if isPaid is defined and not isPaid and order.paymentMethod is not null and order.paymentMethod.gatewayCode != "manual" %}
     <div class="card bg-warning/10 border border-warning mt-6">
       <div class="card-body flex flex-row items-center justify-between gap-4">
         <div>
@@ -210,7 +210,15 @@
 
     {% endif %}
 
-    <div class="mt-8">
+    {% if order is defined and order.status != "CANCELLED" %}
+    <div class="mt-6 flex justify-end">
+      <a href="/order/return/form?token={{ order.token }}" class="btn btn-outline btn-sm btn-error">
+        Odstoupit od smlouvy
+      </a>
+    </div>
+    {% endif %}
+
+    <div class="mt-4">
       <a href="/" class="btn btn-ghost">← Zpět do obchodu</a>
     </div>
 
