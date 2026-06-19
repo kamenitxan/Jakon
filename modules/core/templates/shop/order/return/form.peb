@@ -1,13 +1,13 @@
 {% extends "core" %}
 
-{% block title %}Odstoupení od smlouvy{% endblock %}
+{% block title %}{{ i18n("common", "PAGE_TITLE_RETURN_FORM") }}{% endblock %}
 
 {% block content %}
 <div class="w-full px-4 py-8">
   <div class="max-w-2xl mx-auto">
 
-    <h1 class="text-2xl font-bold mb-2">Odstoupení od smlouvy</h1>
-    <p class="opacity-60 mb-6">Vyberte zboží, které chcete vrátit, a vyplňte požadované údaje.</p>
+    <h1 class="text-2xl font-bold mb-2">{{ i18n("common", "RETURN_HEADING") }}</h1>
+    <p class="opacity-60 mb-6">{{ i18n("common", "RETURN_INTRO") }}</p>
 
     {% if error is defined and error is not empty %}
     <div class="alert alert-error mb-6">
@@ -28,15 +28,15 @@
       <!-- Item selection -->
       <div class="card bg-base-200 mb-6">
         <div class="card-body">
-          <h2 class="card-title text-base mb-4">Vyberte položky k vrácení</h2>
+          <h2 class="card-title text-base mb-4">{{ i18n("common", "SELECT_ITEMS") }}</h2>
           <div class="overflow-x-auto">
             <table class="table">
               <thead>
                 <tr>
                   <th></th>
-                  <th>Produkt</th>
-                  <th class="text-center">Max. množství</th>
-                  <th class="text-center">Vrátit kusů</th>
+                  <th>{{ i18n("common", "PRODUCT") }}</th>
+                  <th class="text-center">{{ i18n("common", "MAX_QUANTITY") }}</th>
+                  <th class="text-center">{{ i18n("common", "RETURN_QUANTITY") }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -66,20 +66,20 @@
       <!-- Reason -->
       <div class="card bg-base-200 mb-6">
         <div class="card-body">
-          <h2 class="card-title text-base mb-4">Důvod vrácení</h2>
+          <h2 class="card-title text-base mb-4">{{ i18n("common", "RETURN_REASON") }}</h2>
           <select name="reason" class="select select-bordered w-full" required>
-            <option value="">-- Vyberte důvod --</option>
+            <option value="">{{ i18n("common", "SELECT_REASON") }}</option>
             {% for r in reasons %}
               {% if r == "DEFECTIVE" %}
-                <option value="{{ r }}">Vadné zboží</option>
+                <option value="{{ r }}">{{ i18n("common", "REASON_DEFECTIVE") }}</option>
               {% elseif r == "WRONG_ITEM" %}
-                <option value="{{ r }}">Obdržel jsem jiné zboží</option>
+                <option value="{{ r }}">{{ i18n("common", "REASON_WRONG_ITEM") }}</option>
               {% elseif r == "NOT_AS_DESCRIBED" %}
-                <option value="{{ r }}">Zboží neodpovídá popisu</option>
+                <option value="{{ r }}">{{ i18n("common", "REASON_NOT_AS_DESCRIBED") }}</option>
               {% elseif r == "CHANGED_MIND" %}
-                <option value="{{ r }}">Změna rozhodnutí</option>
+                <option value="{{ r }}">{{ i18n("common", "REASON_CHANGED_MIND") }}</option>
               {% else %}
-                <option value="{{ r }}">Jiné</option>
+                <option value="{{ r }}">{{ i18n("common", "REASON_OTHER") }}</option>
               {% endif %}
             {% endfor %}
           </select>
@@ -89,17 +89,17 @@
       <!-- Bank account -->
       <div class="card bg-base-200 mb-8">
         <div class="card-body">
-          <h2 class="card-title text-base mb-1">Číslo bankovního účtu pro vrácení peněz</h2>
-          <p class="text-sm opacity-60 mb-3">Na tento účet vám zašleme peníze po obdržení zboží.</p>
+          <h2 class="card-title text-base mb-1">{{ i18n("common", "BANK_ACCOUNT") }}</h2>
+          <p class="text-sm opacity-60 mb-3">{{ i18n("common", "BANK_ACCOUNT_NOTE") }}</p>
           <input type="text" name="bankAccount" placeholder="123456789/0100"
                  class="input input-bordered w-full" required/>
         </div>
       </div>
 
       <div class="flex justify-between">
-        <a href="/order/status?token={{ token }}" class="btn btn-ghost">← Zpět na objednávku</a>
+        <a href="/order/status?token={{ token }}" class="btn btn-ghost">{{ i18n("common", "BACK_TO_ORDER") }}</a>
         <button type="submit" class="btn btn-error">
-          Vytvořit odstoupení
+          {{ i18n("common", "CREATE_RETURN") }}
         </button>
       </div>
     </form>

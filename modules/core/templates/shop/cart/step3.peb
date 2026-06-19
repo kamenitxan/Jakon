@@ -1,35 +1,35 @@
 {% extends "core" %}
 
-{% block title %}Doručovací údaje - My Shop{% endblock %}
+{% block title %}{{ i18n("common", "PAGE_TITLE_STEP3") }}{% endblock %}
 
 {% block content %}
 <div class="w-full px-4 py-8">
 
   <!-- Indikátor kroků -->
   <ul class="steps steps-horizontal w-full mb-8">
-    <li class="step step-primary"><a href="/cart">Košík</a></li>
-    <li class="step step-primary"><a href="/cart/checkout">Doprava a platba</a></li>
-    <li class="step step-primary">Doručovací údaje</li>
+    <li class="step step-primary"><a href="/cart">{{ i18n("common", "STEP_CART") }}</a></li>
+    <li class="step step-primary"><a href="/cart/checkout">{{ i18n("common", "STEP_SHIPPING_PAYMENT") }}</a></li>
+    <li class="step step-primary">{{ i18n("common", "STEP_DELIVERY_DETAILS") }}</li>
   </ul>
 
-  <h1 class="text-2xl font-bold mb-6">Doručovací údaje</h1>
+  <h1 class="text-2xl font-bold mb-6">{{ i18n("common", "STEP_DELIVERY_DETAILS") }}</h1>
 
   <!-- Souhrn objednávky -->
   <div class="card bg-base-200 mb-6">
     <div class="card-body py-4">
       <div class="flex flex-wrap gap-6 text-sm">
         <div>
-          <span class="opacity-60">Doprava:</span>
+          <span class="opacity-60">{{ i18n("common", "SHIPPING_LABEL") }}:</span>
           <strong>{{ cart.selectedShippingMethod.name }}</strong>
-          ({% if cart.selectedShippingMethod.price == 0 %}zdarma{% else %}{{ cart.selectedShippingMethod.price }} Kč{% endif %})
+          ({% if cart.selectedShippingMethod.price == 0 %}{{ i18n("common", "FREE") | lower }}{% else %}{{ cart.selectedShippingMethod.price }} Kč{% endif %})
         </div>
         <div>
-          <span class="opacity-60">Platba:</span>
+          <span class="opacity-60">{{ i18n("common", "PAYMENT_LABEL") }}:</span>
           <strong>{{ cart.selectedPaymentMethod.name }}</strong>
-          ({% if cart.selectedPaymentMethod.price == 0 %}zdarma{% else %}+ {{ cart.selectedPaymentMethod.price }} Kč{% endif %})
+          ({% if cart.selectedPaymentMethod.price == 0 %}{{ i18n("common", "FREE") | lower }}{% else %}+ {{ cart.selectedPaymentMethod.price }} Kč{% endif %})
         </div>
         <div class="ml-auto font-bold text-primary">
-          Celkem: {{ grandTotal }} Kč
+          {{ i18n("common", "TOTAL_LABEL") }}: {{ grandTotal }} Kč
         </div>
       </div>
     </div>
@@ -41,16 +41,16 @@
       <!-- Kontaktní informace -->
       <div class="card bg-base-200">
         <div class="card-body">
-          <h2 class="card-title mb-4">Kontaktní informace</h2>
+          <h2 class="card-title mb-4">{{ i18n("common", "CONTACT_INFO") }}</h2>
 
           <div class="form-control mb-3">
-            <label class="label"><span class="label-text">E-mail *</span></label>
+            <label class="label"><span class="label-text">{{ i18n("common", "EMAIL_LABEL") }}</span></label>
             <input type="email" name="guestEmail" value="{{ prefillEmail | default('') }}"
                    class="input input-bordered" required placeholder="vas@email.cz" />
           </div>
 
           <div class="form-control mb-3">
-            <label class="label"><span class="label-text">Telefon</span></label>
+            <label class="label"><span class="label-text">{{ i18n("common", "PHONE_LABEL") }}</span></label>
             <input type="tel" name="guestPhone" value="{{ prefillPhone | default('') }}"
                    class="input input-bordered" placeholder="+420 123 456 789" />
           </div>
@@ -60,36 +60,36 @@
       <!-- Fakturační adresa -->
       <div class="card bg-base-200">
         <div class="card-body">
-          <h2 class="card-title mb-4">Fakturační adresa</h2>
+          <h2 class="card-title mb-4">{{ i18n("common", "BILLING_ADDRESS") }}</h2>
 
           <div class="form-control mb-3">
-            <label class="label"><span class="label-text">Jméno a příjmení *</span></label>
+            <label class="label"><span class="label-text">{{ i18n("common", "FULL_NAME_REQUIRED") }}</span></label>
             <input type="text" name="billingName" value="{{ prefillName | default('') }}"
                    class="input input-bordered" required placeholder="Jan Novák" />
           </div>
 
           <div class="form-control mb-3">
-            <label class="label"><span class="label-text">Ulice a číslo *</span></label>
+            <label class="label"><span class="label-text">{{ i18n("common", "STREET_REQUIRED") }}</span></label>
             <input type="text" name="billingStreet" value="{{ prefillStreet | default('') }}"
                    class="input input-bordered" required placeholder="Hlavní 1" />
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div class="form-control mb-3">
-              <label class="label"><span class="label-text">Město *</span></label>
+              <label class="label"><span class="label-text">{{ i18n("common", "CITY_REQUIRED") }}</span></label>
               <input type="text" name="billingCity" value="{{ prefillCity | default('') }}"
                      class="input input-bordered" required placeholder="Praha" />
             </div>
             <div class="form-control mb-3">
-              <label class="label"><span class="label-text">PSČ *</span></label>
+              <label class="label"><span class="label-text">{{ i18n("common", "ZIP_REQUIRED") }}</span></label>
               <input type="text" name="billingZip" value="{{ prefillZip | default('') }}"
                      class="input input-bordered" required placeholder="110 00" />
             </div>
           </div>
 
           <div class="form-control mb-3">
-            <label class="label"><span class="label-text">Stát *</span></label>
-            <input type="text" name="billingCountry" value="{{ prefillCountry | default('Česká republika') }}"
+            <label class="label"><span class="label-text">{{ i18n("common", "COUNTRY_REQUIRED") }}</span></label>
+            <input type="text" name="billingCountry" value="{{ prefillCountry | default(i18n("common", "DEFAULT_COUNTRY")) }}"
                    class="input input-bordered" required />
           </div>
         </div>
@@ -99,19 +99,19 @@
       <div class="card bg-base-200 lg:col-span-2">
         <div class="card-body">
           <div class="flex items-center gap-3 mb-4">
-            <h2 class="card-title">Dodací adresa</h2>
-            <span class="text-sm opacity-60">(prázdné = stejná jako fakturační)</span>
+            <h2 class="card-title">{{ i18n("common", "DELIVERY_ADDRESS") }}</h2>
+            <span class="text-sm opacity-60">{{ i18n("common", "DELIVERY_ADDRESS_NOTE") }}</span>
           </div>
 
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
               <div class="form-control mb-3">
-                <label class="label"><span class="label-text">Jméno a příjmení</span></label>
+                <label class="label"><span class="label-text">{{ i18n("common", "FULL_NAME") }}</span></label>
                 <input type="text" name="deliveryName" value="{{ prefillName | default('') }}"
                        class="input input-bordered" placeholder="Jan Novák" />
               </div>
               <div class="form-control mb-3">
-                <label class="label"><span class="label-text">Ulice a číslo</span></label>
+                <label class="label"><span class="label-text">{{ i18n("common", "STREET") }}</span></label>
                 <input type="text" name="deliveryStreet" value="{{ prefillDeliveryStreet | default('') }}"
                        class="input input-bordered" placeholder="Hlavní 1" />
               </div>
@@ -119,18 +119,18 @@
             <div>
               <div class="grid grid-cols-2 gap-3">
                 <div class="form-control mb-3">
-                  <label class="label"><span class="label-text">Město</span></label>
+                  <label class="label"><span class="label-text">{{ i18n("common", "CITY") }}</span></label>
                   <input type="text" name="deliveryCity" value="{{ prefillDeliveryCity | default('') }}"
                          class="input input-bordered" placeholder="Praha" />
                 </div>
                 <div class="form-control mb-3">
-                  <label class="label"><span class="label-text">PSČ</span></label>
+                  <label class="label"><span class="label-text">{{ i18n("common", "ZIP") }}</span></label>
                   <input type="text" name="deliveryZip" value="{{ prefillDeliveryZip | default('') }}"
                          class="input input-bordered" placeholder="110 00" />
                 </div>
               </div>
               <div class="form-control mb-3">
-                <label class="label"><span class="label-text">Stát</span></label>
+                <label class="label"><span class="label-text">{{ i18n("common", "COUNTRY") }}</span></label>
                 <input type="text" name="deliveryCountry" value="{{ prefillDeliveryCountry | default('') }}"
                        class="input input-bordered" />
               </div>
@@ -142,9 +142,9 @@
       <!-- Poznámka -->
       <div class="card bg-base-200 lg:col-span-2">
         <div class="card-body">
-          <h2 class="card-title mb-4">Poznámka k objednávce</h2>
+          <h2 class="card-title mb-4">{{ i18n("common", "ORDER_NOTE") }}</h2>
           <textarea name="customerNote" class="textarea textarea-bordered w-full" rows="3"
-                    placeholder="Upřesnění, speciální požadavky..."></textarea>
+                    placeholder="{{ i18n("common", "ORDER_NOTE_PLACEHOLDER") }}"></textarea>
         </div>
       </div>
     </div>
@@ -154,12 +154,12 @@
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
-        Zpět k dopravě
+        {{ i18n("common", "BACK_TO_SHIPPING") }}
       </a>
       <button type="submit" class="btn btn-primary btn-lg">
         <span class="flex flex-col items-start leading-tight">
-          <span>Dokončit objednávku</span>
-          <span class="text-xs font-normal opacity-80">se závazkem platby</span>
+          <span>{{ i18n("common", "COMPLETE_ORDER") }}</span>
+          <span class="text-xs font-normal opacity-80">{{ i18n("common", "ORDER_WITH_PAYMENT") }}</span>
         </span>
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />

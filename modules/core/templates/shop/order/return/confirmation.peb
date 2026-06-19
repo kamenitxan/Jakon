@@ -1,6 +1,6 @@
 {% extends "core" %}
 
-{% block title %}Odstoupení vytvořeno – {{ orderReturn.returnNumber }}{% endblock %}
+{% block title %}{{ i18n("common", "RETURN_CREATED") }} – {{ orderReturn.returnNumber }}{% endblock %}
 
 {% block content %}
 <div class="w-full px-4 py-16">
@@ -18,15 +18,15 @@
       </div>
     </div>
 
-    <h1 class="text-3xl font-bold mb-2">Odstoupení vytvořeno</h1>
-    <p class="opacity-70 mb-6">Vaše odstoupení od smlouvy bylo přijato k vyřízení.</p>
+    <h1 class="text-3xl font-bold mb-2">{{ i18n("common", "RETURN_CREATED") }}</h1>
+    <p class="opacity-70 mb-6">{{ i18n("common", "RETURN_ACCEPTED") }}</p>
 
     <div class="badge badge-lg badge-primary mb-8">{{ orderReturn.returnNumber }}</div>
 
     <!-- Shipping instructions -->
     <div class="card bg-base-200 text-left mb-8">
       <div class="card-body">
-        <h2 class="card-title text-base mb-3">Kam zaslat balík s vratkou</h2>
+        <h2 class="card-title text-base mb-3">{{ i18n("common", "RETURN_SEND_TO") }}</h2>
 
         {% if returnAddress.name is not empty %}
         <address class="not-italic leading-relaxed mb-4">
@@ -36,25 +36,25 @@
           <p>{{ returnAddress.country }}</p>
         </address>
         {% else %}
-        <p class="opacity-60 italic">Adresa pro vrácení není nakonfigurována. Kontaktujte nás prosím e-mailem.</p>
+        <p class="opacity-60 italic">{{ i18n("common", "RETURN_NO_ADDRESS") }}</p>
         {% endif %}
 
         <div class="divider my-2"></div>
 
-        <h3 class="font-semibold mb-2">Jak zásilku označit</h3>
+        <h3 class="font-semibold mb-2">{{ i18n("common", "RETURN_LABEL_INSTRUCTIONS") }}</h3>
         <ul class="list-disc list-inside space-y-1 text-sm opacity-80">
-          <li>Na balík napište číslo vrácení: <strong>{{ orderReturn.returnNumber }}</strong></li>
-          <li>Uveďte své jméno a adresu jako odesílatele.</li>
-          <li>Zásilku zašlete doporučeně a uschovejte si doklad o podání.</li>
+          <li>{{ i18n("common", "RETURN_LABEL_NUMBER") }} <strong>{{ orderReturn.returnNumber }}</strong></li>
+          <li>{{ i18n("common", "RETURN_LABEL_SENDER") }}</li>
+          <li>{{ i18n("common", "RETURN_LABEL_REGISTERED") }}</li>
         </ul>
       </div>
     </div>
 
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
       {% if token is defined and token is not empty %}
-      <a href="/order/status?token={{ token }}" class="btn btn-outline">Zpět na objednávku</a>
+      <a href="/order/status?token={{ token }}" class="btn btn-outline">{{ i18n("common", "BACK_TO_ORDER_SHORT") }}</a>
       {% endif %}
-      <a href="/" class="btn btn-ghost">Pokračovat v nakupování</a>
+      <a href="/" class="btn btn-ghost">{{ i18n("common", "CONTINUE_SHOPPING") }}</a>
     </div>
 
     {% endif %}

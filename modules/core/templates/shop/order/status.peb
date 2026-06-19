@@ -1,12 +1,12 @@
 {% extends "core" %}
 
-{% block title %}Stav objednávky - My Shop{% endblock %}
+{% block title %}{{ i18n("common", "PAGE_TITLE_ORDER_STATUS") }}{% endblock %}
 
 {% block content %}
 <div class="w-full px-4 py-8">
   <div class="max-w-3xl mx-auto">
 
-    <h1 class="text-2xl font-bold mb-6">Stav objednávky</h1>
+    <h1 class="text-2xl font-bold mb-6">{{ i18n("common", "ORDER_STATUS") }}</h1>
 
     {% if error is defined and error != "" %}
     <div class="alert alert-error">
@@ -22,35 +22,35 @@
       <div class="card-body">
         <div class="flex flex-wrap justify-between items-start gap-4">
           <div>
-            <p class="text-sm opacity-60">Číslo objednávky</p>
+            <p class="text-sm opacity-60">{{ i18n("common", "ORDER_NUMBER") }}</p>
             <p class="text-xl font-bold">{{ order.orderNumber }}</p>
           </div>
           <div>
-            <p class="text-sm opacity-60">Datum objednávky</p>
+            <p class="text-sm opacity-60">{{ i18n("common", "ORDER_DATE") }}</p>
             <p class="font-medium">{{ order.orderDate | date("d.M.yyyy HH:mm") }}</p>
           </div>
           <div>
-            <p class="text-sm opacity-60 mb-1">Stav</p>
+            <p class="text-sm opacity-60 mb-1">{{ i18n("common", "ORDER_STATUS_LABEL") }}</p>
             {% if order.status == "NEW" %}
-              <span class="badge badge-info badge-lg">Nová</span>
+              <span class="badge badge-info badge-lg">{{ i18n("common", "STATUS_NEW") }}</span>
             {% elseif order.status == "PROCESSING" %}
-              <span class="badge badge-warning badge-lg">Zpracovává se</span>
+              <span class="badge badge-warning badge-lg">{{ i18n("common", "STATUS_PROCESSING") }}</span>
             {% elseif order.status == "SHIPPED" %}
-              <span class="badge badge-primary badge-lg">Odesláno</span>
+              <span class="badge badge-primary badge-lg">{{ i18n("common", "STATUS_SHIPPED") }}</span>
             {% elseif order.status == "DELIVERED" %}
-              <span class="badge badge-success badge-lg">Doručeno</span>
+              <span class="badge badge-success badge-lg">{{ i18n("common", "STATUS_DELIVERED") }}</span>
             {% elseif order.status == "CANCELLED" %}
-              <span class="badge badge-error badge-lg">Zrušeno</span>
+              <span class="badge badge-error badge-lg">{{ i18n("common", "STATUS_CANCELLED") }}</span>
             {% else %}
               <span class="badge badge-neutral badge-lg">{{ order.status }}</span>
             {% endif %}
           </div>
           <div>
-            <p class="text-sm opacity-60">Zaplaceno</p>
+            <p class="text-sm opacity-60">{{ i18n("common", "PAID_LABEL") }}</p>
             {% if isPaid is defined and isPaid %}
-              <span class="badge badge-success">Ano</span>
+              <span class="badge badge-success">{{ i18n("common", "YES") }}</span>
             {% else %}
-              <span class="badge badge-warning">Ne</span>
+              <span class="badge badge-warning">{{ i18n("common", "NO") }}</span>
             {% endif %}
           </div>
         </div>
@@ -60,15 +60,15 @@
     <!-- Položky -->
     <div class="card bg-base-200 mb-6">
       <div class="card-body">
-        <h2 class="card-title mb-4">Položky objednávky</h2>
+        <h2 class="card-title mb-4">{{ i18n("common", "ORDER_ITEMS") }}</h2>
         <div class="overflow-x-auto">
           <table class="table table-zebra">
             <thead>
               <tr>
-                <th>Produkt</th>
-                <th class="text-center">Množství</th>
-                <th class="text-right">Cena/ks</th>
-                <th class="text-right">Celkem</th>
+                <th>{{ i18n("common", "PRODUCT") }}</th>
+                <th class="text-center">{{ i18n("common", "QUANTITY") }}</th>
+                <th class="text-right">{{ i18n("common", "UNIT_PRICE") }}</th>
+                <th class="text-right">{{ i18n("common", "TOTAL_LABEL") }}</th>
               </tr>
             </thead>
             <tbody>
@@ -84,18 +84,18 @@
             <tfoot>
               {% if order.shippingPrice is not null and order.shippingPrice != 0 %}
               <tr>
-                <td colspan="3" class="text-right opacity-70">Doprava{% if order.shippingMethod is not null %} ({{ order.shippingMethod.name }}){% endif %}:</td>
+                <td colspan="3" class="text-right opacity-70">{{ i18n("common", "SHIPPING_ROW") }}{% if order.shippingMethod is not null %} ({{ order.shippingMethod.name }}){% endif %}:</td>
                 <td class="text-right">{{ order.shippingPrice }} Kč</td>
               </tr>
               {% endif %}
               {% if order.paymentPrice is not null and order.paymentPrice != 0 %}
               <tr>
-                <td colspan="3" class="text-right opacity-70">Platba{% if order.paymentMethod is not null %} ({{ order.paymentMethod.name }}){% endif %}:</td>
+                <td colspan="3" class="text-right opacity-70">{{ i18n("common", "PAYMENT_ROW") }}{% if order.paymentMethod is not null %} ({{ order.paymentMethod.name }}){% endif %}:</td>
                 <td class="text-right">{{ order.paymentPrice }} Kč</td>
               </tr>
               {% endif %}
               <tr class="font-bold text-lg">
-                <td colspan="3" class="text-right">Celkem:</td>
+                <td colspan="3" class="text-right">{{ i18n("common", "TOTAL_LABEL") }}:</td>
                 <td class="text-right text-primary">{{ order.totalPrice }} Kč</td>
               </tr>
             </tfoot>
@@ -108,7 +108,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="card bg-base-200">
         <div class="card-body">
-          <h2 class="card-title text-base">Fakturační adresa</h2>
+          <h2 class="card-title text-base">{{ i18n("common", "BILLING_ADDRESS_TITLE") }}</h2>
           <address class="not-italic opacity-80 leading-relaxed">
             {{ order.billingName }}<br/>
             {{ order.billingStreet }}<br/>
@@ -119,7 +119,7 @@
       </div>
       <div class="card bg-base-200">
         <div class="card-body">
-          <h2 class="card-title text-base">Dodací adresa</h2>
+          <h2 class="card-title text-base">{{ i18n("common", "DELIVERY_ADDRESS_TITLE") }}</h2>
           <address class="not-italic opacity-80 leading-relaxed">
             {{ order.deliveryName }}<br/>
             {{ order.deliveryStreet }}<br/>
@@ -133,7 +133,7 @@
     {% if order.customerNote is not null and order.customerNote != "" %}
     <div class="card bg-base-200 mt-6">
       <div class="card-body">
-        <h2 class="card-title text-base">Poznámka</h2>
+        <h2 class="card-title text-base">{{ i18n("common", "ORDER_NOTE_TITLE") }}</h2>
         <p class="opacity-80">{{ order.customerNote }}</p>
       </div>
     </div>
@@ -145,7 +145,7 @@
       {% if order.shippingMethod is not null %}
       <div class="card bg-base-200">
         <div class="card-body">
-          <h2 class="card-title text-base">Způsob dopravy</h2>
+          <h2 class="card-title text-base">{{ i18n("common", "SHIPPING_METHOD") }}</h2>
           <div class="flex items-center gap-3">
             {% if order.shippingMethod.icon is not null and order.shippingMethod.icon != "" %}
             <i class="{{ order.shippingMethod.icon }} text-xl"></i>
@@ -157,7 +157,7 @@
               {% endif %}
             </div>
             <div class="ml-auto font-bold text-primary">
-              {% if order.shippingPrice == 0 %}Zdarma{% else %}{{ order.shippingPrice }} Kč{% endif %}
+              {% if order.shippingPrice == 0 %}{{ i18n("common", "FREE") }}{% else %}{{ order.shippingPrice }} Kč{% endif %}
             </div>
           </div>
         </div>
@@ -166,7 +166,7 @@
       {% if order.paymentMethod is not null %}
       <div class="card bg-base-200">
         <div class="card-body">
-          <h2 class="card-title text-base">Způsob platby</h2>
+          <h2 class="card-title text-base">{{ i18n("common", "PAYMENT_METHOD") }}</h2>
           <div class="flex items-center gap-3">
             {% if order.paymentMethod.icon is not null and order.paymentMethod.icon != "" %}
             <i class="{{ order.paymentMethod.icon }} text-xl"></i>
@@ -178,7 +178,7 @@
               {% endif %}
             </div>
             <div class="ml-auto font-bold text-primary">
-              {% if order.paymentPrice == 0 %}Zdarma{% else %}+ {{ order.paymentPrice }} Kč{% endif %}
+              {% if order.paymentPrice == 0 %}{{ i18n("common", "FREE") }}{% else %}+ {{ order.paymentPrice }} Kč{% endif %}
             </div>
           </div>
         </div>
@@ -192,17 +192,17 @@
     <div class="card bg-warning/10 border border-warning mt-6">
       <div class="card-body flex flex-row items-center justify-between gap-4">
         <div>
-          <p class="font-bold text-warning">Objednávka čeká na zaplacení</p>
-          <p class="text-sm opacity-70">Kliknutím na tlačítko budete přesměrováni na platební bránu.</p>
+          <p class="font-bold text-warning">{{ i18n("common", "PAYMENT_PENDING_TITLE") }}</p>
+          <p class="text-sm opacity-70">{{ i18n("common", "PAYMENT_PENDING_DESC") }}</p>
         </div>
         {% if paymentError is defined and paymentError == "1" %}
-        <div class="alert alert-error mb-2 text-sm">Platbu se nepodařilo inicializovat. Zkuste to prosím znovu.</div>
+        <div class="alert alert-error mb-2 text-sm">{{ i18n("common", "PAYMENT_ERROR") }}</div>
         {% endif %}
         <a href="/order/pay?token={{ order.token }}" class="btn btn-warning whitespace-nowrap">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
           </svg>
-          Zaplatit nyní
+          {{ i18n("common", "PAY_NOW") }}
         </a>
       </div>
     </div>
@@ -213,13 +213,13 @@
     {% if order is defined and order.status != "CANCELLED" %}
     <div class="mt-6 flex justify-end">
       <a href="/order/return/form?token={{ order.token }}" class="btn btn-outline btn-sm btn-error">
-        Odstoupit od smlouvy
+        {{ i18n("common", "WITHDRAWAL") }}
       </a>
     </div>
     {% endif %}
 
     <div class="mt-4">
-      <a href="/" class="btn btn-ghost">← Zpět do obchodu</a>
+      <a href="/" class="btn btn-ghost">{{ i18n("common", "BACK_TO_SHOP") }}</a>
     </div>
 
   </div>

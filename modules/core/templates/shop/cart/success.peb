@@ -1,6 +1,6 @@
 {% extends "core" %}
 
-{% block title %}Objednávka přijata - My Shop{% endblock %}
+{% block title %}{{ i18n("common", "PAGE_TITLE_SUCCESS") }}{% endblock %}
 
 {% block content %}
 <div class="w-full px-4 py-16">
@@ -14,22 +14,22 @@
       </div>
     </div>
 
-    <h1 class="text-3xl font-bold mb-4">Objednávka přijata!</h1>
-    <p class="text-lg opacity-70 mb-2">Děkujeme za Vaši objednávku.</p>
+    <h1 class="text-3xl font-bold mb-4">{{ i18n("common", "ORDER_ACCEPTED") }}</h1>
+    <p class="text-lg opacity-70 mb-2">{{ i18n("common", "THANK_YOU") }}</p>
 
     {% if orderNumber %}
     <div class="badge badge-lg badge-primary mb-6">{{ orderNumber }}</div>
     {% endif %}
 
     <p class="opacity-70 mb-8">
-      Na Váš e-mail jsme odeslali potvrzení s odkazem pro sledování stavu objednávky.
+      {{ i18n("common", "EMAIL_CONFIRMATION_SENT") }}
     </p>
 
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
       {% if orderToken is defined and orderToken is not empty %}
-      <a href="/order/status?token={{ orderToken }}" class="btn btn-primary">Sledovat stav objednávky</a>
+      <a href="/order/status?token={{ orderToken }}" class="btn btn-primary">{{ i18n("common", "TRACK_ORDER") }}</a>
       {% endif %}
-      <a href="/" class="btn btn-outline">Pokračovat v nakupování</a>
+      <a href="/" class="btn btn-outline">{{ i18n("common", "CONTINUE_SHOPPING") }}</a>
     </div>
 
   </div>
