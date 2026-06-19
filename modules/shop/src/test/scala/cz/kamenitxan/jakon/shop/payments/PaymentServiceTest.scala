@@ -64,10 +64,14 @@ class PaymentServiceTest extends AnyFunSuite {
 
 		try {
 			var capturedRequest: StripeCheckoutSessionRequest = null
-			val gateway = new StripePaymentGateway((request: StripeCheckoutSessionRequest) => {
-				capturedRequest = request
-				StripeCheckoutSessionResponse("cs_test_123", "https://checkout.stripe.com/pay/cs_test_123")
-			})
+			val stubClient = new StripeCheckoutClient {
+				override def createSession(request: StripeCheckoutSessionRequest): StripeCheckoutSessionResponse = {
+					capturedRequest = request
+					StripeCheckoutSessionResponse("cs_test_123", "https://checkout.stripe.com/pay/cs_test_123")
+				}
+				override def fetchSessionStatus(sessionId: String): String = "unpaid"
+			}
+			val gateway = new StripePaymentGateway(stubClient)
 
 			val order = new ShopOrder()
 			order.orderNumber = "2026-002"

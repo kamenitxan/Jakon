@@ -74,3 +74,17 @@ object PaymentFlow {
 	/** The customer is redirected to an external payment page. */
 	final val Redirect = "redirect"
 }
+
+/** Payment status constants used in [[cz.kamenitxan.jakon.shop.entity.OrderPayment]]. */
+object PaymentStatus {
+	/** Payment has been initiated but not yet confirmed by the gateway or customer. */
+	final val Pending = "PENDING"
+	/** Payment was successfully completed and funds were received. */
+	final val Completed = "COMPLETED"
+	/** Payment failed (e.g. card declined, gateway error). */
+	final val Failed = "FAILED"
+	/** Payment was cancelled by the customer or expired. */
+	final val Cancelled = "CANCELLED"
+	/** Payment was refunded fully or partially. */
+	final val Refunded = "REFUNDED"
+}

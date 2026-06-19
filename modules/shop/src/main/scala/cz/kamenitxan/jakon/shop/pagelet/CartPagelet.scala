@@ -254,10 +254,19 @@ class CartPagelet extends AbstractPagelet {
 	}
 
 	@Get(path = "/success", template = "cart/success")
-	def showSuccess(ctx: Context): mutable.Map[String, Any] = {
+	def showSuccess(ctx: Context)(implicit conn: Connection): mutable.Map[String, Any] = {
 		val orderNumber = Option(ctx.queryParam("orderNumber")).getOrElse("")
+		val orderToken = if (orderNumber.nonEmpty) {
+			val stmt = conn.prepareStatement("SELECT token FROM ShopOrder WHERE orderNumber = ? LIMIT 1")
+			stmt.setString(1, orderNumber)
+			val rs = stmt.executeQuery()
+			val token = if (rs.next()) rs.getString("token") else ""
+			stmt.close()
+			token
+		} else ""
 		mutable.Map(
-			"orderNumber" -> orderNumber
+			"orderNumber" -> orderNumber,
+			"orderToken" -> orderToken
 		) ++ ShopUtils.commonPageData
 	}
 

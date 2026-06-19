@@ -84,13 +84,13 @@
             <tfoot>
               {% if order.shippingPrice is not null and order.shippingPrice != 0 %}
               <tr>
-                <td colspan="3" class="text-right opacity-70">Doprava{% if shippingMethod is not null %} ({{ shippingMethod.name }}){% endif %}:</td>
+                <td colspan="3" class="text-right opacity-70">Doprava{% if order.shippingMethod is not null %} ({{ order.shippingMethod.name }}){% endif %}:</td>
                 <td class="text-right">{{ order.shippingPrice }} Kč</td>
               </tr>
               {% endif %}
               {% if order.paymentPrice is not null and order.paymentPrice != 0 %}
               <tr>
-                <td colspan="3" class="text-right opacity-70">Platba{% if paymentMethod is not null %} ({{ paymentMethod.name }}){% endif %}:</td>
+                <td colspan="3" class="text-right opacity-70">Platba{% if order.paymentMethod is not null %} ({{ order.paymentMethod.name }}){% endif %}:</td>
                 <td class="text-right">{{ order.paymentPrice }} Kč</td>
               </tr>
               {% endif %}
@@ -130,7 +130,7 @@
       </div>
     </div>
 
-    {% if order.customerNote %}
+    {% if order.customerNote is not null and order.customerNote != "" %}
     <div class="card bg-base-200 mt-6">
       <div class="card-body">
         <h2 class="card-title text-base">Poznámka</h2>

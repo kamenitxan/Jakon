@@ -2,7 +2,7 @@ package cz.kamenitxan.jakon.shop.payments
 
 import cz.kamenitxan.jakon.shop.entity.{ShopOrder, ShopOrderItem}
 import cz.kamenitxan.jakon.shop.payments.impl.stripe.StripePaymentSettings
-import cz.kamenitxan.jakon.shop.service.OrderItemService
+import cz.kamenitxan.jakon.shop.service.{OrderItemService, OrderPaymentService}
 
 import java.math.{BigDecimal, RoundingMode}
 import java.sql.Connection
@@ -35,7 +35,9 @@ object PaymentService {
 		if (!gateway.isConfigured) {
 			throw new PaymentGatewayException(s"Payment gateway '${gateway.gatewayCode}' is not configured.")
 		}
-		gateway.initializePayment(request)
+		val initialization = gateway.initializePayment(request)
+		OrderPaymentService.create(shopOrder, initialization)
+		initialization
 	}
 
 	/**

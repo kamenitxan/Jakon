@@ -44,6 +44,16 @@ object PaymentGatewayRegistry {
 	}
 
 	/**
+	 * Looks up a gateway by its code string, returning [[None]] if no matching gateway is registered.
+	 *
+	 * @param code raw gateway code (case-insensitive, trimmed automatically)
+	 * @return Some([[PaymentGateway]]) or None
+	 */
+	def resolveByCode(code: String): Option[PaymentGateway] = {
+		gateways.get(normalizeCode(code))
+	}
+
+	/**
 	 * Returns the normalised gateway code for the given payment method.
 	 *
 	 * @param paymentMethod the payment method to inspect

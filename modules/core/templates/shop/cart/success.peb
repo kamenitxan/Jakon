@@ -26,6 +26,9 @@
     </p>
 
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      {% if orderToken is defined and orderToken is not empty %}
+      <a href="/order/status?token={{ orderToken }}" class="btn btn-primary">Sledovat stav objednávky</a>
+      {% endif %}
       <a href="/" class="btn btn-outline">Pokračovat v nakupování</a>
     </div>
 

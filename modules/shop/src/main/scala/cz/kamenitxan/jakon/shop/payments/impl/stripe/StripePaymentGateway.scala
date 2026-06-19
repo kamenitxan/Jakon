@@ -51,6 +51,29 @@ class StripePaymentGateway(private val checkoutClient: StripeCheckoutClient = De
 			metadata = request.metadata
 		)
 	}
+
+	/**
+	 * Fetches the current payment status of the Stripe Checkout Session and maps it
+	 * to a [[PaymentStatus]] constant.
+	 *
+	 * Stripe {@code payment_status} mapping:
+	 * - {@code "paid"}                → [[PaymentStatus.Completed]]
+	 * - {@code "unpaid"}              → [[PaymentStatus.Pending]] (may also indicate expired session)
+	 * - {@code "no_payment_required"} → [[PaymentStatus.Completed]]
+	 */
+	override def fetchPaymentStatus(externalPaymentId: String): Option[String] = {
+		if (externalPaymentId == null || externalPaymentId.isBlank) return None
+		val stripeStatus = checkoutClient.fetchSessionStatus(externalPaymentId)
+		Some(mapStripeStatus(stripeStatus))
+	}
+
+	private def mapStripeStatus(stripePaymentStatus: String): String = {
+		stripePaymentStatus match {
+			case "paid"                 => PaymentStatus.Completed
+			case "no_payment_required"  => PaymentStatus.Completed
+			case _                      => PaymentStatus.Pending
+		}
+	}
 }
 
 /** Default singleton instance using the production [[DefaultStripeCheckoutClient]]. */

@@ -54,6 +54,18 @@ trait StripeCheckoutClient {
 	 * @throws PaymentGatewayException if the Stripe API returns an error
 	 */
 	def createSession(request: StripeCheckoutSessionRequest): StripeCheckoutSessionResponse
+
+	/**
+	 * Fetches the current payment status of an existing Stripe Checkout Session.
+	 *
+	 * Returns the raw Stripe payment_status string:
+	 * {@code "paid"}, {@code "unpaid"} or {@code "no_payment_required"}.
+	 *
+	 * @param sessionId the Stripe Checkout Session identifier (e.g. {@code cs_test_...})
+	 * @return raw Stripe payment_status string
+	 * @throws PaymentGatewayException if the Stripe API returns an error
+	 */
+	def fetchSessionStatus(sessionId: String): String
 }
 
 /**
@@ -81,6 +93,19 @@ object DefaultStripeCheckoutClient extends StripeCheckoutClient {
 		} catch {
 			case ex: StripeException => throw new PaymentGatewayException("Stripe checkout session creation failed.", ex)
 			case NonFatal(ex) => throw new PaymentGatewayException("Unexpected error while creating Stripe checkout session.", ex)
+		}
+	}
+
+	override def fetchSessionStatus(sessionId: String): String = {
+		try {
+			val session = Session.retrieve(
+				sessionId,
+				RequestOptions.builder().setApiKey(StripePaymentSettings.secretKey).build()
+			)
+			session.getPaymentStatus
+		} catch {
+			case ex: StripeException => throw new PaymentGatewayException(s"Failed to retrieve Stripe session status for '$sessionId'.", ex)
+			case NonFatal(ex) => throw new PaymentGatewayException(s"Unexpected error while retrieving Stripe session status for '$sessionId'.", ex)
 		}
 	}
 

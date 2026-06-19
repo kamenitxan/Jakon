@@ -30,4 +30,16 @@ trait PaymentGateway {
 	 * @throws PaymentGatewayException if the gateway is not configured or the request is invalid
 	 */
 	def initializePayment(request: PaymentRequest): PaymentInitialization
+
+	/**
+	 * Fetches the current status of a payment from the gateway.
+	 *
+	 * Returns a [[PaymentStatus]] constant string if the gateway supports status queries,
+	 * or [[None]] if this gateway does not support remote status checks (e.g. manual gateway).
+	 *
+	 * @param externalPaymentId the gateway-side payment or session identifier
+	 *                          (value of [[cz.kamenitxan.jakon.shop.entity.OrderPayment#externalPaymentId]])
+	 * @return Some([[PaymentStatus]] constant) or None if not supported
+	 */
+	def fetchPaymentStatus(externalPaymentId: String): Option[String] = None
 }
