@@ -1,5 +1,6 @@
 package cz.kamenitxan.jakon.shop.payments
 
+import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.shop.entity.{ShopOrder, ShopOrderItem}
 import cz.kamenitxan.jakon.shop.payments.impl.stripe.StripePaymentSettings
 import cz.kamenitxan.jakon.shop.service.{OrderItemService, OrderPaymentService}
@@ -16,6 +17,43 @@ import java.sql.Connection
  * (e.g. redirect URL for hosted checkout, manual instructions, etc.).
  */
 object PaymentService {
+
+	/**
+	 * Resolves the gateway redirect URL for the given order if its payment method uses a
+	 * redirect-based gateway. Returns [[None]] if the method is manual, the gateway uses a
+	 * different flow, or initialization fails (the error is logged).
+	 *
+	 * @param shopOrder  the order to pay; must not be {@code null}
+	 * @param successUrl URL the customer is redirected to after a successful payment
+	 * @param cancelUrl  URL the customer is redirected to when the payment is cancelled
+	 * @param currency   ISO 4217 currency code; defaults to the value from [[StripePaymentSettings]]
+	 * @param conn       implicit database connection used to load order items
+	 * @return [[Some]] redirect URL when the gateway provides one, [[None]] otherwise
+	 */
+	def gatewayRedirectUrl(shopOrder: ShopOrder, successUrl: String, cancelUrl: String, currency: String = StripePaymentSettings.currency)(implicit conn: Connection): Option[String] = {
+		val gatewayCode = Option(shopOrder.paymentMethod)
+			.map(pm => PaymentGatewayRegistry.normalizeCode(pm.gatewayCode))
+			.getOrElse(PaymentGatewayCode.Manual)
+		if (gatewayCode == PaymentGatewayCode.Manual) {
+			None
+		} else {
+			try {
+				val init = initializePayment(shopOrder, successUrl, cancelUrl, currency)
+				init.flow match {
+					case PaymentFlow.Redirect =>
+						if (init.redirectUrl.isEmpty) {
+							Logger.error(s"Payment gateway returned no redirect URL for order ${shopOrder.orderNumber}")
+						}
+						init.redirectUrl
+					case _ => None
+				}
+			} catch {
+				case e: Exception =>
+					Logger.error(s"Payment initialization failed for order ${shopOrder.orderNumber}: ${e.getMessage}")
+					None
+			}
+		}
+	}
 
 	/**
 	 * Resolves the gateway for the order's payment method, builds a payment request and

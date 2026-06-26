@@ -6,9 +6,10 @@ import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.shop.ShopUtils
 import cz.kamenitxan.jakon.shop.entity.*
+import cz.kamenitxan.jakon.shop.payments.PaymentService
 import cz.kamenitxan.jakon.shop.service.CartService
 import cz.kamenitxan.jakon.utils.mail.EmailEntity
-import io.javalin.http.Context
+import io.javalin.http.{Context, HttpStatus}
 
 import java.math.BigDecimal
 import java.sql.Connection
@@ -249,7 +250,13 @@ class CartPagelet extends AbstractPagelet {
 
 		sendConfirmationEmail(order, items)
 
-		redirect(ctx, s"/cart/success?orderNumber=${order.orderNumber}")
+		val baseUrl = s"${ctx.scheme()}://${ctx.host()}"
+		val successUrl = s"$baseUrl/order/status?token=${order.token}"
+		val cancelUrl = s"$baseUrl/order/status?token=${order.token}&paymentError=1"
+		PaymentService.gatewayRedirectUrl(order, successUrl, cancelUrl) match {
+			case Some(url) => ctx.redirect(url, HttpStatus.FOUND)
+			case None => redirect(ctx, s"/cart/success?orderNumber=${order.orderNumber}")
+		}
 		mutable.Map.empty
 	}
 
