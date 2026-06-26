@@ -5,7 +5,7 @@ import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.task.TaskRunner
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.shop.entity.*
-import cz.kamenitxan.jakon.shop.task.PaymentStatusSyncTask
+import cz.kamenitxan.jakon.shop.task.{CartCleanupTask, PaymentStatusSyncTask}
 
 import java.math.BigDecimal
 import java.sql.Connection
@@ -30,6 +30,7 @@ class ShopInit extends JakonInit {
 	override def taskSetup(): Unit = {
 		super.taskSetup()
 		TaskRunner.registerTask(new PaymentStatusSyncTask(5, TimeUnit.MINUTES))
+		TaskRunner.registerTask(new CartCleanupTask)
 	}
 
 	override protected def afterInit(): Unit = {

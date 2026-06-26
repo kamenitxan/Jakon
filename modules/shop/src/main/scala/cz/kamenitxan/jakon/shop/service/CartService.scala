@@ -12,6 +12,13 @@ object CartService {
 
 	implicit val cartCls: Class[Cart] = classOf[Cart]
 
+	def findCartByToken(token: String)(implicit conn: Connection): Option[Cart] = {
+		val sql = "SELECT * FROM Cart WHERE token = ?"
+		val stmt = conn.prepareStatement(sql)
+		stmt.setString(1, token)
+		Option(DBHelper.selectSingleDeep(stmt))
+	}
+
 	def getOrCreateCart(token: String)(implicit conn: Connection): Cart = {
 		val sql = "SELECT * FROM Cart WHERE token = ?"
 		val stmt = conn.prepareStatement(sql)
