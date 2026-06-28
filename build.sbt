@@ -3,7 +3,7 @@ import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val V = new {
 	val Scala = "3.3.7"
-  val jakon = "0.7.3-SNAPSHOT"
+  val jakon = "0.8.0-SNAPSHOT"
 	val log4j = "2.26.0"
 	val circeVersion = "0.14.15"
 	val javalin = "7.2.2"

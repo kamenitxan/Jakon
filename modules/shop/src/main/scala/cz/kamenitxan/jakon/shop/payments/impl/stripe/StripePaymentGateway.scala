@@ -5,8 +5,8 @@ import cz.kamenitxan.jakon.shop.payments.*
 /**
  * [[cz.kamenitxan.jakon.shop.payments.PaymentGateway]] implementation backed by Stripe Checkout.
  *
- * Creates a Stripe Checkout Session for the provided [[PaymentRequest]] and returns a
- * [[PaymentInitialization]] with [[PaymentFlow.Redirect]] flow containing the session URL.
+ * Creates a Stripe Checkout Session for the provided [[cz.kamenitxan.jakon.shop.payments.PaymentRequest]] and returns a
+ * [[cz.kamenitxan.jakon.shop.payments.PaymentInitialization]] with [[cz.kamenitxan.jakon.shop.payments.PaymentFlow.Redirect]] flow containing the session URL.
  * The customer is then redirected to the Stripe-hosted payment page.
  *
  * Configuration is read from [[StripePaymentSettings]]. The gateway reports itself as
@@ -54,12 +54,12 @@ class StripePaymentGateway(private val checkoutClient: StripeCheckoutClient = De
 
 	/**
 	 * Fetches the current payment status of the Stripe Checkout Session and maps it
-	 * to a [[PaymentStatus]] constant.
+	 * to a [[cz.kamenitxan.jakon.shop.payments.PaymentStatus]] constant.
 	 *
 	 * Stripe {@code payment_status} mapping:
-	 * - {@code "paid"}                → [[PaymentStatus.Completed]]
-	 * - {@code "unpaid"}              → [[PaymentStatus.Pending]] (may also indicate expired session)
-	 * - {@code "no_payment_required"} → [[PaymentStatus.Completed]]
+	 * - {@code "paid"}                → [[cz.kamenitxan.jakon.shop.payments.PaymentStatus.Completed]]
+	 * - {@code "unpaid"}              → [[cz.kamenitxan.jakon.shop.payments.PaymentStatus.Pending]] (may also indicate expired session)
+	 * - {@code "no_payment_required"} → [[cz.kamenitxan.jakon.shop.payments.PaymentStatus.Completed]]
 	 */
 	override def fetchPaymentStatus(externalPaymentId: String): Option[String] = {
 		if (externalPaymentId == null || externalPaymentId.isBlank) return None

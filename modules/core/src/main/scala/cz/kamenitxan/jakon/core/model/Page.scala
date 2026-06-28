@@ -2,6 +2,7 @@ package cz.kamenitxan.jakon.core.model
 
 import cz.kamenitxan.jakon.core.database.JakonField
 import cz.kamenitxan.jakon.core.database.annotation.{ManyToOne, Transient}
+import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.ObjectSettings
 
 import java.sql.{Connection, Statement, Types}
@@ -25,7 +26,7 @@ class Page extends JakonObject with Ordered {
 	@JakonField(listOrder = -96)
 	var visibleOrder: Int = _
 
-	override def createUrl: String = "/page/" + title.replaceAll(" ", "_").toLowerCase
+	override def createUrl: String = "/page/" + Utils.toUrlSlug(title)
 
 
 	override def createObject(jid: Int, conn: Connection): Int = {

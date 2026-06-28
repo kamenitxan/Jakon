@@ -3,9 +3,9 @@ package cz.kamenitxan.jakon.shop.pagelet
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.dynamic.{AbstractPagelet, Get, Pagelet, Post}
 import cz.kamenitxan.jakon.logging.Logger
-import cz.kamenitxan.jakon.shop.{ShopSettings, ShopUtils}
 import cz.kamenitxan.jakon.shop.entity.*
 import cz.kamenitxan.jakon.shop.service.OrderItemService
+import cz.kamenitxan.jakon.shop.{ShopSettings, ShopUtils}
 import cz.kamenitxan.jakon.utils.mail.EmailEntity
 import io.javalin.http.{Context, HttpStatus}
 
@@ -43,8 +43,8 @@ class OrderReturnPagelet extends AbstractPagelet {
 	}
 
 	/**
-	 * Processes the submitted return form, creates [[OrderReturn]] and [[OrderReturnItem]] records,
-	 * and redirects to the confirmation page.
+	 * Processes the submitted return form, creates [[cz.kamenitxan.jakon.shop.entity.OrderReturn]] and
+	 * [[cz.kamenitxan.jakon.shop.entity.OrderReturnItem]] records, and redirects to the confirmation page.
 	 */
 	@Post(path = "/create", validate = false)
 	def createReturn(ctx: Context)(implicit conn: Connection): mutable.Map[String, Any] = {

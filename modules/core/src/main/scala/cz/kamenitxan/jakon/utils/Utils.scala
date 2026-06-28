@@ -5,9 +5,10 @@ import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.core.service.EmailTemplateService
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.mail.EmailTemplateEntity
+import org.apache.commons.lang3.StringUtils
 
 import java.io.{BufferedReader, InputStream, InputStreamReader}
-import java.lang.reflect.{Field, ParameterizedType, Type}
+import java.lang.reflect.Field
 import java.net.URLEncoder
 import java.util.Locale
 import java.util.stream.Collectors
@@ -155,5 +156,13 @@ object Utils {
 			}
 			tmpl
 		})
+	}
+
+	def toUrlSlug(s: String): String = {
+			StringUtils.stripAccents(s)
+				.toLowerCase
+				.replaceAll("[^a-z0-9\\-_/]", "_")
+				.replaceAll("_+", "_")
+				.replaceAll("^_|_$", "")
 	}
 }
