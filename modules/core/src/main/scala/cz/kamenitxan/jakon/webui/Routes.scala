@@ -197,6 +197,12 @@ object Routes {
 					ctx.result(res)
 				}
 			})
+			get("/objectTypes", new Handler {
+				override def handle(ctx: Context): Unit = {
+					val res = gson.toJson(Api.objectTypes())
+					ctx.result(res)
+				}
+			})
 			post("/files", new Handler {
 				override def handle(ctx: Context): Unit = {
 					val res = gson.toJson(Api.getFiles(ctx, Option.empty))

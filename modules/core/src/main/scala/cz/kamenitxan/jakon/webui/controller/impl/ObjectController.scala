@@ -264,13 +264,25 @@ object ObjectController {
 			), UNAUTHORIZED_TMPL)
 		}
 
-		// language=SQL
-		val sql = "DELETE FROM JakonObject WHERE id = ?"
 		val conn = DBHelper.getConnection
-		val stmt = conn.prepareStatement(sql)
-		stmt.setInt(1, objectId)
-		stmt.executeUpdate()
-		conn.close()
+		try {
+			// Block deletion if referenced by any KeyValueEntity
+			val refStmt = conn.prepareStatement("SELECT id FROM KeyValueEntity WHERE value = ?")
+			refStmt.setString(1, objectId.toString)
+			val refRs = refStmt.executeQuery()
+			val blockingIds = Iterator.continually(refRs).takeWhile(_.next()).map(_.getInt("id")).toList
+			if (blockingIds.nonEmpty) {
+				PageContext.getInstance().addMessage(MessageSeverity.ERROR, "OBJ_DELETE_CONSTRAINT_FAIL", Seq(blockingIds.mkString(", ")))
+				return redirect(ctx, ObjectPath + objectName)
+			}
+
+			// language=SQL
+			val stmt = conn.prepareStatement("DELETE FROM JakonObject WHERE id = ?")
+			stmt.setInt(1, objectId)
+			stmt.executeUpdate()
+		} finally {
+			conn.close()
+		}
 
 		ctx.redirect(ObjectPath + objectName)
 		new cz.kamenitxan.jakon.webui.Context(Map[String, Any](), ListTmpl)

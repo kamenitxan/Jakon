@@ -1,0 +1,99 @@
+{# @pebvariable name="field" type="cz.kamenitxan.jakon.webui.entity.FieldInfo" #}
+{# @pebvariable name="fieldHash" type="java.lang.Integer" #}
+
+<input type="text" class="form-control mb-2" name="{{ field.name }}" id="str_{{ fieldHash }}"
+       value="{{ field.value }}" {% if field.disabled %}disabled{% endif %}
+       maxlength="{{ field.htmlMaxLength }}">
+<input type="hidden" name="referencedObject" id="referencedObjectInput_{{ fieldHash }}">
+
+<div class="row g-2 align-items-center">
+	<div class="col-auto">
+		<select class="form-select form-select-sm" id="typepicker_{{ fieldHash }}">
+			<option value="">-- {{ i18n("common", "SELECT_OBJECT_TYPE") }} --</option>
+		</select>
+	</div>
+	<div class="col-auto">
+		<select class="form-select form-select-sm" id="objpicker_{{ fieldHash }}" disabled>
+			<option value="">---</option>
+		</select>
+	</div>
+</div>
+<script>
+	(() => {
+		const textInput = document.getElementById("str_{{ fieldHash }}");
+		const typePicker = document.getElementById("typepicker_{{ fieldHash }}");
+		const objPicker = document.getElementById("objpicker_{{ fieldHash }}");
+		const refInput = document.getElementById("referencedObjectInput_{{ fieldHash }}");
+
+		const preselectedId = "{{ field.value }}";
+		const rawType = "{{ getAttr(object, 'referencedObject') }}";
+		const preselectedType = rawType.includes('.') ? rawType.split('.').pop() : rawType;
+
+		function loadObjects(typeName, preselectId) {
+			while (objPicker.options.length > 0) objPicker.remove(0);
+			const empty = document.createElement("option");
+			empty.value = "";
+			empty.text = "---";
+			objPicker.add(empty);
+
+			if (!typeName) {
+				objPicker.disabled = true;
+				return;
+			}
+
+			fetch("/admin/api/search", {
+				method: "POST",
+				headers: {"Content-Type": "application/json"},
+				body: JSON.stringify({objectName: typeName, query: ""})
+			})
+			.then(r => r.json())
+			.then(data => {
+				(data.result || []).forEach(item => {
+					const opt = document.createElement("option");
+					opt.value = item.id;
+					opt.text = "Id: " + item.id + " - " + item.name;
+					if (String(item.id) === String(preselectId)) opt.selected = true;
+					objPicker.add(opt);
+				});
+				objPicker.disabled = false;
+			});
+		}
+
+		fetch("/admin/api/objectTypes")
+			.then(r => r.json())
+			.then(types => {
+				types.forEach(fullName => {
+					const simpleName = fullName.includes('.') ? fullName.split('.').pop() : fullName;
+					const opt = document.createElement("option");
+					opt.value = fullName;
+					opt.text = simpleName;
+					if (fullName === rawType || simpleName === preselectedType) opt.selected = true;
+					typePicker.add(opt);
+				});
+
+				if (preselectedType) {
+					refInput.value = rawType;
+					loadObjects(preselectedType, preselectedId);
+				}
+			});
+
+		typePicker.addEventListener("change", function() {
+			const simpleName = this.value.includes('.') ? this.value.split('.').pop() : this.value;
+			refInput.value = this.value;
+			loadObjects(simpleName, null);
+		});
+
+		objPicker.addEventListener("change", function() {
+			if (this.value) {
+				textInput.value = this.value;
+			}
+		});
+
+		textInput.addEventListener("input", function() {
+			refInput.value = "";
+			typePicker.value = "";
+			while (objPicker.options.length > 0) objPicker.remove(0);
+			objPicker.disabled = true;
+		});
+	})();
+</script>

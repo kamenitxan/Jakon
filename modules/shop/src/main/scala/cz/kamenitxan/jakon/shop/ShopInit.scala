@@ -2,6 +2,7 @@ package cz.kamenitxan.jakon.shop
 
 import cz.kamenitxan.jakon.JakonInit
 import cz.kamenitxan.jakon.core.database.DBHelper
+import cz.kamenitxan.jakon.core.model.Post
 import cz.kamenitxan.jakon.core.task.TaskRunner
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.shop.entity.*
@@ -14,6 +15,8 @@ import java.util.concurrent.TimeUnit
 class ShopInit extends JakonInit {
 
 	override def daoSetup(): Unit = {
+		super.daoSetup()
+		DBHelper.addDao(classOf[Post])
 		DBHelper.addDao(classOf[PaymentMethod])
 		DBHelper.addDao(classOf[ShippingMethod])
 		DBHelper.addDao(classOf[ShopCategory])
@@ -34,6 +37,7 @@ class ShopInit extends JakonInit {
 	}
 
 	override protected def afterInit(): Unit = {
+		super.afterInit()
 		DBHelper.withDbConnection(implicit conn => {
 			if (isEmpty) {
 				Logger.info("No shop data found — seeding test data")

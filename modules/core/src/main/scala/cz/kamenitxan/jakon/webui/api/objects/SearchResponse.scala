@@ -14,6 +14,10 @@ class SearchResponse private(val result: java.util.List[Result], success: Boolea
 		this(result.map(o => Result(o.id, o.toString)).asJava, success)
 	}
 
+	def this(success: Boolean, results: Seq[Result]) = {
+		this(results.toList.asJava, success)
+	}
+
 }
 
 case class Result(id: Integer, name: String)
