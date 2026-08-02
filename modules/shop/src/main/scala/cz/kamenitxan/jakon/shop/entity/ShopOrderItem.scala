@@ -42,11 +42,15 @@ class ShopOrderItem extends JakonObject with Serializable {
 	@JakonField(required = false)
 	var note: String = ""
 
+	/** Human-readable variant selection snapshot, e.g. "Barva: Červená, Velikost: M". May be null. */
+	@JakonField(required = false)
+	var variantSelection: String = _
+
 	override val objectSettings: ObjectSettings = ShopOrderItem.objectSettings
 
 	override def createObject(conn: Connection): Int = {
 		// language=SQL
-		val sql = "INSERT INTO ShopOrderItem (order_id, product_id, productName, quantity, unitPrice, totalPrice, note, url, published) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+		val sql = "INSERT INTO ShopOrderItem (order_id, product_id, productName, quantity, unitPrice, totalPrice, note, variantSelection, url, published) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 		val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
 		if (shopOrder != null) {
 			stmt.setInt(1, shopOrder.id)
@@ -63,8 +67,9 @@ class ShopOrderItem extends JakonObject with Serializable {
 		stmt.setBigDecimal(5, unitPrice)
 		stmt.setBigDecimal(6, totalPrice)
 		stmt.setString(7, note)
-		stmt.setString(8, url)
-		stmt.setBoolean(9, published)
+		if (variantSelection != null) stmt.setString(8, variantSelection) else stmt.setNull(8, Types.VARCHAR)
+		stmt.setString(9, url)
+		stmt.setBoolean(10, published)
 		val generatedId = executeInsert(stmt)
 		this.id = generatedId
 		generatedId
@@ -76,7 +81,7 @@ class ShopOrderItem extends JakonObject with Serializable {
 
 	override def updateObject(jid: Int, conn: Connection): Unit = {
 		// language=SQL
-		val sql = "UPDATE ShopOrderItem SET order_id = ?, product_id = ?, productName = ?, quantity = ?, unitPrice = ?, totalPrice = ?, note = ?, url = ?, published = ? WHERE id = ?"
+		val sql = "UPDATE ShopOrderItem SET order_id = ?, product_id = ?, productName = ?, quantity = ?, unitPrice = ?, totalPrice = ?, note = ?, variantSelection = ?, url = ?, published = ? WHERE id = ?"
 		val stmt = conn.prepareStatement(sql)
 		if (shopOrder != null) {
 			stmt.setInt(1, shopOrder.id)
@@ -93,9 +98,10 @@ class ShopOrderItem extends JakonObject with Serializable {
 		stmt.setBigDecimal(5, unitPrice)
 		stmt.setBigDecimal(6, totalPrice)
 		stmt.setString(7, note)
-		stmt.setString(8, url)
-		stmt.setBoolean(9, published)
-		stmt.setInt(10, jid)
+		if (variantSelection != null) stmt.setString(8, variantSelection) else stmt.setNull(8, Types.VARCHAR)
+		stmt.setString(9, url)
+		stmt.setBoolean(10, published)
+		stmt.setInt(11, jid)
 		stmt.executeUpdate()
 	}
 }

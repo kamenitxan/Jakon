@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.webui.controller.impl
 
 import cz.kamenitxan.jakon.core.configuration.Settings
+import cz.kamenitxan.jakon.core.database.annotation.ManyToMany
 import cz.kamenitxan.jakon.core.database.{DBHelper, I18n}
 import cz.kamenitxan.jakon.core.model.{I18nData, JakonObject, Ordered}
 import cz.kamenitxan.jakon.logging.Logger
@@ -207,12 +208,16 @@ object ObjectController {
 			if (fieldRefOpt.isDefined) {
 				val fieldRef = fieldRefOpt.get
 				fieldRef.setAccessible(true)
-				val value = ctx.formParams(p).asScala.map(_.trim).mkString("\r\n").conform(fieldRef)
-				if (value != null) {
-					p match {
-						case "visibleOrder" => formOrder = value.asInstanceOf[Int]
-						case "objectOrder" =>
-						case _ => fieldRef.set(obj, value)
+				if (fieldRef.getDeclaredAnnotation(classOf[ManyToMany]) != null) {
+					// ManyToMany fields are handled separately via junction table updates below
+				} else {
+					val value = ctx.formParams(p).asScala.map(_.trim).mkString("\r\n").conform(fieldRef)
+					if (value != null) {
+						p match {
+							case "visibleOrder" => formOrder = value.asInstanceOf[Int]
+							case "objectOrder" =>
+							case _ => fieldRef.set(obj, value)
+						}
 					}
 				}
 			}
@@ -243,6 +248,32 @@ object ObjectController {
 		val i18nFieldOpt = fields.find(_.getAnnotation(classOf[I18n]) != null)
 		if (i18nFieldOpt.nonEmpty) {
 			createI18nData(obj.id, i18nFieldOpt.get, ctx, params)
+		}
+
+		// Persist ManyToMany junction table rows
+		val m2mFields = fields.filter(_.getDeclaredAnnotation(classOf[ManyToMany]) != null)
+		if (m2mFields.nonEmpty) {
+			DBHelper.withDbConnection { implicit conn =>
+				m2mFields.foreach { field =>
+					field.setAccessible(true)
+					val ann         = field.getDeclaredAnnotation(classOf[ManyToMany])
+					val targetClass = ann.genericClass()
+					val joinTable   = objectClass.getSimpleName + targetClass.getSimpleName
+					val joinCol     = { val n = objectClass.getSimpleName; n.head.toLower + n.tail + "_id" }
+					val inverseCol  = { val n = targetClass.getSimpleName; n.head.toLower + n.tail + "_id" }
+					val deleteStmt = conn.prepareStatement(s"DELETE FROM $joinTable WHERE $joinCol = ?")
+					deleteStmt.setInt(1, obj.id)
+					deleteStmt.executeUpdate()
+					deleteStmt.close()
+					ctx.formParams(field.getName).asScala.filter(_.nonEmpty).foreach { idStr =>
+						val insertStmt = conn.prepareStatement(s"INSERT INTO $joinTable ($joinCol, $inverseCol) VALUES (?, ?)")
+						insertStmt.setInt(1, obj.id)
+						insertStmt.setInt(2, idStr.toInt)
+						insertStmt.executeUpdate()
+						insertStmt.close()
+					}
+				}
+			}
 		}
 
 		if (ctx.queryParam("save_and_new").toBoolOrFalse) {

@@ -41,7 +41,7 @@ class FieldConformerTest extends AnyFunSuite {
 		var localDate: LocalDate = _
 		@JakonField
 		var localDateTime: LocalDateTime = _
-		@ManyToMany
+		@ManyToMany(genericClass = classOf[JakonObject])
 		@JakonField
 		var self: TestObject = _
 		@JakonField

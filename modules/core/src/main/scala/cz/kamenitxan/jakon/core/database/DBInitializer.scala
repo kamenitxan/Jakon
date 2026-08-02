@@ -3,7 +3,7 @@ package cz.kamenitxan.jakon.core.database
 import com.zaxxer.hikari.HikariConfig
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
 import cz.kamenitxan.jakon.core.database.DBHelper.getConnection
-import cz.kamenitxan.jakon.core.database.annotation.{Column, ManyToOne, Transient}
+import cz.kamenitxan.jakon.core.database.annotation.{Column, ManyToMany, ManyToOne, Transient}
 import cz.kamenitxan.jakon.core.model.*
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.Utils
@@ -156,6 +156,7 @@ object DBInitializer {
 				.foreach(f => {
 					val columnAnn = f.getAnnotation(classOf[Column])
 					val manyToOne = f.getAnnotation(classOf[ManyToOne])
+					val manyToMany = f.getAnnotation(classOf[ManyToMany])
 					val column = if (columnAnn != null) {
 						collumns.find(c => c.name == columnAnn.name())
 					} else if (manyToOne != null) {
@@ -163,16 +164,52 @@ object DBInitializer {
 					} else {
 						collumns.find(c => c.name == f.getName)
 					}
-					if (column.isEmpty) {
+					if (column.isEmpty && manyToMany == null) {
 						Logger.error(s"Field ${jo.getSimpleName}.${f.getName} is not in DB")
+					}
+					if (manyToMany != null) {
+						checkJunctionTable(jo, manyToMany)
 					}
 				})
 		})
 	}
 
+	private def checkJunctionTable(jo: Class[? <: JakonObject], ann: ManyToMany)(implicit conn: Connection): Unit = {
+		val targetClass = ann.genericClass()
+		val joinTable   = jo.getSimpleName + targetClass.getSimpleName
+		val joinCol     = { val n = jo.getSimpleName; n.head.toLower + n.tail + "_id" }
+		val inverseCol  = { val n = targetClass.getSimpleName; n.head.toLower + n.tail + "_id" }
+
+		var tableExists = false
+		val checkStmt = conn.createStatement()
+		try {
+			checkStmt.executeQuery(s"SELECT 1 FROM $joinTable LIMIT 1")
+			tableExists = true
+		} catch {
+			case _: SQLException =>
+		} finally {
+			checkStmt.close()
+		}
+
+		if (!tableExists) {
+			Logger.info(s"Creating ManyToMany junction table $joinTable")
+			val createSql =
+				s"""CREATE TABLE IF NOT EXISTS $joinTable (
+					 |    $joinCol    INT NOT NULL,
+					 |    $inverseCol INT NOT NULL,
+					 |    PRIMARY KEY ($joinCol, $inverseCol),
+					 |    FOREIGN KEY ($joinCol)    REFERENCES ${jo.getSimpleName} (id) ON DELETE CASCADE,
+					 |    FOREIGN KEY ($inverseCol) REFERENCES ${targetClass.getSimpleName} (id) ON DELETE CASCADE
+					 |)""".stripMargin
+			val createStmt = conn.createStatement()
+			createStmt.execute(createSql)
+			createStmt.close()
+		}
+	}
+
 	case class TableColumnInfo(
-															 name: String,
-															 dataType: String,
-														 )
+															name: String,
+		                          dataType: String,
+														)
 
 }

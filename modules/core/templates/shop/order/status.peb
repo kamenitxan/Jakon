@@ -74,7 +74,12 @@
             <tbody>
               {% for item in orderItems %}
               <tr>
-                <td>{{ item.productName }}</td>
+                <td>
+                  {{ item.productName }}
+                  {% if item.variantSelection is not null and item.variantSelection != "" %}
+                  <div class="text-sm opacity-70">{{ item.variantSelection }}</div>
+                  {% endif %}
+                </td>
                 <td class="text-center">{{ item.quantity }}</td>
                 <td class="text-right">{{ item.unitPrice }} Kč</td>
                 <td class="text-right font-bold">{{ item.totalPrice }} Kč</td>

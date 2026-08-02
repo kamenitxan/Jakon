@@ -7,7 +7,7 @@ import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.shop.ShopUtils
 import cz.kamenitxan.jakon.shop.entity.*
 import cz.kamenitxan.jakon.shop.payments.PaymentService
-import cz.kamenitxan.jakon.shop.service.CartService
+import cz.kamenitxan.jakon.shop.service.{CartService, ProductVariantService}
 import cz.kamenitxan.jakon.utils.mail.EmailEntity
 import io.javalin.http.{Context, HttpStatus}
 
@@ -42,17 +42,28 @@ class CartPagelet extends AbstractPagelet {
 		val cart = CartService.getOrCreateCart(token)
 		val items = CartService.getItems(cart.id)
 		val total = CartService.getTotalPrice(items)
+		val variantTexts: java.util.Map[Integer, String] = {
+			val m = new java.util.HashMap[Integer, String]()
+			items.foreach { item =>
+				val text = ProductVariantService.buildReadableSelection(item.variantSelection)
+				if (text.nonEmpty) m.put(item.id, text)
+			}
+			m
+		}
 		mutable.Map(
 			"cart" -> cart,
 			"cartItems" -> items.asJava,
 			"total" -> total,
+			"variantTexts" -> variantTexts,
 			"step" -> 1
-		) ++ ShopUtils.commonPageData
+		)
 	}
 
 	class AddData {
 		var productId: String = ""
 		var quantity: String = "1"
+		/** Comma-separated ProductVariantValue IDs submitted from the product form. */
+		var variantValues: String = ""
 	}
 
 	@Post(path = "/add")
@@ -60,11 +71,12 @@ class CartPagelet extends AbstractPagelet {
 		val token = getOrSetCartToken(ctx)
 		val productIdOpt = Option(data.productId).filter(_.nonEmpty).flatMap(s => Try(s.toInt).toOption)
 		val qty = Option(data.quantity).filter(_.nonEmpty).flatMap(s => Try(s.toInt).toOption).getOrElse(1)
+		val variantSelection = Option(data.variantValues).map(_.trim).filter(_.nonEmpty).orNull
 		productIdOpt match {
 			case Some(productId) =>
 				val cart = CartService.getOrCreateCart(token)
-				CartService.addItem(cart.id, productId, qty)
-				Logger.debug(s"Added product $productId qty=$qty to cart ${cart.id}")
+				CartService.addItem(cart.id, productId, qty, variantSelection)
+				Logger.debug(s"Added product $productId qty=$qty variants=$variantSelection to cart ${cart.id}")
 			case None =>
 				Logger.warn("addToCart called without valid productId")
 		}
@@ -105,7 +117,7 @@ class CartPagelet extends AbstractPagelet {
 			"shippingMethods" -> shippingMethods.asJava,
 			"paymentMethods" -> paymentMethods.asJava,
 			"step" -> 2
-		) ++ ShopUtils.commonPageData
+		)
 	}
 
 	class CheckoutData {
@@ -152,7 +164,7 @@ class CartPagelet extends AbstractPagelet {
 			"itemsTotal" -> total,
 			"grandTotal" -> grandTotal,
 			"step" -> 3
-		) ++ prefill ++ ShopUtils.commonPageData
+		) ++ prefill
 	}
 
 	class DeliveryData {
@@ -241,6 +253,7 @@ class CartPagelet extends AbstractPagelet {
 			               else BigDecimal.ZERO
 			orderItem.unitPrice = unitPrice
 			orderItem.totalPrice = unitPrice.multiply(BigDecimal.valueOf(item.quantity))
+			orderItem.variantSelection = ProductVariantService.buildReadableSelection(item.variantSelection)
 			orderItem.published = true
 			orderItem.create()
 		}
@@ -274,7 +287,7 @@ class CartPagelet extends AbstractPagelet {
 		mutable.Map(
 			"orderNumber" -> orderNumber,
 			"orderToken" -> orderToken
-		) ++ ShopUtils.commonPageData
+		)
 	}
 
 	private def generateOrderNumber: String = {
@@ -344,4 +357,6 @@ class CartPagelet extends AbstractPagelet {
 			case ex: Exception => Logger.error(s"Failed to create confirmation email for order ${shopOrder.orderNumber}", ex)
 		}
 	}
+
+	override def sharedData: Map[String, Any] = ShopUtils.commonPageData
 }

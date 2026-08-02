@@ -15,6 +15,8 @@ import scala.jdk.CollectionConverters.*
 @Pagelet(path = "/order", authRequired = false)
 class OrderStatusPagelet extends AbstractPagelet {
 
+	override def sharedData: Map[String, Any] = ShopUtils.commonPageData
+
 	@Get(path = "/status", template = "order/status")
 	def showOrderStatus(ctx: Context)(implicit conn: Connection): mutable.Map[String, Any] = {
 		val token = Option(ctx.queryParam("token")).filter(_.nonEmpty)
@@ -24,7 +26,7 @@ class OrderStatusPagelet extends AbstractPagelet {
 			case Some(t) =>
 				loadOrderByToken(t) match {
 					case None =>
-						mutable.Map("error" -> "Objednávka nenalezena nebo neplatný odkaz.") ++ ShopUtils.commonPageData
+						mutable.Map("error" -> "Objednávka nenalezena nebo neplatný odkaz.")
 					case Some(order) =>
 						val orderItems = OrderItemService.getByOrder(order.id)
 							val isPaid = OrderPaymentService.getByOrder(order.id).exists(_.status == PaymentStatus.Completed)
@@ -33,7 +35,7 @@ class OrderStatusPagelet extends AbstractPagelet {
 								"orderItems" -> orderItems.asJava,
 								"isPaid" -> isPaid,
 								"paymentError" -> Option(ctx.queryParam("paymentError")).getOrElse("")
-							) ++ ShopUtils.commonPageData
+							)
 				}
 		}
 	}

@@ -1,7 +1,7 @@
 package cz.kamenitxan.jakon.webui.conform
 
 import cz.kamenitxan.jakon.core.configuration.Settings
-import cz.kamenitxan.jakon.core.database.annotation.{ManyToOne, OneToMany}
+import cz.kamenitxan.jakon.core.database.annotation.{ManyToMany, ManyToOne, OneToMany}
 import cz.kamenitxan.jakon.core.database.{I18n, JakonField}
 import cz.kamenitxan.jakon.core.model.{I18nData, JakonObject}
 import cz.kamenitxan.jakon.utils.TypeReferences.*
@@ -98,6 +98,12 @@ object FieldConformer {
 					val typeCls = f.getDeclaredAnnotation(classOf[OneToMany]).genericClass()
 					val typeName = typeCls.getTypeName.substring(typeCls.getTypeName.lastIndexOf(".") + 1)
 					infos = infos :+ new FieldInfo(an, HtmlType.CHECKBOX, f, fv, "OneToMany", typeName)
+				} else if (f.getDeclaredAnnotation(classOf[ManyToMany]) != null) {
+					val fv = f.get(obj)
+					val m2mAnn = f.getDeclaredAnnotation(classOf[ManyToMany])
+					val targetClass = m2mAnn.genericClass()
+					val typeName = targetClass.getTypeName.substring(targetClass.getTypeName.lastIndexOf(".") + 1)
+					infos = infos :+ new FieldInfo(an, HtmlType.CHECKBOX, f, fv, "ManyToMany", typeName)
 				} else {
 					f.getType match {
 						case BOOLEAN =>

@@ -35,6 +35,7 @@ abstract class AbstractPagelet extends IPagelet {
 		val ctx = if (context != null) context else mutable.Map[String, Any]()
 
 		ctx += "jakon_messages" -> PageContext.getInstance().messages.asJava
+		ctx ++= sharedData
 		val rp = javalinCtx.queryParamMap()
 		val srp = javalinCtx.sessionAttribute(AbstractPagelet.REQUEST_PARAMS).asInstanceOf[java.util.Map[String, java.util.List[String]]]
 		val mergedRp = if (srp != null) {
@@ -56,6 +57,8 @@ abstract class AbstractPagelet extends IPagelet {
 		ctx.sessionAttribute(AbstractPagelet.REQUEST_PARAMS, requestParams.asJava)
 		ctx.redirect(target)
 	}
+	
+	def sharedData: Map[String, Any] = Map.empty
 }
 
 object AbstractPagelet {

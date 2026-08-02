@@ -30,14 +30,14 @@ class OrderReturnPagelet extends AbstractPagelet {
 				mutable.Map(
 					"error" -> "Pro tuto objednávku již bylo vytvořeno odstoupení od smlouvy.",
 					"token" -> tokenFrom(ctx)
-				) ++ ShopUtils.commonPageData
+				)
 			} else {
 				mutable.Map(
 					"order" -> order,
 					"orderItems" -> orderItems.asJava,
 					"reasons" -> OrderReturnReason.all.asJava,
 					"token" -> tokenFrom(ctx)
-				) ++ ShopUtils.commonPageData
+				)
 			}
 		}
 	}
@@ -70,7 +70,7 @@ class OrderReturnPagelet extends AbstractPagelet {
 					"reasons" -> OrderReturnReason.all.asJava,
 					"token" -> token,
 					"formError" -> "Vyberte alespoň jednu položku k vrácení."
-				) ++ ShopUtils.commonPageData
+				)
 			}
 
 			val orderReturn = new OrderReturn
@@ -118,13 +118,13 @@ class OrderReturnPagelet extends AbstractPagelet {
 		val token = tokenFrom(ctx)
 
 		if (returnNumber.isEmpty) {
-			return mutable.Map("error" -> "Chybí číslo odstoupení.") ++ ShopUtils.commonPageData
+			return mutable.Map("error" -> "Chybí číslo odstoupení.")
 		}
 
 		val orderReturn = findReturnByNumber(returnNumber)
 		orderReturn match {
 			case None =>
-				mutable.Map("error" -> "Odstoupení nebylo nalezeno.") ++ ShopUtils.commonPageData
+				mutable.Map("error" -> "Odstoupení nebylo nalezeno.")
 			case Some(r) =>
 				mutable.Map(
 					"orderReturn" -> r,
@@ -136,7 +136,7 @@ class OrderReturnPagelet extends AbstractPagelet {
 						"zip"     -> ShopSettings.returnZip,
 						"country" -> ShopSettings.returnCountry
 					).asJava
-				) ++ ShopUtils.commonPageData
+				)
 		}
 	}
 
@@ -218,4 +218,6 @@ class OrderReturnPagelet extends AbstractPagelet {
 				Logger.error(s"Failed to send return confirmation email for return ${orderReturn.returnNumber}", ex)
 		}
 	}
+
+	override def sharedData: Map[String, Any] = ShopUtils.commonPageData
 }

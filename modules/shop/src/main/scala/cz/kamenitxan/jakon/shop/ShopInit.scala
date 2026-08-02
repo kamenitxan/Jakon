@@ -20,6 +20,8 @@ class ShopInit extends JakonInit {
 		DBHelper.addDao(classOf[PaymentMethod])
 		DBHelper.addDao(classOf[ShippingMethod])
 		DBHelper.addDao(classOf[ShopCategory])
+		DBHelper.addDao(classOf[ProductVariant])
+		DBHelper.addDao(classOf[ProductVariantValue])
 		DBHelper.addDao(classOf[ShopProduct])
 		DBHelper.addDao(classOf[Cart])
 		DBHelper.addDao(classOf[CartItem])
