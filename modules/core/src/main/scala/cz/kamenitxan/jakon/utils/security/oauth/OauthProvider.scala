@@ -5,6 +5,7 @@ import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
 import cz.kamenitxan.jakon.core.service.UserService
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.PageContext
+import cz.kamenitxan.jakon.utils.security.AuthUtils
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import io.javalin.http.Context
 
@@ -26,7 +27,7 @@ trait OauthProvider {
 			false
 		} else {
 			Logger.info("User " + user.username + " logged in")
-			ctx.sessionAttribute("user", user)
+			AuthUtils.logIn(ctx, user)
 			true
 		}
 	}

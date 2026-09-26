@@ -18,8 +18,12 @@ import io.javalin.apibuilder.ApiBuilder
 import io.javalin.config.{JavalinConfig, RoutesConfig}
 import io.javalin.http.{Context, Handler, HttpStatus}
 import io.javalin.plugin.bundled.CorsPluginConfig
+import org.eclipse.jetty.ee10.servlet.SessionHandler
+import org.eclipse.jetty.http.HttpCookie
 
 import java.io.File
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
@@ -114,6 +118,16 @@ class JakonInit {
 
 		val app = Javalin.create(config => {
 			config.jetty.port = portNumber
+			config.jetty.modifyServletContextHandler(handler => {
+				if (handler.getSessionHandler == null) {
+					handler.setSessionHandler(new SessionHandler())
+				}
+				val sessionHandler = handler.getSessionHandler
+				sessionHandler.setHttpOnly(true)
+				sessionHandler.setSameSite(HttpCookie.SameSite.LAX)
+				// Secure flag whenever request comes over HTTPS
+				sessionHandler.setSecureRequestOnly(true)
+			})
 			config.http.defaultContentType = "text/html; charset=utf-8"
 			config.router.treatMultipleSlashesAsSingleSlash = true
 			config.staticFiles.add(Settings.getStaticDir)
@@ -193,9 +207,9 @@ class JakonInit {
 					if (user == null || (!user.acl.adminAllowed && !user.acl.allowedFrontendPrefixes.contains(pp))) {
 						Logger.debug(s"User $user denied access to '$pp*'")
 						if (ctx.path().startsWith(Routes.AdminPrefix)) {
-							ctx.redirect(Routes.AdminPrefix + s"?redirectTo=${ctx.path()}", HttpStatus.FOUND)
+							ctx.redirect(Routes.AdminPrefix + s"?redirectTo=${URLEncoder.encode(ctx.path(), StandardCharsets.UTF_8)}", HttpStatus.FOUND)
 						} else {
-							ctx.redirect(Settings.getLoginPath + s"?redirectTo=${ctx.path()}", HttpStatus.FOUND)
+							ctx.redirect(Settings.getLoginPath + s"?redirectTo=${URLEncoder.encode(ctx.path(), StandardCharsets.UTF_8)}", HttpStatus.FOUND)
 						}
 					}
 

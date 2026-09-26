@@ -26,7 +26,7 @@ class OauthLoginRouter extends AbstractAdminPagelet {
 		}
 		if (success) {
 			val redirectTo = ctx.queryParam(OauthProvider.REDIRECT_TO)
-			ctx.redirect(redirectTo.getOrElse("/admin/index"))
+			ctx.redirect(safeRedirectOr(redirectTo, "/admin/index"))
 		} else {
 			PageContext.getInstance().addMessage(MessageSeverity.ERROR, "OAUTH_LOGIN_FAILED")
 			ctx.redirect("/admin")

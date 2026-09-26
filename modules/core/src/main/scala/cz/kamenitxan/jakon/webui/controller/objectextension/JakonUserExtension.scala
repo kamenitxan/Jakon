@@ -5,7 +5,7 @@ import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.dynamic.{Get, Pagelet}
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.core.service.UserService
-import cz.kamenitxan.jakon.utils.PageContext
+import cz.kamenitxan.jakon.utils.{PageContext, Utils}
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import io.javalin.http.Context
 
@@ -41,11 +41,7 @@ class JakonUserExtension extends AbstractObjectExtension {
 		})
 
 
-		val redirectTo = if (ctx.header("Referer") != null) {
-			ctx.header("Referer")
-		} else {
-			"/admin/object/JakonUser"
-		}
+		val redirectTo = Utils.localPathOr(ctx.header("Referer"), "/admin/object/JakonUser")
 		redirect(ctx, redirectTo)
 
 

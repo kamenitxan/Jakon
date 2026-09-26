@@ -53,6 +53,7 @@ class TestHttpServletRequest extends HttpServletRequest {
 	override def getServletPath: String = ???
 
 	override def getSession(create: Boolean): HttpSession = {
+		if (session != null || !create) return session
 		session = new HttpSession {
 			private val attributes: mutable.Map[String, Any] = mutable.Map[String, Any]()
 
@@ -76,7 +77,7 @@ class TestHttpServletRequest extends HttpServletRequest {
 			
 			override def setAttribute(name: String, value: Any): Unit = attributes.put(name, value)
 			
-			override def removeAttribute(name: String): Unit = ???
+			override def removeAttribute(name: String): Unit = attributes.remove(name)
 			
 			override def invalidate(): Unit = ???
 
@@ -93,7 +94,7 @@ class TestHttpServletRequest extends HttpServletRequest {
 		}
 	}
 
-	override def changeSessionId(): String = ???
+	override def changeSessionId(): String = java.util.UUID.randomUUID().toString
 
 	override def isRequestedSessionIdValid: Boolean = ???
 

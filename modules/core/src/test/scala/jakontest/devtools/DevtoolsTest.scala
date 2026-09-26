@@ -1,5 +1,6 @@
 package jakontest.devtools
 
+import cz.kamenitxan.jakon.devtools.SafeFileResolver
 import cz.kamenitxan.jakon.webui.controller.impl.FileManagerController
 import jakontest.test.TestBase
 import org.openqa.selenium.WebDriver
@@ -28,6 +29,18 @@ class DevtoolsTest extends TestBase {
 		implicit val driver: WebDriver = f.driver
 		driver.get(host + "/upload/ufctest.txt")
 		assert(driver.getPageSource.contains(content))
+	}
+
+	test("SafeFileResolver prevents path traversal") { _ =>
+		val base = FileManagerController.REPOSITORY_BASE_PATH + "/basePath"
+		val file = new File(base + "/sfrtest.txt")
+		file.createNewFile()
+
+		assert(SafeFileResolver.resolve(base, "/sfrtest.txt").isDefined)
+		assert(SafeFileResolver.resolve(base, "/../basePath/sfrtest.txt").isDefined)
+		assert(SafeFileResolver.resolve(base, "/../../build.sbt").isEmpty)
+		assert(SafeFileResolver.resolve(base, "/nonexistent.txt").isEmpty)
+		assert(SafeFileResolver.resolve(base, "/").isEmpty)
 	}
 
 

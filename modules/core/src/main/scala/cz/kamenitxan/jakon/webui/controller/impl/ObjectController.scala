@@ -47,8 +47,9 @@ object ObjectController {
 			val objectSettings = objectClass.get.getDeclaredConstructor().newInstance().objectSettings
 			implicit val conn: Connection = DBHelper.getConnection
 			try {
+				val filter = SqlGen.parseFilterParams(filterParams, objectClass.get)
 				val filterSql = {
-					val fp = SqlGen.parseFilterParams(filterParams, objectClass.get)
+					val fp = filter.sql
 					val of = if (objectSettings != null) objectSettings.customFilter else ""
 					if(fp.nonEmpty && of.nonEmpty) fp + " AND " + of
 					else if (fp.nonEmpty && of.isEmpty) fp
@@ -59,8 +60,9 @@ object ObjectController {
 				val joinSql = createSqlJoin(objectClass.get)
 				// pocet objektu
 				// language=SQL
-				val countSql = s"SELECT count(*) FROM JakonObject $joinSql $filterSql"
-				val count = DBHelper.count(countSql)
+				val countStmt = conn.prepareStatement(s"SELECT count(*) FROM JakonObject $joinSql $filterSql")
+				filter.bind(countStmt)
+				val count = DBHelper.count(countStmt)
 
 				// seznam objektu
 				implicit val ocls: Class[JakonObject] = objectClass.get.asInstanceOf[Class[JakonObject]]
@@ -74,8 +76,9 @@ object ObjectController {
 
 				// language=SQL
 				val listSql = s"SELECT * FROM JakonObject $joinSql $filterSql $order LIMIT $pageSize OFFSET $first"
-				val stmt2 = conn.createStatement()
-				val resultList = DBHelper.selectDeep(stmt2, listSql)
+				val stmt2 = conn.prepareStatement(listSql)
+				filter.bind(stmt2)
+				val resultList = DBHelper.selectDeep(stmt2)
 				// TODO: nacist foreign key objekty
 				val pageItems: Seq[JakonObject] = if (ocls.getInterfaces.contains(classOf[Ordered])) {
 					Ordered.fetchVisibleOrder(resultList, ocls)

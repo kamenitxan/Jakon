@@ -67,7 +67,8 @@ class SqlGenTest extends TestBase {
 			"double" -> "invalid"
 		)
 		val res = SqlGen.parseFilterParams(params, classOf[TestObject])
-		assert("WHERE TestObject.double = \"invalid\"" == res)
+		assert("WHERE TestObject.double = ?" == res.sql)
+		assert(Seq("invalid") == res.params)
 	}
 
 	test("parseFilterParams invalid boolean") { _ =>
@@ -75,6 +76,43 @@ class SqlGenTest extends TestBase {
 			"boolean" -> "invalid"
 		)
 		val res = SqlGen.parseFilterParams(params, classOf[TestObject])
-		assert("WHERE TestObject.boolean = \"invalid\"" == res)
+		assert("WHERE TestObject.boolean = ?" == res.sql)
+		assert(Seq("invalid") == res.params)
+	}
+
+	test("parseFilterParams valid number and boolean") { _ =>
+		val params = mutable.LinkedHashMap(
+			"double" -> "1.5",
+			"boolean" -> "true"
+		)
+		val res = SqlGen.parseFilterParams(params, classOf[TestObject])
+		assert("WHERE TestObject.double = ? AND TestObject.boolean = ?" == res.sql)
+		assert(Seq(1.5, 1) == res.params)
+	}
+
+	test("parseFilterParams injection is parametrized") { _ =>
+		val params = mutable.Map(
+			"string" -> "x\" OR 1=1 --"
+		)
+		val res = SqlGen.parseFilterParams(params, classOf[TestObject])
+		assert("WHERE TestObject.string = ?" == res.sql)
+		assert(Seq("x\" or 1=1 --") == res.params)
+	}
+
+	test("parseFilterParams like") { _ =>
+		val params = mutable.Map(
+			"string" -> "Ab*"
+		)
+		val res = SqlGen.parseFilterParams(params, classOf[TestObject])
+		assert("WHERE TestObject.string LIKE ?" == res.sql)
+		assert(Seq("ab%") == res.params)
+	}
+
+	test("parseFilterParams unknown field is ignored") { _ =>
+		val params = mutable.Map(
+			"nonexistent\" OR 1=1 --" -> "x"
+		)
+		val res = SqlGen.parseFilterParams(params, classOf[TestObject])
+		assert(res.isEmpty)
 	}
 }

@@ -14,6 +14,7 @@ class PebbleExtension extends AbstractExtension {
 		extensions.put("i18n", new I18nFun)
 		extensions.put("link", new LinkFun)
 		extensions.put("value", new ValueFun)
+		extensions.put("csrfToken", new CsrfTokenFun)
 		extensions
 	}
 

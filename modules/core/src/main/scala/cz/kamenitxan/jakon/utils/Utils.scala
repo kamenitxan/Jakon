@@ -118,6 +118,34 @@ object Utils {
 		!isEmpty(s)
 	}
 
+	/**
+	 * Checks that redirect target is local relative path (prevents open redirect).
+	 * Must start with single '/', must not contain backslash or control characters.
+	 */
+	def isSafeRedirect(s: String): Boolean = {
+		nonEmpty(s) &&
+			s.startsWith("/") &&
+			!s.startsWith("//") &&
+			!s.contains("\\") &&
+			!s.exists(c => c < 0x20 || c == 0x7f)
+	}
+
+	def safeRedirectOr(s: String, default: String): String = {
+		if (isSafeRedirect(s)) s else default
+	}
+
+	/**
+	 * Extracts local path (with query) from absolute or relative URL, e.g. Referer header.
+	 * Host is dropped, so result always points to current site.
+	 */
+	def localPathOr(url: String, default: String): String = {
+		if (isEmpty(url)) return default
+		Try(new java.net.URI(url)).toOption
+			.flatMap(uri => Option(uri.getRawPath).map(p => p + Option(uri.getRawQuery).map("?" + _).getOrElse("")))
+			.filter(isSafeRedirect)
+			.getOrElse(default)
+	}
+
 	def measured[B](logFun: Long => String)(measuredFun: => B): B = {
 		// TODO: https://stackoverflow.com/questions/33909930/what-is-the-best-way-to-get-the-name-of-the-caller-class-in-an-object/
 		val startTime = System.currentTimeMillis()

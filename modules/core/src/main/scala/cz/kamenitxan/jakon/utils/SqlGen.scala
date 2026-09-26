@@ -235,58 +235,90 @@ object SqlGen {
 		}
 	}
 
-	def parseFilterParams(kv: mutable.Map[String, String], objectClass: Class[_]): String = {
+	/**
+	 * SQL WHERE fragment with `?` placeholders and ordered bind values.
+	 */
+	case class FilterSql(sql: String, params: Seq[Any]) {
+		def isEmpty: Boolean = sql.isEmpty
+		def nonEmpty: Boolean = sql.nonEmpty
+
+		/** Binds params to statement starting at given index. Returns next free index. */
+		def bind(stmt: PreparedStatement, startIndex: Int = 1): Int = {
+			var i = startIndex
+			params.foreach(p => {
+				p match {
+					case d: Double => stmt.setDouble(i, d)
+					case n: Int => stmt.setInt(i, n)
+					case s: String => stmt.setString(i, s)
+					case o => stmt.setObject(i, o)
+				}
+				i += 1
+			})
+			i
+		}
+	}
+
+	object FilterSql {
+		val Empty: FilterSql = FilterSql("", Nil)
+	}
+
+	private def findField(objectClass: Class[_], fieldName: String): Option[(Class[_], Field)] = {
+		var cls: Class[_] = objectClass
+		while (cls != null) {
+			try {
+				return Some(cls -> cls.getDeclaredField(fieldName))
+			} catch {
+				case _: NoSuchFieldException => cls = cls.getSuperclass
+			}
+		}
+		None
+	}
+
+	/**
+	 * Creates parametrized WHERE clause from filter params. Values are never concatenated into SQL,
+	 * field names must match declared fields of objectClass (unknown fields are ignored).
+	 */
+	def parseFilterParams(kv: mutable.Map[String, String], objectClass: Class[_]): FilterSql = {
 		if (kv.isEmpty) {
-			return ""
+			return FilterSql.Empty
 		}
-		var notFirst = false
-		val sb = new mutable.StringBuilder()
-		sb.append("WHERE ")
+		val conditions = mutable.ArrayBuffer[String]()
+		val params = mutable.ArrayBuffer[Any]()
 		for ((fieldName, v) <- kv) {
-			if (notFirst) {
-				sb.append(" AND ")
-			}
-			val clr = Utils.getClassByFieldName(objectClass, fieldName)
-
-
-			sb.append(clr._1.getSimpleName)
-			sb.append(".")
-			sb.append(fieldName)
-			if (classOf[JakonObject].isAssignableFrom(clr._2.getType)) {
-				sb.append("_id")
-			}
-
-			val value = v.trim.toLowerCase
-			value match {
-				case param if param.contains("*") =>
-					sb.append(" LIKE \"")
-					sb.append(param.replace("*", "%"))
-					sb.append("\"")
-				case param =>
-					sb.append(" = ")
-					if (NumberTypes.contains(clr._2.getType)) {
-						try {
-							value.toDouble
-							sb.append(param)
-						} catch {
-							case _: NumberFormatException => sb.append("\"" + value + "\"")
-						}
-					} else if (BoolTypes.contains(clr._2.getType)) {
-						try {
-							val pbv = value.toBoolean
-							if (pbv) sb.append(1) else sb.append(0)
-						} catch {
-							case _: IllegalArgumentException => sb.append("\"" + value + "\"")
-						}
-					} else {
-						sb.append("\"")
-						sb.append(value)
-						sb.append("\"")
+			findField(objectClass, fieldName) match {
+				case None =>
+					Logger.warn(s"Ignoring filter on unknown field ${objectClass.getSimpleName}.$fieldName")
+				case Some((cls, field)) =>
+					val sb = new mutable.StringBuilder()
+					sb.append(cls.getSimpleName)
+					sb.append(".")
+					sb.append(field.getName)
+					if (classOf[JakonObject].isAssignableFrom(field.getType)) {
+						sb.append("_id")
 					}
+
+					val value = v.trim.toLowerCase
+					if (value.contains("*")) {
+						sb.append(" LIKE ?")
+						params += value.replace("*", "%")
+					} else {
+						sb.append(" = ?")
+						if (NumberTypes.contains(field.getType)) {
+							params += value.toDoubleOption.getOrElse(value)
+						} else if (BoolTypes.contains(field.getType)) {
+							params += value.toBooleanOption.map(b => if (b) 1 else 0).getOrElse(value)
+						} else {
+							params += value
+						}
+					}
+					conditions += sb.toString()
 			}
-			notFirst = true
 		}
-		sb.toString()
+		if (conditions.isEmpty) {
+			FilterSql.Empty
+		} else {
+			FilterSql(conditions.mkString("WHERE ", " AND ", ""), params.toSeq)
+		}
 	}
 
 }

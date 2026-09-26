@@ -9,7 +9,7 @@ import cz.kamenitxan.jakon.shop.entity.*
 import cz.kamenitxan.jakon.shop.payments.PaymentService
 import cz.kamenitxan.jakon.shop.service.{CartService, ProductVariantService}
 import cz.kamenitxan.jakon.utils.mail.EmailEntity
-import io.javalin.http.{Context, HttpStatus}
+import io.javalin.http.{Context, Cookie, HttpStatus, SameSite}
 
 import java.math.BigDecimal
 import java.sql.Connection
@@ -31,9 +31,13 @@ class CartPagelet extends AbstractPagelet {
 			existing
 		} else {
 			val token = UUID.randomUUID().toString
-			ctx.cookie(CART_COOKIE, token, COOKIE_MAX_AGE)
+			setCartCookie(ctx, token, COOKIE_MAX_AGE)
 			token
 		}
+	}
+
+	private def setCartCookie(ctx: Context, value: String, maxAge: Int): Unit = {
+		ctx.cookie(new Cookie(CART_COOKIE, value, "/", maxAge, ctx.req().isSecure, true, null, SameSite.LAX))
 	}
 
 	@Get(path = "", template = "cart/step1")
@@ -259,7 +263,7 @@ class CartPagelet extends AbstractPagelet {
 		}
 
 		CartService.deleteCart(cart.id)
-		ctx.cookie(CART_COOKIE, "", 0)
+		setCartCookie(ctx, "", 0)
 
 		sendConfirmationEmail(order, items)
 

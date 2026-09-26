@@ -6,7 +6,7 @@ import cz.kamenitxan.jakon.core.dynamic.{Get, Pagelet}
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.core.service.EmailTemplateService
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
-import cz.kamenitxan.jakon.utils.{PageContext, SqlGen}
+import cz.kamenitxan.jakon.utils.{PageContext, SqlGen, Utils}
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import io.javalin.http.Context
 
@@ -53,10 +53,10 @@ class JakonUserEmailExtension extends AbstractObjectExtension {
 	def list(ctx: Context): Unit = {
 		val filterParams = ctx.queryParamMap().asScala.filter(kv => kv._1.startsWith("filter_") && kv._2.asScala.head.nonEmpty).map(kv => kv._1.substring(7) -> kv._2.asScala.head)
 		DBHelper.withDbConnection(implicit conn => {
-			val filterSql = SqlGen.parseFilterParams(filterParams, classOf[JakonUser])
-			val sql = s"SELECT * FROM JakonUser $filterSql"
-			val stmt = conn.createStatement()
-			val users = DBHelper.select(stmt, sql, classOf[JakonUser]).map(_.entity)
+			val filter = SqlGen.parseFilterParams(filterParams, classOf[JakonUser])
+			val stmt = conn.prepareStatement(s"SELECT * FROM JakonUser ${filter.sql}")
+			filter.bind(stmt)
+			val users = DBHelper.select(stmt, classOf[JakonUser]).map(_.entity)
 			sendEmails(ctx, users)
 		})
 	}
@@ -83,11 +83,7 @@ class JakonUserEmailExtension extends AbstractObjectExtension {
 			PageContext.getInstance().messages += new Message(MessageSeverity.SUCCESS, "JUEE_EMAIL_SENT")
 		}
 
-		val redirectTo = if (ctx.header("Referer") != null) {
-			ctx.header("Referer")
-		} else {
-			"/admin/object/JakonUser"
-		}
+		val redirectTo = Utils.localPathOr(ctx.header("Referer"), "/admin/object/JakonUser")
 		redirect(ctx, redirectTo)
 	}
 

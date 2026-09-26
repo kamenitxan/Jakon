@@ -1,15 +1,8 @@
 (function () {
 	'use strict';
 
-	function getCookie(name) {
-		var match = document.cookie.match('(?:^|; )' + name + '=([^;]*)');
-		return match ? decodeURIComponent(match[1]) : null;
-	}
-
 	function updateCartSummary() {
-		if (!getCookie('cart_token')) {
-			return;
-		}
+		// cart_token cookie is HttpOnly; the endpoint returns zero values when no cart exists
 		fetch('/api/cart/summary')
 			.then(function (res) { return res.json(); })
 			.then(function (json) {

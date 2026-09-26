@@ -8,7 +8,3 @@ CREATE TABLE KeyValueEntity
     PRIMARY KEY (id),
     CONSTRAINT uq_name UNIQUE (name)
 );
-
--- Migration for existing databases:
--- ALTER TABLE KeyValueEntity ADD COLUMN referencedObject VARCHAR(255);
-

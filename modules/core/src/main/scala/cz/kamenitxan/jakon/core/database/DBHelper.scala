@@ -85,7 +85,7 @@ object DBHelper {
 		if (rs.next()) {
 			res = EntityMapper.createJakonObject(rs, cls)
 		} else {
-			res = new QueryResult[T](null)
+			res = new QueryResult[T](Map.empty)
 		}
 		stmt.close()
 		fetchI18nData(res)
@@ -97,7 +97,7 @@ object DBHelper {
 		val res: QueryResult[T] = if (rs.next()) {
 			EntityMapper.createJakonObject(rs, cls)
 		} else {
-			new QueryResult[T](null)
+			new QueryResult[T](Map.empty)
 		}
 		stmt.close()
 		fetchI18nData(res)
@@ -147,8 +147,9 @@ object DBHelper {
 	}
 
 	def fetchForeignObjects[T <: JakonObject](resultList: Seq[QueryResult[T]])(implicit conn: Connection): Seq[QueryResult[T]] = {
-		resultList.foreach(r => {
-			if (r.foreignIds.nonEmpty) {
+		// empty result (e.g. selectSingle without match) has no entity to fill
+		resultList.filter(r => r.entity != null).foreach(r => {
+			if (r.foreignIds != null && r.foreignIds.nonEmpty) {
 				r.foreignIds.foreach(fki => {
 					val field = fki._2.field
 					if (fki._2.ids.size == 1 && r.entity.id == fki._2.ids.head && field.getType.isAssignableFrom(r.entity.getClass)) {

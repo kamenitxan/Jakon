@@ -8,6 +8,7 @@ import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.core.service.UserService
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.gson.*
+import cz.kamenitxan.jakon.utils.security.CsrfProtection
 import cz.kamenitxan.jakon.webui.api.Api
 import cz.kamenitxan.jakon.webui.controller.impl.{FileManagerController, ObjectController, UserController}
 import cz.kamenitxan.jakon.webui.util.AdminExceptionHandler
@@ -58,6 +59,9 @@ object Routes {
 				}
 			}
 		})
+		// CSRF check must run before handlers that may log user in (DEVEL mode)
+		JakonInit.javalinConfig.routes.before(AdminPrefix, (ctx: Context) => CsrfProtection.check(ctx))
+		JakonInit.javalinConfig.routes.before(s"$AdminPrefix/*", (ctx: Context) => CsrfProtection.check(ctx))
 		JakonInit.javalinConfig.routes.before(AdminPrefix, new Handler {
 			override def handle(ctx: Context): Unit = {
 				val user: JakonUser =  ctx.sessionAttribute("user")

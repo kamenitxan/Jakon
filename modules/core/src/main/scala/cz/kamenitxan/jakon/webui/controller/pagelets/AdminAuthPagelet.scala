@@ -6,7 +6,7 @@ import cz.kamenitxan.jakon.core.dynamic.{Get, Pagelet, Post}
 import cz.kamenitxan.jakon.core.service.UserService
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.security.AuthUtils
-import cz.kamenitxan.jakon.utils.security.oauth.{Facebook, Google}
+import cz.kamenitxan.jakon.utils.security.oauth.{Facebook, Google, OauthProvider}
 import cz.kamenitxan.jakon.utils.{PageContext, Utils}
 import cz.kamenitxan.jakon.webui.Routes
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
@@ -31,7 +31,8 @@ class AdminAuthPagelet extends AbstractAdminPagelet {
 		}.filter(p => p.isEnabled).map(p => p.authInfo(ctx))
 
 		mutable.Map[String, Any](
-			"oauthProviders" -> oauthProviders.asJava
+			"oauthProviders" -> oauthProviders.asJava,
+			"redirectTo" -> Utils.safeRedirectOr(ctx.queryParam(OauthProvider.REDIRECT_TO), "")
 		)
 	}
 
@@ -39,7 +40,12 @@ class AdminAuthPagelet extends AbstractAdminPagelet {
 	def loginPost(ctx: Context): mutable.Map[String, Any] = {
 		val email = ctx.formParam("email")
 		val password = ctx.formParam("password")
-		val redirectTo = ctx.queryParam("redirect_to")
+		val redirectTo = Option(ctx.formParam(OauthProvider.REDIRECT_TO))
+			.orElse(Option(ctx.queryParam(OauthProvider.REDIRECT_TO)))
+			.orNull
+		val model = mutable.Map[String, Any](
+			"redirectTo" -> Utils.safeRedirectOr(redirectTo, "")
+		)
 		if (email != null && password != null) {
 			implicit val conn: Connection = DBHelper.getConnection
 			try {
@@ -47,7 +53,7 @@ class AdminAuthPagelet extends AbstractAdminPagelet {
 				if (user == null) {
 					Logger.info("User " + email + " not found when logging in")
 					PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "WRONG_EMAIL_OR_PASSWORD")
-					return mutable.Map.empty
+					return model
 				}
 
 				if (!user.enabled) {
@@ -62,14 +68,10 @@ class AdminAuthPagelet extends AbstractAdminPagelet {
 						AuthUtils.resetLoginAttempts(user.id)
 
 						Logger.info("User " + user.username + " logged in")
-						ctx.sessionAttribute("user", user)
+						AuthUtils.logIn(ctx, user)
 
 						if (user.acl.adminAllowed) {
-							if (Utils.isEmpty(redirectTo)) {
-								ctx.redirect(Routes.AdminPrefix + "/index")
-							} else {
-								ctx.redirect(redirectTo)
-							}
+							ctx.redirect(Utils.safeRedirectOr(redirectTo, Routes.AdminPrefix + "/index"))
 						} else {
 							PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "ADMIN_NOT_ALLOWED")
 						}
@@ -88,7 +90,7 @@ class AdminAuthPagelet extends AbstractAdminPagelet {
 				conn.close()
 			}
 		}
-		mutable.Map.empty
+		model
 	}
 
 	@Get(path = "/logout", template = "login")

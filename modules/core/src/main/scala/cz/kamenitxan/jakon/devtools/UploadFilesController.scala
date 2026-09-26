@@ -4,7 +4,7 @@ import cz.kamenitxan.jakon.webui.controller.impl.FileManagerController
 import io.javalin.http.Context
 import org.apache.commons.io.IOUtils
 
-import java.io.{File, FileInputStream}
+import java.io.FileInputStream
 import scala.language.postfixOps
 
 /**
@@ -14,11 +14,11 @@ import scala.language.postfixOps
 class UploadFilesController  {
 
 	def doGet(ctx: Context): String = {
-		val fileName = ctx.path().replace("/upload", FileManagerController.REPOSITORY_BASE_PATH + "/basePath")
-		val file = new File(fileName)
-		if (file.exists()) {
+		val fileOpt = SafeFileResolver.resolve(FileManagerController.REPOSITORY_BASE_PATH + "/basePath", ctx.path().stripPrefix("/upload"))
+		fileOpt.foreach(file => {
 			ctx.status(200)
 
+			val fileName = file.getName
 			val suffix = {
 				val lastDot = fileName.lastIndexOf('.')
 				if (lastDot > 0) {
@@ -37,7 +37,7 @@ class UploadFilesController  {
 			os.close()
 			is.close()
 			ctx.header("Content-Length", file.length().toString)
-		}
+		})
 		ctx.body()
 	}
 

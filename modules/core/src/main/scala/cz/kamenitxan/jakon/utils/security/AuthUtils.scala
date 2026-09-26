@@ -1,5 +1,7 @@
 package cz.kamenitxan.jakon.utils.security
 
+import cz.kamenitxan.jakon.core.model.JakonUser
+import io.javalin.http.Context
 import org.mindrot.jbcrypt.BCrypt
 
 import java.time.LocalDateTime
@@ -65,6 +67,18 @@ object AuthUtils {
 
 	def resetLoginAttempts(userId: Int): Unit = {
 		loginAttempts.remove(userId)
+	}
+
+	/**
+	 * Stores user in session. Session id is changed (session attributes are kept) and CSRF token
+	 * is rotated to prevent session fixation.
+	 */
+	def logIn(ctx: Context, user: JakonUser): Unit = {
+		val req = ctx.req()
+		req.getSession(true)
+		req.changeSessionId()
+		CsrfProtection.rotateToken(ctx)
+		ctx.sessionAttribute("user", user)
 	}
 
 }
