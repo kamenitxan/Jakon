@@ -9,7 +9,7 @@ import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.controller.impl.ObjectController
 import cz.kamenitxan.jakon.webui.entity.{FieldInfo, HtmlType}
 
-import java.lang.reflect.{Field, ParameterizedType, Type}
+import java.lang.reflect.{Field, Type}
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, LocalDateTime, LocalTime}
@@ -181,7 +181,7 @@ object FieldConformer {
 								} else {
 									fields.map(f => f.getName + "_" + l.toString -> {
 										val an = f.getAnnotation(classOf[JakonField])
-										new FieldInfo(an, HtmlType.TEXT, f, null, "String")
+										new FieldInfo(an, HtmlType.TEXT, f, null)
 									})
 								}
 							}).toMap
