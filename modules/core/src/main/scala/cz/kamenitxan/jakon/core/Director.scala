@@ -1,7 +1,7 @@
 package cz.kamenitxan.jakon.core
 
 import cz.kamenitxan.jakon.JakonInitializer
-import cz.kamenitxan.jakon.core.configuration.Settings
+import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.core.controller.IController
 import cz.kamenitxan.jakon.core.custom_pages.AbstractCustomPage
 import cz.kamenitxan.jakon.core.database.DBInitializer
@@ -23,6 +23,8 @@ import scala.concurrent.Future
 object Director {
 	var customPages: List[IController] = List[IController]()
 	var controllers: List[IController] = List[IController]()
+
+	private val renderLock = new Object
 
 	def init(): Unit = {
 		Settings.setTemplateDir("templates/bacon/")
@@ -67,8 +69,16 @@ object Director {
 		Logger.info("Jakon default init complete")
 	}
 
-	def render(): Unit = {
-		TemplateUtils.clean(Settings.getOutputDir)
+	def render(): Unit = renderLock.synchronized {
+		if (Settings.getDeployMode == DeployMode.PRODUCTION) {
+			TemplateUtils.renderAtomically(Settings.getOutputDir)(generate)
+		} else {
+			TemplateUtils.renderInPlace(Settings.getOutputDir)(generate)
+		}
+		Logger.info("Render complete")
+	}
+
+	private def generate(targetDir: String): Unit = {
 		controllers.foreach(i => {
 			//TODO: poslat chybu dale ale neukoncit generovani
 			i.generateRun()
@@ -77,10 +87,9 @@ object Director {
 			i.generateRun()
 		})
 
-		if (Settings.getStaticDir != null && Settings.getOutputDir != null) {
-			TemplateUtils.copy(Settings.getStaticDir, Settings.getOutputDir)
+		if (Settings.getStaticDir != null && targetDir != null) {
+			TemplateUtils.copy(Settings.getStaticDir, targetDir)
 		}
-		Logger.info("Render complete")
 	}
 
 	def registerCustomPage(page: AbstractCustomPage): Unit = {
