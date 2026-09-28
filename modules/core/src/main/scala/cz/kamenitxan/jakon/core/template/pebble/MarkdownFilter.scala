@@ -9,6 +9,7 @@ import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
 
 import java.util
+import java.util.regex.Pattern
 
 class MarkdownFilter extends Filter {
 
@@ -28,11 +29,29 @@ object MarkdownFilter {
 		.softbreak("<br>")
 		.build
 
+	private val codeBlockPattern = Pattern.compile("(?s)<pre>.*?</pre>")
+
 	def parseString(input: String): String = {
 		val document = parser.parse(input)
 		val renderedString = renderer.render(document)
-		val result = FunctionHelper.parse(renderedString)
-		result
+		parseFunctionsOutsideCode(renderedString)
+	}
+
+	/**
+	  * Evaluates template functions like {link ...} everywhere except in code blocks,
+	  * where the braces are a part of the shown code.
+	  */
+	private def parseFunctionsOutsideCode(html: String): String = {
+		val m = codeBlockPattern.matcher(html)
+		val result = new StringBuilder
+		var last = 0
+		while (m.find) {
+			result.append(FunctionHelper.parse(html.substring(last, m.start())))
+			result.append(m.group())
+			last = m.end()
+		}
+		result.append(FunctionHelper.parse(html.substring(last)))
+		result.toString
 	}
 
 }

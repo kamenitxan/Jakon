@@ -539,7 +539,7 @@
   position: absolute;
   top: 45%;
   left: .35em;
-  transform: translateY(-50%)rotate(45deg);
+  transform: translateY(-50%) rotate(45deg);
 }
 
 .editor-nestedListItem {
@@ -616,6 +616,7 @@
 }
 
 .editor-embedBlock {
+  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -656,6 +657,7 @@
 }
 
 .editor-hr.editor-hrSelected {
+  -webkit-user-select: none;
   user-select: none;
   outline: 2px solid #3c84f4;
 }
@@ -718,21 +720,140 @@
   margin-right: 8px;
 }
 
+html {
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-family: system-ui;
+  display: flex;
+}
+
 .jakon-editor-wrapper {
+  position: relative;
 
   & textarea.form-control {
     display: none;
   }
 
-  & .lexical-editor {
-      min-height: 150px;
-  }
-
   & .jakon-editor-toolbar {
     align-items: center;
     gap: .5rem;
-    display: flex;
     margin-bottom: 5px;
+    display: flex;
+  }
+
+  & .lexical-editor {
+    min-height: 150px;
+    padding-left: 52px;
+  }
+
+  & .draggable-block-menu {
+    cursor: grab;
+    color: #6c757d;
+    opacity: .5;
+    will-change: transform;
+    z-index: 5;
+    border-radius: 4px;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+    padding: 2px 4px;
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  & .draggable-block-menu:hover {
+    opacity: 1;
+    background-color: #efefef;
+  }
+
+  & .draggable-block-add {
+    color: inherit;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0 2px;
+  }
+
+  & .draggable-block-grip {
+    padding: 0 2px;
+  }
+
+  & .draggable-block-picker {
+    z-index: 10;
+    width: 220px;
+    max-height: 320px;
+    position: absolute;
+    overflow-y: auto;
+  }
+
+  & .draggable-block-picker input {
+    border: 0;
+    border-bottom: 1px solid var(--bs-border-color);
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  & .draggable-block-menu:active {
+    cursor: grabbing;
+  }
+
+  & .draggable-block-target-line {
+    opacity: 0;
+    pointer-events: none;
+    will-change: transform;
+    background: #00bfff;
+    height: 4px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(-10000px, -10000px);
+  }
+
+  & .floating-text-format-toolbar {
+    z-index: 10;
+    flex-direction: row;
+    gap: 2px;
+    padding: 4px;
+    position: absolute;
+  }
+
+  & .code-action-menu {
+    z-index: 10;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    padding: 2px;
+    position: absolute;
+  }
+
+  & .code-action-menu select {
+    width: auto;
+  }
+
+  & .link-popover {
+    z-index: 10;
+    max-width: 400px;
+    padding: 4px;
+    position: absolute;
+  }
+
+  & .link-popover-view, & .link-popover-form {
+    align-items: center;
+    gap: 4px;
+  }
+
+  & .link-popover-url {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0 4px;
+    overflow: hidden;
+  }
+
+  & .link-popover-form input {
+    min-width: 240px;
   }
 
   & .dropdown-toggle {
@@ -749,8 +870,12 @@
     align-self: flex-end;
   }
 
-  & .jakon-editor-toolbar .markdown-toggle {
+  & .jakon-editor-toolbar .shortcuts-toggle, & .jakon-editor-toolbar .markdown-toggle {
     margin-left: auto;
+  }
+
+  & .jakon-editor-toolbar .shortcuts-toggle + .markdown-toggle {
+    margin-left: 0;
   }
 
   & .image-node-wrapper {
@@ -805,4 +930,17 @@
   & .image-node-delete-icon:hover {
     background: #dc3545;
   }
+
+  & .image_selector .pointer {
+    cursor: pointer;
+  }
 }
+
+.jakon-emoji-picker {
+  z-index: 2000;
+  min-width: 200px;
+  max-height: 300px;
+  position: absolute;
+  overflow-y: auto;
+}
+/*# sourceMappingURL=jakon-editor.css.map */
