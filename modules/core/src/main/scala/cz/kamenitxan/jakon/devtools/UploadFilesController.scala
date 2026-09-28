@@ -14,7 +14,8 @@ import scala.language.postfixOps
 class UploadFilesController  {
 
 	def doGet(ctx: Context): String = {
-		val fileOpt = SafeFileResolver.resolve(FileManagerController.REPOSITORY_BASE_PATH + "/basePath", ctx.path().stripPrefix("/upload"))
+		val requestPath = java.net.URLDecoder.decode(ctx.path().stripPrefix("/upload").replace("+", "%2B"), java.nio.charset.StandardCharsets.UTF_8)
+		val fileOpt = SafeFileResolver.resolve(FileManagerController.REPOSITORY_BASE_PATH + "/basePath", requestPath)
 		fileOpt.foreach(file => {
 			ctx.status(200)
 

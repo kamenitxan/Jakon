@@ -59,7 +59,7 @@ object Routes {
 				}
 			}
 		})
-		// CSRF check must run before handlers that may log user in (DEVEL mode)
+		// CSRF check for logged in users, disabled in DEVEL mode (see CsrfProtection.check)
 		JakonInit.javalinConfig.routes.before(AdminPrefix, (ctx: Context) => CsrfProtection.check(ctx))
 		JakonInit.javalinConfig.routes.before(s"$AdminPrefix/*", (ctx: Context) => CsrfProtection.check(ctx))
 		JakonInit.javalinConfig.routes.before(AdminPrefix, new Handler {

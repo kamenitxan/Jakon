@@ -1,5 +1,6 @@
 package cz.kamenitxan.jakon.utils.security
 
+import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.logging.Logger
 import io.javalin.http.{Context, HandlerType, HttpStatus}
 
@@ -51,8 +52,10 @@ object CsrfProtection {
 
 	/**
 	 * Before handler. Checks token only for logged in users, anonymous requests have nothing to forge.
+	 * Disabled in DEVEL mode.
 	 */
 	def check(ctx: Context): Unit = {
+		if (Settings.getDeployMode == DeployMode.DEVEL) return
 		if (SafeMethods.contains(ctx.method())) return
 		if (ctx.sessionAttribute[AnyRef]("user") == null) return
 		if (!isValid(ctx)) {

@@ -62,6 +62,7 @@ class JakonInit {
 			cors => {
 				cors.addRule(it => {
 					it.reflectClientOrigin = true
+					it.allowCredentials = true
 				})
 			}
 		} else {
