@@ -139,39 +139,67 @@ object DBInitializer {
 
 	private def checkColumns(implicit conn: Connection): Unit = {
 		DBHelper.objects.foreach(jo => {
-			val tableName = jo.getSimpleName
-			val stmt = conn.createStatement()
-			val collumns = Settings.getDatabaseType match {
-				case DatabaseType.SQLITE =>
-					val sql = s"PRAGMA table_info($tableName)"
-					val rs = stmt.executeQuery(sql)
-					Iterator.from(0).takeWhile(_ => rs.next()).map(_ => TableColumnInfo(rs.getString(2), rs.getString(3))).toSeq
-				case DatabaseType.MYSQL =>
-					val sql = s"DESCRIBE $tableName"
-					val rs = stmt.executeQuery(sql)
-					Iterator.from(0).takeWhile(_ => rs.next()).map(_ => TableColumnInfo(rs.getString(1), rs.getString(2))).toSeq
-			}
-			jo.getDeclaredFields
-				.filter(f => f.getAnnotation(classOf[JakonField]) != null && f.getAnnotation(classOf[Transient]) == null)
-				.foreach(f => {
-					val columnAnn = f.getAnnotation(classOf[Column])
-					val manyToOne = f.getAnnotation(classOf[ManyToOne])
-					val manyToMany = f.getAnnotation(classOf[ManyToMany])
-					val column = if (columnAnn != null) {
-						collumns.find(c => c.name == columnAnn.name())
-					} else if (manyToOne != null) {
-						collumns.find(c => c.name == f.getName + "_id")
-					} else {
-						collumns.find(c => c.name == f.getName)
-					}
-					if (column.isEmpty && manyToMany == null) {
-						Logger.error(s"Field ${jo.getSimpleName}.${f.getName} is not in DB")
-					}
-					if (manyToMany != null) {
-						checkJunctionTable(jo, manyToMany)
-					}
-				})
+			checkTableColumns(jo)
+			jo.getDeclaredFields.filter(_.getAnnotation(classOf[I18n]) != null).foreach(f => {
+				checkI18nTable(jo, f.getAnnotation(classOf[I18n]))
+			})
 		})
+	}
+
+	private def checkTableColumns(jo: Class[?])(implicit conn: Connection): Unit = {
+		val tableName = jo.getSimpleName
+		val stmt = conn.createStatement()
+		val collumns = Settings.getDatabaseType match {
+			case DatabaseType.SQLITE =>
+				val sql = s"PRAGMA table_info($tableName)"
+				val rs = stmt.executeQuery(sql)
+				Iterator.from(0).takeWhile(_ => rs.next()).map(_ => TableColumnInfo(rs.getString(2), rs.getString(3))).toSeq
+			case DatabaseType.MYSQL =>
+				val sql = s"DESCRIBE $tableName"
+				val rs = stmt.executeQuery(sql)
+				Iterator.from(0).takeWhile(_ => rs.next()).map(_ => TableColumnInfo(rs.getString(1), rs.getString(2))).toSeq
+		}
+		stmt.close()
+		// i18n data lives in a separate table (not a column), which is checked by checkI18nTable
+		jo.getDeclaredFields
+			.filter(f => f.getAnnotation(classOf[JakonField]) != null && f.getAnnotation(classOf[Transient]) == null && f.getAnnotation(classOf[I18n]) == null)
+			.foreach(f => {
+				val columnAnn = f.getAnnotation(classOf[Column])
+				val manyToOne = f.getAnnotation(classOf[ManyToOne])
+				val manyToMany = f.getAnnotation(classOf[ManyToMany])
+				val column = if (columnAnn != null) {
+					collumns.find(c => c.name == columnAnn.name())
+				} else if (manyToOne != null) {
+					collumns.find(c => c.name == f.getName + "_id")
+				} else {
+					collumns.find(c => c.name == f.getName)
+				}
+				if (column.isEmpty && manyToMany == null) {
+					Logger.error(s"Field ${jo.getSimpleName}.${f.getName} is not in DB")
+				}
+				if (manyToMany != null) {
+					checkJunctionTable(jo.asInstanceOf[Class[? <: JakonObject]], manyToMany)
+				}
+			})
+	}
+
+	private def checkI18nTable(jo: Class[? <: JakonObject], ann: I18n)(implicit conn: Connection): Unit = {
+		val i18nClass = ann.genericClass()
+		val i18nTable = i18nClass.getSimpleName
+		val stmt = conn.createStatement()
+		val exists = try {
+			stmt.executeQuery(s"SELECT 1 FROM $i18nTable LIMIT 1").close()
+			true
+		} catch {
+			case _: SQLException =>
+				Logger.error(s"I18n table $i18nTable for ${jo.getSimpleName} is not in DB")
+				false
+		} finally {
+			stmt.close()
+		}
+		if (exists) {
+			checkTableColumns(i18nClass)
+		}
 	}
 
 	private def checkJunctionTable(jo: Class[? <: JakonObject], ann: ManyToMany)(implicit conn: Connection): Unit = {

@@ -9,6 +9,7 @@ import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{Category, Page, Post}
 import cz.kamenitxan.jakon.core.template.Pebble
 import jakontest.core.*
+import jakontest.core.database.DBInitializerTest
 import jakontest.core.functions.LinkTest
 import jakontest.core.pagelet.{JsonPageletTest, PageletTest}
 import jakontest.core.task.TaskRunnerTest
@@ -39,6 +40,7 @@ class TestRunner extends Suites(
 	new WebUi,
 	new SqlGenTest,
 	new ModelTest,
+	new DBInitializerTest,
 	new SettingsTest,
 	new I18NUtilTest,
 	new PageletTest,
