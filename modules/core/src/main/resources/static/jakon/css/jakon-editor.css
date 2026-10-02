@@ -720,14 +720,6 @@
   margin-right: 8px;
 }
 
-html {
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  font-family: system-ui;
-  display: flex;
-}
-
 .jakon-editor-wrapper {
   position: relative;
 
