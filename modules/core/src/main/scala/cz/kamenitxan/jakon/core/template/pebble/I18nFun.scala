@@ -22,18 +22,7 @@ class I18nFun extends i18nFunction {
 		val default = args.get("def").asInstanceOf[String]
 		val silentArg = args.get("s").asInstanceOf[String]
 		val silent = if (silentArg == null) false else true
-		lazy val contextLocale = context.getVariable(I18nFun.renderLocale)
-
-		val lu = if (PageContext.getInstance() != null) PageContext.getInstance().getLoggedUser else null
-		val locale = if (lu != null && lu.nonEmpty && lu.get.locale != null) {
-			lu.get.locale
-		} else if (contextLocale != null && contextLocale.isInstanceOf[Locale]) {
-			contextLocale.asInstanceOf[Locale]
-		} else if (Settings.getDefaultLocale != null) {
-			Settings.getDefaultLocale
-		} else {
-			context.getLocale
-		}
+		val locale = I18nFun.resolveLocale(context)
 
 		val phraseObject = I18nUtil.getTranslation(templateDir, basename, key, locale, default, silent)
 		if (phraseObject != null && params != null && params.nonEmpty) {
@@ -47,5 +36,24 @@ class I18nFun extends i18nFunction {
 
 object I18nFun {
 	val renderLocale = "jakon_render_locale"
+
+	/**
+	  * Locale of the logged user, then the locale the page is rendered in, the default locale of the application
+	  * and the locale of the template.
+	  */
+	def resolveLocale(context: EvaluationContext): Locale = {
+		lazy val contextLocale = context.getVariable(renderLocale)
+
+		val lu = if (PageContext.getInstance() != null) PageContext.getInstance().getLoggedUser else null
+		if (lu != null && lu.nonEmpty && lu.get.locale != null) {
+			lu.get.locale
+		} else if (contextLocale != null && contextLocale.isInstanceOf[Locale]) {
+			contextLocale.asInstanceOf[Locale]
+		} else if (Settings.getDefaultLocale != null) {
+			Settings.getDefaultLocale
+		} else {
+			context.getLocale
+		}
+	}
 }
 

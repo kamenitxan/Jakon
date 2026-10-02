@@ -15,6 +15,7 @@ class PebbleExtension extends AbstractExtension {
 		extensions.put("link", new LinkFun)
 		extensions.put("value", new ValueFun)
 		extensions.put("csrfToken", new CsrfTokenFun)
+		extensions.put("locale", new LocaleFun)
 		extensions
 	}
 
