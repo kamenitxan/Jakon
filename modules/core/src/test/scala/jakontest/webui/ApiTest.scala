@@ -6,7 +6,7 @@ import org.scalatest.DoNotDiscover
 import org.scalatest.funsuite.AnyFunSuite
 
 import java.io.DataOutputStream
-import java.net.{HttpURLConnection, URL}
+import java.net.{HttpURLConnection, URI}
 import scala.io.Source
 
 @DoNotDiscover
@@ -17,7 +17,7 @@ class ApiTest extends AnyFunSuite {
 
 	test("search") {
 		val url = "http://localhost:" + Settings.getPort + "/admin/api/search"
-		val obj = new URL(url)
+		val obj = URI.create(url).toURL
 		val con = obj.openConnection.asInstanceOf[HttpURLConnection]
 
 
@@ -37,7 +37,7 @@ class ApiTest extends AnyFunSuite {
 
 	test("search by id") {
 		val url = "http://localhost:" + Settings.getPort + "/admin/api/search"
-		val obj = new URL(url)
+		val obj = URI.create(url).toURL
 		val con = obj.openConnection.asInstanceOf[HttpURLConnection]
 
 
@@ -58,7 +58,7 @@ class ApiTest extends AnyFunSuite {
 	test("images") {
 		val port = JakonInit.javalin.port()
 		val url = s"http://localhost:$port/admin/api/images"
-		val obj = new URL(url)
+		val obj = URI.create(url).toURL
 		val con = obj.openConnection.asInstanceOf[HttpURLConnection]
 
 
