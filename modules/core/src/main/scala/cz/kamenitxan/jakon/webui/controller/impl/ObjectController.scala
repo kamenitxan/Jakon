@@ -230,7 +230,9 @@ object ObjectController {
 		try {
 			if (objectId.nonEmpty) {
 				if (objectClass.getInterfaces.contains(classOf[Ordered])) {
-					obj = DBHelper.withDbConnection(implicit conn => obj.asInstanceOf[Ordered].updateOrder(formOrder))
+					// the subsequent obj.update() persists the whole object (incl. objectOrder), so only the
+					// new order is calculated here, no separate DB write is needed
+					obj = DBHelper.withDbConnection(implicit conn => obj.asInstanceOf[Ordered].calculateOrder(formOrder))
 				}
 				obj.update()
 			} else {
@@ -350,8 +352,8 @@ object ObjectController {
 				val ps = conn.prepareStatement("SELECT * FROM " + objectName + " WHERE id = ?")
 				ps.setInt(1, objectId.get)
 				val obj = DBHelper.selectSingleDeep(ps).asInstanceOf[JakonObject with Ordered]
+				// updateOrder already persists the new objectOrder to the DB, a full obj.update() would be redundant
 				obj.updateOrder(newOrder)
-				obj.update()
 			} finally {
 				conn.close()
 			}

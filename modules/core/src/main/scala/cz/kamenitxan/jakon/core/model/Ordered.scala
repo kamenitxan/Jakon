@@ -34,7 +34,12 @@ trait Ordered {
 		this
 	}
 
-	def updateOrder(formOrder: Int)(implicit conn: Connection): JakonObject with Ordered = {
+	/**
+	 * Calculates the new objectOrder value for this object based on the requested visible position
+	 * (formOrder), by placing it between the neighboring objects' objectOrder values. Does not persist
+	 * anything to the DB - the caller is responsible for saving the object afterwards.
+	 */
+	def calculateOrder(formOrder: Int)(implicit conn: Connection): JakonObject with Ordered = {
 		val objectClass = this.getClass
 		val obj = this
 		val stmt = conn.prepareStatement("SELECT id, objectOrder FROM " + objectClass.getSimpleName + " WHERE id = ?")
@@ -74,7 +79,22 @@ trait Ordered {
 			10
 		}
 		obj.objectOrder = resultPos
-		// TODO: po zmene pozice se ma do DB rovnou ulozit nova, aby se nemusel aktualizovat cely objekt
+		obj
+	}
+
+	/**
+	 * Calculates the new object order for the requested position and persists it directly to the DB,
+	 * without updating the whole object. If the position doesn't change, no DB write is performed.
+	 */
+	def updateOrder(formOrder: Int)(implicit conn: Connection): JakonObject with Ordered = {
+		val originalOrder = this.objectOrder
+		val obj = calculateOrder(formOrder)
+		if (obj.objectOrder != originalOrder) {
+			val stmt = conn.prepareStatement("UPDATE " + obj.getClass.getSimpleName + " SET objectOrder = ? WHERE id = ?")
+			stmt.setDouble(1, obj.objectOrder)
+			stmt.setInt(2, obj.id)
+			stmt.executeUpdate()
+		}
 		obj
 	}
 }
