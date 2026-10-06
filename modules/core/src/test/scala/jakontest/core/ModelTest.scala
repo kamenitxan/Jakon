@@ -7,6 +7,7 @@ import jakontest.test.TestBase
 import jakontest.utils.entity.{TestEmbeddedObject, TestObject}
 import org.scalatest.DoNotDiscover
 
+import java.nio.file.Files
 import java.util.Date
 import scala.util.Random
 
@@ -135,6 +136,48 @@ class ModelTest extends TestBase {
 			val entity = DBHelper.selectSingleDeep(stmt)(conn, classOf[TestObject])
 			assert(entity.oneToMany.isEmpty)
 		})
+	}
+
+	test("JakonFile delete removes file from FS") { _ =>
+		val tmpDir = Files.createTempDirectory("jakonFileTest")
+		val tmpFile = tmpDir.resolve("test.txt")
+		Files.write(tmpFile, "test content".getBytes)
+		assert(Files.exists(tmpFile))
+
+		val jf = new JakonFile()
+		jf.name = tmpFile.getFileName.toString
+		jf.path = tmpDir.toString
+		jf.fileType = FileType.FILE
+		jf.created = java.time.LocalDateTime.now()
+		jf.create()
+
+		jf.delete()
+
+		assert(!Files.exists(tmpFile))
+		Files.deleteIfExists(tmpDir)
+	}
+
+	test("JakonFile delete without FS file does not throw") { _ =>
+		val tmpDir = Files.createTempDirectory("jakonFileTestMissing")
+
+		val jf = new JakonFile()
+		jf.name = "nonExisting.txt"
+		jf.path = tmpDir.toString
+		jf.fileType = FileType.FILE
+		jf.created = java.time.LocalDateTime.now()
+		jf.create()
+
+		jf.delete() // should not throw even though the file is missing on FS
+
+		DBHelper.withDbConnection(implicit conn => {
+			val sql = "SELECT * From JakonFile WHERE id = ?"
+			val stmt = conn.prepareStatement(sql)
+			stmt.setInt(1, jf.id)
+			val rs = stmt.executeQuery()
+			assert(!rs.next())
+		})
+
+		Files.deleteIfExists(tmpDir)
 	}
 
 	var post: Post = _
