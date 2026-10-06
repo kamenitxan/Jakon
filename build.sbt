@@ -180,7 +180,11 @@ lazy val commonBuildSettings: Seq[Def.Setting[?]] = Seq(
 	organization := "cz.kamenitxan",
 	name := "jakon",
 	version := V.jakon,
-	startYear := Some(2015)
+	startYear := Some(2015),
+	// Default is crossTarget, which embeds the Scala version in the path. SonarQube does not
+	// support wildcards in sonar.scala.coverage.reportPaths, so keep the report at a stable
+	// location: modules/<module>/target/scoverage-report/scoverage.xml
+	coverageDataDir := target.value
 )
 
 lazy val scalaBuildSettings: Seq[Def.Setting[?]] = Seq(
