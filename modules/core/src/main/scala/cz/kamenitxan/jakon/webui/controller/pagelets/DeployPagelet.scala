@@ -3,7 +3,7 @@ package cz.kamenitxan.jakon.webui.controller.pagelets
 import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.deploy.DeployDirector
-import cz.kamenitxan.jakon.core.dynamic.{Get, Pagelet}
+import cz.kamenitxan.jakon.core.dynamic.{ConditionalPagelet, Get, Pagelet, PageletState}
 import io.javalin.http.Context
 
 import java.nio.file.{Files, Paths}
@@ -33,7 +33,7 @@ class DeployPagelet extends AbstractAdminPagelet {
 
 	@Get(path = "", template = "pagelet/task")
 	def render(ctx: Context): mutable.Map[String, Any] = {
-		val servers = if (Files.exists(Paths.get("servers.json"))) {
+		val servers = if (DeployPagelet.hasConfiguredServers) {
 			DeployDirector.servers
 		} else {
 			Seq.empty
@@ -45,4 +45,14 @@ class DeployPagelet extends AbstractAdminPagelet {
 		)
 	}
 
+}
+
+object DeployPagelet extends ConditionalPagelet {
+
+	private def hasConfiguredServers: Boolean = Files.exists(Paths.get("servers.json"))
+
+	/** Deploy makes no sense without any configured server. */
+	override def defaultState: PageletState = {
+		if (hasConfiguredServers) PageletState.ENABLED else PageletState.DISABLED
+	}
 }

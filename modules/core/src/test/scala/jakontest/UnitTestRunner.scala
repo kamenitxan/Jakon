@@ -1,6 +1,7 @@
 package jakontest
 
 import jakontest.core.database.ConvertersTest
+import jakontest.core.dynamic.PageletSettingsTest
 import jakontest.core.functions.FunctionHelperTest
 import jakontest.core.pagelet.JsonParserTest
 import jakontest.core.template.pebble.Pebble
@@ -23,7 +24,8 @@ class UnitTestRunner extends Suites(
 	new AtomicRenderTest,
 	new ConvertersTest,
 	new AdminSettingsTest,
-	new JsonParserTest
+	new JsonParserTest,
+	new PageletSettingsTest
 ) with BeforeAndAfterAll {
 
 }

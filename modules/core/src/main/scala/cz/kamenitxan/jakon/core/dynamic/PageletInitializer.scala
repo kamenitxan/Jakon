@@ -28,7 +28,9 @@ object PageletInitializer {
 
 	def initControllers(controllers: Seq[Class[_]]): Unit = {
 		Logger.info("Initializing pagelets")
-		controllers.foreach(c => {
+		val (activeControllers, disabledControllers) = controllers.partition(PageletSettings.isEnabled)
+		disabledControllers.foreach(c => Logger.info(s"Pagelet ${c.getSimpleName} is disabled by configuration"))
+		activeControllers.foreach(c => {
 			Logger.debug("Initializing pagelet: " + c.getSimpleName)
 			val controllerAnn = c.getAnnotation(classOf[Pagelet])
 			if (controllerAnn.path().endsWith("/")) {
@@ -57,7 +59,8 @@ object PageletInitializer {
 					}
 				})
 		})
-		controllers.filter(c => classOf[AbstractAdminPagelet].isAssignableFrom(c) && c.getAnnotation(classOf[Pagelet]).showInAdmin()).foreach(c => {
+		activeControllers.filter(c => classOf[AbstractAdminPagelet].isAssignableFrom(c)
+			&& c.getAnnotation(classOf[Pagelet]).showInAdmin()).foreach(c => {
 			val apa = c.getDeclaredMethods.filter(m => m.getAnnotation(classOf[Get]) != null)
 				.map(_.getAnnotation(classOf[Get]))
 				.sortBy(_.path()).headOption

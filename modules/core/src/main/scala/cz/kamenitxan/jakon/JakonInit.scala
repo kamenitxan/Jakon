@@ -10,8 +10,8 @@ import cz.kamenitxan.jakon.devtools.{DevRender, DevStaticFilesController, Static
 import cz.kamenitxan.jakon.logging.{LogCleanerTask, Logger}
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.utils.{ContextExtension, LoggingExceptionHandler, PageContext}
+import cz.kamenitxan.jakon.webui.Routes
 import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, ResetPasswordEmailEntity}
-import cz.kamenitxan.jakon.webui.{AdminSettings, Routes}
 import io.github.classgraph.ScanResult
 import io.javalin.Javalin
 import io.javalin.apibuilder.ApiBuilder
@@ -24,7 +24,6 @@ import org.eclipse.jetty.http.HttpCookie
 import java.io.File
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-import java.nio.file.{Files, Paths}
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 
@@ -67,17 +66,6 @@ class JakonInit {
 			}
 		} else {
 			 null
-		}
-	}
-
-	protected def adminControllers(): Unit = {
-		if (Files.exists(Paths.get("servers.json"))) {
-			// TODO skryvani controleru udelat nejak jinak
-			//AdminSettings.registerCustomController(classOf[DeployController])
-		}
-		if (AdminSettings.enableFiles) {
-			// TODO skryvani controleru udelat nejak jinak
-			//AdminSettings.registerCustomController(classOf[FileManagerController])
 		}
 	}
 
@@ -157,7 +145,6 @@ class JakonInit {
 		Logger.info("Starting in " + Settings.getDeployMode + " mode")
 
 		daoSetup()
-		adminControllers()
 		taskSetup()
 
 		if (Settings.isInitRoutes) {

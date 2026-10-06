@@ -27,7 +27,9 @@ object JsonPageletInitializer {
 
 	def initControllers(controllers: Seq[Class[_]]): Unit = {
 		Logger.info("Initializing json pagelets")
-		controllers.foreach(c => {
+		val (activeControllers, disabledControllers) = controllers.partition(PageletSettings.isEnabled)
+		disabledControllers.foreach(c => Logger.info(s"Json pagelet ${c.getSimpleName} is disabled by configuration"))
+		activeControllers.foreach(c => {
 			Logger.debug("Initializing json pagelet: " + c.getSimpleName)
 			val controllerAnn = c.getAnnotation(classOf[JsonPagelet])
 			if (controllerAnn.path().endsWith("/")) {

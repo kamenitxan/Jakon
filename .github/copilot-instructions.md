@@ -55,10 +55,9 @@ Jakon is a **Scala static web generator / CMS framework** built on [Javalin](htt
 
 Users extend `JakonInit` and call `.run(args)`. The framework bootstraps via a set of overridable hooks in this order:
 1. `daoSetup()` — register entity classes via `DBHelper.addDao(classOf[MyEntity])`
-2. `adminControllers()` — register custom admin controllers
-3. `taskSetup()` — register scheduled tasks with `TaskRunner`
-4. `javalinConfig()` / `routesSetup()` / `websocketSetup()` — configure Javalin
-5. `afterInit()` — post-start hook
+2. `taskSetup()` — register scheduled tasks with `TaskRunner`
+3. `javalinConfig()` / `routesSetup()` / `websocketSetup()` — configure Javalin
+4. `afterInit()` — post-start hook
 
 ### Entity / ORM Model
 
@@ -85,6 +84,7 @@ Users extend `JakonInit` and call `.run(args)`. The framework bootstraps via a s
 
 - Config is read from `jakon_config.properties` (or a file passed via `--jakonConfig=path` CLI arg).
 - Key settings: `templateDir`, `staticDir`, `outputDir`, `databaseDriver`, `databaseConnPath`, `deployMode` (`DEVEL` / `PRODUCTION`), `port`, `package`.
+- Pagelets can be deactivated with `pagelet.<SimpleName>=ENABLED|DISABLED` (e.g. `pagelet.DbConsolePagelet=DISABLED`); `DISABLED` means no routes are registered at all. A pagelet can also decide on its own: its **companion object** implements `ConditionalPagelet` and overrides `defaultState` (see `DeployPagelet`, `FileManagerController`) — the companion is read reflectively via `MODULE$`, so no pagelet instance is created. Resolution order is config > `ConditionalPagelet.defaultState` > `ENABLED`, so the config file always wins. Visibility in the admin menu is a separate, compile-time concern controlled by `@Pagelet(showInAdmin = ...)`.
 - `Settings` object provides typed accessors for all config values.
 - Deploy mode controls caching (disabled in DEVEL), CORS (open in DEVEL), and access control (enforced in PRODUCTION).
 
@@ -98,7 +98,7 @@ Users extend `JakonInit` and call `.run(args)`. The framework bootstraps via a s
 ### Admin UI
 
 - Auto-generated from registered entities; each entity gets list/create/edit/delete views.
-- Custom admin controllers extend `AbstractCustomPage` or are registered via `AdminSettings.registerCustomController(...)`.
+- Custom admin controllers are pagelets extending `AbstractAdminPagelet` with `@Pagelet(showInAdmin = true)`.
 - Admin routes are prefixed with `/admin/` (`Routes.AdminPrefix`).
 
 ## Key Conventions
