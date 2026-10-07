@@ -111,4 +111,133 @@ class PaymentServiceTest extends AnyFunSuite {
 
 		assert(gateway.gatewayCode == PaymentGatewayCode.Stripe)
 	}
+
+	test("createPaymentRequest falls back to an order-title line item when there are no items, shipping or fees") {
+		val order = new ShopOrder()
+		order.id = 77
+		order.orderNumber = "2026-003"
+		order.totalPrice = new BigDecimal("199.00")
+
+		val request = PaymentService.createPaymentRequest(
+			shopOrder = order,
+			successUrl = "https://example.com/success",
+			cancelUrl = "https://example.com/cancel",
+			currency = "CZK",
+			shopOrderItems = Seq.empty
+		)
+
+		assert(request.lineItems.size == 1)
+		assert(request.lineItems.head.name == "Order 2026-003")
+		assert(request.lineItems.head.unitPrice == new BigDecimal("199.00"))
+	}
+
+	test("createPaymentRequest falls back to a generic title when the order has no order number") {
+		val order = new ShopOrder()
+		order.orderNumber = null
+		order.totalPrice = new BigDecimal("50.00")
+
+		val request = PaymentService.createPaymentRequest(
+			shopOrder = order,
+			successUrl = "https://example.com/success",
+			cancelUrl = "https://example.com/cancel",
+			currency = "CZK",
+			shopOrderItems = Seq.empty
+		)
+
+		assert(request.lineItems.head.name == "Order payment")
+	}
+
+	test("createPaymentRequest omits shipping and payment fee line items when their prices are zero") {
+		val order = new ShopOrder()
+		order.orderNumber = "2026-004"
+		order.shippingPrice = BigDecimal.ZERO
+		order.paymentPrice = BigDecimal.ZERO
+
+		val orderItem = new ShopOrderItem()
+		orderItem.productName = "Tea"
+		orderItem.quantity = 1
+		orderItem.totalPrice = new BigDecimal("30.00")
+
+		val request = PaymentService.createPaymentRequest(
+			shopOrder = order,
+			successUrl = "https://example.com/success",
+			cancelUrl = "https://example.com/cancel",
+			currency = "CZK",
+			shopOrderItems = Seq(orderItem)
+		)
+
+		assert(request.lineItems.map(_.name) == Seq("Tea"))
+	}
+
+	test("createPaymentRequest resolves the unit price from totalPrice divided by quantity when unitPrice is not set") {
+		val order = new ShopOrder()
+		order.orderNumber = "2026-005"
+
+		val orderItem = new ShopOrderItem()
+		orderItem.productName = "Coffee"
+		orderItem.quantity = 3
+		orderItem.totalPrice = new BigDecimal("30.00")
+
+		val request = PaymentService.createPaymentRequest(
+			shopOrder = order,
+			successUrl = "https://example.com/success",
+			cancelUrl = "https://example.com/cancel",
+			currency = "CZK",
+			shopOrderItems = Seq(orderItem)
+		)
+
+		assert(request.lineItems.head.unitPrice == new BigDecimal("10.00"))
+		assert(request.lineItems.head.quantity == 3L)
+	}
+
+	test("createPaymentRequest throws when the order is null") {
+		assertThrows[IllegalArgumentException] {
+			PaymentService.createPaymentRequest(
+				shopOrder = null,
+				successUrl = "https://example.com/success",
+				cancelUrl = "https://example.com/cancel",
+				currency = "CZK",
+				shopOrderItems = Seq.empty
+			)
+		}
+	}
+
+	test("createPaymentRequest throws when the success or cancel URL is blank") {
+		val order = new ShopOrder()
+		order.orderNumber = "2026-006"
+
+		assertThrows[IllegalArgumentException] {
+			PaymentService.createPaymentRequest(order, "", "https://example.com/cancel", "CZK", Seq.empty)
+		}
+		assertThrows[IllegalArgumentException] {
+			PaymentService.createPaymentRequest(order, "https://example.com/success", "  ", "CZK", Seq.empty)
+		}
+	}
+
+	test("gatewayRedirectUrl returns None for an order with a manual payment method, without touching the database") {
+		val paymentMethod = new PaymentMethod()
+		paymentMethod.gatewayCode = "manual"
+
+		val order = new ShopOrder()
+		order.orderNumber = "2026-007"
+		order.paymentMethod = paymentMethod
+
+		implicit val conn: java.sql.Connection = null
+
+		val redirectUrl = PaymentService.gatewayRedirectUrl(order, "https://example.com/success", "https://example.com/cancel", "CZK")
+
+		assert(redirectUrl.isEmpty)
+	}
+
+	test("gatewayRedirectUrl returns None when no payment method is set on the order") {
+		val order = new ShopOrder()
+		order.orderNumber = "2026-008"
+		order.paymentMethod = null
+
+		implicit val conn: java.sql.Connection = null
+
+		val redirectUrl = PaymentService.gatewayRedirectUrl(order, "https://example.com/success", "https://example.com/cancel", "CZK")
+
+		assert(redirectUrl.isEmpty)
+	}
 }
