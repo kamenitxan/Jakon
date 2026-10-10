@@ -104,9 +104,13 @@ class JakonInit {
 		annotationScanner.loadConfiguration()
 
 		val portNumber: Int = arguments.find(a => a._1 == "port").map(a => a._2.toInt).getOrElse(Settings.getPort)
+		val host: String = arguments.find(a => a._1 == "host").map(a => a._2).getOrElse(Settings.getHost)
 
 		val app = Javalin.create(config => {
 			config.jetty.port = portNumber
+			if (host != null && host.nonEmpty) {
+				config.jetty.host = host
+			}
 			config.jetty.modifyServletContextHandler(handler => {
 				if (handler.getSessionHandler == null) {
 					handler.setSessionHandler(new SessionHandler())
@@ -133,7 +137,7 @@ class JakonInit {
 		JakonInit.javalin = app
 
 		app.start(portNumber)
-		Logger.info(s"Jakon started on port $portNumber")
+		Logger.info(s"Jakon started on ${if (host != null && host.nonEmpty) host else "all interfaces"}, port $portNumber")
 		Director.start()
 		afterInit()
 	}
@@ -146,6 +150,12 @@ class JakonInit {
 
 		daoSetup()
 		taskSetup()
+
+		if (Settings.isClacksOverhead) {
+			config.routes.before((ctx: Context) => {
+				ctx.header("X-Clacks-Overhead", "GNU Terry Pratchett")
+			})
+		}
 
 		if (Settings.isInitRoutes) {
 			websocketSetup(config)

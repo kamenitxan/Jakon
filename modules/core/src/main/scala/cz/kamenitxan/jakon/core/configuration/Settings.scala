@@ -67,6 +67,9 @@ object Settings {
 	@ConfigurationValue(name = "port", required = true, defaultValue = "4567")
 	private var port: Int = _
 
+	@ConfigurationValue(name = "host", required = false, defaultValue = "")
+	private var host: String = _
+
 	@ConfigurationValue(name = "defaultLocale", required = true, defaultValue = "en_US")
 	private var defaultLocale: Locale = _
 
@@ -130,6 +133,9 @@ object Settings {
 	@ConfigurationValue(name = "onlyRender", required = true, defaultValue = "false")
 	private var onlyRender: Boolean = _
 
+	@ConfigurationValue(name = "clacksOverhead", required = false, defaultValue = "true")
+	private var clacksOverhead: Boolean = _
+
 	def getTemplateDir: String = templateDir
 
 	def setTemplateDir(templateDir: String): Unit = this.templateDir = templateDir
@@ -182,6 +188,13 @@ object Settings {
 	def getPort: Int = port
 
 	def setPort(port: String): Unit = this.port = port toInt
+
+	/**
+	 * @return address the server listens on, empty means all interfaces
+	 */
+	def getHost: String = host
+
+	def setHost(host: String): Unit = this.host = host
 
 	def getDefaultLocale: Locale = defaultLocale
 
@@ -249,4 +262,11 @@ object Settings {
 	def isInitRoutes: Boolean = initRoutes
 
 	def isOnlyRender: Boolean = onlyRender
+
+	/**
+	 * @return true if X-Clacks-Overhead header should be added to every response
+	 */
+	def isClacksOverhead: Boolean = clacksOverhead
+
+	def setClacksOverhead(enabled: Boolean): Unit = clacksOverhead = enabled
 }
