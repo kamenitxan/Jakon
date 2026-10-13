@@ -474,17 +474,27 @@
   list-style-position: outside;
 }
 
+.editor-list-ul, .editor-list-ol {
+  margin: 0;
+  padding: 0 0 0 1.5em;
+  list-style-position: outside;
+}
+
+.editor-list-ul:has( > .editor-listItemChecked,  > .editor-listItemUnchecked) {
+  padding-left: 0;
+}
+
 .editor-listItem {
-  margin: 0 32px;
+  margin: 0;
 }
 
 .editor-listItemChecked, .editor-listItemUnchecked {
   outline: none;
   min-height: 1.5em;
-  margin-left: .5em;
-  margin-right: .5em;
+  margin-left: 0;
+  margin-right: 0;
   padding-left: 1.5em;
-  padding-right: 1.5em;
+  padding-right: 0;
   list-style-type: none;
   display: block;
   position: relative;

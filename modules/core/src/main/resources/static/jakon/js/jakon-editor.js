@@ -18814,7 +18814,12 @@ const $c6527582716cce0c$export$2bf09bec83b86f9e = [
     $c6527582716cce0c$export$e59503cc178f46b,
     $c6527582716cce0c$export$363ed55c19f02301,
     $c6527582716cce0c$export$902eb194f883041a,
-    ...(0, $a9bacec133185446$export$b75ea24683f92be6).map((t)=>t === (0, $a9bacec133185446$export$b395009ca7f092c7) ? $c6527582716cce0c$var$ESCAPE_AWARE_LINK : t),
+    ...(0, $a9bacec133185446$export$b75ea24683f92be6).flatMap((t)=>t === (0, $a9bacec133185446$export$895ae9c433e1284f) ? [
+            (0, $a9bacec133185446$export$a2f9cfc16e8207ab),
+            t
+        ] : [
+            t === (0, $a9bacec133185446$export$b395009ca7f092c7) ? $c6527582716cce0c$var$ESCAPE_AWARE_LINK : t
+        ]),
     $c6527582716cce0c$export$41dbabafe943a3bc
 ];
 function $c6527582716cce0c$export$1adbaa0510da5df0(markdown) {
@@ -25661,7 +25666,7 @@ const $3c48177f5953c946$var$editorTheme = {
     },
     list: {
         nested: {
-            listitem: 'editor-nested-listitem'
+            listitem: 'editor-nestedListItem'
         },
         ol: 'editor-list-ol',
         ul: 'editor-list-ul',
@@ -40913,7 +40918,7 @@ class $9a38758d7670bcdc$export$2e2bcd8739ae039 {
         (0, $a1582b3e9cd27d5a$export$526d63e32585ec63)(editor, {
             ...(0, $a1582b3e9cd27d5a$export$39018e2257803be8),
             defaultLanguage: null
-        }), (0, $db7462aea8c72c2d$export$860a6656ca8b0d29)(editor), // Markdown can't express these, they would get lost when the text is saved. Remove them at once so that
+        }), (0, $db7462aea8c72c2d$export$860a6656ca8b0d29)(editor), (0, $db7462aea8c72c2d$export$154ef963a298a2c0)(editor), // Markdown can't express these, they would get lost when the text is saved. Remove them at once so that
         // the editor shows what is saved (Ctrl+U, pasted text...)
         editor.registerNodeTransform((0, $7eaea91d48fd3839$export$f0a25ea3087686aa), (node)=>{
             for (const format of $9a38758d7670bcdc$var$UNSUPPORTED_TEXT_FORMATS)if (node.hasFormat(format)) node.toggleFormat(format);
