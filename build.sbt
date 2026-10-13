@@ -51,6 +51,7 @@ val Dependencies = new {
 				"org.commonmark" % "commonmark" % V.commonmark,
 				"org.commonmark" % "commonmark-ext-gfm-tables" % V.commonmark,
 				"org.commonmark" % "commonmark-ext-gfm-strikethrough" % V.commonmark,
+				"org.commonmark" % "commonmark-ext-task-list-items" % V.commonmark,
 				"com.google.code.gson" % "gson" % "2.14.0",
 				"io.circe" %% "circe-core" % V.circeVersion,
 				"io.circe" %% "circe-generic"% V.circeVersion,

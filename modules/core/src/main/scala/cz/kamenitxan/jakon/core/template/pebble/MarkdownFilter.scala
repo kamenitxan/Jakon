@@ -5,6 +5,7 @@ import io.pebbletemplates.pebble.extension.Filter
 import io.pebbletemplates.pebble.template.{EvaluationContext, PebbleTemplate}
 import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension
 import org.commonmark.ext.gfm.tables.TablesExtension
+import org.commonmark.ext.task.list.items.TaskListItemsExtension
 import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
 
@@ -22,7 +23,7 @@ class MarkdownFilter extends Filter {
 
 object MarkdownFilter {
 
-	private val extensions = util.List.of(TablesExtension.create, StrikethroughExtension.create)
+	private val extensions = util.List.of(TablesExtension.create, StrikethroughExtension.create, TaskListItemsExtension.create)
 	private val parser = Parser.builder.extensions(extensions).build
 	private val renderer = HtmlRenderer.builder
 		.extensions(extensions)

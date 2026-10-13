@@ -4,7 +4,7 @@ import jakontest.core.database.ConvertersTest
 import jakontest.core.dynamic.PageletSettingsTest
 import jakontest.core.functions.FunctionHelperTest
 import jakontest.core.pagelet.JsonParserTest
-import jakontest.core.template.pebble.Pebble
+import jakontest.core.template.pebble.{MarkdownEditorSampleTest, Pebble}
 import jakontest.core.template.{AtomicRenderTest, TemplateUtilsTest}
 import jakontest.utils.UtilsUnitTest
 import jakontest.validation.ValidationUnitTest
@@ -20,6 +20,7 @@ class UnitTestRunner extends Suites(
 	new ValidationUnitTest,
 	new FunctionHelperTest,
 	new Pebble,
+	new MarkdownEditorSampleTest,
 	new TemplateUtilsTest,
 	new AtomicRenderTest,
 	new ConvertersTest,
