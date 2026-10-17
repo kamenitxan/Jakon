@@ -49,7 +49,7 @@
               <div>
                 <div class="font-bold">{{ item.product.name }}</div>
                 <div class="text-sm opacity-60">{{ item.product.sku }}</div>
-                {% if variantTexts is not empty and variantTexts[item.id] %}
+                {% if variantTexts contains item.id %}
                 <div class="text-sm opacity-80 mt-1">{{ variantTexts[item.id] }}</div>
                 {% endif %}
               </div>

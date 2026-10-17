@@ -17,6 +17,7 @@ class ShopInit extends JakonInit {
 	override def daoSetup(): Unit = {
 		super.daoSetup()
 		DBHelper.addDao(classOf[Post])
+		DBHelper.addDao(classOf[Customer])
 		DBHelper.addDao(classOf[PaymentMethod])
 		DBHelper.addDao(classOf[ShippingMethod])
 		DBHelper.addDao(classOf[ShopCategory])

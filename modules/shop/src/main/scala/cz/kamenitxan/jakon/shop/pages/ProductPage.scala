@@ -27,7 +27,7 @@ class ProductPage extends AbstractCustomPage {
 		// category.variants is populated via @ManyToMany when selectDeep loads the product
 		val variantWithValues = if (product.category != null) {
 			product.category.variants.map { v =>
-				VariantWithValues(v, ProductVariantService.loadValuesForVariant(v.id))
+				VariantWithValues(v, ProductVariantService.loadValuesForVariant(v.id).asJava)
 			}
 		} else {
 			Seq.empty

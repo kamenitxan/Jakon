@@ -8,7 +8,7 @@ import java.sql.Connection
 object ProductVariantService {
 	
 	/**
-	 * Returns all values for a given variant, ordered by displayOrder.
+	 * Returns all published values for a given variant, ordered by objectOrder.
 	 */
 	def loadValuesForVariant(variantId: Int)(implicit conn: Connection): Seq[ProductVariantValue] = {
 		// language=SQL
@@ -43,7 +43,7 @@ object ProductVariantService {
 			   |FROM ProductVariantValue pvv
 			   |JOIN ProductVariant pv ON pv.id = pvv.variant_id
 			   |WHERE pvv.id IN ($placeholders)
-			   |ORDER BY pv.displayOrder""".stripMargin
+			   |ORDER BY pv.objectOrder, pvv.objectOrder""".stripMargin
 		val stmt = conn.prepareStatement(sql)
 		valueIds.zipWithIndex.foreach { case (id, idx) => stmt.setInt(idx + 1, id) }
 		val rs = stmt.executeQuery()
@@ -57,5 +57,5 @@ object ProductVariantService {
 	}
 }
 
-/** Variant group bundled with its selectable values for template rendering. */
-case class VariantWithValues(variant: ProductVariant, values: Seq[ProductVariantValue])
+/** Variant group bundled with its selectable values for template rendering. Values are java List, Pebble can not iterate Scala Seq. */
+case class VariantWithValues(variant: ProductVariant, values: java.util.List[ProductVariantValue])

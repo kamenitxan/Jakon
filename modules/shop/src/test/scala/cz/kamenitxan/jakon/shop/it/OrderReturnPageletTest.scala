@@ -26,11 +26,8 @@ class OrderReturnPageletTest extends ShopHttpTestBase {
 		createOrderItem(order)
 		val resp = new Browser().post("/order/return/create", "token" -> order.token, "reason" -> OrderReturnReason.Other)
 		assert(queryInt("SELECT COUNT(*) FROM OrderReturn WHERE order_id = ?", order.id) == 0)
-		// BUG: @Post of createReturn has no template, so the form with error is not rendered
-		pendingUntilFixed {
-			assertOk(resp)
-			assert(resp.body().contains("Vyberte alespoň jednu položku"))
-		}
+		assertOk(resp)
+		assert(resp.body().contains("Vyberte alespoň jednu položku"))
 	}
 
 	test("create return stores return with items, then refuses a second return") {
@@ -70,14 +67,11 @@ class OrderReturnPageletTest extends ShopHttpTestBase {
 	}
 
 	test("return confirmation email goes to customer email when order has a customer") {
-		// BUG: Customer can not be created, see ShopEntityTest "Customer create and update"
-		pendingUntilFixed {
-			val customer = createCustomer()
-			val order = createOrder(customer = customer)
-			val item = createOrderItem(order)
-			new Browser().post("/order/return/create", "token" -> order.token, "itemId" -> item.id.toString)
-			assert(queryInt("SELECT COUNT(*) FROM EmailEntity WHERE addressTo = ?", customer.email) >= 1)
-		}
+		val customer = createCustomer()
+		val order = createOrder(customer = customer)
+		val item = createOrderItem(order)
+		new Browser().post("/order/return/create", "token" -> order.token, "itemId" -> item.id.toString)
+		assert(queryInt("SELECT COUNT(*) FROM EmailEntity WHERE addressTo = ?", customer.email) >= 1)
 	}
 
 	test("return without any recipient email does not send email") {

@@ -46,7 +46,7 @@ class OrderReturnPagelet extends AbstractPagelet {
 	 * Processes the submitted return form, creates [[cz.kamenitxan.jakon.shop.entity.OrderReturn]] and
 	 * [[cz.kamenitxan.jakon.shop.entity.OrderReturnItem]] records, and redirects to the confirmation page.
 	 */
-	@Post(path = "/create", validate = false)
+	@Post(path = "/create", template = "order/return/form", validate = false)
 	def createReturn(ctx: Context)(implicit conn: Connection): mutable.Map[String, Any] = {
 		withOrder(ctx) { order =>
 			val token = tokenFrom(ctx)

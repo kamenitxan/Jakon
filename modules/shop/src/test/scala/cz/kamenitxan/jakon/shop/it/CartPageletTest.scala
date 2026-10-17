@@ -61,12 +61,9 @@ class CartPageletTest extends ShopHttpTestBase {
 		assertRedirect(browser.post("/cart/add", "productId" -> product.id.toString, "variantValues" -> red.id.toString), "/cart")
 		val id = cartId(browser)
 		assert(queryInt("SELECT COUNT(*) FROM CartItem WHERE cart_id = ?", id) == 2)
-		// BUG: ProductVariantService.buildReadableSelection orders by pv.displayOrder, which does not exist
-		pendingUntilFixed {
-			val variantPage = browser.get("/cart")
-			assertOk(variantPage)
-			assert(variantPage.body().contains("Červená"))
-		}
+		val variantPage = browser.get("/cart")
+		assertOk(variantPage)
+		assert(variantPage.body().contains("Červená"))
 
 		val itemId = queryInt("SELECT id FROM CartItem WHERE cart_id = ? AND variantSelection IS NULL", id)
 		assertRedirect(browser.post("/cart/update", "itemId" -> itemId.toString, "quantity" -> "4"), "/cart")
@@ -150,20 +147,20 @@ class CartPageletTest extends ShopHttpTestBase {
 	}
 
 	test("submit order as logged in customer links the order to customer") {
-		// BUG: Customer can not be created, see ShopEntityTest "Customer create and update"
-		pendingUntilFixed {
-			val customer = createCustomer()
-			val browser = new Browser
-			login(browser, customer.email)
-			prepareCheckout(browser)
-			val delivery = browser.get("/cart/delivery")
-			assertOk(delivery)
-			assert(delivery.body().contains(customer.email))
+		val customer = createCustomer()
+		val browser = new Browser
+		login(browser, customer.email)
+		prepareCheckout(browser)
+		val delivery = browser.get("/cart/delivery")
+		assertOk(delivery)
+		assert(delivery.body().contains(customer.email))
+		// customer specific data are prefilled too
+		assert(delivery.body().contains(customer.phone))
+		assert(delivery.body().contains(customer.city))
 
-			val resp = browser.post("/cart/submit", deliveryParams(customer.email)*)
-			val orderNumber = location(resp).split("orderNumber=")(1)
-			assert(queryInt("SELECT customer_id FROM ShopOrder WHERE orderNumber = ?", orderNumber) == customer.id)
-		}
+		val resp = browser.post("/cart/submit", deliveryParams(customer.email)*)
+		val orderNumber = location(resp).split("orderNumber=")(1)
+		assert(queryInt("SELECT customer_id FROM ShopOrder WHERE orderNumber = ?", orderNumber) == customer.id)
 	}
 
 	test("delivery form is prefilled for logged in non-customer user") {

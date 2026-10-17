@@ -38,20 +38,17 @@ class ShopEntityTest extends AnyFunSuite with ShopDbSupport {
 	}
 
 	test("ShopProduct update with and without discount") {
-		// BUG: ShopProduct.updateObject writes displayOrder column which does not exist in ShopProduct table
-		pendingUntilFixed {
-			val product = createProduct(price = "200", discountPrice = "150")
-			product.name = "updated product"
-			product.discountPrice = null
-			product.featured = true
-			product.update()
-			assert(queryString("SELECT name FROM ShopProduct WHERE id = ?", product.id) == "updated product")
-			assert(queryInt("SELECT COUNT(*) FROM ShopProduct WHERE id = ? AND discountPrice IS NULL", product.id) == 1)
+		val product = createProduct(price = "200", discountPrice = "150")
+		product.name = "updated product"
+		product.discountPrice = null
+		product.featured = true
+		product.update()
+		assert(queryString("SELECT name FROM ShopProduct WHERE id = ?", product.id) == "updated product")
+		assert(queryInt("SELECT COUNT(*) FROM ShopProduct WHERE id = ? AND discountPrice IS NULL", product.id) == 1)
 
-			product.discountPrice = new BigDecimal("99")
-			product.update()
-			assert(queryString("SELECT discountPrice FROM ShopProduct WHERE id = ?", product.id) == "99")
-		}
+		product.discountPrice = new BigDecimal("99")
+		product.update()
+		assert(queryString("SELECT discountPrice FROM ShopProduct WHERE id = ?", product.id) == "99")
 	}
 
 	test("ShippingMethod and PaymentMethod create and update") {
@@ -140,15 +137,12 @@ class ShopEntityTest extends AnyFunSuite with ShopDbSupport {
 	}
 
 	test("ShopOrder with customer") {
-		// BUG: Customer can not be created, see "Customer create and update"
-		pendingUntilFixed {
-			val customer = createCustomer()
-			val order = createOrder(customer = customer)
-			assert(queryInt("SELECT customer_id FROM ShopOrder WHERE id = ?", order.id) == customer.id)
-			order.customer = null
-			order.update()
-			assert(queryInt("SELECT COUNT(*) FROM ShopOrder WHERE id = ? AND customer_id IS NULL", order.id) == 1)
-		}
+		val customer = createCustomer()
+		val order = createOrder(customer = customer)
+		assert(queryInt("SELECT customer_id FROM ShopOrder WHERE id = ?", order.id) == customer.id)
+		order.customer = null
+		order.update()
+		assert(queryInt("SELECT COUNT(*) FROM ShopOrder WHERE id = ? AND customer_id IS NULL", order.id) == 1)
 	}
 
 	test("ShopOrderItem create and update with and without product") {
@@ -233,16 +227,12 @@ class ShopEntityTest extends AnyFunSuite with ShopDbSupport {
 	}
 
 	test("Customer create and update") {
-		// BUG: Customer has standAlone = true, so create() calls createObject(conn), which Customer does not override
-		// and generated SQL is invalid. Customer is also not registered as DAO in ShopInit.
-		pendingUntilFixed {
-			val customer = createCustomer()
-			assert(queryString("SELECT city FROM Customer WHERE id = ?", customer.id) == "Brno")
-			customer.city = "Ostrava"
-			customer.deliveryCity = "Olomouc"
-			customer.update()
-			assert(queryString("SELECT city FROM Customer WHERE id = ?", customer.id) == "Ostrava")
-			assert(customer.toString.nonEmpty)
-		}
+		val customer = createCustomer()
+		assert(queryString("SELECT city FROM Customer WHERE id = ?", customer.id) == "Brno")
+		customer.city = "Ostrava"
+		customer.deliveryCity = "Olomouc"
+		customer.update()
+		assert(queryString("SELECT city FROM Customer WHERE id = ?", customer.id) == "Ostrava")
+		assert(customer.toString.nonEmpty)
 	}
 }

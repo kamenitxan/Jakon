@@ -52,7 +52,9 @@ abstract class ShopHttpTestBase extends AnyFunSuite with ShopDbSupport {
 		assert(location(resp).startsWith(target), s"expected redirect to $target, got ${location(resp)}")
 	}
 
+	/** Rendering errors end with status 200 and empty body, so body is checked too. */
 	protected def assertOk(resp: HttpResponse[String]): Unit = {
 		assert(resp.statusCode() == 200, s"expected 200, got ${resp.statusCode()}: ${resp.body().take(500)}")
+		assert(resp.body().trim.nonEmpty, s"empty response body of ${resp.uri()}")
 	}
 }

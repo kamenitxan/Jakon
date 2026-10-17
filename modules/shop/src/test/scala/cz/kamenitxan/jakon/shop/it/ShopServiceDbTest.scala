@@ -6,6 +6,8 @@ import cz.kamenitxan.jakon.shop.service.*
 import org.scalatest.DoNotDiscover
 import org.scalatest.funsuite.AnyFunSuite
 
+import scala.jdk.CollectionConverters.*
+
 @DoNotDiscover
 class ShopServiceDbTest extends AnyFunSuite with ShopDbSupport {
 
@@ -24,15 +26,12 @@ class ShopServiceDbTest extends AnyFunSuite with ShopDbSupport {
 
 			val values = ProductVariantService.loadValuesForVariant(variant.id)
 			assert(values.map(_.value) == Seq("Červená", "Modrá"))
-			assert(VariantWithValues(variant, values).values.size == 2)
+			assert(VariantWithValues(variant, values.asJava).values.size == 2)
 
 			assert(ProductVariantService.buildReadableSelection(null) == "")
 			assert(ProductVariantService.buildReadableSelection("  ") == "")
 			assert(ProductVariantService.buildReadableSelection("abc,def") == "")
-			// BUG: buildReadableSelection orders by pv.displayOrder, but ProductVariant has only objectOrder
-			pendingUntilFixed {
-				assert(ProductVariantService.buildReadableSelection(s"${red.id}, ${blue.id}") == "Barva: Červená, Barva: Modrá")
-			}
+			assert(ProductVariantService.buildReadableSelection(s"${red.id}, ${blue.id}") == "Barva: Červená, Barva: Modrá")
 		})
 	}
 

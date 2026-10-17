@@ -233,9 +233,9 @@ class CartPagelet extends AbstractPagelet {
 		order.customerNote = Option(data.customerNote).map(_.trim).getOrElse("")
 		order.published = true
 
-		val user: JakonUser = ctx.sessionAttribute("user")
-		if (user != null && user.isInstanceOf[Customer]) {
-			order.customer = user.asInstanceOf[Customer]
+		currentUser(ctx) match {
+			case c: Customer => order.customer = c
+			case _ =>
 		}
 
 		order.create()
@@ -294,8 +294,26 @@ class CartPagelet extends AbstractPagelet {
 		f"ORD-$year-$seq%06d"
 	}
 
-	private def prefillFromUser(ctx: Context): mutable.Map[String, Any] = {
+	/**
+	 * Logged in user. Login loads user as plain [[JakonUser]], so customer data are loaded separately
+	 * when the user is a [[Customer]].
+	 */
+	private def currentUser(ctx: Context)(implicit conn: Connection): JakonUser = {
 		val user: JakonUser = ctx.sessionAttribute("user")
+		user match {
+			case null => null
+			case c: Customer => c
+			case u =>
+				implicit val cls: Class[Customer] = classOf[Customer]
+				// language=SQL
+				val stmt = conn.prepareStatement("SELECT * FROM Customer JOIN JakonUser ON JakonUser.id = Customer.id WHERE Customer.id = ?")
+				stmt.setInt(1, u.id)
+				Option(DBHelper.selectSingleDeep[Customer](stmt)).getOrElse(u)
+		}
+	}
+
+	private def prefillFromUser(ctx: Context)(implicit conn: Connection): mutable.Map[String, Any] = {
+		val user = currentUser(ctx)
 		if (user == null) {
 			mutable.Map.empty
 		} else if (user.isInstanceOf[Customer]) {

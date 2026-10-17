@@ -60,7 +60,7 @@ class ShopProduct extends JakonObject with Serializable {
 
 	override def updateObject(jid: Int, conn: Connection): Unit = {
 		// language=SQL
-		val sql = "UPDATE ShopProduct SET name = ?, description = ?, shortDescription = ?, price = ?, discountPrice = ?, stockQuantity = ?, sku = ?, mainImage = ?, images = ?, category_id = ?, featured = ?, displayOrder = ? WHERE id = ?"
+		val sql = "UPDATE ShopProduct SET name = ?, description = ?, shortDescription = ?, price = ?, discountPrice = ?, stockQuantity = ?, sku = ?, mainImage = ?, images = ?, category_id = ?, featured = ? WHERE id = ?"
 		val stmt = conn.prepareStatement(sql)
 		stmt.setString(1, name)
 		stmt.setString(2, description)
@@ -81,7 +81,7 @@ class ShopProduct extends JakonObject with Serializable {
 			stmt.setNull(10, Types.INTEGER)
 		}
 		stmt.setBoolean(11, featured)
-		stmt.setInt(13, jid)
+		stmt.setInt(12, jid)
 		stmt.executeUpdate()
 	}
 }

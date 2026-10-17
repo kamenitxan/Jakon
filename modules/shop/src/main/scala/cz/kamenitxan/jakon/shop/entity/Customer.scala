@@ -103,6 +103,7 @@ class Customer extends JakonUser with Serializable {
 }
 
 object Customer {
-	val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-user-circle", standAlone = true)
+	// not standAlone - Customer extends JakonUser, so it needs JakonObject parent row
+	val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-user-circle")
 }
 
