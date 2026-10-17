@@ -3,7 +3,7 @@ package jakontest.core.pagelet
 import cz.kamenitxan.jakon.core.dynamic.entity.{AbstractJsonResponse, JsonFailResponse}
 import cz.kamenitxan.jakon.core.dynamic.{AbstractJsonPagelet, Get, JsonPagelet, Post}
 import cz.kamenitxan.jakon.utils.Utils.*
-import jakontest.core.pagelet.entity.{OldTestJsonPageletData, SingleTestResponse, TestJsonPageletData, TypedTestResponseData}
+import jakontest.core.pagelet.entity.{SingleTestResponse, TestJsonPageletData, TypedTestResponseData}
 
 import java.sql.Connection
 import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
@@ -30,7 +30,7 @@ class TestJsonPagelet extends AbstractJsonPagelet {
 	}
 
 	@Get(path = "/withDataAndConnection")
-	def withDataAndConnection(data: OldTestJsonPageletData, conn: Connection): String = {
+	def withDataAndConnection(data: TestJsonPageletData, conn: Connection): String = {
 		data.msg
 	}
 

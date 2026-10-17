@@ -6,8 +6,8 @@ import cz.kamenitxan.jakon.validation.validators.{Email, NotEmpty}
 /**
   * Created by TPa on 2018-11-27.
   */
-class ForgetPasswordData {
+case class ForgetPasswordData(
 	@NotEmpty
 	@Email
-	var email: String = _
-}
+	email: String
+)

@@ -15,6 +15,22 @@ class TestPagelet extends AbstractPagelet {
 		)
 	}
 
+	@Get(path = "/getCaseClass", template = "pagelet/examplePagelet")
+	def getCaseClass(data: TestPageletData): mutable.Map[String, Any] = {
+		mutable.Map(
+			"pushed" -> s"${data.msg}-${data.count}"
+		)
+	}
+
+	case class InnerData(msg: String)
+
+	@Get(path = "/getInnerCaseClass", template = "pagelet/examplePagelet")
+	def getInnerCaseClass(data: InnerData): mutable.Map[String, Any] = {
+		mutable.Map(
+			"pushed" -> s"inner-${data.msg}"
+		)
+	}
+
 	@Post(path = "/post", template = "pagelet/ExamplePagelet")
 	def post(ctx: Context): mutable.Map[String, Any] = {
 		redirect(ctx, "/pagelet/get")
@@ -27,3 +43,5 @@ class TestPagelet extends AbstractPagelet {
 	}
 
 }
+
+case class TestPageletData(msg: String, count: Int)

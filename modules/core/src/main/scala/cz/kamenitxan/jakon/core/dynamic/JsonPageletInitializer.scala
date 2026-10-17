@@ -38,6 +38,7 @@ object JsonPageletInitializer {
 
 			c.getDeclaredMethods
 				.filter(m => m.getAnnotation(classOf[Get]) != null || m.getAnnotation(classOf[Post]) != null)
+				.filter(m => PageletInitializer.checkDataClass(c, m))
 				.foreach(m => {
 					val get = m.getAnnotation(classOf[Get])
 					val post = m.getAnnotation(classOf[Post])

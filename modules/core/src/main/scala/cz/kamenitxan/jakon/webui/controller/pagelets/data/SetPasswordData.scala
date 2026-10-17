@@ -2,13 +2,13 @@ package cz.kamenitxan.jakon.webui.controller.pagelets.data
 
 import cz.kamenitxan.jakon.validation.validators.{EqualsWithOther, NotEmpty, Size}
 
-class SetPasswordData {
+case class SetPasswordData(
 	@NotEmpty()
 	@Size(min = 5)
-	var password: String = _
+	password: String,
 	@NotEmpty()
 	@EqualsWithOther(value = "password")
-	var password_check: String = _
+	password_check: String,
 	@NotEmpty
-	var token: String = _
-}
+	token: String
+)

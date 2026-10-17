@@ -63,12 +63,12 @@ class CartPagelet extends AbstractPagelet {
 		)
 	}
 
-	class AddData {
-		var productId: String = ""
-		var quantity: String = "1"
+	case class AddData(
+		productId: String,
+		quantity: String,
 		/** Comma-separated ProductVariantValue IDs submitted from the product form. */
-		var variantValues: String = ""
-	}
+		variantValues: String
+	)
 
 	@Post(path = "/add")
 	def addToCart(ctx: Context, data: AddData)(implicit conn: Connection): mutable.Map[String, Any] = {
@@ -88,10 +88,7 @@ class CartPagelet extends AbstractPagelet {
 		mutable.Map.empty
 	}
 
-	class UpdateData {
-		var itemId: String = ""
-		var quantity: String = "0"
-	}
+	case class UpdateData(itemId: String, quantity: String)
 
 	@Post(path = "/update")
 	def updateCart(ctx: Context, data: UpdateData)(implicit conn: Connection): mutable.Map[String, Any] = {
@@ -124,10 +121,7 @@ class CartPagelet extends AbstractPagelet {
 		)
 	}
 
-	class CheckoutData {
-		var shippingMethodId: String = ""
-		var paymentMethodId: String = ""
-	}
+	case class CheckoutData(shippingMethodId: String, paymentMethodId: String)
 
 	@Post(path = "/checkout")
 	def saveCheckout(ctx: Context, data: CheckoutData)(implicit conn: Connection): mutable.Map[String, Any] = {
@@ -171,21 +165,21 @@ class CartPagelet extends AbstractPagelet {
 		) ++ prefill
 	}
 
-	class DeliveryData {
-		var guestEmail: String = ""
-		var guestPhone: String = ""
-		var billingName: String = ""
-		var billingStreet: String = ""
-		var billingCity: String = ""
-		var billingZip: String = ""
-		var billingCountry: String = ""
-		var deliveryName: String = ""
-		var deliveryStreet: String = ""
-		var deliveryCity: String = ""
-		var deliveryZip: String = ""
-		var deliveryCountry: String = ""
-		var customerNote: String = ""
-	}
+	case class DeliveryData(
+		guestEmail: String,
+		guestPhone: String,
+		billingName: String,
+		billingStreet: String,
+		billingCity: String,
+		billingZip: String,
+		billingCountry: String,
+		deliveryName: String,
+		deliveryStreet: String,
+		deliveryCity: String,
+		deliveryZip: String,
+		deliveryCountry: String,
+		customerNote: String
+	)
 
 	@Post(path = "/submit", validate = false)
 	def submitOrder(ctx: Context, data: DeliveryData)(implicit conn: Connection): mutable.Map[String, Any] = {

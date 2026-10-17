@@ -20,6 +20,34 @@ class PageletTest extends TestBase {
 		assert(f.driver.getPageSource.contains("pushedValue"))
 	}
 
+	test("example pagelet get - case class data from query params") { f =>
+		f.driver.get(host + "/pagelet/getCaseClass?msg=caseClassValue&count=42")
+
+		assert(f.driver.getPageSource.contains("caseClassValue-42"))
+	}
+
+	test("example pagelet get - case class data with missing params") { f =>
+		f.driver.get(host + "/pagelet/getCaseClass")
+
+		assert(f.driver.getPageSource.contains("null-0"))
+	}
+
+	test("example pagelet get - inner case class data") { f =>
+		f.driver.get(host + "/pagelet/getInnerCaseClass?msg=innerValue")
+
+		assert(f.driver.getPageSource.contains("inner-innerValue"))
+	}
+
+	test("pagelet method with non case class data is ignored") { f =>
+		PageletInitializer.initControllers(Seq(classOf[TestInvalidDataPagelet]))
+
+		f.driver.get(host + "/invalidDataPagelet/get")
+		assert(!f.driver.getPageSource.contains("invalidDataValue"))
+
+		f.driver.get(host + "/invalidDataPagelet/valid")
+		assert(f.driver.getPageSource.contains("validMethodValue"))
+	}
+
 	test("example pagelet post") { f =>
 
 		val postUrl = host + "/pagelet/get"

@@ -2,19 +2,19 @@ package cz.kamenitxan.jakon.webui.controller.pagelets.data
 
 import cz.kamenitxan.jakon.validation.validators.{Email, EqualsWithOther, NotEmpty, Size}
 
-class JakonRegistrationData {
+case class JakonRegistrationData(
 	@NotEmpty()
 	@Email()
-	var email: String = _
+	email: String,
 	@NotEmpty()
 	@Size(min = 5)
-	var password: String = _
+	password: String,
 	@NotEmpty()
 	@Size(min = 5)
 	@EqualsWithOther(value = "password")
-	var password2: String = _
+	password2: String,
 	@NotEmpty()
-	var firstname: String = _
+	firstname: String,
 	@NotEmpty()
-	var lastname: String = _
-}
+	lastname: String
+)

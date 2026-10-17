@@ -40,6 +40,4 @@ class DbConsolePagelet extends AbstractAdminPagelet {
 	}
 }
 
-class DbConsoleData {
-	var sql: String = _
-}
+case class DbConsoleData(sql: String)

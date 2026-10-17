@@ -42,6 +42,7 @@ object PageletInitializer {
 
 			c.getDeclaredMethods
 				.filter(m => m.getAnnotation(classOf[Get]) != null || m.getAnnotation(classOf[Post]) != null)
+				.filter(m => checkDataClass(c, m))
 				.foreach(m => {
 					val get = m.getAnnotation(classOf[Get])
 					val post = m.getAnnotation(classOf[Post])
@@ -214,29 +215,69 @@ object PageletInitializer {
 				conn = DBHelper.getConnection
 				conn
 			case t =>
-				val enclosingCls = t.getEnclosingClass
-				val constructor = if (enclosingCls != null) t.getDeclaredConstructor(enclosingCls) else t.getDeclaredConstructor()
-				val data = (if (enclosingCls != null) constructor.newInstance(pagelet) else constructor.newInstance()).asInstanceOf[AnyRef]
 				Logger.debug(s"Creating pagelet data: {${t.getSimpleName}}")
-				t.getDeclaredFields.foreach(f => {
-					try {
-						if (ctx.formParam(f.getName) != null && ctx.formParam(f.getName).nonEmpty) {
-							val value = ctx.formParam(f.getName)
-							f.setAccessible(true)
-							f.set(data, value.conform(f))
-						} else if (!ctx.queryParams(f.getName).isEmpty) {
-							val value = ctx.queryParams(f.getName).asScala.mkString("\r\n")
-							f.setAccessible(true)
-							f.set(data, value.conform(f))
-						}
-					} catch {
-						case ex: Exception => Logger.error("Exception when setting pagelet data value", ex)
-					}
-				})
+				val data = createDataObject(t, ctx, pagelet)
 				dataRef = data
 				data
 		}.asInstanceOf[Array[Any]]
 		new MethodArgs(arr, dataRef, Option.apply(conn))
+	}
+
+	/** Checks that pagelet data class is case class. Method with invalid data class is logged and should be ignored. */
+	private[dynamic] def checkDataClass(c: Class[_], m: Method): Boolean = {
+		getDataClass(m) match {
+			case Some(dc) if !classOf[Product].isAssignableFrom(dc) =>
+				Logger.error(s"${c.getSimpleName}.${m.getName}: pagelet data class ${dc.getSimpleName} must be a case class. Method is ignored.")
+				false
+			case _ => true
+		}
+	}
+
+	/** Creates pagelet case class data object from form and query params */
+	private def createDataObject(t: Class[_], ctx: Context, pagelet: AnyRef): AnyRef = {
+		val values: Map[String, Any] = t.getDeclaredFields.flatMap(f => {
+			try {
+				val paramName = EntityValidator.getParamName(f)
+				val value = if (ctx.formParam(paramName) != null && ctx.formParam(paramName).nonEmpty) {
+					Option(ctx.formParam(paramName))
+				} else if (!ctx.queryParams(paramName).isEmpty) {
+					Option(ctx.queryParams(paramName).asScala.mkString("\r\n"))
+				} else {
+					None
+				}
+				value.map(v => f.getName -> v.conform(f))
+			} catch {
+				case ex: Exception =>
+					Logger.error("Exception when setting pagelet data value", ex)
+					None
+			}
+		}).toMap
+
+		val enclosingCls = t.getEnclosingClass
+		val constructor = t.getDeclaredConstructors.head
+		val params = constructor.getParameters.zipWithIndex.map((p, i) => {
+			if (i == 0 && enclosingCls != null && p.getType == enclosingCls) {
+				pagelet
+			} else {
+				values.get(p.getName).orNull match {
+					case null if p.getType.isPrimitive => defaultPrimitive(p.getType)
+					case v => v
+				}
+			}
+		})
+		constructor.newInstance(params: _*).asInstanceOf[AnyRef]
+	}
+
+	private def defaultPrimitive(t: Class[_]): Any = t match {
+		case java.lang.Boolean.TYPE => false
+		case java.lang.Character.TYPE => 0.toChar
+		case java.lang.Byte.TYPE => 0.toByte
+		case java.lang.Short.TYPE => 0.toShort
+		case java.lang.Integer.TYPE => 0
+		case java.lang.Long.TYPE => 0L
+		case java.lang.Float.TYPE => 0f
+		case java.lang.Double.TYPE => 0d
+		case _ => null
 	}
 
 	class MethodArgs(val array: Array[Any], val data: Any, val connection: Option[Connection])
