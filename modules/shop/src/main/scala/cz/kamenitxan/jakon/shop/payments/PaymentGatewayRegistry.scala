@@ -78,15 +78,17 @@ object PaymentGatewayRegistry {
 	/** Scans the payments package and instantiates all concrete [[PaymentGateway]] implementations. */
 	private def discoverGateways(): Seq[PaymentGateway] = {
 		val scanResult = new ClassGraph()
+			.enableClasspath()
 			.enableClassInfo()
 			.acceptPackages(classOf[PaymentGateway].getPackageName)
 			.scan()
 
 		try {
-			val allClasses = scanResult.getClassesImplementing(classOf[PaymentGateway].getName)
-				.loadClasses()
+			val classLoader = Option(Thread.currentThread().getContextClassLoader).getOrElse(getClass.getClassLoader)
+			val allClasses = scanResult.getAllClassesImplementing(classOf[PaymentGateway])
 				.asScala
 				.toSeq
+				.map(ci => Class.forName(ci.getName, false, classLoader))
 				.filterNot(clazz => clazz.isInterface || Modifier.isAbstract(clazz.getModifiers))
 
 			// If both a class and its Scala companion object (ClassName$) are found,

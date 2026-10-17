@@ -58,7 +58,7 @@ val Dependencies = new {
 				"io.circe" %% "circe-parser"% V.circeVersion,
 				//"org.apache.lucene" % "lucene-core" % "7.5.0",
 				//"org.apache.lucene" % "lucene-queryparser" % "7.5.0",
-				"io.github.classgraph" % "classgraph" % "4.8.184",
+				"io.github.classgraph" % "classgraph" % "6.0.0",
 				"com.zaxxer" % "HikariCP" % "7.0.2",
 				"com.github.scribejava" % "scribejava-apis" % "8.3.3",
 				"cz.etn" % "email-validator" % "1.4.0",

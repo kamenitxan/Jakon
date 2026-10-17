@@ -62,7 +62,7 @@ object ConfigurationInitializer {
 				val setter = c.getDeclaredMethods
 				  .filter(m => m.getParameterTypes.forall(cls => cls == classOf[String]))
 				  .find(m => m.getName.equalsIgnoreCase("set" + f.getName))
-				if (setter.nonEmpty) {
+				if (setter.nonEmpty && confValue.nonEmpty) {
 					if (setter.get.getParameterTypes.forall(cls => cls == classOf[String])) {
 						setter.get.invoke(obj, confValue.get)
 					} else {

@@ -16,7 +16,11 @@ import scala.jdk.CollectionConverters.*
 class AnnotationScanner {
 
 	private val scanResult = {
-		val cg = new ClassGraph().enableAllInfo()
+		// classpath scanning is opt-in since ClassGraph 6
+		val cg = new ClassGraph()
+			.enableClasspath()
+			.enableClassInfo()
+			.enableAnnotationInfo()
 		cg.acceptPaths("/static")
 		cg.rejectPackages("cz.kamenitxan.jakon.shop.pages")
 		Settings.getPackage.foreach(p => cg.acceptPackages(p))
@@ -98,7 +102,9 @@ class AnnotationScanner {
 	implicit class ClassInfoListExtensions(val cil: ClassInfoList) {
 
 		def loadScalaClasses(): Seq[Class[_]] = {
-			cil.loadClasses().asScala.toSeq
+			// ClassGraph 6 no longer loads classes itself
+			val classLoader = Option(Thread.currentThread().getContextClassLoader).getOrElse(getClass.getClassLoader)
+			cil.asScala.toSeq.map(ci => Class.forName(ci.getName, false, classLoader))
 		}
 	}
 
