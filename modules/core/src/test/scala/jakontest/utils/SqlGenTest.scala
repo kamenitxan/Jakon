@@ -55,7 +55,8 @@ class SqlGenTest extends TestBase {
 
 	test("DBHelper selectDeep") { _ =>
 		DBHelper.withDbConnection(implicit conn => {
-			val stmt = conn.prepareStatement("SELECT * FROM JakonUser")
+			// registered users do not have ACL
+			val stmt = conn.prepareStatement("SELECT * FROM JakonUser WHERE acl_id IS NOT NULL")
 			val users = DBHelper.selectDeep(stmt)(conn, classOf[JakonUser])
 			assert(users.nonEmpty)
 			assert(users.forall( u => u.acl != null))

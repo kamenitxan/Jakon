@@ -19,7 +19,9 @@ class MarkdownEditorSampleTest extends AnyFunSuite {
 	}
 
 	private def assertRendered(fragment: String): Unit = {
-		assert(html.contains(fragment), s"\nexpected fragment:\n$fragment\nrendered html:\n$html")
+		// multiline literals contain \r\n when sources are checked out with CRLF (Windows)
+		val expected = fragment.replace("\r\n", "\n")
+		assert(html.contains(expected), s"\nexpected fragment:\n$expected\nrendered html:\n$html")
 	}
 
 	test("editor sample headings") {

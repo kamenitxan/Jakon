@@ -44,6 +44,24 @@ class AtomicRenderTest extends AnyFunSuite {
 		})
 	}
 
+	test("renderAtomically renders in place when symlinks are not supported") {
+		withTempDir(dir => {
+			val probe = dir.resolve("probe")
+			val supported = Try(Files.createSymbolicLink(probe, dir.getFileName)).isSuccess
+			Files.deleteIfExists(probe)
+			assume(!supported, "symlinks are supported on this system")
+			val out = dir.resolve("out")
+			Files.createDirectories(out)
+
+			TemplateUtils.renderAtomically(out.toString)(target => write(target, "index.html", "new"))
+
+			assert(Files.isDirectory(out, LinkOption.NOFOLLOW_LINKS))
+			assert(Files.readString(out.resolve("index.html")) == "new")
+			// release directory of the failed attempt is removed
+			assert(releases(dir).isEmpty)
+		})
+	}
+
 	test("renderAtomically creates symlink to release") {
 		withTempDir(dir => {
 			assumeSymlinks(dir)

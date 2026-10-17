@@ -11,11 +11,11 @@ import cz.kamenitxan.jakon.core.template.Pebble
 import jakontest.core.*
 import jakontest.core.database.DBInitializerTest
 import jakontest.core.functions.LinkTest
-import jakontest.core.pagelet.{JsonPageletTest, PageletTest}
+import jakontest.core.pagelet.{JsonPageletTest, PageletTest, PageletValidationTest}
 import jakontest.core.task.TaskRunnerTest
 import jakontest.devtools.DevtoolsTest
 import jakontest.logging.LoggingTest
-import jakontest.utils.entity.{TestExtNoFields, TestExtUser, TestObject}
+import jakontest.utils.entity.{TestExtNoFields, TestExtUser, TestM2MOwner, TestM2MTag, TestObject}
 import jakontest.utils.mail.EmailTest
 import jakontest.utils.{I18NUtilTest, SecurityTest, SqlGenTest, UtilsTest}
 import jakontest.validation.ValidationTest
@@ -52,7 +52,11 @@ class TestRunner extends Suites(
 	new ServiceTest,
 	new ValidationTest,
 	new UtilsTest,
-	new TaskRunnerTest
+	new TaskRunnerTest,
+	new PageletValidationTest,
+	new PasswordResetTest,
+	new CoreMiscTest,
+	new AdminAccessTest
 ) with BeforeAndAfterAll {
 
 	val config = "jakonConfig=jakon_config_test_dev.properties"
@@ -100,6 +104,8 @@ class TestJakonApp extends JakonInit {
 		DBHelper.addDao(classOf[TestObject])
 		DBHelper.addDao(classOf[TestExtUser])
 		DBHelper.addDao(classOf[TestExtNoFields])
+		DBHelper.addDao(classOf[TestM2MTag])
+		DBHelper.addDao(classOf[TestM2MOwner])
 	}
 
 	Director.registerController(new PageController)

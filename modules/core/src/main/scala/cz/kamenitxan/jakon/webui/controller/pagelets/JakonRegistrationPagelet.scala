@@ -29,12 +29,12 @@ class JakonRegistrationPagelet extends AbstractAdminPagelet {
 
 	@Post(path = "", template = "")
 	def registrationPost(ctx: Context, data: JakonRegistrationData): mutable.Map[String, Any] = {
-		val email = ctx.queryParam("email")
-		val password = ctx.queryParam("password")
-		val password2 = ctx.queryParam("password2")
-		val firstName = ctx.queryParam("firstname")
-		val lastName = ctx.queryParam("lastname")
-		if (!password.equals(password2)) {
+		val email = data.email
+		val password = data.password
+		val password2 = data.password2
+		val firstName = data.firstname
+		val lastName = data.lastname
+		if (password != password2) {
 			PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "REGISTRATION_PASSWORD_NOT_SAME")
 			return null
 		}

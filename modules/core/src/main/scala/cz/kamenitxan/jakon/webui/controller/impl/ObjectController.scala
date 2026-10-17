@@ -240,11 +240,14 @@ object ObjectController {
 			}
 		} catch {
 			case ex: SQLiteException =>
-				if (ex.getResultCode == SQLiteErrorCode.SQLITE_CONSTRAINT && ex.getMessage.contains("UNIQUE")) {
+				// sqlite-jdbc reports extended result code SQLITE_CONSTRAINT_UNIQUE
+				val uniqueViolation = ex.getResultCode == SQLiteErrorCode.SQLITE_CONSTRAINT_UNIQUE ||
+					(ex.getResultCode == SQLiteErrorCode.SQLITE_CONSTRAINT && ex.getMessage.contains("UNIQUE"))
+				if (uniqueViolation) {
 					// TODO: mysql
 					// TODO: better msg
 					PageContext.getInstance().addMessage(MessageSeverity.ERROR, "NEW_OBJ_UNIQUE_FAIL")
-					redirect(ctx, "/admin/object/create/" + objectName)
+					return redirect(ctx, "/admin/object/create/" + objectName)
 				} else {
 					throw ex
 				}

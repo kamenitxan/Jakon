@@ -3,7 +3,7 @@ package jakontest.webui
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonUser
-import cz.kamenitxan.jakon.core.service.AclRuleService
+import cz.kamenitxan.jakon.core.service.{AclRuleService, UserService}
 import cz.kamenitxan.jakon.utils.security.AuthUtils
 import org.openqa.selenium.htmlunit.HtmlUnitDriver
 import org.openqa.selenium.{By, WebDriver}
@@ -127,7 +127,7 @@ class AuthTest extends FixtureAnyFunSuite {
 
 		val firstNameInput = f.driver.findElement(By.cssSelector("#firstname"))
 		firstNameInput.sendKeys("unit")
-		val lastNameInput = f.driver.findElement(By.cssSelector("#firstname"))
+		val lastNameInput = f.driver.findElement(By.cssSelector("#lastname"))
 		lastNameInput.sendKeys("test")
 		val emailInput = f.driver.findElement(By.cssSelector("#email"))
 		emailInput.sendKeys("unittest@test.cz")
@@ -139,6 +139,9 @@ class AuthTest extends FixtureAnyFunSuite {
 		submit.click()
 
 		assert(checkPageLoad(f.driver, "#jakon_messages"))
+		val user = DBHelper.withDbConnection(implicit conn => UserService.getByEmail("unittest@test.cz"))
+		assert(user != null)
+		assert(user.lastName == "test")
 	}
 
 	test ("register post nok") { f =>
@@ -147,10 +150,10 @@ class AuthTest extends FixtureAnyFunSuite {
 
 		val firstNameInput = f.driver.findElement(By.cssSelector("#firstname"))
 		firstNameInput.sendKeys("unit")
-		val lastNameInput = f.driver.findElement(By.cssSelector("#firstname"))
+		val lastNameInput = f.driver.findElement(By.cssSelector("#lastname"))
 		lastNameInput.sendKeys("test")
 		val emailInput = f.driver.findElement(By.cssSelector("#email"))
-		emailInput.sendKeys("unittest@test.cz")
+		emailInput.sendKeys("unittest-nok@test.cz")
 		val passwordInput1 = f.driver.findElement(By.cssSelector("#password"))
 		passwordInput1.sendKeys("unittest")
 		val passwordInput2 = f.driver.findElement(By.cssSelector("#password2"))

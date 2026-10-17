@@ -2,6 +2,7 @@ package cz.kamenitxan.jakon.utils.security
 
 import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
 import cz.kamenitxan.jakon.logging.Logger
+import cz.kamenitxan.jakon.utils.PageContext
 import io.javalin.http.{Context, HandlerType, HttpStatus}
 
 import java.nio.charset.StandardCharsets
@@ -61,6 +62,8 @@ object CsrfProtection {
 		if (!isValid(ctx)) {
 			Logger.warn(s"CSRF token validation failed for ${ctx.method()} ${ctx.path()}")
 			ctx.status(HttpStatus.FORBIDDEN).result("Invalid CSRF token")
+			// after handlers are skipped too, so PageContext has to be cleaned here, otherwise it stays on the thread
+			PageContext.destroy()
 			ctx.skipRemainingHandlers()
 		}
 	}
