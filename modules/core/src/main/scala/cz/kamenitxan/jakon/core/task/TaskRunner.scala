@@ -22,7 +22,8 @@ object TaskRunner {
 		}
 	}
 
-	def runSingle(task: AbstractTask): Unit = {
+	/** Can be called from many threads (e.g. log cleaning), check and schedule must be atomic. */
+	def runSingle(task: AbstractTask): Unit = singleRunFutures.synchronized {
 		val ef = singleRunFutures.get(task.name.value)
 		if (ef.isEmpty || ef.get.isDone) {
 			val f = scheduledExecutor.schedule(task, 0, TimeUnit.SECONDS)
