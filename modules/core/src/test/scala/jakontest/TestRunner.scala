@@ -56,6 +56,7 @@ class TestRunner extends Suites(
 	new PageletValidationTest,
 	new PasswordResetTest,
 	new CoreMiscTest,
+	new AdminInheritedObjectTest,
 	new AdminAccessTest
 ) with BeforeAndAfterAll {
 
