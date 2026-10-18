@@ -15,7 +15,7 @@ import jakontest.core.pagelet.{JsonPageletTest, PageletTest, PageletValidationTe
 import jakontest.core.task.TaskRunnerTest
 import jakontest.devtools.DevtoolsTest
 import jakontest.logging.LoggingTest
-import jakontest.utils.entity.{TestExtNoFields, TestExtUser, TestM2MOwner, TestM2MTag, TestObject}
+import jakontest.utils.entity.{TestExtNoFields, TestExtUser, TestFirstFk, TestM2MOwner, TestM2MTag, TestObject, TestStandaloneFk}
 import jakontest.utils.mail.EmailTest
 import jakontest.utils.{I18NUtilTest, SecurityTest, SqlGenTest, UtilsTest}
 import jakontest.validation.ValidationTest
@@ -107,6 +107,8 @@ class TestJakonApp extends JakonInit {
 		DBHelper.addDao(classOf[TestExtNoFields])
 		DBHelper.addDao(classOf[TestM2MTag])
 		DBHelper.addDao(classOf[TestM2MOwner])
+		DBHelper.addDao(classOf[TestStandaloneFk])
+		DBHelper.addDao(classOf[TestFirstFk])
 	}
 
 	Director.registerController(new PageController)

@@ -1,0 +1,6 @@
+CREATE TABLE TestFirstFk (
+    id     INTEGER NOT NULL REFERENCES JakonObject (id) ON DELETE CASCADE,
+    ext_id INTEGER REFERENCES TestExtUser (id) ON DELETE CASCADE,
+    name   VARCHAR(255),
+    PRIMARY KEY (id)
+);
