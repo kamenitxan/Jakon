@@ -56,3 +56,4 @@ jakon_config.properties
 /modules/backend/src/main/resources/static/jakon/vite/
 /modules/frontend/node_modules/
 /modules/shop/node_modules/
+/modules/core/heapdump.hprof
