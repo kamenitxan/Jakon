@@ -1,5 +1,6 @@
 package jakontest
 
+import jakontest.core.ConfigurationInitializerTest
 import jakontest.core.database.ConvertersTest
 import jakontest.core.dynamic.PageletSettingsTest
 import jakontest.core.functions.FunctionHelperTest
@@ -26,7 +27,8 @@ class UnitTestRunner extends Suites(
 	new ConvertersTest,
 	new AdminSettingsTest,
 	new JsonParserTest,
-	new PageletSettingsTest
+	new PageletSettingsTest,
+	new ConfigurationInitializerTest
 ) with BeforeAndAfterAll {
 
 }

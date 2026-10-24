@@ -29,6 +29,7 @@ hs_err_pid*
 .node_modules/
 node_modules/*
 jakon_config.properties
+jakon_secrets.properties
 /out/
 /target/
 /fulltext/

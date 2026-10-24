@@ -83,6 +83,7 @@ Users extend `JakonInit` and call `.run(args)`. The framework bootstraps via a s
 ### Configuration
 
 - Config is read from `jakon_config.properties` (or a file passed via `--jakonConfig=path` CLI arg).
+- Secrets (API tokens, passwords) go to an optional `jakon_secrets.properties` next to the config file (not committed); its values are merged into the configuration and override the config file ones.
 - Key settings: `templateDir`, `staticDir`, `outputDir`, `databaseDriver`, `databaseConnPath`, `deployMode` (`DEVEL` / `PRODUCTION`), `port`, `package`.
 - Pagelets can be deactivated with `pagelet.<SimpleName>=ENABLED|DISABLED` (e.g. `pagelet.DbConsolePagelet=DISABLED`); `DISABLED` means no routes are registered at all. A pagelet can also decide on its own: its **companion object** implements `ConditionalPagelet` and overrides `defaultState` (see `DeployPagelet`, `FileManagerController`) — the companion is read reflectively via `MODULE$`, so no pagelet instance is created. Resolution order is config > `ConditionalPagelet.defaultState` > `ENABLED`, so the config file always wins. Visibility in the admin menu is a separate, compile-time concern controlled by `@Pagelet(showInAdmin = ...)`.
 - `Settings` object provides typed accessors for all config values.
