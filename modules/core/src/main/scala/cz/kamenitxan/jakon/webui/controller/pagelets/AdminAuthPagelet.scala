@@ -68,7 +68,8 @@ class AdminAuthPagelet extends AbstractAdminPagelet {
 						AuthUtils.resetLoginAttempts(user.id)
 
 						Logger.info("User " + user.username + " logged in")
-						AuthUtils.logIn(ctx, user)
+						val remember = ctx.formParam("remember") != null
+						AuthUtils.logIn(ctx, user, remember)
 
 						if (user.acl.adminAllowed) {
 							ctx.redirect(Utils.safeRedirectOr(redirectTo, Routes.AdminPrefix + "/index"))
@@ -96,6 +97,7 @@ class AdminAuthPagelet extends AbstractAdminPagelet {
 	@Get(path = "/logout", template = "login")
 	def logout(ctx: Context): mutable.Map[String, Any] = {
 		ctx.req().getSession.invalidate()
+		ctx.removeCookie("JSESSIONID", "/")
 		ctx.redirect("/admin")
 		mutable.Map.empty
 	}

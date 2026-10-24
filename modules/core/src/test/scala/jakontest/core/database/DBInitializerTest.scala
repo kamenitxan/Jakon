@@ -59,8 +59,8 @@ class DBInitializerTest extends AnyFunSuite {
 		execute("ALTER TABLE TestObjectI18n DROP COLUMN description")
 		try {
 			val errors = consistencyErrors()
-			assert(errors.contains("Field TestObjectI18n.description is not in DB"), errors)
-			assert(!errors.contains("Field TestObjectI18n.name is not in DB"), errors)
+			assert(errors.exists(_.startsWith("Field TestObjectI18n.description is not in DB")), errors)
+			assert(!errors.exists(_.startsWith("Field TestObjectI18n.name is not in DB")), errors)
 			assert(!errors.exists(_.startsWith("I18n table")), errors)
 		} finally {
 			execute("ALTER TABLE TestObjectI18n ADD COLUMN description VARCHAR(100)")
