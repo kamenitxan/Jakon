@@ -1,0 +1,9 @@
+{% extends "core" %}
+
+{% block content %}
+    {% include "includes/sideMenu" %}
+
+    <div id="page-wrapper" style="padding: 0">
+        <iframe src="/admin/filemanager2/frame" width="100%" height="700px"></iframe>
+    </div>
+{% endblock %}
