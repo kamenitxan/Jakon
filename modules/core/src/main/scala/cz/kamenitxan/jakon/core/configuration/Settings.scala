@@ -76,7 +76,8 @@ object Settings {
 	@ConfigurationValue(name = "supportedLocales", required = false, defaultValue = "en_US")
 	private var supportedLocales: Seq[Locale] = _
 
-	@ConfigurationValue(name = "deployMode", required = true, defaultValue = "DEVEL")
+	/** Defaults to PRODUCTION: a missing or mistyped key must never switch off access control, caching, ... */
+	@ConfigurationValue(name = "deployMode", required = true, defaultValue = "PRODUCTION")
 	private var deployMode: DeployMode = _
 
 	@ConfigurationValue(name = "deployType", required = true, defaultValue = "cz.kamenitxan.jakon.core.deploy.DummyDeploy")

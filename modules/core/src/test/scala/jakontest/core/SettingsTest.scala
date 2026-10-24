@@ -1,6 +1,6 @@
 package jakontest.core
 
-import cz.kamenitxan.jakon.core.configuration.{DeployMode, Settings}
+import cz.kamenitxan.jakon.core.configuration.{ConfigurationValue, DeployMode, Settings}
 import cz.kamenitxan.jakon.core.template.utils.JakonPebbleTemplateEngine
 import cz.kamenitxan.jakon.webui.util.JakonFileLoader
 import jakontest.test.{TestBase, TestEmailTypeHandler}
@@ -42,6 +42,11 @@ class SettingsTest extends TestBase {
 		Settings.setDeployMode("XXXXX")
 		assert(DeployMode.PRODUCTION == Settings.getDeployMode)
 		Settings.setDeployMode(current)
+	}
+
+	test("missing deploy mode defaults to production") { _ =>
+		val field = Settings.getClass.getDeclaredField("deployMode")
+		assert(field.getAnnotation(classOf[ConfigurationValue]).defaultValue() == DeployMode.PRODUCTION.toString)
 	}
 
 	test("default emailTypeHandler") { _ =>
