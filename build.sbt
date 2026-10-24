@@ -6,7 +6,7 @@ val V = new {
   val jakon = "0.8.0-SNAPSHOT"
 	val log4j = "2.26.0"
 	val circeVersion = "0.14.15"
-	val javalin = "7.2.2"
+	val javalin = "7.2.3"
 	val commonmark = "0.28.0"
 }
 
