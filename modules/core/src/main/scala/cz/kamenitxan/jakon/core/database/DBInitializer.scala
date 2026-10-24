@@ -167,20 +167,80 @@ object DBInitializer {
 				val columnAnn = f.getAnnotation(classOf[Column])
 				val manyToOne = f.getAnnotation(classOf[ManyToOne])
 				val manyToMany = f.getAnnotation(classOf[ManyToMany])
-				val column = if (columnAnn != null) {
-					collumns.find(c => c.name == columnAnn.name())
+				val columnName = if (columnAnn != null) {
+					columnAnn.name()
 				} else if (manyToOne != null) {
-					collumns.find(c => c.name == f.getName + "_id")
+					f.getName + "_id"
 				} else {
-					collumns.find(c => c.name == f.getName)
+					f.getName
 				}
+				val column = collumns.find(c => c.name == columnName)
 				if (column.isEmpty && manyToMany == null) {
-					Logger.error(s"Field ${jo.getSimpleName}.${f.getName} is not in DB")
+					columnDefinitionFromSqlFile(tableName, columnName) match {
+						case Some(columnDefinition) =>
+							val alterSql = s"ALTER TABLE $tableName ADD COLUMN $columnName $columnDefinition;"
+							Logger.error(s"Field ${jo.getSimpleName}.${f.getName} is not in DB, run this SQL to add it: $alterSql")
+						case None =>
+							Logger.error(s"Field ${jo.getSimpleName}.${f.getName} is not in DB and its definition was not found in sql/$tableName.sql")
+					}
 				}
 				if (manyToMany != null) {
 					checkJunctionTable(jo.asInstanceOf[Class[? <: JakonObject]], manyToMany)
 				}
 			})
+	}
+
+	/**
+	 * Looks up the column definition (type, NOT NULL, DEFAULT, ...) for the given column from the
+	 * table's original CREATE TABLE statement in src/main/resources/sql/$tableName.sql, so that the
+	 * suggested ALTER TABLE statement matches the project's own schema definition instead of a type
+	 * guessed from the java field.
+	 */
+	private def columnDefinitionFromSqlFile(tableName: String, columnName: String): Option[String] = {
+		Utils.getResourceFromJar(s"/sql/$tableName.sql").flatMap(resource => {
+			val openIdx = resource.indexOf('(')
+			val closeIdx = resource.lastIndexOf(')')
+			if (openIdx < 0 || closeIdx < 0 || closeIdx <= openIdx) {
+				None
+			} else {
+				val body = resource.substring(openIdx + 1, closeIdx)
+				splitTopLevelByComma(body)
+					.map(_.trim)
+					.filter(_.nonEmpty)
+					.find(clause => clause.takeWhile(!_.isWhitespace).equalsIgnoreCase(columnName))
+					.map(clause => {
+						var definition = clause.substring(columnName.length).trim
+						if (Settings.getDatabaseType == DatabaseType.SQLITE) {
+							definition = definition.replaceAll("AUTO_INCREMENT", "")
+						}
+						definition
+					})
+			}
+		})
+	}
+
+	/** Splits a CREATE TABLE body on commas, ignoring commas nested inside parentheses (e.g. DECIMAL(19, 2)). */
+	private def splitTopLevelByComma(s: String): Seq[String] = {
+		val result = mutable.ArrayBuffer[String]()
+		val current = new StringBuilder
+		var depth = 0
+		s.foreach {
+			case c @ '(' =>
+				depth += 1
+				current.append(c)
+			case c @ ')' =>
+				depth -= 1
+				current.append(c)
+			case ',' if depth == 0 =>
+				result += current.toString()
+				current.clear()
+			case c =>
+				current.append(c)
+		}
+		if (current.nonEmpty) {
+			result += current.toString()
+		}
+		result.toSeq
 	}
 
 	private def checkI18nTable(jo: Class[? <: JakonObject], ann: I18n)(implicit conn: Connection): Unit = {

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrfToken() }}">
 
-    <title>JakonUI{% block title %}{% endblock %}</title>
+    <title>{{ deployModeTag() }} JakonUI{% block title %}{% endblock %}</title>
 
     <script src="/jakon/vite/jakon.js"></script>
     <script src="/jakon/js/scalajs.js"></script>
