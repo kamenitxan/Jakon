@@ -269,8 +269,8 @@ object ObjectController {
 					// junction table belongs to the class declaring the field, not to its subclasses
 					val ownerClass  = field.getDeclaringClass
 					val joinTable   = ownerClass.getSimpleName + targetClass.getSimpleName
-					val joinCol     = { val n = ownerClass.getSimpleName; n.head.toLower + n.tail + "_id" }
-					val inverseCol  = { val n = targetClass.getSimpleName; n.head.toLower + n.tail + "_id" }
+					val joinCol     = { val n = ownerClass.getSimpleName; s"${n.head.toLower}${n.tail}_id" }
+					val inverseCol  = { val n = targetClass.getSimpleName; s"${n.head.toLower}${n.tail}_id" }
 					val deleteStmt = conn.prepareStatement(s"DELETE FROM $joinTable WHERE $joinCol = ?")
 					deleteStmt.setInt(1, obj.id)
 					deleteStmt.executeUpdate()

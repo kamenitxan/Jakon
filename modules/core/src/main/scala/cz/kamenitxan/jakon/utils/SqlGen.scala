@@ -77,6 +77,7 @@ object SqlGen {
 		if (!standalone) {
 			jid match {
 				case x: Int => stmt.setInt(1, x)
+				case null => throw new IllegalArgumentException("jid is required for non-standalone objects")
 			}
 		}
 		// first parameter is id, except for standalone objects

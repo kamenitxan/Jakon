@@ -265,8 +265,8 @@ object DBInitializer {
 	private def checkJunctionTable(jo: Class[? <: JakonObject], ann: ManyToMany)(implicit conn: Connection): Unit = {
 		val targetClass = ann.genericClass()
 		val joinTable   = jo.getSimpleName + targetClass.getSimpleName
-		val joinCol     = { val n = jo.getSimpleName; n.head.toLower + n.tail + "_id" }
-		val inverseCol  = { val n = targetClass.getSimpleName; n.head.toLower + n.tail + "_id" }
+		val joinCol     = { val n = jo.getSimpleName; s"${n.head.toLower}${n.tail}_id" }
+		val inverseCol  = { val n = targetClass.getSimpleName; s"${n.head.toLower}${n.tail}_id" }
 
 		var tableExists = false
 		val checkStmt = conn.createStatement()

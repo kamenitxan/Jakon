@@ -53,60 +53,65 @@ class OrderReturnPagelet extends AbstractPagelet {
 
 			if (findReturnByOrder(order.id).isDefined) {
 				ctx.redirect(s"/order/status?token=$token", HttpStatus.FOUND)
-				return mutable.Map.empty
-			}
+				mutable.Map.empty
+			} else {
+				val selectedItemIds = Option(ctx.formParamMap().get("itemId"))
+					.map(_.asScala.toSeq.flatMap(s => scala.util.Try(s.toInt).toOption))
+					.getOrElse(Seq.empty)
 
-			val reason = Option(ctx.formParam("reason")).getOrElse("")
-			val bankAccount = Option(ctx.formParam("bankAccount")).map(_.trim).getOrElse("")
-			val selectedItemIds = Option(ctx.formParamMap().get("itemId"))
-				.map(_.asScala.toSeq.flatMap(s => scala.util.Try(s.toInt).toOption))
-				.getOrElse(Seq.empty)
-
-			if (selectedItemIds.isEmpty) {
-				val orderItems = OrderItemService.getByOrder(order.id)
-				return mutable.Map(
-					"order" -> order,
-					"orderItems" -> orderItems.asJava,
-					"reasons" -> OrderReturnReason.all.asJava,
-					"token" -> token,
-					"formError" -> "Vyberte alespoň jednu položku k vrácení."
-				)
-			}
-
-			val orderReturn = new OrderReturn
-			orderReturn.order = order
-			orderReturn.returnNumber = generateReturnNumber
-			orderReturn.status = OrderReturnStatus.Pending
-			orderReturn.reason = reason
-			orderReturn.bankAccount = bankAccount
-			orderReturn.createdAt = LocalDateTime.now()
-			orderReturn.published = true
-			orderReturn.create()
-
-			val orderItems = OrderItemService.getByOrder(order.id)
-			val itemMap: Map[Int, ShopOrderItem] = orderItems.map(i => i.id -> i).toMap
-
-			selectedItemIds.distinct.foreach { itemId =>
-				itemMap.get(itemId).foreach { item =>
-					val returnItem = new OrderReturnItem
-					returnItem.orderReturn = orderReturn
-					returnItem.orderItem = item
-					returnItem.productName = item.productName
-					val qty = Option(ctx.formParam(s"qty_$itemId"))
-						.flatMap(s => scala.util.Try(s.toInt).toOption)
-						.map(q => Math.min(Math.max(q, 1), item.quantity))
-						.getOrElse(item.quantity)
-					returnItem.quantity = qty
-					returnItem.published = true
-					returnItem.create()
+				if (selectedItemIds.isEmpty) {
+					val orderItems = OrderItemService.getByOrder(order.id)
+					mutable.Map(
+						"order" -> order,
+						"orderItems" -> orderItems.asJava,
+						"reasons" -> OrderReturnReason.all.asJava,
+						"token" -> token,
+						"formError" -> "Vyberte alespoň jednu položku k vrácení."
+					)
+				} else {
+					saveReturn(ctx, order, token, selectedItemIds)
 				}
 			}
-
-			Logger.info(s"OrderReturn ${orderReturn.returnNumber} created for order ${order.orderNumber}")
-			sendReturnConfirmationEmail(order, orderReturn)
-			ctx.redirect(s"/order/return/confirmation?returnNumber=${orderReturn.returnNumber}&token=$token", HttpStatus.FOUND)
-			mutable.Map.empty
 		}
+	}
+
+	private def saveReturn(ctx: Context, order: ShopOrder, token: String, selectedItemIds: Seq[Int])(implicit conn: Connection): mutable.Map[String, Any] = {
+		val reason = Option(ctx.formParam("reason")).getOrElse("")
+		val bankAccount = Option(ctx.formParam("bankAccount")).map(_.trim).getOrElse("")
+
+		val orderReturn = new OrderReturn
+		orderReturn.order = order
+		orderReturn.returnNumber = generateReturnNumber
+		orderReturn.status = OrderReturnStatus.Pending
+		orderReturn.reason = reason
+		orderReturn.bankAccount = bankAccount
+		orderReturn.createdAt = LocalDateTime.now()
+		orderReturn.published = true
+		orderReturn.create()
+
+		val orderItems = OrderItemService.getByOrder(order.id)
+		val itemMap: Map[Int, ShopOrderItem] = orderItems.map(i => i.id -> i).toMap
+
+		selectedItemIds.distinct.foreach { itemId =>
+			itemMap.get(itemId).foreach { item =>
+				val returnItem = new OrderReturnItem
+				returnItem.orderReturn = orderReturn
+				returnItem.orderItem = item
+				returnItem.productName = item.productName
+				val qty = Option(ctx.formParam(s"qty_$itemId"))
+					.flatMap(s => scala.util.Try(s.toInt).toOption)
+					.map(q => Math.min(Math.max(q, 1), item.quantity))
+					.getOrElse(item.quantity)
+				returnItem.quantity = qty
+				returnItem.published = true
+				returnItem.create()
+			}
+		}
+
+		Logger.info(s"OrderReturn ${orderReturn.returnNumber} created for order ${order.orderNumber}")
+		sendReturnConfirmationEmail(order, orderReturn)
+		ctx.redirect(s"/order/return/confirmation?returnNumber=${orderReturn.returnNumber}&token=$token", HttpStatus.FOUND)
+		mutable.Map.empty
 	}
 
 	/**

@@ -48,7 +48,7 @@ class AuthTest extends FixtureAnyFunSuite {
 			user.lastName = "lastName"
 			user.email = email
 			user.password = password
-			user.locale = new Locale("en", "US")
+			user.locale = Locale.of("en", "US")
 			user.acl = AclRuleService.getByName("Admin").get
 
 			assert(user.create() > 0)

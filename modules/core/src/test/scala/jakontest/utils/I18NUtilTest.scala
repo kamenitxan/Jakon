@@ -8,8 +8,8 @@ import java.util.Locale
 
 @DoNotDiscover
 class I18NUtilTest extends TestBase {
-	val en = new Locale("en", "US")
-	val cs = new Locale("cs", "CZ")
+	val en = Locale.of("en", "US")
+	val cs = Locale.of("cs", "CZ")
 	val templateDir = "templates/admin/"
 	val bundle = "common"
 

@@ -1,12 +1,12 @@
 package cz.kamenitxan.jakon.webui.facade
 
 import cz.kamenitxan.jakon.webui.facade.jquery.ElementDesc
+import org.scalajs.dom
+import org.scalajs.dom.Element
 
 import scala.scalajs.js
-import js.{UndefOr, undefined, |}
-import js.annotation.{JSImport, JSName}
-import org.scalajs.dom
-import dom.Element
+import scala.scalajs.js.annotation.{JSImport, JSName}
+import scala.scalajs.js.{UndefOr, |}
 
 @js.native
 @JSImport("jquery", JSImport.Default, globalFallback = "$")
@@ -74,7 +74,7 @@ object JQueryStatic extends js.Object {
    * callbacks into callback queues, invoke callback queues, and relay the success or failure state 
    * of any synchronous or asynchronous function.
    */
-  def Deferred(beforeStart:js.Function1[JQueryDeferred, _] = ???):JQueryDeferred = js.native
+  def Deferred(beforeStart:js.Function1[JQueryDeferred, ?] = ???):JQueryDeferred = js.native
   
   /**
    * Execute the next function on the queue for the matched element.
@@ -88,10 +88,10 @@ object JQueryStatic extends js.Object {
    * Arrays and array-like objects with a length property (such as a function's arguments object) are 
    * iterated by numeric index, from 0 to length-1. Other objects are iterated via their named properties.
    */
-  def each[A](collection: js.Array[A], callback: js.Function2[Int, A, _]): Unit = js.native
-  def each[A](collection: js.Array[A], callback: js.ThisFunction0[A, _]): Unit = js.native
-  def each[A](collection: js.Dictionary[A], callback: js.Function2[String, A, _]): Unit = js.native
-  def each[A](collection: js.Dictionary[A], callback: js.ThisFunction0[A, _]): Unit = js.native  
+  def each[A](collection: js.Array[A], callback: js.Function2[Int, A, ?]): Unit = js.native
+  def each[A](collection: js.Array[A], callback: js.ThisFunction0[A, ?]): Unit = js.native
+  def each[A](collection: js.Dictionary[A], callback: js.Function2[String, A, ?]): Unit = js.native
+  def each[A](collection: js.Dictionary[A], callback: js.ThisFunction0[A, ?]): Unit = js.native
 
   /**
    * Takes a string and throws an exception containing it.
