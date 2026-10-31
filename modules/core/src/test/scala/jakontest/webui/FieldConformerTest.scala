@@ -30,38 +30,38 @@ class FieldConformerTest extends AnyFunSuite {
 		@JakonField
 		var integer: Integer = 2
 		@JakonField
-		var user: JakonUser = _
+		var user: JakonUser = scala.compiletime.uninitialized
 		@JakonField
-		var time: LocalTime = _
+		var time: LocalTime = scala.compiletime.uninitialized
 		@JakonField
 		var date: Date = new Date()
 		@JakonField
-		var date2: Date = _
+		var date2: Date = scala.compiletime.uninitialized
 		@JakonField
-		var localDate: LocalDate = _
+		var localDate: LocalDate = scala.compiletime.uninitialized
 		@JakonField
-		var localDateTime: LocalDateTime = _
+		var localDateTime: LocalDateTime = scala.compiletime.uninitialized
 		@ManyToMany(genericClass = classOf[JakonObject])
 		@JakonField
-		var self: TestObject = _
+		var self: TestObject = scala.compiletime.uninitialized
 		@JakonField
 		var javaEnum: MessageSeverity = MessageSeverity.ERROR
 		@JakonField
 		@GenericType(cls = classOf[Integer])
-		var listJInt: util.ArrayList[Integer] = _
+		var listJInt: util.ArrayList[Integer] = scala.compiletime.uninitialized
 		@JakonField
 		@GenericType(classOf[String])
-		var listJString: util.ArrayList[String] = _
+		var listJString: util.ArrayList[String] = scala.compiletime.uninitialized
 		@JakonField
-		var seqI: Seq[Int] = _
+		var seqI: Seq[Int] = scala.compiletime.uninitialized
 		@JakonField
 		@OneToMany(genericClass = classOf[JakonUser])
-		var seqUsers: Seq[JakonUser] = _
+		var seqUsers: Seq[JakonUser] = scala.compiletime.uninitialized
 		@JakonField
 		@GenericType(classOf[String])
-		var seqS: Seq[String] = _
+		var seqS: Seq[String] = scala.compiletime.uninitialized
 		@JakonField
-		var float: Float = _
+		var float: Float = scala.compiletime.uninitialized
 
 
 		override val objectSettings: ObjectSettings = null

@@ -1,13 +1,12 @@
 package cz.kamenitxan.jakon.webui.facade
 
 import cz.kamenitxan.jakon.webui.facade.jquery.{AttrVal, ElementDesc, Selector}
+import org.scalajs.dom
+import org.scalajs.dom.Element
 
 import scala.scalajs.js
-import js.UndefOr
-import js.|
-import js.annotation.JSName
-import org.scalajs.dom
-import dom.Element
+import scala.scalajs.js.annotation.JSName
+import scala.scalajs.js.{UndefOr, |}
 
 /**
  * A facade for the main jQuery object.
@@ -252,7 +251,7 @@ trait JQuery extends js.Object {
   /**
    * Retrieve the elements matched by the jQuery object.
    */
-  def get():js.Array[_] = js.native
+  def get():js.Array[?] = js.native
   
   /**
    * Reduce the set of matched elements to those that have a descendant that matches the selector or DOM element.

@@ -15,17 +15,17 @@ import cz.kamenitxan.jakon.core.configuration.{Configuration, ConfigurationValue
 @Configuration
 object ShopSettings {
 	@ConfigurationValue(name = "shop.return.name", required = false, defaultValue = "")
-	var returnName: String = _
+	var returnName: String = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "shop.return.street", required = false, defaultValue = "")
-	var returnStreet: String = _
+	var returnStreet: String = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "shop.return.city", required = false, defaultValue = "")
-	var returnCity: String = _
+	var returnCity: String = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "shop.return.zip", required = false, defaultValue = "")
-	var returnZip: String = _
+	var returnZip: String = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "shop.return.country", required = false, defaultValue = "")
-	var returnCountry: String = _
+	var returnCountry: String = scala.compiletime.uninitialized
 }

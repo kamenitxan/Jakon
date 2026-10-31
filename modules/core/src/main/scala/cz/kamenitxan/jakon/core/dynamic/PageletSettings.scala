@@ -18,16 +18,16 @@ object PageletSettings {
 
 	private val ConfigPrefix = "pagelet."
 
-	def stateOf(cls: Class[_]): PageletState = {
+	def stateOf(cls: Class[?]): PageletState = {
 		configState(cls)
 			.orElse(conditionalState(cls))
 			.getOrElse(PageletState.ENABLED)
 	}
 
 	/** @return true if the routes of the pagelet should be registered */
-	def isEnabled(cls: Class[_]): Boolean = stateOf(cls) != PageletState.DISABLED
+	def isEnabled(cls: Class[?]): Boolean = stateOf(cls) != PageletState.DISABLED
 
-	private def configState(cls: Class[_]): Option[PageletState] = {
+	private def configState(cls: Class[?]): Option[PageletState] = {
 		ConfigurationInitializer.getConf.get(ConfigPrefix + cls.getSimpleName).flatMap(value => {
 			try {
 				Option(PageletState.valueOf(value.trim.toUpperCase))
@@ -43,7 +43,7 @@ object PageletSettings {
 	/**
 	 * Asks the companion object of the pagelet whether it wants to be active.
 	 */
-	private def conditionalState(cls: Class[_]): Option[PageletState] = {
+	private def conditionalState(cls: Class[?]): Option[PageletState] = {
 		companionOf(cls).flatMap(companion => {
 			try {
 				Option(companion.defaultState)
@@ -56,7 +56,7 @@ object PageletSettings {
 	}
 
 	/** @return the companion object of the pagelet if it implements [[ConditionalPagelet]] */
-	private def companionOf(cls: Class[_]): Option[ConditionalPagelet] = {
+	private def companionOf(cls: Class[?]): Option[ConditionalPagelet] = {
 		try {
 			val companionCls = Class.forName(cls.getName + "$", true, cls.getClassLoader)
 			companionCls.getField("MODULE$").get(null) match {

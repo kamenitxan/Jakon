@@ -11,8 +11,8 @@ import java.util.concurrent.TimeUnit
   * Created by TPa on 27.05.18.
   */
 abstract class AbstractTask(val period: Long, val unit: TimeUnit)(implicit val name: sourcecode.Name) extends Runnable {
-	var lastRun: LocalDateTime = _
-	var lastExecutionTime: Long = _
+	var lastRun: LocalDateTime = scala.compiletime.uninitialized
+	var lastExecutionTime: Long = scala.compiletime.uninitialized
 	var lastRunSuccessful: Boolean = false
 
 	def paused: Boolean = {

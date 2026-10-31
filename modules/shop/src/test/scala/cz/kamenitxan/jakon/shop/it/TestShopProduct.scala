@@ -15,7 +15,7 @@ class TestShopProduct extends ShopProduct {
 
 	@JakonField
 	@I18n(classOf[TestShopProductI18n])
-	var i18n: Seq[TestShopProductI18n] = _
+	var i18n: Seq[TestShopProductI18n] = scala.compiletime.uninitialized
 
 	override def createObject(jid: Int, conn: Connection): Int = {
 		super.createObject(jid, conn)
@@ -31,7 +31,7 @@ class TestShopProduct extends ShopProduct {
 class TestShopProductI18n extends I18nData {
 
 	@JakonField
-	var description: String = _
+	var description: String = scala.compiletime.uninitialized
 
 	override def create(): Int = {
 		DBHelper.withDbConnection(conn => {

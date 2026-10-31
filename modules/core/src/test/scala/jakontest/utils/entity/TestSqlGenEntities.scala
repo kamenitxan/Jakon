@@ -12,7 +12,7 @@ class TestStandaloneFk extends JakonObject {
 
 	@ManyToOne
 	@JakonField(required = false)
-	var owner: JakonUser = _
+	var owner: JakonUser = scala.compiletime.uninitialized
 
 	override val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-cube", standAlone = true)
 }
@@ -21,7 +21,7 @@ class TestStandaloneFk extends JakonObject {
 class TestFirstFk extends JakonObject {
 	@ManyToOne
 	@JakonField(required = false)
-	var ext: TestExtUser = _
+	var ext: TestExtUser = scala.compiletime.uninitialized
 
 	@JakonField
 	var name: String = ""

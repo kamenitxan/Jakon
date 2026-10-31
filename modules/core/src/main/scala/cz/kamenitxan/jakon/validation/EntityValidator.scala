@@ -39,7 +39,7 @@ object EntityValidator {
 	// TODO: change name?
 	def validateJson(prefix: String, validatedData: Map[Field, ParsedValue]): Either[Seq[Message], Map[Field, ParsedValue]] = {
 		val errors = validatedData.map(data => {
-			val constructor: Constructor[_] = data._1.getDeclaringClass.getDeclaredConstructors.head
+			val constructor: Constructor[?] = data._1.getDeclaringClass.getDeclaredConstructors.head
 			val parameterIndex = constructor.getParameters.zipWithIndex.find(pi => {
 				pi._1.getName == data._1.getName
 			}).map(_._2)
@@ -74,7 +74,7 @@ object EntityValidator {
 	}
 
 	// TODO: tohle tu byt nema, neni to cast validatoru
-	def createFormData(ctx: Context, dataClass: Class[_]): Map[Field, String] = {
+	def createFormData(ctx: Context, dataClass: Class[?]): Map[Field, String] = {
 		dataClass.getDeclaredFields.map(f => {
 			var res: (Field, String) = null
 			try {

@@ -60,7 +60,7 @@ object Utils {
 		}
 	}
 	
-	def getFieldsUpTo(startClass: Class[_], exclusiveParent: Class[_]): Seq[Field] = {
+	def getFieldsUpTo(startClass: Class[?], exclusiveParent: Class[?]): Seq[Field] = {
 		var currentClassFields = getFields(startClass)
 		val parentClass = startClass.getSuperclass
 		if (parentClass != null && (exclusiveParent == null || (parentClass != exclusiveParent))) {
@@ -70,16 +70,16 @@ object Utils {
 		currentClassFields
 	}
 
-	def getFields(cls: Class[_]): Seq[Field] = {
+	def getFields(cls: Class[?]): Seq[Field] = {
 		ArraySeq.unsafeWrapArray(cls.getDeclaredFields)
 	}
 
-	def isJakonObject(cls: Class[_]): Boolean = {
+	def isJakonObject(cls: Class[?]): Boolean = {
 		isClassOrChild(cls, classOf[JakonObject])
 	}
 
 	@tailrec
-	def isClassOrChild(cls: Class[_], parrent: Class[_]): Boolean = {
+	def isClassOrChild(cls: Class[?], parrent: Class[?]): Boolean = {
 		if (cls == parrent) {
 			true
 		} else if (cls == classOf[Object] || cls.getSuperclass == null) {
@@ -90,7 +90,7 @@ object Utils {
 	}
 
 	@tailrec
-	def getClassByFieldName(startClass: Class[_], fieldName: String): (Class[_], Field) = {
+	def getClassByFieldName(startClass: Class[?], fieldName: String): (Class[?], Field) = {
 		var field: Option[Field] = null
 		try {
 			field = Option.apply(startClass.getDeclaredField(fieldName))

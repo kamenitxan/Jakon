@@ -18,11 +18,11 @@ class Cart extends JakonObject with Serializable {
 
 	@ManyToOne
 	@JakonField(required = false)
-	var selectedShippingMethod: ShippingMethod = _
+	var selectedShippingMethod: ShippingMethod = scala.compiletime.uninitialized
 
 	@ManyToOne
 	@JakonField(required = false)
-	var selectedPaymentMethod: PaymentMethod = _
+	var selectedPaymentMethod: PaymentMethod = scala.compiletime.uninitialized
 
 	@JakonField
 	var createdAt: LocalDateTime = LocalDateTime.now()

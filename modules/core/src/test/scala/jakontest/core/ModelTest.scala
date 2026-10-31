@@ -180,7 +180,7 @@ class ModelTest extends TestBase {
 		Files.deleteIfExists(tmpDir)
 	}
 
-	var post: Post = _
+	var post: Post = scala.compiletime.uninitialized
 	test("Post Create") { _ =>
 		val obj = new Post {
 			date = new Date()

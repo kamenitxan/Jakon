@@ -7,7 +7,7 @@ import cz.kamenitxan.jakon.core.database.JakonField
  */
 class TestEmbeddedObject {
 	@JakonField
-	var string: String = _
+	var string: String = scala.compiletime.uninitialized
 	@JakonField
-	var int: Int = _
+	var int: Int = scala.compiletime.uninitialized
 }

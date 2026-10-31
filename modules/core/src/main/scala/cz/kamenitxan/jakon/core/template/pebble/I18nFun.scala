@@ -27,7 +27,7 @@ class I18nFun extends i18nFunction {
 		val phraseObject = I18nUtil.getTranslation(templateDir, basename, key, locale, default, silent)
 		if (phraseObject != null && params != null && params.nonEmpty) {
 			val paramsArray = params.toArray
-			return MessageFormat.format(phraseObject, paramsArray:_*)
+			return MessageFormat.format(phraseObject, paramsArray*)
 		}
 		phraseObject
 	}

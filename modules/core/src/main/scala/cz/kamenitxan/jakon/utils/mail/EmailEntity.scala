@@ -20,18 +20,18 @@ class EmailEntity(u: Unit = ()) extends JakonObject {
 	@JakonField
 	var sent: Boolean = false
 	@JakonField(disabled = true)
-	var sentDate: Date = _
+	var sentDate: Date = scala.compiletime.uninitialized
 	@JakonField
-	var template: String = _
+	var template: String = scala.compiletime.uninitialized
 	@JakonField
-	var lang: String = _
+	var lang: String = scala.compiletime.uninitialized
 	@JakonField
-	var emailType: String = _
+	var emailType: String = scala.compiletime.uninitialized
 	@JakonField(shownInList = false, converter = classOf[ScalaMapConverter])
-	var params: Map[String, String] = _
+	var params: Map[String, String] = scala.compiletime.uninitialized
 	@OneToMany(genericClass = classOf[JakonFile])
 	@JakonField(shownInList = false)
-	var attachments: Seq[JakonFile] = _
+	var attachments: Seq[JakonFile] = scala.compiletime.uninitialized
 
 	def this() = this(u = ())
 

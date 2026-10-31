@@ -110,7 +110,7 @@ object PaymentGatewayRegistry {
 	 * Obtains a [[PaymentGateway]] instance from a class.
 	 * Prefers Scala's {@code MODULE$} singleton field; falls back to a no-arg constructor.
 	 */
-	private def instantiateGateway(clazz: Class[_]): PaymentGateway = {
+	private def instantiateGateway(clazz: Class[?]): PaymentGateway = {
 		try {
 			clazz.getField("MODULE$").get(null).asInstanceOf[PaymentGateway]
 		} catch {

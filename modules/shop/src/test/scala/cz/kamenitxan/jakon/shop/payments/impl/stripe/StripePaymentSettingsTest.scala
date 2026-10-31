@@ -5,8 +5,8 @@ import org.scalatest.funsuite.AnyFunSuite
 
 class StripePaymentSettingsTest extends AnyFunSuite with BeforeAndAfterEach {
 
-	private var originalSecretKey: String = _
-	private var originalPublishableKey: String = _
+	private var originalSecretKey: String = scala.compiletime.uninitialized
+	private var originalPublishableKey: String = scala.compiletime.uninitialized
 
 	override def beforeEach(): Unit = {
 		originalSecretKey = StripePaymentSettings.secretKey

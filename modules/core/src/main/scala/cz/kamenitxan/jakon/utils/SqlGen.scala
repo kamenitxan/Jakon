@@ -22,7 +22,7 @@ object SqlGen {
 	private val NumberTypes = classOf[Int] :: classOf[Integer] :: classOf[Double] :: classOf[Float] :: Nil
 	private val BoolTypes = classOf[Boolean] :: classOf[java.lang.Boolean] :: Nil
 
-	private def createSql(cls: Class[_ <: JakonObject], annotatedFields: Seq[Field], standalone: Boolean): String = {
+	private def createSql(cls: Class[? <: JakonObject], annotatedFields: Seq[Field], standalone: Boolean): String = {
 		val sb = new StringBuilder
 		sb.append(s"INSERT INTO ${cls.getSimpleName} (")
 		if (!standalone) {
@@ -85,7 +85,7 @@ object SqlGen {
 		stmt
 	}
 
-	private def updateSql(cls: Class[_ <: JakonObject], annotatedFields: Seq[Field], jid: Int): String = {
+	private def updateSql(cls: Class[? <: JakonObject], annotatedFields: Seq[Field], jid: Int): String = {
 		val sb = new StringBuilder
 		sb.append(s"UPDATE ${cls.getSimpleName} SET ")
 
@@ -153,7 +153,7 @@ object SqlGen {
 	}
 
 
-	private def getJakonFields(cls: Class[_ <: JakonObject]): Seq[Field] = {
+	private def getJakonFields(cls: Class[? <: JakonObject]): Seq[Field] = {
 		val allFields = Utils.getFieldsUpTo(cls, cls.getSuperclass)
 		allFields.filter(f =>
 			f.getAnnotations.exists(fa => fa.annotationType().getName == classOf[JakonField].getName)
@@ -199,7 +199,7 @@ object SqlGen {
 					stmt.setInt(i, value.asInstanceOf[JakonObject].id)
 				} else if (jakonField != null) {
 					val converter = jakonField.converter()
-					if (!Utils.isClassOrChild(converter, classOf[AbstractConverter[_]])) {
+					if (!Utils.isClassOrChild(converter, classOf[AbstractConverter[?]])) {
 						Logger.error(s"Converters are unsupported on ${inst.getClass.getSimpleName}.${f.getName}")
 						stmt.setString(i, "")
 					} else if (converter == classOf[NoOpConverter]) {
@@ -266,8 +266,8 @@ object SqlGen {
 		val Empty: FilterSql = FilterSql("", Nil)
 	}
 
-	private def findField(objectClass: Class[_], fieldName: String): Option[(Class[_], Field)] = {
-		var cls: Class[_] = objectClass
+	private def findField(objectClass: Class[?], fieldName: String): Option[(Class[?], Field)] = {
+		var cls: Class[?] = objectClass
 		while (cls != null) {
 			try {
 				return Some(cls -> cls.getDeclaredField(fieldName))
@@ -282,7 +282,7 @@ object SqlGen {
 	 * Creates parametrized WHERE clause from filter params. Values are never concatenated into SQL,
 	 * field names must match declared fields of objectClass (unknown fields are ignored).
 	 */
-	def parseFilterParams(kv: mutable.Map[String, String], objectClass: Class[_]): FilterSql = {
+	def parseFilterParams(kv: mutable.Map[String, String], objectClass: Class[?]): FilterSql = {
 		if (kv.isEmpty) {
 			return FilterSql.Empty
 		}

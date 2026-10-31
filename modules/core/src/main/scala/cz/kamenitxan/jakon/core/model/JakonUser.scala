@@ -39,10 +39,10 @@ class JakonUser extends JakonObject with Serializable {
 	@NotEmpty
 	@ManyToOne
 	@JakonField(required = true, searched = true)
-	var acl: AclRule = _
+	var acl: AclRule = scala.compiletime.uninitialized
 	@NotEmpty
 	@JakonField(converter = classOf[LocaleConverter])
-	var locale: Locale = _
+	var locale: Locale = scala.compiletime.uninitialized
 
 	override val objectSettings: ObjectSettings = JakonUser.objectSettings
 

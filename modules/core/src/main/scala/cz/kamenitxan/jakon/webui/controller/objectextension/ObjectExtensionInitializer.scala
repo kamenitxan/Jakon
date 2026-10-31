@@ -8,7 +8,7 @@ import cz.kamenitxan.jakon.webui.AdminSettings
 
 object ObjectExtensionInitializer {
 
-	def initObjectExtensions(objectExtensions: Seq[Class[_]]): Unit = {
+	def initObjectExtensions(objectExtensions: Seq[Class[?]]): Unit = {
 		Logger.info("Initializing ObjectExtensions")
 		objectExtensions.foreach(oe => {
 			Logger.debug("Initializing ObjectExtension: " + oe.getSimpleName)

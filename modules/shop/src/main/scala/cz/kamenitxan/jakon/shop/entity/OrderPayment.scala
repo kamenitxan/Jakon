@@ -25,7 +25,7 @@ class OrderPayment extends JakonObject with Serializable {
 	/** The order this payment belongs to. */
 	@ManyToOne
 	@JakonField(required = true, searched = true)
-	var order: ShopOrder = _
+	var order: ShopOrder = scala.compiletime.uninitialized
 
 	/** Gateway code (e.g. {@code "stripe"}, {@code "manual"}). Matches [[cz.kamenitxan.jakon.shop.payments.PaymentGatewayCode]]. */
 	@JakonField(searched = true)

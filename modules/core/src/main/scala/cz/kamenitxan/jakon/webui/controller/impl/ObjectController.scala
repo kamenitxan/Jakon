@@ -127,7 +127,7 @@ object ObjectController {
 			ctx.status(404)
 			return new cz.kamenitxan.jakon.webui.Context(Map[String, Any](), "errors/404")
 		}
-		implicit val objectClass: Class[_ <: JakonObject] = filteredClasses.head
+		implicit val objectClass: Class[? <: JakonObject] = filteredClasses.head
 
 		if (!isAuthorized(objectClass)) {
 			return new cz.kamenitxan.jakon.webui.Context(Map[String, Any](
@@ -329,7 +329,7 @@ object ObjectController {
 		new cz.kamenitxan.jakon.webui.Context(Map[String, Any](), ListTmpl)
 	}
 
-	private def isAuthorized(objectClass: Class[_]): Boolean = {
+	private def isAuthorized(objectClass: Class[?]): Boolean = {
 		val user = PageContext.getInstance().getLoggedUser
 		if (user.get.acl.masterAdmin) {
 			true
@@ -344,7 +344,7 @@ object ObjectController {
 		val objectId = ctx.pathParam("id").toOptInt
 		val order = ctx.queryParam("currentOrder").toOptInt
 
-		implicit val objectClass: Class[_ <: JakonObject] = DBHelper.getDaoClasses.filter(c => c.getSimpleName.equals(objectName)).head
+		implicit val objectClass: Class[? <: JakonObject] = DBHelper.getDaoClasses.filter(c => c.getSimpleName.equals(objectName)).head
 		if (!objectClass.getInterfaces.contains(classOf[Ordered])) {
 			PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "OBJECT_NOT_ORDERED")
 			redirect(ctx, ObjectPath + objectName)
@@ -356,7 +356,7 @@ object ObjectController {
 
 				val ps = conn.prepareStatement("SELECT * FROM " + objectName + " WHERE id = ?")
 				ps.setInt(1, objectId.get)
-				val obj = DBHelper.selectSingleDeep(ps).asInstanceOf[JakonObject with Ordered]
+				val obj = DBHelper.selectSingleDeep(ps).asInstanceOf[JakonObject & Ordered]
 				// updateOrder already persists the new objectOrder to the DB, a full obj.update() would be redundant
 				obj.updateOrder(newOrder)
 			} finally {
@@ -375,7 +375,7 @@ object ObjectController {
 	}
 
 	@tailrec
-	private def createSqlJoin(cls: Class[_], sql: String = ""): String = {
+	private def createSqlJoin(cls: Class[?], sql: String = ""): String = {
 		if (cls != null && cls != classOf[JakonObject]) {
 			val objectName = cls.getSimpleName
 			val newSql = sql + s"INNER JOIN $objectName ON JakonObject.id = $objectName.id "
@@ -386,7 +386,7 @@ object ObjectController {
 	}
 
 	private def createI18nData(id: Integer, f: Field, ctx: Context, params: Set[String]): Any = {
-		implicit val cls: Class[_] = f.getDeclaredAnnotation(classOf[I18n]).genericClass()
+		implicit val cls: Class[?] = f.getDeclaredAnnotation(classOf[I18n]).genericClass()
 		val fields = Utils.getFieldsUpTo(cls, classOf[Object])
 		Settings.getSupportedLocales.foreach(l => {
 			val isUpdate = DBHelper.withDbConnection(implicit conn => {

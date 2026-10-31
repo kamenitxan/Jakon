@@ -6,7 +6,7 @@ import java.lang.reflect.Field
 
 class QueryResult[T <: BaseEntity](val foreignIds: Map[String, ForeignKeyInfo]) {
 	// TODO: change to Option[T]
-	var entity: T = _
+	var entity: T = scala.compiletime.uninitialized
 	var i18nField: Option[Field] = Option.empty
 
 	def this(entity: T, foreignIds: Map[String, ForeignKeyInfo], i18nField: Option[Field]) = {

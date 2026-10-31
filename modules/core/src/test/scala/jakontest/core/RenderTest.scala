@@ -12,12 +12,12 @@ import scala.io.Source
 class RenderTest extends TestBase {
 
 	test("render static test") { _ =>
-		val fileContents = Source.fromFile("out/static.html").getLines.mkString
+		val fileContents = Source.fromFile("out/static.html").getLines().mkString
 		assert(fileContents.contains("__content__"))
 	}
 
 	test("render page") { _ =>
-		val fileContents = Source.fromFile("out/page/test_page_1.html").getLines.mkString
+		val fileContents = Source.fromFile("out/page/test_page_1.html").getLines().mkString
 		assert(fileContents.contains("url=\"/page/test_page_1\""))
 		assert(fileContents.contains("title=\"test page 1\""))
 		assert(fileContents.contains("content=\"test content\""))

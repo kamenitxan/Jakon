@@ -13,7 +13,7 @@ class TestExtUser extends JakonUser {
 	childClass = implicitly[sourcecode.FullName].value
 
 	@JakonField
-	var someStuff: String = _
+	var someStuff: String = scala.compiletime.uninitialized
 
 	override def createObject(jid: Int, conn: Connection): Int = {
 		super.createObject(jid, conn)

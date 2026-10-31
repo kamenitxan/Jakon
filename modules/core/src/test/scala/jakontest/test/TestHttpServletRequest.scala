@@ -12,7 +12,7 @@ import scala.jdk.CollectionConverters.*
 
 
 class TestHttpServletRequest extends HttpServletRequest {
-	var session: HttpSession = _
+	var session: HttpSession = scala.compiletime.uninitialized
 
 	override def getAuthType: String = ???
 

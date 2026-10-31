@@ -20,7 +20,7 @@ class OrderReturn extends JakonObject with Serializable {
 	/** The order the customer is returning items from. */
 	@ManyToOne
 	@JakonField(required = true, searched = true)
-	var order: ShopOrder = _
+	var order: ShopOrder = scala.compiletime.uninitialized
 
 	/** Unique return identifier generated at creation (e.g. {@code RET-2026-123456}). */
 	@JakonField(searched = true)

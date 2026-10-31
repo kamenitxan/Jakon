@@ -13,7 +13,7 @@ object AdminSettings {
 	var enableFiles = true
 
 	val customControllersInfo = new mutable.ListBuffer[CustomControllerInfo]
-	val objectExtensions = new mutable.HashMap[Class[_ <: JakonObject], mutable.Set[Class[_ <: AbstractObjectExtension]]]() with mutable.MultiMap[Class[_ <: JakonObject], Class[_ <: AbstractObjectExtension]]
+	val objectExtensions = new mutable.HashMap[Class[? <: JakonObject], mutable.Set[Class[? <: AbstractObjectExtension]]]() with mutable.MultiMap[Class[? <: JakonObject], Class[? <: AbstractObjectExtension]]
 	
 	def setDashboardController(fun: (Context) => cz.kamenitxan.jakon.webui.Context): Unit = {
 		dashboardController = (ctx: Context) => {

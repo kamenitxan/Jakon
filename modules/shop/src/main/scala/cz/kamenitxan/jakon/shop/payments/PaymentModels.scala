@@ -32,12 +32,12 @@ case class PaymentLineItem(
  */
 case class PaymentRequest(
 													 shopOrder: ShopOrder,
-	                         lineItems: Seq[PaymentLineItem],
-	                         successUrl: String,
-	                         cancelUrl: String,
-	                         currency: String,
-	                         metadata: Map[String, String],
-	                         customerEmail: Option[String]
+													 lineItems: Seq[PaymentLineItem],
+													 successUrl: String,
+													 cancelUrl: String,
+													 currency: String,
+													 metadata: Map[String, String],
+													 customerEmail: Option[String]
 )
 
 /**

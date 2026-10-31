@@ -14,7 +14,7 @@ import java.util.Date
 class TestObject extends JakonObject {
 	@ManyToOne
 	@JakonField
-	var user: JakonUser = _
+	var user: JakonUser = scala.compiletime.uninitialized
 	@JakonField
 	var string: String = ""
 	@JakonField
@@ -26,16 +26,16 @@ class TestObject extends JakonObject {
 	@JakonField
 	var integer: Int = 2
 	@JakonField
-	var time: LocalTime = _
+	var time: LocalTime = scala.compiletime.uninitialized
 	@JakonField
-	var date: Date = _
+	var date: Date = scala.compiletime.uninitialized
 	@JakonField
-	var localDate: LocalDate = _
+	var localDate: LocalDate = scala.compiletime.uninitialized
 	@JakonField
-	var localDateTime: LocalDateTime = _
+	var localDateTime: LocalDateTime = scala.compiletime.uninitialized
 	@ManyToOne
 	@JakonField
-	var self: TestObject = _
+	var self: TestObject = scala.compiletime.uninitialized
 	@JakonField
 	var javaEnum: MessageSeverity = MessageSeverity.ERROR
 	@JakonField(converter = classOf[ScalaMapConverter])
@@ -44,15 +44,15 @@ class TestObject extends JakonObject {
 	var mapNoConverter: Map[String, String] = Map()
 	@OneToMany(genericClass = classOf[JakonUser])
 	@JakonField
-	var oneToMany: Seq[JakonUser] = _
+	var oneToMany: Seq[JakonUser] = scala.compiletime.uninitialized
 	@Embedded
 	@JakonField
-	var embedded: TestEmbeddedObject = _
+	var embedded: TestEmbeddedObject = scala.compiletime.uninitialized
 	@JakonField
 	@I18n(classOf[TestObjectI18n])
-	var i18n: Seq[TestObjectI18n] = _
+	var i18n: Seq[TestObjectI18n] = scala.compiletime.uninitialized
 	@JakonField
-	var jakonFile: JakonFile = _
+	var jakonFile: JakonFile = scala.compiletime.uninitialized
 
 
 	override val objectSettings: ObjectSettings = null

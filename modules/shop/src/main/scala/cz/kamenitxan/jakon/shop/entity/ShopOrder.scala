@@ -26,7 +26,7 @@ class ShopOrder extends JakonObject with Serializable {
 	@NotEmpty
 	@ManyToOne
 	@JakonField(required = true, searched = true)
-	var customer: Customer = _
+	var customer: Customer = scala.compiletime.uninitialized
 
 	/** Datum a čas vytvoření objednávky. */
 	@JakonField(searched = true)
@@ -53,12 +53,12 @@ class ShopOrder extends JakonObject with Serializable {
 	/** Zvolený způsob platby. */
 	@ManyToOne
 	@JakonField(required = false, searched = true)
-	var paymentMethod: PaymentMethod = _
+	var paymentMethod: PaymentMethod = scala.compiletime.uninitialized
 
 	/** Zvolený způsob dopravy. */
 	@ManyToOne
 	@JakonField(required = false, searched = true)
-	var shippingMethod: ShippingMethod = _
+	var shippingMethod: ShippingMethod = scala.compiletime.uninitialized
 
 	/** Poznámka zákazníka k objednávce. */
 	@JakonField(required = false)

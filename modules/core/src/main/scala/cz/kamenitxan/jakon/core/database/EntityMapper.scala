@@ -126,7 +126,7 @@ object EntityMapper {
 					field.set(obj, embeddedObj)
 				} else if (jakonField != null) {
 					val converter = jakonField.converter()
-					if (converter.getName != classOf[AbstractConverter[_]].getName) {
+					if (converter.getName != classOf[AbstractConverter[?]].getName) {
 						field.set(obj, converter.getDeclaredConstructor().newInstance().convertToEntityAttribute(rs.getString(columnName)))
 					} else {
 						Logger.error(s"Converter not specified for data type on ${obj.getClass.getSimpleName}.${field.getName}")

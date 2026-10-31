@@ -13,7 +13,7 @@ import java.lang.reflect.{Field, ParameterizedType}
  */
 object CirceJsonParser extends ArgumentParser {
 
-	override def parseRequestData(ctx: Context, t: Class[_]): Map[Field, ParsedValue] = {
+	override def parseRequestData(ctx: Context, t: Class[?]): Map[Field, ParsedValue] = {
 		val res = parser.parse(ctx.body()).getOrElse(Json.Null)
 		val hc: HCursor = res.hcursor
 

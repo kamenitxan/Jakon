@@ -101,7 +101,7 @@ class AnnotationScanner {
 
 	implicit class ClassInfoListExtensions(val cil: ClassInfoList) {
 
-		def loadScalaClasses(): Seq[Class[_]] = {
+		def loadScalaClasses(): Seq[Class[?]] = {
 			// ClassGraph 6 no longer loads classes itself
 			val classLoader = Option(Thread.currentThread().getContextClassLoader).getOrElse(getClass.getClassLoader)
 			cil.asScala.toSeq.map(ci => Class.forName(ci.getName, false, classLoader))

@@ -5,7 +5,7 @@ import cz.kamenitxan.jakon.logging.Logger
 
 object CustomPageInitializer {
 
-	def initCustomPages(customPages: Seq[Class[_]]): Unit = {
+	def initCustomPages(customPages: Seq[Class[?]]): Unit = {
 		Logger.info("Initializing custom pages")
 		customPages.foreach(cp => {
 			Logger.info("Initializing custom page: " + cp.getSimpleName)
@@ -18,7 +18,7 @@ object CustomPageInitializer {
 		Logger.info("Initializing custom pages complete")
 	}
 
-	def initStaticPages(customPages: Seq[Class[_]]): Unit = {
+	def initStaticPages(customPages: Seq[Class[?]]): Unit = {
 		Logger.info("Initializing static pages")
 		customPages.foreach(cp => {
 			Logger.info("Initializing static page: " + cp.getSimpleName)
@@ -32,7 +32,7 @@ object CustomPageInitializer {
 	}
 
 	@scala.annotation.tailrec
-	private def isChildOf(child: Class[_], parent: Class[_]): Boolean = {
+	private def isChildOf(child: Class[?], parent: Class[?]): Boolean = {
 		val supperClass = child.getSuperclass
 		if (supperClass == null) {
 			false

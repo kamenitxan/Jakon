@@ -34,7 +34,7 @@ class GetAttributeFun extends Function {
 		}
 	}
 
-	def getField(obj: Class[_ <: Any], attrName: String): Field = {
+	def getField(obj: Class[? <: Any], attrName: String): Field = {
 		try {
 			val fields = Utils.getFieldsUpTo(obj, classOf[Object])
 			val f = fields.find(f => attrName.equals(f.getName))

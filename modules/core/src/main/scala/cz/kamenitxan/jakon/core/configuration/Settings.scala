@@ -18,8 +18,8 @@ import scala.language.postfixOps
 //noinspection VarCouldBeVal,ScalaUnusedSymbol
 @Configuration
 object Settings {
-	private var engine: TemplateEngine = _
-	private var adminEngine: FileRenderer = _
+	private var engine: TemplateEngine = scala.compiletime.uninitialized
+	private var adminEngine: FileRenderer = scala.compiletime.uninitialized
 	private var emailTypeHandler: EmailTypeHandler = new EmailTypeHandler {
 		override def handle(emailType: String): (Message, Predef.Map[String, Any]) => Unit = (_, _) => {}
 
@@ -27,7 +27,7 @@ object Settings {
 			// override this to execute something after emails is send
 		}
 	}
-	private var databaseType: DatabaseType = _
+	private var databaseType: DatabaseType = scala.compiletime.uninitialized
 
 	def doAfterLoad(): Unit = {
 		System.getProperty("user.dir")
@@ -42,100 +42,100 @@ object Settings {
 	}
 
 	@ConfigurationValue(name = "templateDir", required = true, defaultValue = "templates/bacon")
-	private var templateDir: String = _
+	private var templateDir: String = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "staticDir", required = true, defaultValue = "static")
-	private var staticDir: String = _
+	private var staticDir: String = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "outputDir", required = true, defaultValue = "out/")
-	private var outputDir: String = _
+	private var outputDir: String = scala.compiletime.uninitialized
 
-	private var pckg: Array[String] = _
+	private var pckg: Array[String] = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "databaseDriver", required = true, defaultValue = "org.sqlite.JDBC")
-	private var databaseDriver: String = _
+	private var databaseDriver: String = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "databaseConnPath", required = true, defaultValue = "jdbc:sqlite:jakonTest.sqlite")
-	private var databaseConnPath: String = _
+	private var databaseConnPath: String = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "databaseUser", required = false, defaultValue = "")
-	private var databaseUser: String = _
+	private var databaseUser: String = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "databasePass", required = false, defaultValue = "")
-	private var databasePass: String = _
+	private var databasePass: String = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "port", required = true, defaultValue = "4567")
-	private var port: Int = _
+	private var port: Int = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "host", required = false, defaultValue = "")
-	private var host: String = _
+	private var host: String = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "defaultLocale", required = true, defaultValue = "en_US")
-	private var defaultLocale: Locale = _
+	private var defaultLocale: Locale = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "supportedLocales", required = false, defaultValue = "en_US")
-	private var supportedLocales: Seq[Locale] = _
+	private var supportedLocales: Seq[Locale] = scala.compiletime.uninitialized
 
 	/** Defaults to PRODUCTION: a missing or mistyped key must never switch off access control, caching, ... */
 	@ConfigurationValue(name = "deployMode", required = true, defaultValue = "PRODUCTION")
-	private var deployMode: DeployMode = _
+	private var deployMode: DeployMode = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "deployType", required = true, defaultValue = "cz.kamenitxan.jakon.core.deploy.DummyDeploy")
-	private var deployType: String = _
+	private var deployType: String = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "MAIL.enabled", required = true, defaultValue = "true")
-	private var emailEnabled: Boolean = _
+	private var emailEnabled: Boolean = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "MAIL.auth", required = false)
-	private var emailAuth: String = _
+	private var emailAuth: String = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "MAIL.tls", required = false, defaultValue = "false")
-	private var emailTls: Boolean = _
+	private var emailTls: Boolean = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "MAIL.ssl", required = false, defaultValue = "false")
-	private var emailSSL: Boolean = _
+	private var emailSSL: Boolean = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "MAIL.host", required = false)
-	private var emailHost: String = _
+	private var emailHost: String = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "MAIL.port", required = false, defaultValue = "25")
-	private var emailPort: String = _
+	private var emailPort: String = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "MAIL.username", required = false)
-	private var emailUserName: String = _
+	private var emailUserName: String = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "MAIL.password", required = false)
-	private var emailPassword: String = _
+	private var emailPassword: String = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "MAIL.force_bcc", required = false)
-	private var emailForceBcc: String = _
+	private var emailForceBcc: String = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "encryptionSecret", required = true, defaultValue = "reallyRandomStin")
-	private var encryptionSecret: String = _
+	private var encryptionSecret: String = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "hostname", required = true)
-	private var hostname: String = _
+	private var hostname: String = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "loginPath", required = true, defaultValue = "/login")
-	private var loginPath: String = _
+	private var loginPath: String = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "emailValidator.checkDns", required = false, defaultValue = "true")
-	private var emailValidatorCheckDns: Boolean = _
+	private var emailValidatorCheckDns: Boolean = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "HCAPTCHA.secret", required = false)
-	private var hCaptchaSecret: String = _
+	private var hCaptchaSecret: String = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "HCAPTCHA.siteKey", required = false)
-	private var hCaptchaSiteKey: String = _
+	private var hCaptchaSiteKey: String = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "initRoutes", required = true, defaultValue = "true")
-	private var initRoutes: Boolean = _
+	private var initRoutes: Boolean = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "onlyRender", required = true, defaultValue = "false")
-	private var onlyRender: Boolean = _
+	private var onlyRender: Boolean = scala.compiletime.uninitialized
 
 	@ConfigurationValue(name = "clacksOverhead", required = false, defaultValue = "true")
-	private var clacksOverhead: Boolean = _
+	private var clacksOverhead: Boolean = scala.compiletime.uninitialized
 
 	def getTemplateDir: String = templateDir
 

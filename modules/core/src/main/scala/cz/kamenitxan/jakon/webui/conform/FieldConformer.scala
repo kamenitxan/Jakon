@@ -43,7 +43,7 @@ object FieldConformer {
 			conform(f.getType, gft)
 		}
 
-		private def conform(t: Class[_], genericType: Type): Any = {
+		private def conform(t: Class[?], genericType: Type): Any = {
 			t match {
 				case BOOLEAN => s toBoolean
 				case DOUBLE | DOUBLE_j => s toDouble

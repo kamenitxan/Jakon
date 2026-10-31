@@ -56,7 +56,7 @@ object ConfigurationInitializer {
 	def getConf: mutable.Map[String, String] = conf
 
 
-	def initConfiguration(configClasses: Seq[Class[_]]): Unit = {
+	def initConfiguration(configClasses: Seq[Class[?]]): Unit = {
 		configClasses.foreach(c => {
 			c.getDeclaredFields.filter(f => f.isAnnotationPresent(classOf[ConfigurationValue])).foreach(f => {
 				val obj = c.getField("MODULE$").get(c)

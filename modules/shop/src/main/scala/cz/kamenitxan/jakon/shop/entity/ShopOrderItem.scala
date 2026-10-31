@@ -17,12 +17,12 @@ class ShopOrderItem extends JakonObject with Serializable {
 	@NotEmpty
 	@ManyToOne
 	@JakonField(required = true, searched = true)
-	var shopOrder: ShopOrder = _
+	var shopOrder: ShopOrder = scala.compiletime.uninitialized
 	
 	@NotEmpty
 	@ManyToOne
 	@JakonField(required = true, searched = true)
-	var product: ShopProduct = _
+	var product: ShopProduct = scala.compiletime.uninitialized
 	
 	@JakonField(searched = true)
 	var productName: String = ""
@@ -44,7 +44,7 @@ class ShopOrderItem extends JakonObject with Serializable {
 
 	/** Human-readable variant selection snapshot, e.g. "Barva: Červená, Velikost: M". May be null. */
 	@JakonField(required = false)
-	var variantSelection: String = _
+	var variantSelection: String = scala.compiletime.uninitialized
 
 	override val objectSettings: ObjectSettings = ShopOrderItem.objectSettings
 

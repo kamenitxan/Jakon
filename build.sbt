@@ -2,7 +2,7 @@ import sbt.Tests.{Group, SubProcess}
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val V = new {
-	val Scala = "3.3.7"
+	val Scala = "3.9.0"
   val jakon = "0.8.0-SNAPSHOT"
 	val log4j = "2.26.0"
 	val circeVersion = "0.14.15"
@@ -203,6 +203,7 @@ lazy val scalaBuildSettings: Seq[Def.Setting[?]] = Seq(
 		"-unchecked", // enable additional warnings where generated code depends on assumptions
 		//"-Xfatal-warnings", // fail the compilation if there are any warnings
 		//"-Yexplicit-nulls"
+		"-source:3.4-migration", "-rewrite"
 	)
 )
 

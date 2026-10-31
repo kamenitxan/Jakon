@@ -14,11 +14,11 @@ class CartItem extends JakonObject with Serializable {
 
 	@JakonField()
 	@ManyToOne
-	var cart: Cart = _
+	var cart: Cart = scala.compiletime.uninitialized
 
 	@JakonField()
 	@ManyToOne
-	var product: ShopProduct = _
+	var product: ShopProduct = scala.compiletime.uninitialized
 
 	@JakonField
 	var quantity: Int = 1

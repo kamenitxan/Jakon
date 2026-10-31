@@ -48,7 +48,7 @@ object DBInitializer {
 	}
 
 	def createTables(): Unit = {
-		val dbobj = mutable.ArrayBuffer[Class[_ <: JakonObject]]()
+		val dbobj = mutable.ArrayBuffer[Class[? <: JakonObject]]()
 		dbobj ++= DBHelper.objects
 		dbobj.+=:(classOf[JakonObject])
 		val conn = getConnection
@@ -297,7 +297,7 @@ object DBInitializer {
 
 	case class TableColumnInfo(
 															name: String,
-		                          dataType: String,
+															dataType: String,
 														)
 
 }

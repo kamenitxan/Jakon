@@ -61,7 +61,7 @@ class TestJsonPagelet extends AbstractJsonPagelet {
 	}
 
 	@Get(path = "/getTyped")
-	def getTyped(): AbstractJsonResponse[_ <: Any] = {
+	def getTyped(): AbstractJsonResponse[? <: Any] = {
 		val data = TypedTestResponseData(
 			"msg",
 			1,

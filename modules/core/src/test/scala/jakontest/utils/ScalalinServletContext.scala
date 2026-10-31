@@ -32,7 +32,7 @@ class ScalalinServletContext extends Context {
 
 	override def appData[T](key: Key[T]): T = ???
 	
-	override def future(supplier: Supplier[_ <: CompletableFuture[_]]): Unit = ???
+	override def future(supplier: Supplier[? <: CompletableFuture[?]]): Unit = ???
 	
 	override def jsonMapper(): JsonMapper = ???
 	
@@ -56,9 +56,9 @@ class ScalalinServletContext extends Context {
 
 	override def strictContentTypes(): Boolean = ???
 
-	override def `with`[T](aClass: Class[_ <: ContextPlugin[_, T]]): T = ???
+	override def `with`[T](aClass: Class[? <: ContextPlugin[?, T]]): T = ???
 
-	override def writeJsonStream(stream: java.util.stream.Stream[_]): Unit = ???
+	override def writeJsonStream(stream: java.util.stream.Stream[?]): Unit = ???
 
 	override def endpoints(): Endpoints = ???
 

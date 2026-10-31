@@ -10,16 +10,16 @@ import java.time.LocalDateTime
 class JakonFile extends JakonObject {
 
 	@JakonField
-	var name: String = _
+	var name: String = scala.compiletime.uninitialized
 	@JakonField
-	var path: String = _
+	var path: String = scala.compiletime.uninitialized
 	@ManyToOne
 	@JakonField
-	var author: JakonUser = _
+	var author: JakonUser = scala.compiletime.uninitialized
 	@JakonField
-	var created: LocalDateTime = _
+	var created: LocalDateTime = scala.compiletime.uninitialized
 	@JakonField(disabled = true)
-	var fileType: FileType = _
+	var fileType: FileType = scala.compiletime.uninitialized
 
 	@transient
 	var mappedToFs: Boolean = false

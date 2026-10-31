@@ -219,6 +219,6 @@ class JakonInit {
 }
 
 object JakonInit {
-	var javalin: Javalin = _
-	var javalinConfig: JavalinConfig = _
+	var javalin: Javalin = scala.compiletime.uninitialized
+	var javalinConfig: JavalinConfig = scala.compiletime.uninitialized
 }

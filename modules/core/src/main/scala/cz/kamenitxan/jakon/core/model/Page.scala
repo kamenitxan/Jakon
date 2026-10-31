@@ -17,14 +17,14 @@ class Page extends JakonObject with Ordered {
 	var content: String = ""
 	@ManyToOne
 	@JakonField(inputTemplate = "String")
-	var parent: Page = _
+	var parent: Page = scala.compiletime.uninitialized
 	@JakonField
 	var showComments: Boolean = false
 	@JakonField(listOrder = -96, shownInEdit = false, shownInList = false)
-	var objectOrder: Double = _
+	var objectOrder: Double = scala.compiletime.uninitialized
 	@Transient
 	@JakonField(listOrder = -96)
-	var visibleOrder: Int = _
+	var visibleOrder: Int = scala.compiletime.uninitialized
 
 	override def createUrl: String = "/page/" + Utils.toUrlSlug(title)
 

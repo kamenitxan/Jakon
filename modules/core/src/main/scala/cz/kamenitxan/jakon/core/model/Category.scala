@@ -13,10 +13,10 @@ class Category extends JakonObject with Ordered {
 	@JakonField
 	var showComments: Boolean = false
 	@JakonField(listOrder = -96, shownInEdit = false, shownInList = false)
-	var objectOrder: Double = _
+	var objectOrder: Double = scala.compiletime.uninitialized
 	@Transient
 	@JakonField(listOrder = -96)
-	var visibleOrder: Int = _
+	var visibleOrder: Int = scala.compiletime.uninitialized
 
 	override val objectSettings: ObjectSettings = null
 

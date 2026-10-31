@@ -24,5 +24,5 @@ class TestInvalidDataPagelet extends AbstractPagelet {
 
 /** data class that is not case class - not supported */
 class TestInvalidPageletData {
-	var msg: String = _
+	var msg: String = scala.compiletime.uninitialized
 }

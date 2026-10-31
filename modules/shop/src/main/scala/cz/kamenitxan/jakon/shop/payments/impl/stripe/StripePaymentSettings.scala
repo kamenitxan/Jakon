@@ -25,15 +25,15 @@ object StripePaymentSettings {
 
 	/** Stripe secret API key used for server-side requests. */
 	@ConfigurationValue(name = "PAYMENT.stripe.secretKey", required = false)
-	var secretKey: String = _
+	var secretKey: String = scala.compiletime.uninitialized
 
 	/** Stripe publishable key exposed to the front-end for client-side SDKs. */
 	@ConfigurationValue(name = "PAYMENT.stripe.publishableKey", required = false)
-	var publishableKey: String = _
+	var publishableKey: String = scala.compiletime.uninitialized
 
 	/** Stripe webhook signing secret used to verify incoming webhook events. */
 	@ConfigurationValue(name = "PAYMENT.stripe.webhookSecret", required = false)
-	var webhookSecret: String = _
+	var webhookSecret: String = scala.compiletime.uninitialized
 
 	/** ISO 4217 currency code used when no explicit currency is supplied. Defaults to {@code czk}. */
 	@ConfigurationValue(name = "PAYMENT.currency", required = false, defaultValue = "czk")

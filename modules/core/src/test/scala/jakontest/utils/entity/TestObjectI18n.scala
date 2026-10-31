@@ -8,10 +8,10 @@ import cz.kamenitxan.jakon.core.model.I18nData
   */
 class TestObjectI18n extends I18nData {
 	@JakonField
-	var name: String = _
+	var name: String = scala.compiletime.uninitialized
 
 	@JakonField
-	var description: String = _
+	var description: String = scala.compiletime.uninitialized
 
 	def create(): Int = {
 		DBHelper.withDbConnection(implicit conn => {

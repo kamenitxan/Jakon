@@ -17,7 +17,7 @@ import scala.collection.mutable
   */
 object DBHelper {
 
-	val objects: mutable.ArrayBuffer[Class[_ <: JakonObject]] = mutable.ArrayBuffer[Class[_ <: JakonObject]]()
+	val objects: mutable.ArrayBuffer[Class[? <: JakonObject]] = mutable.ArrayBuffer[Class[? <: JakonObject]]()
 	private lazy val ds = {
 		val tds = new HikariDataSource(DBInitializer.config)
 		tds.setLeakDetectionThreshold(60 * 1000)
@@ -29,7 +29,7 @@ object DBHelper {
 		objects += jobject
 	}
 
-	def getDaoClasses: mutable.ArrayBuffer[Class[_ <: JakonObject]] = objects
+	def getDaoClasses: mutable.ArrayBuffer[Class[? <: JakonObject]] = objects
 
 	def getConnection: Connection = {
 		val conn = if (Settings.getDatabaseType == DatabaseType.SQLITE) {

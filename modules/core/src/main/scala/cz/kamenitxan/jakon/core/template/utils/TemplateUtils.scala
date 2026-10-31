@@ -7,8 +7,8 @@ import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
 
 import java.io.{BufferedWriter, File, FileWriter, IOException}
-import java.nio.file.attribute.BasicFileAttributes
 import java.nio.file.*
+import java.nio.file.attribute.BasicFileAttributes
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util
@@ -30,7 +30,7 @@ object TemplateUtils {
 	val ReleaseInfix = "-release-"
 	private val ReleaseFormat = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS")
 
-	@volatile private var outputDirOverride: String = _
+	@volatile private var outputDirOverride: String = scala.compiletime.uninitialized
 
 	private def outputDir: String = Option(outputDirOverride).getOrElse(Settings.getOutputDir)
 

@@ -16,18 +16,18 @@ class ProductVariantValue extends JakonObject with Ordered {
 	@NotEmpty
 	@ManyToOne
 	@JakonField(required = true, searched = true)
-	var variant: ProductVariant = _
+	var variant: ProductVariant = scala.compiletime.uninitialized
 
 	@NotEmpty
 	@JakonField(searched = true)
 	var value: String = ""
 
 	@JakonField(listOrder = -96, shownInEdit = false, shownInList = false)
-	var objectOrder: Double = _
+	var objectOrder: Double = scala.compiletime.uninitialized
 	
 	@Transient
 	@JakonField(listOrder = -96)
-	var visibleOrder: Int = _
+	var visibleOrder: Int = scala.compiletime.uninitialized
 
 
 	override val objectSettings: ObjectSettings = ProductVariantValue.objectSettings

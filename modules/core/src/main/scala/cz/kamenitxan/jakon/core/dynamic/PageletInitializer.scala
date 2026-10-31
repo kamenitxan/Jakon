@@ -26,7 +26,7 @@ object PageletInitializer {
 
 	val protectedPrefixes: mutable.Buffer[String] = mutable.Buffer[String]()
 
-	def initControllers(controllers: Seq[Class[_]]): Unit = {
+	def initControllers(controllers: Seq[Class[?]]): Unit = {
 		Logger.info("Initializing pagelets")
 		val (activeControllers, disabledControllers) = controllers.partition(PageletSettings.isEnabled)
 		disabledControllers.foreach(c => Logger.info(s"Pagelet ${c.getSimpleName} is disabled by configuration"))
@@ -76,14 +76,14 @@ object PageletInitializer {
 	}
 
 
-	private def initGetAnnotation(get: Get, controllerAnn: Pagelet, m: Method, c: Class[_]): Unit = {
+	private def initGetAnnotation(get: Get, controllerAnn: Pagelet, m: Method, c: Class[?]): Unit = {
 		//TODO m.getReturnType.is
 		JakonInit.javalinConfig.routes.get(controllerAnn.path() + get.path(), new Handler {
 			override def handle(ctx: Context): Unit = {
 				val pagelet: IPagelet = c.getDeclaredConstructor().newInstance().asInstanceOf[IPagelet]
 				val methodArgs = createMethodArgs(m, ctx, pagelet)
 				try {
-					var context = m.invoke(pagelet, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
+					var context = m.invoke(pagelet, methodArgs.array*).asInstanceOf[mutable.Map[String, Any]]
 					if (ctx.result() == null) {
 						if (notRedirected(ctx)) {
 							if (pagelet.isInstanceOf[AbstractAdminPagelet]) {
@@ -111,7 +111,7 @@ object PageletInitializer {
 		})
 	}
 
-	private def initPostAnnotation(post: Post, controllerAnn: Pagelet, m: Method, c: Class[_]): Unit = {
+	private def initPostAnnotation(post: Post, controllerAnn: Pagelet, m: Method, c: Class[?]): Unit = {
 		JakonInit.javalinConfig.routes.post(controllerAnn.path() + post.path(), new Handler {
 			override def handle(ctx: Context): Unit = {
 				val pagelet = c.getDeclaredConstructor().newInstance().asInstanceOf[IPagelet]
@@ -172,10 +172,10 @@ object PageletInitializer {
 		if (notRedirected(ctx)) {
 			m.getReturnType match {
 				case STRING =>
-					m.invoke(controller, methodArgs.array: _*).asInstanceOf[String]
+					m.invoke(controller, methodArgs.array*).asInstanceOf[String]
 				case _ =>
 					try {
-						val context = m.invoke(controller, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
+						val context = m.invoke(controller, methodArgs.array*).asInstanceOf[mutable.Map[String, Any]]
 						if (notRedirected(ctx)) {
 							controller.render(context, post.template(), ctx)
 
@@ -202,7 +202,7 @@ object PageletInitializer {
 	}
 
 
-	def getDataClass(m: Method): Option[Class[_]] = {
+	def getDataClass(m: Method): Option[Class[?]] = {
 		m.getParameterTypes.find(c => c != CONTEXT_CLS && c != CONNECTION_CLS)
 	}
 
@@ -224,7 +224,7 @@ object PageletInitializer {
 	}
 
 	/** Checks that pagelet data class is case class. Method with invalid data class is logged and should be ignored. */
-	private[dynamic] def checkDataClass(c: Class[_], m: Method): Boolean = {
+	private[dynamic] def checkDataClass(c: Class[?], m: Method): Boolean = {
 		getDataClass(m) match {
 			case Some(dc) if !classOf[Product].isAssignableFrom(dc) =>
 				Logger.error(s"${c.getSimpleName}.${m.getName}: pagelet data class ${dc.getSimpleName} must be a case class. Method is ignored.")
@@ -234,7 +234,7 @@ object PageletInitializer {
 	}
 
 	/** Creates pagelet case class data object from form and query params */
-	private def createDataObject(t: Class[_], ctx: Context, pagelet: AnyRef): AnyRef = {
+	private def createDataObject(t: Class[?], ctx: Context, pagelet: AnyRef): AnyRef = {
 		val values: Map[String, Any] = t.getDeclaredFields.flatMap(f => {
 			try {
 				val paramName = EntityValidator.getParamName(f)
@@ -265,10 +265,10 @@ object PageletInitializer {
 				}
 			}
 		})
-		constructor.newInstance(params: _*).asInstanceOf[AnyRef]
+		constructor.newInstance(params*).asInstanceOf[AnyRef]
 	}
 
-	private def defaultPrimitive(t: Class[_]): Any = t match {
+	private def defaultPrimitive(t: Class[?]): Any = t match {
 		case java.lang.Boolean.TYPE => false
 		case java.lang.Character.TYPE => 0.toChar
 		case java.lang.Byte.TYPE => 0.toByte

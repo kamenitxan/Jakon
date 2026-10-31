@@ -17,12 +17,12 @@ class OrderReturnItem extends JakonObject with Serializable {
 	/** The return request this item belongs to. */
 	@ManyToOne
 	@JakonField(required = true, searched = true)
-	var orderReturn: OrderReturn = _
+	var orderReturn: OrderReturn = scala.compiletime.uninitialized
 
 	/** The original order line item being returned. */
 	@ManyToOne
 	@JakonField(required = true, searched = true)
-	var orderItem: ShopOrderItem = _
+	var orderItem: ShopOrderItem = scala.compiletime.uninitialized
 
 	/** Snapshot of the product name at the time of the return request. */
 	@JakonField(searched = true)

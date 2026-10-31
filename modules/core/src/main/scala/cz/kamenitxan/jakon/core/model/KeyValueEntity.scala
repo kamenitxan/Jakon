@@ -11,13 +11,13 @@ import java.sql.{Connection, Statement}
 class KeyValueEntity extends JakonObject {
 
 	@JakonField
-	var name: String = _
+	var name: String = scala.compiletime.uninitialized
 	/** Stores the ID of the referenced JakonObject as a string. */
 	@JakonField(inputTemplate = "JakonObjectValuePicker", shownInList = false)
-	var value: String = _
+	var value: String = scala.compiletime.uninitialized
 	/** Display name of the referenced JakonObject, populated automatically on save. */
 	@JakonField(required = false, disabled = true, shownInEdit = false)
-	var referencedObject: String = _
+	var referencedObject: String = scala.compiletime.uninitialized
 
 	override def createObject(jid: Int, conn: Connection): Int = {
 		val sql = "INSERT INTO KeyValueEntity (id, name, value, referencedObject) VALUES (?, ?, ?, ?)"

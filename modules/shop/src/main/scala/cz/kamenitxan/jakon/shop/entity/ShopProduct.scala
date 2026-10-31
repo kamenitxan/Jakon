@@ -29,7 +29,7 @@ class ShopProduct extends JakonObject with Serializable {
 	var price: BigDecimal = BigDecimal.ZERO
 	
 	@JakonField(required = false)
-	var discountPrice: BigDecimal = _
+	var discountPrice: BigDecimal = scala.compiletime.uninitialized
 	
 	@JakonField
 	var stockQuantity: Int = 0
@@ -46,7 +46,7 @@ class ShopProduct extends JakonObject with Serializable {
 	@NotEmpty
 	@ManyToOne
 	@JakonField(required = true, searched = true)
-	var category: ShopCategory = _
+	var category: ShopCategory = scala.compiletime.uninitialized
 	
 	@JakonField(searched = true)
 	var featured: Boolean = false
@@ -57,7 +57,7 @@ class ShopProduct extends JakonObject with Serializable {
 	 */
 	@ManyToOne
 	@JakonField(required = false, searched = true)
-	var mainProduct: ShopProduct = _
+	var mainProduct: ShopProduct = scala.compiletime.uninitialized
 
 	/** Variant values distinguishing this product within its variant group, e.g. Color: Red and Size: XL. */
 	@ManyToMany(genericClass = classOf[ProductVariantValue])

@@ -5,5 +5,5 @@ package cz.kamenitxan.jakon.webui.api
   */
 @Deprecated
 abstract class AbstractResponse(val success: Boolean) {
-	var error: String = _
+	var error: String = scala.compiletime.uninitialized
 }

@@ -22,7 +22,7 @@ class ShopCategory extends JakonObject with Serializable {
 	var image: String = ""
 	@ManyToOne
 	@JakonField(required = false, searched = true)
-	var parentCategory: ShopCategory = _
+	var parentCategory: ShopCategory = scala.compiletime.uninitialized
 	@ManyToMany(genericClass = classOf[ProductVariant])
 	@JakonField(required = false)
 	var variants: Seq[ProductVariant] = Seq.empty

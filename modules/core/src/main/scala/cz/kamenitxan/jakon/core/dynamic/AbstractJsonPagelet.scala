@@ -28,16 +28,16 @@ abstract class AbstractJsonPagelet {
 	 */
 	val wrapResponse = true
 	
-	def parseRequestData(ctx: Context, t: Class[_]): Map[Field, ParsedValue] = {
+	def parseRequestData(ctx: Context, t: Class[?]): Map[Field, ParsedValue] = {
 		CirceJsonParser.parseRequestData(ctx, t)
 	}
 
-	def createDataObject(data: Map[Field, ParsedValue], t: Class[_]): Any = {
+	def createDataObject(data: Map[Field, ParsedValue], t: Class[?]): Any = {
 		val constructorParams = t.getDeclaredConstructors.head.getParameters.map(p => {
 			CirceJsonParser.mapToObject(p, data)
 		})
 
-		t.getDeclaredConstructors.head.newInstance(constructorParams: _*)
+		t.getDeclaredConstructors.head.newInstance(constructorParams*)
 	}
 
 	def encodeToJson(responseDate: AnyRef): String = {

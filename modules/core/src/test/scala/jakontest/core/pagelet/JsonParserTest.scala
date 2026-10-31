@@ -14,7 +14,7 @@ import java.time.{LocalDate, ZonedDateTime}
 @DoNotDiscover
 class JsonParserTest extends AnyFunSuite {
 
-	def parseRequestData(json: String, t: Class[_]): Map[Field, ParsedValue] = {
+	def parseRequestData(json: String, t: Class[?]): Map[Field, ParsedValue] = {
 		val res = parser.parse(json).getOrElse(Json.Null)
 		val hc: HCursor = res.hcursor
 
@@ -22,15 +22,15 @@ class JsonParserTest extends AnyFunSuite {
 		fields.map(f => CirceJsonParser.mapToString(hc, f)).toMap[Field, ParsedValue]
 	}
 
-	def createDataObject(data: Map[Field, ParsedValue], t: Class[_]): Any = {
+	def createDataObject(data: Map[Field, ParsedValue], t: Class[?]): Any = {
 		val constructorParams = t.getDeclaredConstructors.head.getParameters.map(p => {
 			CirceJsonParser.mapToObject(p, data)
 		})
 
-		t.getDeclaredConstructors.head.newInstance(constructorParams: _*)
+		t.getDeclaredConstructors.head.newInstance(constructorParams*)
 	}
 
-	def parse(json: String, t: Class[_]): Any = {
+	def parse(json: String, t: Class[?]): Any = {
 		val data = parseRequestData(json, t)
 		createDataObject(data, t)
 	}

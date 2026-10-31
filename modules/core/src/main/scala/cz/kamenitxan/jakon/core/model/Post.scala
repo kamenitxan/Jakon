@@ -15,14 +15,14 @@ import java.util.regex.Pattern
   */
 class Post extends JakonObject {
 	@JakonField(listOrder = 4)
-	var date: Date = _
+	var date: Date = scala.compiletime.uninitialized
 	@JakonField(required = false, listOrder = 2)
-	var perex: String = _
+	var perex: String = scala.compiletime.uninitialized
 	@ManyToOne
 	@JakonField(required = false, inputTemplate = "String", listOrder = 5)
-	var category: Category = _
+	var category: Category = scala.compiletime.uninitialized
 	@JakonField(listOrder = 1, searched = true)
-	var title: String = _
+	var title: String = scala.compiletime.uninitialized
 	@JakonField(inputTemplate = "textarea", listOrder = 3)
 	var content: String = ""
 	@JakonField(listOrder = 6)
