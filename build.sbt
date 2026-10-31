@@ -203,7 +203,6 @@ lazy val scalaBuildSettings: Seq[Def.Setting[?]] = Seq(
 		"-unchecked", // enable additional warnings where generated code depends on assumptions
 		//"-Xfatal-warnings", // fail the compilation if there are any warnings
 		//"-Yexplicit-nulls"
-		"-source:3.4-migration", "-rewrite"
 	)
 )
 

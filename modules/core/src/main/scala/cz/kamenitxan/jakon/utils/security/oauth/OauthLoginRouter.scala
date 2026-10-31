@@ -19,7 +19,7 @@ class OauthLoginRouter extends AbstractAdminPagelet {
 		val provider = ctx.queryParam("provider")
 		val success = provider match {
 			case p if p == Google.getClass.getSimpleName =>
-				Google.handleAuthResponse(ctx)(conn)
+				Google.handleAuthResponse(ctx)(using conn)
 			case p =>
 				Logger.error("Unknown oauth provider: " + p)
 				false

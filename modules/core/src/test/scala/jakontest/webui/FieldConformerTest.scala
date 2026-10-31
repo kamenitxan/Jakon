@@ -50,7 +50,7 @@ class FieldConformerTest extends AnyFunSuite {
 		@GenericType(cls = classOf[Integer])
 		var listJInt: util.ArrayList[Integer] = scala.compiletime.uninitialized
 		@JakonField
-		@GenericType(classOf[String])
+		@GenericType(cls = classOf[String])
 		var listJString: util.ArrayList[String] = scala.compiletime.uninitialized
 		@JakonField
 		var seqI: Seq[Int] = scala.compiletime.uninitialized
@@ -58,7 +58,7 @@ class FieldConformerTest extends AnyFunSuite {
 		@OneToMany(genericClass = classOf[JakonUser])
 		var seqUsers: Seq[JakonUser] = scala.compiletime.uninitialized
 		@JakonField
-		@GenericType(classOf[String])
+		@GenericType(cls = classOf[String])
 		var seqS: Seq[String] = scala.compiletime.uninitialized
 		@JakonField
 		var float: Float = scala.compiletime.uninitialized

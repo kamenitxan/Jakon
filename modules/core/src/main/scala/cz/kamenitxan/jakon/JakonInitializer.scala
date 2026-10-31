@@ -17,7 +17,7 @@ object JakonInitializer {
 		try {
 			val masterAdminStmt = conn.prepareStatement("SELECT * FROM AclRule WHERE masterAdmin = ?")
 			masterAdminStmt.setBoolean(1, true)
-			val masterAdmin = DBHelper.selectSingleDeep(masterAdminStmt)(implicitly, classOf[AclRule])
+			val masterAdmin = DBHelper.selectSingleDeep(masterAdminStmt)(using implicitly, classOf[AclRule])
 			val acl = if (masterAdmin == null) {
 				val acl = new AclRule()
 				acl.name = "Admin"
@@ -47,7 +47,7 @@ object JakonInitializer {
 
 
 			if (Settings.isEmailEnabled) {
-				createDefaultEmailTemplates()(conn)
+				createDefaultEmailTemplates()(using conn)
 			}
 		} finally {
 			conn.close()

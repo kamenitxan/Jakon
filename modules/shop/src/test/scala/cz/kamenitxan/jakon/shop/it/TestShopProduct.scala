@@ -14,7 +14,7 @@ class TestShopProduct extends ShopProduct {
 	var subtitle: String = ""
 
 	@JakonField
-	@I18n(classOf[TestShopProductI18n])
+	@I18n(genericClass = classOf[TestShopProductI18n])
 	var i18n: Seq[TestShopProductI18n] = scala.compiletime.uninitialized
 
 	override def createObject(jid: Int, conn: Connection): Int = {

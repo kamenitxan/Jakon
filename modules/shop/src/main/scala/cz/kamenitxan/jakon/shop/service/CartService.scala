@@ -103,7 +103,7 @@ object CartService {
 		val sql = "SELECT * FROM CartItem JOIN ShopProduct sp ON sp.id = CartItem.product_id JOIN Cart c ON c.id = CartItem.cart_id WHERE cart_id = ? ORDER BY id"
 		val stmt = conn.prepareStatement(sql)
 		stmt.setInt(1, cartId)
-		val items = DBHelper.selectDeep(stmt)(conn, classOf[CartItem])
+		val items = DBHelper.selectDeep(stmt)(using conn, classOf[CartItem])
 		stmt.close()
 		items
 	}

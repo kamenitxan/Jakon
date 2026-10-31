@@ -12,7 +12,7 @@ import scala.jdk.CollectionConverters.*
  */
 object ShopUtils {
 
-	private def categories() = ShopCategoryService.getAll()(DBHelper.getConnection)
+	private def categories() = ShopCategoryService.getAll()(using DBHelper.getConnection)
 
 	def categoryTree(): Seq[ShopCategory] = {
 		val roots = categories().filter(_.parentCategory == null)

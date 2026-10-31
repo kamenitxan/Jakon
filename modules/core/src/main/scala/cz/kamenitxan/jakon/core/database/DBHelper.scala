@@ -125,7 +125,7 @@ object DBHelper {
 		fki.ids.zipWithIndex.foreach(idi => {
 			stmt.setInt(idi._2 + 1, idi._1)
 		})
-		val r = selectDeep(stmt)(implicitly, cls.asInstanceOf[Class[JakonObject]])
+		val r = selectDeep(stmt)(using implicitly, cls.asInstanceOf[Class[JakonObject]])
 		stmt.close()
 		if (fki.ids.size > 1) {
 			fki.field.set(res.entity, r)
@@ -175,7 +175,7 @@ object DBHelper {
 							stmt.setInt(idi._2 + 1, idi._1)
 						})
 
-						val res = selectDeep(stmt)(implicitly, objectClass)
+						val res = selectDeep(stmt)(using implicitly, objectClass)
 						field.getType match {
 							case SEQ => field.set(r.entity, res)
 							case _ => field.set(r.entity, res.head)
@@ -221,7 +221,7 @@ object DBHelper {
 				val inClause   = "c.id = ? OR " * (ids.size - 1) + "c.id = ?"
 				val entitiesStmt = conn.prepareStatement(s"SELECT * FROM $targetName c JOIN JakonObject ON c.id = JakonObject.id $joinSql WHERE $inClause")
 				ids.zipWithIndex.foreach { case (id, i) => entitiesStmt.setInt(i + 1, id) }
-				val entities = selectDeep(entitiesStmt)(implicitly, targetClass)
+				val entities = selectDeep(entitiesStmt)(using implicitly, targetClass)
 				field.set(r.entity, entities)
 			}
 		}

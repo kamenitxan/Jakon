@@ -86,7 +86,7 @@ abstract class JakonObject(implicit s: sourcecode.FullName) extends BaseEntity {
 			conn.close()
 		}
 		if (this.getClass.getInterfaces.contains(classOf[Ordered])) {
-			val thisOrdered = DBHelper.withDbConnection(conn2 => this.asInstanceOf[JakonObject & Ordered].updateNewObjectOrder(conn2))
+			val thisOrdered = DBHelper.withDbConnection(conn2 => this.asInstanceOf[JakonObject & Ordered].updateNewObjectOrder(using conn2))
 			thisOrdered.update()
 		}
 		this.id

@@ -49,7 +49,7 @@ class TestObject extends JakonObject {
 	@JakonField
 	var embedded: TestEmbeddedObject = scala.compiletime.uninitialized
 	@JakonField
-	@I18n(classOf[TestObjectI18n])
+	@I18n(genericClass = classOf[TestObjectI18n])
 	var i18n: Seq[TestObjectI18n] = scala.compiletime.uninitialized
 	@JakonField
 	var jakonFile: JakonFile = scala.compiletime.uninitialized
