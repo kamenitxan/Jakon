@@ -3,6 +3,7 @@ package cz.kamenitxan.jakon.shop.it
 import cz.kamenitxan.jakon.JakonInit
 import cz.kamenitxan.jakon.core.Director
 import cz.kamenitxan.jakon.core.configuration.Settings
+import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.template.Pebble
 import cz.kamenitxan.jakon.shop.ShopInit
 import org.scalatest.{BeforeAndAfterAll, Suites}
@@ -18,6 +19,7 @@ class ShopTestRunner extends Suites(
 	new ShopEntityTest,
 	new CartServiceDbTest,
 	new ShopServiceDbTest,
+	new ShopProductSubclassTest,
 	new ShopTaskTest,
 	new ShopPagesTest,
 	new CartPageletTest,
@@ -36,7 +38,13 @@ class ShopTestRunner extends Suites(
 		copyDir(Paths.get("../core/templates/shop"), Paths.get("target/test-templates/shop"))
 		Director.init()
 		Settings.setTemplateEngine(new Pebble)
-		new ShopInit().run(Array[String](config))
+		new ShopInit {
+			// table of the product subclass, ShopProductSubclassTest switches the product class to it
+			override def daoSetup(): Unit = {
+				super.daoSetup()
+				DBHelper.addDao(classOf[TestShopProduct])
+			}
+		}.run(Array[String](config))
 	}
 
 	override protected def afterAll(): Unit = {

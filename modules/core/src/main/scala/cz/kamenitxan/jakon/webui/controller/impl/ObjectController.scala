@@ -266,8 +266,10 @@ object ObjectController {
 					field.setAccessible(true)
 					val ann         = field.getDeclaredAnnotation(classOf[ManyToMany])
 					val targetClass = ann.genericClass()
-					val joinTable   = objectClass.getSimpleName + targetClass.getSimpleName
-					val joinCol     = { val n = objectClass.getSimpleName; n.head.toLower + n.tail + "_id" }
+					// junction table belongs to the class declaring the field, not to its subclasses
+					val ownerClass  = field.getDeclaringClass
+					val joinTable   = ownerClass.getSimpleName + targetClass.getSimpleName
+					val joinCol     = { val n = ownerClass.getSimpleName; n.head.toLower + n.tail + "_id" }
 					val inverseCol  = { val n = targetClass.getSimpleName; n.head.toLower + n.tail + "_id" }
 					val deleteStmt = conn.prepareStatement(s"DELETE FROM $joinTable WHERE $joinCol = ?")
 					deleteStmt.setInt(1, obj.id)

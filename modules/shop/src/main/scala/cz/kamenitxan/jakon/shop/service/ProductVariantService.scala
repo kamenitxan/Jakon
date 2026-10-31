@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.shop.service
 
 import cz.kamenitxan.jakon.core.database.DBHelper
+import cz.kamenitxan.jakon.shop.ShopInit
 import cz.kamenitxan.jakon.shop.entity.{ProductVariant, ProductVariantValue, ShopProduct}
 
 import java.math.BigDecimal
@@ -61,11 +62,10 @@ object ProductVariantService {
 	 * with loaded variant values. Product without variants returns only itself.
 	 */
 	def loadVariantGroup(product: ShopProduct)(implicit conn: Connection): Seq[ShopProduct] = {
-		implicit val cls: Class[ShopProduct] = classOf[ShopProduct]
+		implicit val cls: Class[ShopProduct] = ShopInit.productClass.asInstanceOf[Class[ShopProduct]]
 		// language=SQL
 		val sql =
-			"""SELECT * FROM ShopProduct
-			  |JOIN JakonObject ON JakonObject.id = ShopProduct.id
+			s"""SELECT * FROM ${ShopProductService.fromClause(cls)}
 			  |WHERE (ShopProduct.id = ? OR ShopProduct.mainProduct_id = ?) AND JakonObject.published = true
 			  |ORDER BY ShopProduct.id""".stripMargin
 		val stmt = conn.prepareStatement(sql)

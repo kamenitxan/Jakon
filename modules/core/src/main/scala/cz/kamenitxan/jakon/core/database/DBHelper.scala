@@ -194,7 +194,8 @@ object DBHelper {
 		val manyToManyFields = Utils.getFieldsUpTo(r.entity.getClass, classOf[Object]).filter(_.getDeclaredAnnotation(classOf[ManyToMany]) != null)
 		manyToManyFields.foreach { field =>
 			val ann         = field.getDeclaredAnnotation(classOf[ManyToMany])
-			val ownerClass  = r.entity.getClass
+			// junction table belongs to the class declaring the field, not to its subclasses
+			val ownerClass  = field.getDeclaringClass
 			val targetClass = ann.genericClass().asInstanceOf[Class[JakonObject]]
 			val joinTable   = ownerClass.getSimpleName + targetClass.getSimpleName
 			val joinCol     = ownerClass.getSimpleName + "_id"
