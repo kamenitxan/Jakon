@@ -56,16 +56,18 @@ class CartPageletTest extends ShopHttpTestBase {
 		assertOk(cartPage)
 		assert(cartPage.body().contains(product.name))
 
-		val variant = createVariant("Barva")
-		val red = createVariantValue(variant, "Červená")
-		assertRedirect(browser.post("/cart/add", "productId" -> product.id.toString, "variantValues" -> red.id.toString), "/cart")
+		// variant is a standalone product, it is added by its own id
+		val color = createVariant("Barva")
+		val red = createVariantValue(color, "Červená")
+		val redVariant = createProductVariant(product, price = "300", values = Seq(red))
+		assertRedirect(browser.post("/cart/add", "productId" -> redVariant.id.toString), "/cart")
 		val id = cartId(browser)
 		assert(queryInt("SELECT COUNT(*) FROM CartItem WHERE cart_id = ?", id) == 2)
 		val variantPage = browser.get("/cart")
 		assertOk(variantPage)
-		assert(variantPage.body().contains("Červená"))
+		assert(variantPage.body().contains("Barva: Červená"))
 
-		val itemId = queryInt("SELECT id FROM CartItem WHERE cart_id = ? AND variantSelection IS NULL", id)
+		val itemId = queryInt("SELECT id FROM CartItem WHERE cart_id = ? AND product_id = ?", id, product.id)
 		assertRedirect(browser.post("/cart/update", "itemId" -> itemId.toString, "quantity" -> "4"), "/cart")
 		assert(queryInt("SELECT quantity FROM CartItem WHERE id = ?", itemId) == 4)
 		assertRedirect(browser.post("/cart/update", "itemId" -> itemId.toString, "quantity" -> "0"), "/cart")
@@ -112,6 +114,26 @@ class CartPageletTest extends ShopHttpTestBase {
 		prepareCheckout(missingData)
 		assertRedirect(missingData.post("/cart/submit", "guestEmail" -> ""), "/cart/delivery")
 		assertRedirect(missingData.post("/cart/submit", "guestEmail" -> "a@example.com"), "/cart/delivery")
+	}
+
+	test("order of product variant uses variant price and stores readable variant") {
+		val browser = new Browser
+		val main = createProduct(price = "500")
+		val size = createVariant("Velikost")
+		val xl = createVariantValue(size, "XL")
+		val xlVariant = createProductVariant(main, price = "700", discountPrice = "650", values = Seq(xl))
+		assertRedirect(browser.post("/cart/add", "productId" -> xlVariant.id.toString, "quantity" -> "2"), "/cart")
+		val shipping = createShipping("0")
+		val payment = createPayment()
+		browser.post("/cart/checkout", "shippingMethodId" -> shipping.id.toString, "paymentMethodId" -> payment.id.toString)
+
+		val resp = browser.post("/cart/submit", deliveryParams()*)
+		val orderNumber = location(resp).split("orderNumber=")(1)
+		val orderId = queryInt("SELECT id FROM ShopOrder WHERE orderNumber = ?", orderNumber)
+		assert(queryInt("SELECT product_id FROM ShopOrderItem WHERE order_id = ?", orderId) == xlVariant.id)
+		assert(new java.math.BigDecimal(queryString("SELECT unitPrice FROM ShopOrderItem WHERE order_id = ?", orderId)).compareTo(new java.math.BigDecimal("650")) == 0)
+		assert(queryString("SELECT variantSelection FROM ShopOrderItem WHERE order_id = ?", orderId) == "Velikost: XL")
+		assert(new java.math.BigDecimal(queryString("SELECT totalPrice FROM ShopOrder WHERE id = ?", orderId)).compareTo(new java.math.BigDecimal("1300")) == 0)
 	}
 
 	test("submit order with manual payment creates order, items and email") {

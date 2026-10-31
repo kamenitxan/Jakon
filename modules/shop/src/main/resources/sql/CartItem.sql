@@ -3,7 +3,6 @@ CREATE TABLE CartItem (
     cart_id          INT     NOT NULL,
     product_id       INT     NOT NULL,
     quantity         INT     NOT NULL DEFAULT 1,
-    variantSelection VARCHAR(1024),
 
     FOREIGN KEY (cart_id)    REFERENCES Cart (id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES ShopProduct (id) ON DELETE RESTRICT

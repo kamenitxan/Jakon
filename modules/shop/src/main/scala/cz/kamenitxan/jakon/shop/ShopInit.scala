@@ -6,6 +6,7 @@ import cz.kamenitxan.jakon.core.model.Post
 import cz.kamenitxan.jakon.core.task.TaskRunner
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.shop.entity.*
+import cz.kamenitxan.jakon.shop.service.ProductVariantService
 import cz.kamenitxan.jakon.shop.task.{CartCleanupTask, PaymentStatusSyncTask}
 
 import java.math.BigDecimal
@@ -84,12 +85,57 @@ class ShopInit extends JakonInit {
 			"Rozšiř svůj notebook jedním kabelem.", new BigDecimal("890"), null,         "HUB-7C",  60, electronics)
 		makeProduct("Pánské tričko Classic", "100% bavlna, dostupné ve 5 barvách, unisex střih.",
 			"Základní tričko do každého šatníku.", new BigDecimal("349"), new BigDecimal("249"), "TR-CL-M", 100, clothing)
-		makeProduct("Mikina s kapucí Urban", "Bavlněný fleece, klokaní kapsa, regulovatelná kapuce.",
+		val hoodie = makeProduct("Mikina s kapucí Urban", "Bavlněný fleece, klokaní kapsa, regulovatelná kapuce.",
 			"Pohodlná mikina na každý den.",   new BigDecimal("799"),  null,            "MK-URB",  50, clothing)
 		makeProduct("Zahradní sada nářadí",  "12dílná sada s lopatkou, hrabičkami a konvičkou.",
 			"Vše pro vaši zahradu.",            new BigDecimal("1290"), new BigDecimal("990"),  "ZS-12",   30, home)
 
+		// --- Varianty - každá varianta je samostatný produkt s vlastní cenou ---
+		val size = makeVariant("Velikost")
+		val sizeM  = makeVariantValue(size, "M")
+		val sizeL  = makeVariantValue(size, "L")
+		val sizeXL = makeVariantValue(size, "XL")
+		ProductVariantService.setVariantValues(hoodie, Seq(sizeM))
+		makeProductVariant(hoodie, "L",  new BigDecimal("849"), null,                  "MK-URB-L",  20, sizeL)
+		makeProductVariant(hoodie, "XL", new BigDecimal("899"), new BigDecimal("849"), "MK-URB-XL", 10, sizeXL)
+
 		Logger.info("Test data seeded successfully")
+	}
+
+	private def makeVariant(name: String)(implicit conn: Connection): ProductVariant = {
+		val v = new ProductVariant
+		v.name = name
+		v.published = true
+		v.create()
+		v
+	}
+
+	private def makeVariantValue(variant: ProductVariant, value: String)(implicit conn: Connection): ProductVariantValue = {
+		val v = new ProductVariantValue
+		v.variant = variant
+		v.value = value
+		v.published = true
+		v.create()
+		v
+	}
+
+	/** Variant of the main product is a standalone product with own price and stock. */
+	private def makeProductVariant(main: ShopProduct, nameSuffix: String, price: BigDecimal, discountPrice: BigDecimal, sku: String,
+	                               stock: Int, values: ProductVariantValue*)(implicit conn: Connection): ShopProduct = {
+		val p = new ShopProduct
+		p.name = s"${main.name} $nameSuffix"
+		p.description = main.description
+		p.shortDescription = main.shortDescription
+		p.price = price
+		p.discountPrice = discountPrice
+		p.sku = sku
+		p.stockQuantity = stock
+		p.category = main.category
+		p.mainProduct = main
+		p.published = true
+		p.create()
+		ProductVariantService.setVariantValues(p, values)
+		p
 	}
 
 	private def makeCategory(name: String, description: String, order: Int)(implicit conn: Connection): ShopCategory = {

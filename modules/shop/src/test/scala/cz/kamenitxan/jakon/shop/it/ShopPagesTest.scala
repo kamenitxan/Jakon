@@ -21,32 +21,47 @@ class ShopPagesTest extends AnyFunSuite with ShopDbSupport {
 		Files.readString(f.toPath)
 	}
 
-	test("IndexPage renders product list") {
+	test("IndexPage lists products, variants are represented by their main product") {
 		val product = createProduct()
+		val variant = createProductVariant(product, price = "100")
+		variant.name = unique("variant-not-listed")
+		variant.update()
 		new IndexPage().generateRun()
-		assert(content("index.html").contains(product.name))
+		val index = content("index.html")
+		assert(index.contains(product.name))
+		assert(!index.contains(variant.name))
 	}
 
-	test("ProductPage renders detail of every product including variants") {
-		val variant = createVariant("Velikost")
-		createVariantValue(variant, "M")
-		val category = createCategory()
-		withConn(conn => {
-			val stmt = conn.prepareStatement("INSERT INTO ShopCategoryProductVariant (shopCategory_id, productVariant_id) VALUES (?, ?)")
-			stmt.setInt(1, category.id)
-			stmt.setInt(2, variant.id)
-			stmt.executeUpdate()
-			stmt.close()
-		})
-		val withVariants = createProduct(category = category)
-		val withoutVariants = createProduct()
+	test("ProductPage renders every variant with its price and variant selector") {
+		val size = createVariant("Velikost")
+		val m = createVariantValue(size, "M")
+		val xl = createVariantValue(size, "XL")
+		val main = createProduct(price = "799")
+		setVariantValues(main, m)
+		val xlVariant = createProductVariant(main, price = "899", discountPrice = "849", values = Seq(xl))
+		val withoutVariants = createProduct(price = "350")
 
 		new ProductPage().generateRun()
 
-		val variantPage = content(s"product${withVariants.id}.html")
-		assert(variantPage.contains(withVariants.name))
-		assert(variantPage.contains("Velikost"))
-		assert(content(s"product${withoutVariants.id}.html").contains(withoutVariants.name))
+		val mainPage = content(s"product${main.id}.html")
+		assert(mainPage.contains("Velikost"))
+		assert(mainPage.contains(s"""<option value="${m.id}" selected>M</option>"""))
+		assert(mainPage.contains(s"""<option value="${xl.id}">XL</option>"""))
+		// prices of all variants are in page for switching variant without reload
+		assert(mainPage.contains(s""""productId":${xlVariant.id}"""))
+		assert(mainPage.contains(""""discountPrice":849"""))
+
+		val xlPage = content(s"product${xlVariant.id}.html")
+		assert(xlPage.contains(s"""<option value="${xl.id}" selected>XL</option>"""))
+		assert(xlPage.contains(s"""name="productId" id="productId" value="${xlVariant.id}""""))
+		// discount price is the current price, regular price is crossed out
+		assert(xlPage.contains("""<span id="priceCurrent">849</span>"""))
+
+		val plainPage = content(s"product${withoutVariants.id}.html")
+		assert(plainPage.contains(withoutVariants.name))
+		// no variant select, script of the page is there always
+		assert(!plainPage.contains("""<select name="variant_"""))
+		assert(plainPage.contains("""<span id="priceCurrent">350</span>"""))
 	}
 
 	test("CategoryListPage renders every category") {

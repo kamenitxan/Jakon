@@ -16,7 +16,7 @@ class IndexPage extends AbstractCustomPage {
 
 	override protected def generate(): Unit = {
 		DBHelper.withDbConnection(implicit conn => {
-			val products = ShopProductService.getAll()
+			val products = ShopProductService.getListed()
 			val data = ShopUtils.commonPageData ++ Map(
 				"title" -> "Naše produkty",
 				"products" -> products.asJava

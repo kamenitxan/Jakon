@@ -14,24 +14,69 @@ class ShopServiceDbTest extends AnyFunSuite with ShopDbSupport {
 	private val successUrl = "https://shop.example.com/ok"
 	private val cancelUrl = "https://shop.example.com/cancel"
 
-	test("ProductVariantService loads published values ordered and builds readable selection") {
+	test("buildReadableVariant describes product by its variant values ordered by variant") {
+		// order of variants and values is assigned by Ordered on creation
+		val color = createVariant("Barva")
+		val size = createVariant("Velikost")
+		val xl = createVariantValue(size, "XL")
+		val red = createVariantValue(color, "Červená")
+		val main = createProduct()
+		val variant = createProductVariant(main, price = "100", values = Seq(xl, red))
+
 		withConn(implicit conn => {
-			val variant = createVariant("Barva")
-			// order of values is assigned by Ordered on creation
-			val red = createVariantValue(variant, "Červená")
-			val blue = createVariantValue(variant, "Modrá")
-			val hidden = createVariantValue(variant, "Skrytá")
-			hidden.published = false
-			hidden.update()
+			assert(ProductVariantService.buildReadableVariant(variant.id) == "Barva: Červená, Velikost: XL")
+			assert(ProductVariantService.buildReadableVariant(main.id) == "")
+		})
+	}
 
-			val values = ProductVariantService.loadValuesForVariant(variant.id)
-			assert(values.map(_.value) == Seq("Červená", "Modrá"))
-			assert(VariantWithValues(variant, values.asJava).values.size == 2)
+	test("loadVariantGroup returns published main product and variants") {
+		val main = createProduct(price = "100")
+		val v1 = createProductVariant(main, price = "110")
+		val v2 = createProductVariant(main, price = "120")
+		val hidden = createProductVariant(main, price = "130")
+		hidden.published = false
+		hidden.update()
+		val standalone = createProduct()
 
-			assert(ProductVariantService.buildReadableSelection(null) == "")
-			assert(ProductVariantService.buildReadableSelection("  ") == "")
-			assert(ProductVariantService.buildReadableSelection("abc,def") == "")
-			assert(ProductVariantService.buildReadableSelection(s"${red.id}, ${blue.id}") == "Barva: Červená, Barva: Modrá")
+		withConn(implicit conn => {
+			val expected = Seq(main.id, v1.id, v2.id)
+			assert(ProductVariantService.loadVariantGroup(main).map(_.id) == expected)
+			assert(ProductVariantService.loadVariantGroup(v2).map(_.id) == expected)
+			assert(ProductVariantService.loadVariantGroup(standalone).map(_.id) == Seq(standalone.id))
+		})
+	}
+
+	test("buildSelector creates axes with selected values and options with variant prices") {
+		val color = createVariant("Barva")
+		val size = createVariant("Velikost")
+		val red = createVariantValue(color, "Červená")
+		val blue = createVariantValue(color, "Modrá")
+		val m = createVariantValue(size, "M")
+		val xl = createVariantValue(size, "XL")
+
+		val main = createProduct(price = "100")
+		setVariantValues(main, red, m)
+		val redXl = createProductVariant(main, price = "130", discountPrice = "120", values = Seq(red, xl))
+		val blueM = createProductVariant(main, price = "110", values = Seq(blue, m))
+
+		withConn(implicit conn => {
+			val group = ProductVariantService.loadVariantGroup(main)
+			val selector = ProductVariantService.buildSelector(group.find(_.id == redXl.id).get, group).get
+
+			val axes = selector.axes.asScala.toSeq
+			assert(axes.map(_.variant.name) == Seq("Barva", "Velikost"))
+			assert(axes.head.values.asScala.map(_.value.value).toSeq == Seq("Červená", "Modrá"))
+			assert(axes.flatMap(_.values.asScala).filter(_.selected).map(_.value.id).toSet == Set(red.id, xl.id))
+
+			val options = selector.options.map(o => o.productId -> o).toMap
+			assert(options.keySet == Set(main.id, redXl.id, blueM.id))
+			assert(options(redXl.id).valueIds.toSeq == Seq(red.id, xl.id).sorted)
+			assert(options(redXl.id).discountPrice.compareTo(new java.math.BigDecimal("120")) == 0)
+			assert(options(blueM.id).price.compareTo(new java.math.BigDecimal("110")) == 0)
+
+			// product without variants has no selector
+			val standalone = createProduct()
+			assert(ProductVariantService.buildSelector(standalone, Seq(standalone)).isEmpty)
 		})
 	}
 

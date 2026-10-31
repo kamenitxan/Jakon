@@ -20,7 +20,7 @@ class CartServiceDbTest extends AnyFunSuite with ShopDbSupport {
 		})
 	}
 
-	test("addItem merges quantity of the same product and variant selection") {
+	test("addItem merges quantity of the same product, variants are separate items with own price") {
 		withConn(implicit conn => {
 			val cart = CartService.getOrCreateCart(unique("token"))
 			val product = createProduct(price = "100")
@@ -28,13 +28,15 @@ class CartServiceDbTest extends AnyFunSuite with ShopDbSupport {
 			val merged = CartService.addItem(cart.id, product.id, 2)
 			assert(merged.quantity == 3)
 
-			CartService.addItem(cart.id, product.id, 1, "5,6")
-			val mergedVariant = CartService.addItem(cart.id, product.id, 4, "5,6")
+			val variant = createProductVariant(product, price = "150", discountPrice = "120")
+			CartService.addItem(cart.id, variant.id, 1)
+			val mergedVariant = CartService.addItem(cart.id, variant.id, 4)
 			assert(mergedVariant.quantity == 5)
 
 			val items = CartService.getItems(cart.id)
 			assert(items.size == 2)
-			assert(CartService.getTotalPrice(items).compareTo(new BigDecimal("800")) == 0)
+			// 3 x 100 + 5 x 120 (variant discount price)
+			assert(CartService.getTotalPrice(items).compareTo(new BigDecimal("900")) == 0)
 		})
 	}
 

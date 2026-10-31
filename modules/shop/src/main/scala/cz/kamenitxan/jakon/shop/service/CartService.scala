@@ -39,8 +39,9 @@ object CartService {
 
 	}
 
-	def addItem(cartId: Int, productId: Int, quantity: Int, variantSelection: String = null)(implicit conn: Connection): CartItem = {
-		val existing = findItem(cartId, productId, variantSelection)
+	/** Adds product to cart. Variant of a product is a standalone product, so productId identifies the chosen variant. */
+	def addItem(cartId: Int, productId: Int, quantity: Int)(implicit conn: Connection): CartItem = {
+		val existing = findItem(cartId, productId)
 		existing match {
 			case Some(item) =>
 				val newQty = item.quantity + quantity
@@ -63,29 +64,17 @@ object CartService {
 				item.product = new ShopProduct
 				item.product.id = productId
 				item.quantity = quantity
-				item.variantSelection = variantSelection
 				item.published = true
 				item.create()
-				Logger.debug(s"Added CartItem: product=$productId qty=$quantity variants=$variantSelection to cart=$cartId")
+				Logger.debug(s"Added CartItem: product=$productId qty=$quantity to cart=$cartId")
 				item
 		}
 	}
 
-	private def findItem(cartId: Int, productId: Int, variantSelection: String)(implicit conn: Connection): Option[CartItem] = {
-		// Items with the same product but different variant selection are treated as separate cart entries
-		val (sql, params) = if (variantSelection == null || variantSelection.isEmpty) {
-			("SELECT * FROM CartItem WHERE cart_id = ? AND product_id = ? AND (variantSelection IS NULL OR variantSelection = '')",
-				Seq[Any](cartId, productId))
-		} else {
-			("SELECT * FROM CartItem WHERE cart_id = ? AND product_id = ? AND variantSelection = ?",
-				Seq[Any](cartId, productId, variantSelection))
-		}
-		val stmt = conn.prepareStatement(sql)
-		params.zipWithIndex.foreach {
-			case (v: Int, i)    => stmt.setInt(i + 1, v)
-			case (v: String, i) => stmt.setString(i + 1, v)
-			case _              =>
-		}
+	private def findItem(cartId: Int, productId: Int)(implicit conn: Connection): Option[CartItem] = {
+		val stmt = conn.prepareStatement("SELECT * FROM CartItem WHERE cart_id = ? AND product_id = ?")
+		stmt.setInt(1, cartId)
+		stmt.setInt(2, productId)
 		val items = DBHelper.select(stmt, classOf[CartItem]).map(_.entity)
 		stmt.close()
 		items.headOption

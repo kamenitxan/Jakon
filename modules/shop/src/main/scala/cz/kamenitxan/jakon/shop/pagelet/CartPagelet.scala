@@ -48,8 +48,8 @@ class CartPagelet extends AbstractPagelet {
 		val total = CartService.getTotalPrice(items)
 		val variantTexts: java.util.Map[Integer, String] = {
 			val m = new java.util.HashMap[Integer, String]()
-			items.foreach { item =>
-				val text = ProductVariantService.buildReadableSelection(item.variantSelection)
+			items.filter(_.product != null).foreach { item =>
+				val text = ProductVariantService.buildReadableVariant(item.product.id)
 				if (text.nonEmpty) m.put(item.id, text)
 			}
 			m
@@ -63,24 +63,19 @@ class CartPagelet extends AbstractPagelet {
 		)
 	}
 
-	case class AddData(
-		productId: String,
-		quantity: String,
-		/** Comma-separated ProductVariantValue IDs submitted from the product form. */
-		variantValues: String
-	)
+	/** productId is id of the chosen variant - variant is a standalone product. */
+	case class AddData(productId: String, quantity: String)
 
 	@Post(path = "/add")
 	def addToCart(ctx: Context, data: AddData)(implicit conn: Connection): mutable.Map[String, Any] = {
 		val token = getOrSetCartToken(ctx)
 		val productIdOpt = Option(data.productId).filter(_.nonEmpty).flatMap(s => Try(s.toInt).toOption)
 		val qty = Option(data.quantity).filter(_.nonEmpty).flatMap(s => Try(s.toInt).toOption).getOrElse(1)
-		val variantSelection = Option(data.variantValues).map(_.trim).filter(_.nonEmpty).orNull
 		productIdOpt match {
 			case Some(productId) =>
 				val cart = CartService.getOrCreateCart(token)
-				CartService.addItem(cart.id, productId, qty, variantSelection)
-				Logger.debug(s"Added product $productId qty=$qty variants=$variantSelection to cart ${cart.id}")
+				CartService.addItem(cart.id, productId, qty)
+				Logger.debug(s"Added product $productId qty=$qty to cart ${cart.id}")
 			case None =>
 				Logger.warn("addToCart called without valid productId")
 		}
@@ -251,7 +246,8 @@ class CartPagelet extends AbstractPagelet {
 			               else BigDecimal.ZERO
 			orderItem.unitPrice = unitPrice
 			orderItem.totalPrice = unitPrice.multiply(BigDecimal.valueOf(item.quantity))
-			orderItem.variantSelection = ProductVariantService.buildReadableSelection(item.variantSelection)
+			// readable snapshot of chosen variant, order keeps it even when product changes later
+			orderItem.variantSelection = if (item.product != null) ProductVariantService.buildReadableVariant(item.product.id) else ""
 			orderItem.published = true
 			orderItem.create()
 		}

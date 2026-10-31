@@ -4,6 +4,7 @@ import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
 import cz.kamenitxan.jakon.shop.entity.*
 import cz.kamenitxan.jakon.shop.payments.PaymentStatus
+import cz.kamenitxan.jakon.shop.service.ProductVariantService
 
 import java.math.BigDecimal
 import java.sql.Connection
@@ -65,6 +66,26 @@ trait ShopDbSupport {
 		p.published = true
 		p.create()
 		p
+	}
+
+	/** Variant of the main product - standalone product with own price and variant values. */
+	protected def createProductVariant(main: ShopProduct, price: String, discountPrice: String = null, values: Seq[ProductVariantValue] = Seq.empty): ShopProduct = {
+		val p = new ShopProduct
+		p.name = main.name + " variant"
+		p.price = new BigDecimal(price)
+		p.discountPrice = Option(discountPrice).map(new BigDecimal(_)).orNull
+		p.sku = unique("sku")
+		p.stockQuantity = 5
+		p.category = main.category
+		p.mainProduct = main
+		p.published = true
+		p.create()
+		withConn(implicit conn => ProductVariantService.setVariantValues(p, values))
+		p
+	}
+
+	protected def setVariantValues(product: ShopProduct, values: ProductVariantValue*): Unit = {
+		withConn(implicit conn => ProductVariantService.setVariantValues(product, values))
 	}
 
 	protected def createShipping(price: String = "79"): ShippingMethod = {

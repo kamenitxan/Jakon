@@ -11,7 +11,9 @@ CREATE TABLE ShopProduct (
     images           VARCHAR(255),
     category_id      INT            NOT NULL,
     featured         BOOLEAN        NOT NULL DEFAULT FALSE,
-    
+    mainProduct_id   INT            NULL,
+
     PRIMARY KEY (id),
-    FOREIGN KEY (category_id) REFERENCES ShopCategory (id)
+    FOREIGN KEY (category_id) REFERENCES ShopCategory (id),
+    FOREIGN KEY (mainProduct_id) REFERENCES ShopProduct (id) ON DELETE SET NULL
 );

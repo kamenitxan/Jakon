@@ -49,33 +49,28 @@
         <span class="text-sm opacity-70">({{ product.reviewCount | default("15") }} hodnocení)</span>
       </div>
 
-      <!-- Cena -->
+      <!-- Cena - akční cena je hlavní, původní cena přeškrtnutá. Při výběru varianty ji přepíná JS. -->
       <div class="mb-6">
         <div class="text-4xl font-bold text-primary mb-2">
-          {{ product.price | default("1 299") }} Kč
+          <span id="priceCurrent">{% if product.discountPrice is not null %}{{ product.discountPrice }}{% else %}{{ product.price }}{% endif %}</span> Kč
         </div>
-        {% if product.discountPrice is not null %}
-        <div class="text-xl line-through opacity-60">
-          {{ product.discountPrice }} Kč
+        <div id="priceOriginalBox" class="text-xl line-through opacity-60{% if product.discountPrice is null %} hidden{% endif %}">
+          <span id="priceOriginal">{{ product.price }}</span> Kč
         </div>
-        {% endif %}
       </div>
 
       <!-- Skladem -->
       <div class="mb-6">
         {% set stock = product.stockQuantity | default(0) %}
-        {% if stock > 0 %}
-        <div class="badge badge-success gap-2">
+        <div id="inStock" class="badge badge-success gap-2{% if stock <= 0 %} hidden{% endif %}">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
           </svg>
-          Skladem ({{ stock }} ks)
+          Skladem (<span id="stockCount">{{ stock }}</span> ks)
         </div>
-        {% else %}
-        <div class="badge badge-error gap-2">
+        <div id="outOfStock" class="badge badge-error gap-2{% if stock > 0 %} hidden{% endif %}">
           Není skladem
         </div>
-        {% endif %}
       </div>
 
       <!-- Krátký popis -->
@@ -87,27 +82,29 @@
 
       <!-- Množství a tlačítko do košíku -->
       <form method="post" action="/cart/add">
-        <input type="hidden" name="productId" value="{{ product.id }}" />
+        <!-- id zvolené varianty - každá varianta je samostatný produkt -->
+        <input type="hidden" name="productId" id="productId" value="{{ product.id }}" />
 
-        {% if variants is not empty %}
+        {% if variantSelector is not null %}
         <!-- Varianty produktu -->
         <div class="mb-6 space-y-4">
-          {% for vwv in variants %}
+          {% for axis in variantSelector.axes %}
           <div class="form-control">
             <label class="label">
-              <span class="label-text font-semibold">{{ vwv.variant.name }}</span>
+              <span class="label-text font-semibold">{{ axis.variant.name }}</span>
             </label>
-            <select name="variant_{{ vwv.variant.id }}" class="select select-bordered w-full max-w-xs variant-select" data-variant-id="{{ vwv.variant.id }}" required>
-              <option value="" disabled selected>{{ i18n("common", "SELECT_VARIANT") }}</option>
-              {% for val in vwv.values %}
-              <option value="{{ val.id }}">{{ val.value }}</option>
+            <select name="variant_{{ axis.variant.id }}" class="select select-bordered w-full max-w-xs variant-select" data-variant-id="{{ axis.variant.id }}" required>
+              <option value="" disabled>{{ i18n("common", "SELECT_VARIANT") }}</option>
+              {% for axisValue in axis.values %}
+              <option value="{{ axisValue.value.id }}"{% if axisValue.selected %} selected{% endif %}>{{ axisValue.value.value }}</option>
               {% endfor %}
             </select>
           </div>
           {% endfor %}
+          <div id="variantUnavailable" class="alert alert-warning hidden">
+            <span>{{ i18n("common", "VARIANT_NOT_AVAILABLE") }}</span>
+          </div>
         </div>
-        <!-- Hidden field collecting all selected variant value IDs (comma-separated) -->
-        <input type="hidden" name="variantValues" id="variantValues" value="" />
         {% endif %}
 
         <div class="flex gap-4 mb-6">
@@ -118,7 +115,7 @@
             <input type="number" name="quantity" value="1" min="1" max="{{ product.stockQuantity | default(99) }}" class="input input-bordered w-24" />
           </div>
           <div class="flex-1 flex items-end">
-            <button type="submit" class="btn btn-primary btn-lg w-full">
+            <button type="submit" id="addToCartBtn" class="btn btn-primary btn-lg w-full">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
@@ -203,18 +200,46 @@
     document.getElementById('mainImage').src = imageSrc;
   }
 
-  // Collect selected variant value IDs into the hidden variantValues field on submit
+  // Products of the variant group: {productId, valueIds (sorted), price, discountPrice, stockQuantity}
+  var variantOptions = {{ variantOptionsJson | raw }};
+
+  // Every variant is a standalone product - selected values switch productId, price and stock to the matching variant
   (function () {
     var form = document.querySelector('form[action="/cart/add"]');
-    if (!form) return;
-    form.addEventListener('submit', function () {
-      var selects = form.querySelectorAll('.variant-select');
+    if (!form || variantOptions.length === 0) return;
+    var selects = form.querySelectorAll('.variant-select');
+
+    function setHidden(id, hidden) {
+      var el = document.getElementById(id);
+      if (el) el.classList.toggle('hidden', hidden);
+    }
+
+    function update() {
       var ids = [];
       selects.forEach(function (sel) {
-        if (sel.value) ids.push(sel.value);
+        if (sel.value) ids.push(parseInt(sel.value, 10));
       });
-      var hidden = form.querySelector('#variantValues');
-      if (hidden) hidden.value = ids.join(',');
+      ids.sort(function (a, b) { return a - b; });
+      var match = variantOptions.find(function (o) {
+        return o.valueIds.length === ids.length && o.valueIds.every(function (v, i) { return v === ids[i]; });
+      });
+
+      document.getElementById('addToCartBtn').disabled = !match;
+      setHidden('variantUnavailable', !!match);
+      if (!match) return;
+
+      document.getElementById('productId').value = match.productId;
+      var hasDiscount = match.discountPrice !== undefined && match.discountPrice !== null;
+      document.getElementById('priceCurrent').textContent = hasDiscount ? match.discountPrice : match.price;
+      document.getElementById('priceOriginal').textContent = match.price;
+      setHidden('priceOriginalBox', !hasDiscount);
+      document.getElementById('stockCount').textContent = match.stockQuantity;
+      setHidden('inStock', match.stockQuantity <= 0);
+      setHidden('outOfStock', match.stockQuantity > 0);
+    }
+
+    selects.forEach(function (sel) {
+      sel.addEventListener('change', update);
     });
   })();
 </script>

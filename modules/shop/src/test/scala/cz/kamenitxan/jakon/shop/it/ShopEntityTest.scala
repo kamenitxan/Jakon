@@ -51,6 +51,24 @@ class ShopEntityTest extends AnyFunSuite with ShopDbSupport {
 		assert(queryString("SELECT discountPrice FROM ShopProduct WHERE id = ?", product.id) == "99")
 	}
 
+	test("ShopProduct variant references main product and has own variant values") {
+		val main = createProduct(price = "100")
+		val size = createVariant("Velikost")
+		val xl = createVariantValue(size, "XL")
+		val variant = createProductVariant(main, price = "130", values = Seq(xl))
+
+		assert(queryInt("SELECT mainProduct_id FROM ShopProduct WHERE id = ?", variant.id) == main.id)
+		assert(queryInt("SELECT COUNT(*) FROM ShopProduct WHERE id = ? AND mainProduct_id IS NULL", main.id) == 1)
+		assert(queryInt("SELECT productVariantValue_id FROM ShopProductProductVariantValue WHERE shopProduct_id = ?", variant.id) == xl.id)
+		assert(variant.variantGroupId == main.id)
+		assert(main.variantGroupId == main.id)
+
+		// variant can be detached from its main product
+		variant.mainProduct = null
+		variant.update()
+		assert(queryInt("SELECT COUNT(*) FROM ShopProduct WHERE id = ? AND mainProduct_id IS NULL", variant.id) == 1)
+	}
+
 	test("ShippingMethod and PaymentMethod create and update") {
 		val shipping = createShipping()
 		shipping.name = "updated shipping"
@@ -106,10 +124,8 @@ class ShopEntityTest extends AnyFunSuite with ShopDbSupport {
 		item.cart = cart
 		item.product = product
 		item.quantity = 2
-		item.variantSelection = "1,2"
 		item.create()
 		item.quantity = 5
-		item.variantSelection = null
 		item.update()
 		assert(queryInt("SELECT quantity FROM CartItem WHERE id = ?", item.id) == 5)
 		assert(item.toString.nonEmpty)
