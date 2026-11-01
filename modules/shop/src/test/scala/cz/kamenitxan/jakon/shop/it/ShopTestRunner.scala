@@ -20,6 +20,7 @@ class ShopTestRunner extends Suites(
 	new CartServiceDbTest,
 	new ShopServiceDbTest,
 	new ShopProductSubclassTest,
+	new ShopCategorySubclassTest,
 	new ShopTaskTest,
 	new ShopPagesTest,
 	new CartPageletTest,
@@ -39,10 +40,11 @@ class ShopTestRunner extends Suites(
 		Director.init()
 		Settings.setTemplateEngine(new Pebble)
 		new ShopInit {
-			// table of the product subclass, ShopProductSubclassTest switches the product class to it
+			// tables of the product and category subclasses, the subclass tests switch the shop classes to them
 			override def daoSetup(): Unit = {
 				super.daoSetup()
 				DBHelper.addDao(classOf[TestShopProduct])
+				DBHelper.addDao(classOf[TestShopCategory])
 			}
 		}.run(Array[String](config))
 	}

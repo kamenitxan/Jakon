@@ -18,6 +18,14 @@ object ShopInit {
 	 * in its own table joined by id and its createObject and updateObject must call super.
 	 */
 	var productClass: Class[? <: ShopProduct] = classOf[ShopProduct]
+
+	/**
+	 * Class of shop categories, works the same way as [[productClass]] - a direct subclass of [[ShopCategory]]
+	 * stored in its own table joined by id. Parent category, product category and other relations still reference
+	 * [[ShopCategory]], [[cz.kamenitxan.jakon.shop.service.ShopProductService]] replaces the category of loaded
+	 * products with an instance of this class.
+	 */
+	var categoryClass: Class[? <: ShopCategory] = classOf[ShopCategory]
 }
 
 class ShopInit extends JakonInit {
@@ -29,6 +37,9 @@ class ShopInit extends JakonInit {
 		DBHelper.addDao(classOf[PaymentMethod])
 		DBHelper.addDao(classOf[ShippingMethod])
 		DBHelper.addDao(classOf[ShopCategory])
+		if (ShopInit.categoryClass != classOf[ShopCategory]) {
+			DBHelper.addDao(ShopInit.categoryClass)
+		}
 		DBHelper.addDao(classOf[ProductVariant])
 		DBHelper.addDao(classOf[ProductVariantValue])
 		DBHelper.addDao(classOf[ShopProduct])

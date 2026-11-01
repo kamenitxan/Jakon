@@ -73,7 +73,7 @@ object ShopTestDataSeeder {
 		Logger.info("Test data seeded successfully")
 	}
 
-	/** Creates new product of [[ShopInit.productClass]]. */
+	/** Creates new product of [[ShopInit.productClass]], categories use [[ShopInit.categoryClass]] the same way. */
 	private def newProduct(): ShopProduct = ShopInit.productClass.getDeclaredConstructor().newInstance()
 
 	private def makeVariant(name: String)(implicit conn: Connection): ProductVariant = {
@@ -113,7 +113,7 @@ object ShopTestDataSeeder {
 	}
 
 	private def makeCategory(name: String, description: String, order: Int)(implicit conn: Connection): ShopCategory = {
-		val c = new ShopCategory
+		val c = ShopInit.categoryClass.getDeclaredConstructor().newInstance()
 		c.name = name
 		c.description = description
 		c.displayOrder = order
