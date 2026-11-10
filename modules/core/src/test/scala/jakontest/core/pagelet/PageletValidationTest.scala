@@ -14,7 +14,7 @@ class PageletValidationTest extends AnyFunSuite {
 
 	private def browser: HttpBrowser = {
 		if (!initialized) {
-			PageletInitializer.initControllers(Seq(classOf[TestValidationPagelet]))
+			PageletInitializer.initControllers(Seq(classOf[TestValidationPagelet], classOf[TestPathParamPagelet]))
 			initialized = true
 		}
 		new HttpBrowser
@@ -29,6 +29,31 @@ class PageletValidationTest extends AnyFunSuite {
 		val resp = browser.post("/validationPagelet/save", "name" -> "", "count" -> "3")
 		assert(resp.statusCode() == 302)
 		assert(location(resp).startsWith("/validationPagelet/save"))
+	}
+
+	test("valid data are passed to pagelet with path param") {
+		val resp = browser.post("/cs/langPagelet/save", "name" -> "abc", "count" -> "3")
+		assert(resp.body() == "saved-cs-abc")
+	}
+
+	test("invalid data redirect back to the form with path params replaced") {
+		val resp = browser.post("/cs/langPagelet/save", "name" -> "", "count" -> "3")
+		assert(resp.statusCode() == 302)
+		assert(location(resp) == "/cs/langPagelet/save")
+	}
+
+	test("path param value is URL encoded in redirect after invalid data") {
+		val resp = browser.post("/a%20b%2Fc/langPagelet/save", "name" -> "", "count" -> "3")
+		assert(resp.statusCode() == 302)
+		assert(location(resp) == "/a%20b%2Fc/langPagelet/save")
+	}
+
+	test("replacePathParams replaces only whole {key} and <key> placeholders") {
+		assert(PageletInitializer.replacePathParams("/{lang}/language/save", Map("lang" -> "cs")) == "/cs/language/save")
+		assert(PageletInitializer.replacePathParams("/{lang}/{id}", Map("lang" -> "cs", "id" -> "5")) == "/cs/5")
+		assert(PageletInitializer.replacePathParams("/files/<path>", Map("path" -> "a b/c")) == "/files/a%20b/c")
+		assert(PageletInitializer.replacePathParams("/x/{v}", Map("v" -> "č&?#+")) == "/x/%C4%8D%26%3F%23%2B")
+		assert(PageletInitializer.replacePathParams("/static", Map.empty) == "/static")
 	}
 
 	test("validate=true returns validation result as JSON") {

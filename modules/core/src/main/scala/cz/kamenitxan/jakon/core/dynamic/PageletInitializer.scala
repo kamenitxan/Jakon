@@ -14,8 +14,9 @@ import cz.kamenitxan.jakon.webui.entity.CustomControllerInfo
 import io.javalin.http.{Context, Handler}
 
 import java.lang.reflect.Method
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.sql.Connection
-import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
@@ -157,15 +158,20 @@ object PageletInitializer {
 		})
 	}
 
-	@tailrec
-	private def replacePathParams(path: String, params: mutable.Map[String, String]): String = {
-		if (params.isEmpty) {
-			path
-		} else {
-			val head = params.head
-			val replaced = path.replace(head._1, head._2)
-			replacePathParams(replaced, params.tail)
+	/**
+	 * Replaces Javalin path param placeholders (`{key}` and `<key>`) in route path with URL encoded values.
+	 * Javalin returns `pathParamMap()` keys without brackets and with URL decoded values.
+	 * `<key>` params may contain slashes, so slashes are kept and each segment is encoded separately.
+	 */
+	def replacePathParams(path: String, params: collection.Map[String, String]): String = {
+		params.foldLeft(path) { case (p, (key, value)) =>
+			p.replace("{" + key + "}", encodePathSegment(value))
+				.replace("<" + key + ">", value.split("/", -1).map(encodePathSegment).mkString("/"))
 		}
+	}
+
+	private def encodePathSegment(value: String): String = {
+		URLEncoder.encode(value, StandardCharsets.UTF_8).replace("+", "%20")
 	}
 
 	private def invokePost(ctx: Context, controller: IPagelet, m: Method, post: Post, methodArgs: MethodArgs): String = {
