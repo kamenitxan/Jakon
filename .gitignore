@@ -58,3 +58,4 @@ jakon_secrets.properties
 /modules/frontend/node_modules/
 /modules/shop/node_modules/
 /modules/core/heapdump.hprof
+/.claude-tmp/
