@@ -8,6 +8,7 @@ val V = new {
 	val circeVersion = "0.14.17"
 	val javalin = "7.2.4"
 	val commonmark = "0.33.0"
+	val pac4j = "6.6.1"
 }
 
 scalaVersion := V.Scala
@@ -60,7 +61,8 @@ val Dependencies = new {
 				//"org.apache.lucene" % "lucene-queryparser" % "7.5.0",
 				"io.github.classgraph" % "classgraph" % "6.0.2",
 				"com.zaxxer" % "HikariCP" % "7.1.0",
-				"com.github.scribejava" % "scribejava-apis" % "8.3.3",
+				"org.pac4j" % "javalin-pac4j" % "8.0.1",
+				"org.pac4j" % "pac4j-oidc" % V.pac4j,
 				"cz.etn" % "email-validator" % "1.4.0",
 				"com.lihaoyi" %% "sourcecode" % "0.4.4"
 			)

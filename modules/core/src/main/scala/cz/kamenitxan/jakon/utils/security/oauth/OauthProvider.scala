@@ -1,7 +1,6 @@
 package cz.kamenitxan.jakon.utils.security.oauth
 
-import cz.kamenitxan.jakon.core.database.DBHelper
-import cz.kamenitxan.jakon.core.model.{AclRule, JakonUser}
+import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.service.UserService
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.PageContext
@@ -30,6 +29,12 @@ trait OauthProvider {
 			AuthUtils.logIn(ctx, user)
 			true
 		}
+	}
+
+	/** Address the provider redirects back to, handled by [[OauthLoginRouter]]. Must match the one registered at the provider. */
+	protected def callbackUrl: String = {
+		val port = if (Settings.getPort != 80) s":${Settings.getPort}" else ""
+		s"http://${Settings.getHostname}$port/admin/login/oauth?provider=${this.getClass.getSimpleName}"
 	}
 
 	protected def getSecretState(ctx: Context): String = {
