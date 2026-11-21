@@ -4,10 +4,10 @@ import sbtassembly.AssemblyPlugin.autoImport.assembly
 val V = new {
 	val Scala = "3.9.0"
   val jakon = "0.8.0-SNAPSHOT"
-	val log4j = "2.26.0"
-	val circeVersion = "0.14.15"
-	val javalin = "7.2.3"
-	val commonmark = "0.28.0"
+	val log4j = "2.26.1"
+	val circeVersion = "0.14.17"
+	val javalin = "7.2.4"
+	val commonmark = "0.33.0"
 }
 
 scalaVersion := V.Scala
@@ -36,30 +36,30 @@ val Dependencies = new {
 			Seq(
 				"io.javalin" % "javalin" % V.javalin,
 				"io.javalin" % "javalin-rendering-pebble" % V.javalin,
-				"org.slf4j" % "slf4j-api" % "2.0.18",
+				"org.slf4j" % "slf4j-api" % "2.0.20",
 				"org.apache.logging.log4j" % "log4j-api" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-core" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-slf4j2-impl" % V.log4j,
-				"org.xerial" % "sqlite-jdbc" % "3.53.2.0",
-				"com.mysql" % "mysql-connector-j" % "9.7.0" % Optional,
-				"com.google.guava" % "guava" % "33.6.0-jre",
+				"org.xerial" % "sqlite-jdbc" % "3.54.1.0",
+				"com.mysql" % "mysql-connector-j" % "26.10.0" % Optional,
+				"com.google.guava" % "guava" % "33.8.0-jre",
 				"commons-io" % "commons-io" % "2.22.0",
-				"org.apache.commons" % "commons-lang3" % "3.20.0",
-				"commons-codec" % "commons-codec" % "1.22.0",
+				"org.apache.commons" % "commons-lang3" % "3.22.0",
+				"commons-codec" % "commons-codec" % "1.23.0",
 				"de.svenkubiak" % "jBCrypt" % "0.4.3",
 				"com.sun.mail" % "jakarta.mail" % "2.0.2",
 				"org.commonmark" % "commonmark" % V.commonmark,
 				"org.commonmark" % "commonmark-ext-gfm-tables" % V.commonmark,
 				"org.commonmark" % "commonmark-ext-gfm-strikethrough" % V.commonmark,
 				"org.commonmark" % "commonmark-ext-task-list-items" % V.commonmark,
-				"com.google.code.gson" % "gson" % "2.14.0",
+				"com.google.code.gson" % "gson" % "2.15.0",
 				"io.circe" %% "circe-core" % V.circeVersion,
 				"io.circe" %% "circe-generic"% V.circeVersion,
 				"io.circe" %% "circe-parser"% V.circeVersion,
 				//"org.apache.lucene" % "lucene-core" % "7.5.0",
 				//"org.apache.lucene" % "lucene-queryparser" % "7.5.0",
-				"io.github.classgraph" % "classgraph" % "6.0.0",
-				"com.zaxxer" % "HikariCP" % "7.0.2",
+				"io.github.classgraph" % "classgraph" % "6.0.2",
+				"com.zaxxer" % "HikariCP" % "7.1.0",
 				"com.github.scribejava" % "scribejava-apis" % "8.3.3",
 				"cz.etn" % "email-validator" % "1.4.0",
 				"com.lihaoyi" %% "sourcecode" % "0.4.4"
