@@ -71,7 +71,7 @@ val Dependencies = new {
 	lazy val shop = Seq(
 		libraryDependencies ++=
 			Seq(
-				"com.stripe" % "stripe-java" % "33.0.0"
+				"com.stripe" % "stripe-java" % "34.2.0"
 			)
 	)
 
@@ -79,8 +79,8 @@ val Dependencies = new {
 	lazy val tests = Def.settings(
 		libraryDependencies ++= Seq(
 			"org.scalatest" %% "scalatest" % "3.2.20" % Test,
-			"org.scalamock" %% "scalamock" % "7.5.5" % Test,
-			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.44.0" % Test
+			"org.scalamock" %% "scalamock" % "7.6.3" % Test,
+			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.52.0" % Test
 		)
 	)
 }
