@@ -30,6 +30,15 @@ object AuthUtils {
 		BCrypt.hashpw(passwordPlaintext, salt)
 	}
 
+	/** Whole bcrypt hash as made by [[hashPassword]]: {@code $2a$}, two digit cost, {@code $}, 53 characters of salt and hash. */
+	private val BcryptHash = "^\\$2a\\$\\d{2}\\$[./A-Za-z0-9]{53}$".r
+
+	/**
+	 * Whether the value is a bcrypt hash made by [[hashPassword]] and not a plaintext password. The whole format is
+	 * checked, not only the {@code $2a$} prefix, so a plaintext password that only starts like a hash is still hashed.
+	 */
+	def isPasswordHash(value: String): Boolean = value != null && BcryptHash.matches(value)
+
 	/**
 	 * Check that a plaintext password matches a previously hashed one
 	 *
@@ -38,7 +47,7 @@ object AuthUtils {
 	 * @return true if the passwords match, false otherwise
 	 */
 	def checkPassword(passwordPlaintext: String, storedHash: String): Boolean = {
-		if (null == storedHash || !storedHash.startsWith("$2a$"))
+		if (!isPasswordHash(storedHash))
 			throw new java.lang.IllegalArgumentException("Invalid hash provided for comparison")
 
 		BCrypt.checkpw(passwordPlaintext, storedHash)

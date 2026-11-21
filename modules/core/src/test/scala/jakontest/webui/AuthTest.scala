@@ -67,6 +67,33 @@ class AuthTest extends FixtureAnyFunSuite {
 		assert(AuthUtils.checkPassword(password, user.password))
 	}
 
+	test("a password that only starts like a bcrypt hash is hashed on update") { _ =>
+		val tricky = "$2a$not-a-hash-only-a-password"
+		assert(AuthUtils.isPasswordHash(AuthUtils.hashPassword(tricky)))
+		assert(!AuthUtils.isPasswordHash(tricky))
+		assert(!AuthUtils.isPasswordHash(null))
+
+		DBHelper.withDbConnection(implicit conn => {
+			val user = new JakonUser()
+			user.firstName = "hash"
+			user.lastName = "prefix"
+			user.email = "prefix" + email
+			user.password = "original-password"
+			user.locale = Locale.of("en", "US")
+			user.acl = AclRuleService.getByName("Admin").get
+			user.create()
+
+			user.password = tricky
+			user.update()
+
+			val stmt = conn.prepareStatement("SELECT id, username, password, enabled, acl_id FROM JakonUser WHERE id = ?")
+			stmt.setInt(1, user.id)
+			val stored = DBHelper.selectSingle(stmt, classOf[JakonUser]).entity.password
+			assert(AuthUtils.isPasswordHash(stored))
+			assert(AuthUtils.checkPassword(tricky, stored))
+		})
+	}
+
 	test("login ok") { f =>
 		val url = "http://localhost:"  + Settings.getPort + "/admin"
 		f.driver.get(url)

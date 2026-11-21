@@ -77,7 +77,7 @@ class JakonUser extends JakonObject with Serializable {
 	}
 
 	override def updateObject(jid: Int, conn: Connection): Unit = {
-		if (!this.password.startsWith("$2a$")) {
+		if (!AuthUtils.isPasswordHash(this.password)) {
 			this.password = AuthUtils.hashPassword(this.password)
 		}
 
