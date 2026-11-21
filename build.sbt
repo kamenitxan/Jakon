@@ -80,6 +80,7 @@ val Dependencies = new {
 		libraryDependencies ++= Seq(
 			"org.scalatest" %% "scalatest" % "3.2.20" % Test,
 			"org.scalamock" %% "scalamock" % "7.6.3" % Test,
+			"org.scalamock" %% "scalamock-scalatest" % "7.6.3" % Test,
 			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.52.0" % Test
 		)
 	)
