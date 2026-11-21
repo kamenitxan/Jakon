@@ -11,9 +11,9 @@
     "outdated": "npm outdated"
   },
   "dependencies": {
-    "jquery": "4.0.0"
+    "jquery": "4.1.0"
   },
   "devDependencies": {
-    "vite": "^8.3.4"
+    "vite": "^8.3.8"
   }
 }
