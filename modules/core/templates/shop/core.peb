@@ -22,5 +22,6 @@
 
 {% include "components/footer" with { "max_w" : max_w } %}
 
+<script src="/shop/jakon-shop.js" defer></script>
 </body>
 </html>

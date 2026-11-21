@@ -16,6 +16,7 @@ class AdminPebbleExtension extends PebbleExtension {
 		extensions.put("splitMessages", new SplitMessagesFun)
 		extensions.put("objectExtensions", new ObjectExtensionFun)
 		extensions.put("getAdminControllers", new GetAdminControllers)
+		extensions.put("deployModeTag", new DeployModeTagFun)
 		extensions
 	}
 }

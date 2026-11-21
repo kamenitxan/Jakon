@@ -1,10 +1,12 @@
 package jakontest
 
+import jakontest.core.ConfigurationInitializerTest
 import jakontest.core.database.ConvertersTest
+import jakontest.core.dynamic.PageletSettingsTest
 import jakontest.core.functions.FunctionHelperTest
 import jakontest.core.pagelet.JsonParserTest
-import jakontest.core.template.TemplateUtilsTest
-import jakontest.core.template.pebble.Pebble
+import jakontest.core.template.pebble.{MarkdownEditorSampleTest, Pebble}
+import jakontest.core.template.{AtomicRenderTest, TemplateUtilsTest}
 import jakontest.utils.UtilsUnitTest
 import jakontest.validation.ValidationUnitTest
 import jakontest.webui.{AdminSettingsTest, FieldConformerTest}
@@ -19,10 +21,14 @@ class UnitTestRunner extends Suites(
 	new ValidationUnitTest,
 	new FunctionHelperTest,
 	new Pebble,
+	new MarkdownEditorSampleTest,
 	new TemplateUtilsTest,
+	new AtomicRenderTest,
 	new ConvertersTest,
 	new AdminSettingsTest,
-	new JsonParserTest
+	new JsonParserTest,
+	new PageletSettingsTest,
+	new ConfigurationInitializerTest
 ) with BeforeAndAfterAll {
 
 }

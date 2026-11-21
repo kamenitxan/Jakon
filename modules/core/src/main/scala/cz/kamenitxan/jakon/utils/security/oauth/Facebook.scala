@@ -14,9 +14,9 @@ import java.sql.Connection
 object Facebook extends OauthProvider {
 
 	@ConfigurationValue(name = "OAUTH.facebook.clientId", required = false)
-	var clientId: String = _
+	var clientId: String = scala.compiletime.uninitialized
 	@ConfigurationValue(name = "OAUTH.facebook.clientSecret", required = false)
-	var clientSecret: String = _
+	var clientSecret: String = scala.compiletime.uninitialized
 
 	private lazy val gson = new Gson()
 	val isEnabled = Utils.nonEmpty(clientId)

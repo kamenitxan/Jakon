@@ -18,9 +18,9 @@ import scala.jdk.CollectionConverters.*
 object Google extends OauthProvider {
 
 	@ConfigurationValue(name = "OAUTH.google.clientId", required = false)
-	var clientId: String = _
+	var clientId: String = scala.compiletime.uninitialized
 	@ConfigurationValue(name = "OAUTH.google.clientSecret", required = false)
-	var clientSecret: String = _
+	var clientSecret: String = scala.compiletime.uninitialized
 
 	private lazy val gson = new Gson()
 	val isEnabled = Utils.nonEmpty(clientId) && Utils.nonEmpty(clientSecret)

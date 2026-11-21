@@ -8,6 +8,7 @@ import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.core.service.UserService
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.gson.*
+import cz.kamenitxan.jakon.utils.security.CsrfProtection
 import cz.kamenitxan.jakon.webui.api.Api
 import cz.kamenitxan.jakon.webui.controller.impl.{FileManagerController, ObjectController, UserController}
 import cz.kamenitxan.jakon.webui.util.AdminExceptionHandler
@@ -58,6 +59,9 @@ object Routes {
 				}
 			}
 		})
+		// CSRF check for logged in users, disabled in DEVEL mode (see CsrfProtection.check)
+		JakonInit.javalinConfig.routes.before(AdminPrefix, (ctx: Context) => CsrfProtection.check(ctx))
+		JakonInit.javalinConfig.routes.before(s"$AdminPrefix/*", (ctx: Context) => CsrfProtection.check(ctx))
 		JakonInit.javalinConfig.routes.before(AdminPrefix, new Handler {
 			override def handle(ctx: Context): Unit = {
 				val user: JakonUser =  ctx.sessionAttribute("user")
@@ -194,6 +198,12 @@ object Routes {
 			post("/search", new Handler {
 				override def handle(ctx: Context): Unit = {
 					val res = gson.toJson(Api.search(ctx))
+					ctx.result(res)
+				}
+			})
+			get("/objectTypes", new Handler {
+				override def handle(ctx: Context): Unit = {
+					val res = gson.toJson(Api.objectTypes())
 					ctx.result(res)
 				}
 			})

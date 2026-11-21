@@ -20,6 +20,10 @@
 			</div>
 			<div class="card-body">
 				<form action="/admin" method="post">
+					<input type="hidden" name="_csrf" value="{{ csrfToken() }}">
+					{% if redirectTo is defined and redirectTo is not empty %}
+						<input type="hidden" name="redirectTo" value="{{ redirectTo }}">
+					{% endif %}
 					<fieldset>
 						<div class="form-group">
 							<input class="form-control" placeholder="{{ i18n("common","EMAIL") }}" name="email" type="email" autofocus>

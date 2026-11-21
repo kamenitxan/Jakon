@@ -1,0 +1,37 @@
+{% extends "core" %}
+
+{% block title %}{{ i18n("common", "PAGE_TITLE_SUCCESS") }}{% endblock %}
+
+{% block content %}
+<div class="w-full px-4 py-16">
+  <div class="max-w-lg mx-auto text-center">
+
+    <div class="flex justify-center mb-6">
+      <div class="w-20 h-20 rounded-full bg-success flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-success-content" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+    </div>
+
+    <h1 class="text-3xl font-bold mb-4">{{ i18n("common", "ORDER_ACCEPTED") }}</h1>
+    <p class="text-lg opacity-70 mb-2">{{ i18n("common", "THANK_YOU") }}</p>
+
+    {% if orderNumber %}
+    <div class="badge badge-lg badge-primary mb-6">{{ orderNumber }}</div>
+    {% endif %}
+
+    <p class="opacity-70 mb-8">
+      {{ i18n("common", "EMAIL_CONFIRMATION_SENT") }}
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      {% if orderToken is defined and orderToken is not empty %}
+      <a href="/order/status?token={{ orderToken }}" class="btn btn-primary">{{ i18n("common", "TRACK_ORDER") }}</a>
+      {% endif %}
+      <a href="/" class="btn btn-outline">{{ i18n("common", "CONTINUE_SHOPPING") }}</a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

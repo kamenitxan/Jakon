@@ -19,14 +19,14 @@ class OauthLoginRouter extends AbstractAdminPagelet {
 		val provider = ctx.queryParam("provider")
 		val success = provider match {
 			case p if p == Google.getClass.getSimpleName =>
-				Google.handleAuthResponse(ctx)(conn)
+				Google.handleAuthResponse(ctx)(using conn)
 			case p =>
 				Logger.error("Unknown oauth provider: " + p)
 				false
 		}
 		if (success) {
 			val redirectTo = ctx.queryParam(OauthProvider.REDIRECT_TO)
-			ctx.redirect(redirectTo.getOrElse("/admin/index"))
+			ctx.redirect(safeRedirectOr(redirectTo, "/admin/index"))
 		} else {
 			PageContext.getInstance().addMessage(MessageSeverity.ERROR, "OAUTH_LOGIN_FAILED")
 			ctx.redirect("/admin")

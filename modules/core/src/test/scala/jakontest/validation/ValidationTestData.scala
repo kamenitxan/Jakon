@@ -7,15 +7,15 @@ import cz.kamenitxan.jakon.validation.validators.*
  */
 class ValidationTestData {
 	@NotEmpty
-	var string: String = _
+	var string: String = scala.compiletime.uninitialized
 	@Min(value = 5)
 	@Max(value = 5)
-	var number: String = _
+	var number: String = scala.compiletime.uninitialized
 	var password: String = "testok"
 	@EqualsWithOther(value = "password")
-	var password2: String = _
+	var password2: String = scala.compiletime.uninitialized
 	@Size(min = 5, max = 10)
-	var size: String = _
+	var size: String = scala.compiletime.uninitialized
 	@Email
-	var email: String = _
+	var email: String = scala.compiletime.uninitialized
 }

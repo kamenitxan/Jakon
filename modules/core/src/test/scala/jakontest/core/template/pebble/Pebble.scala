@@ -15,4 +15,9 @@ class Pebble extends AnyFunSuite {
 		val res = MarkdownFilter.parseString(testContent)
 		assert(res == expectedContent)
 	}
+
+	test("markdownFilter does not evaluate functions in code blocks") {
+		val res = MarkdownFilter.parseString("```\n{link id=1 text=example}\n```\n")
+		assert(res == "<pre><code>{link id=1 text=example}\n</code></pre>\n")
+	}
 }

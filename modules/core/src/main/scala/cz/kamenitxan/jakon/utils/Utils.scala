@@ -5,9 +5,10 @@ import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.core.service.EmailTemplateService
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.mail.EmailTemplateEntity
+import org.apache.commons.lang3.StringUtils
 
 import java.io.{BufferedReader, InputStream, InputStreamReader}
-import java.lang.reflect.{Field, ParameterizedType, Type}
+import java.lang.reflect.Field
 import java.net.URLEncoder
 import java.util.Locale
 import java.util.stream.Collectors
@@ -59,7 +60,7 @@ object Utils {
 		}
 	}
 	
-	def getFieldsUpTo(startClass: Class[_], exclusiveParent: Class[_]): Seq[Field] = {
+	def getFieldsUpTo(startClass: Class[?], exclusiveParent: Class[?]): Seq[Field] = {
 		var currentClassFields = getFields(startClass)
 		val parentClass = startClass.getSuperclass
 		if (parentClass != null && (exclusiveParent == null || (parentClass != exclusiveParent))) {
@@ -69,16 +70,16 @@ object Utils {
 		currentClassFields
 	}
 
-	def getFields(cls: Class[_]): Seq[Field] = {
+	def getFields(cls: Class[?]): Seq[Field] = {
 		ArraySeq.unsafeWrapArray(cls.getDeclaredFields)
 	}
 
-	def isJakonObject(cls: Class[_]): Boolean = {
+	def isJakonObject(cls: Class[?]): Boolean = {
 		isClassOrChild(cls, classOf[JakonObject])
 	}
 
 	@tailrec
-	def isClassOrChild(cls: Class[_], parrent: Class[_]): Boolean = {
+	def isClassOrChild(cls: Class[?], parrent: Class[?]): Boolean = {
 		if (cls == parrent) {
 			true
 		} else if (cls == classOf[Object] || cls.getSuperclass == null) {
@@ -89,7 +90,7 @@ object Utils {
 	}
 
 	@tailrec
-	def getClassByFieldName(startClass: Class[_], fieldName: String): (Class[_], Field) = {
+	def getClassByFieldName(startClass: Class[?], fieldName: String): (Class[?], Field) = {
 		var field: Option[Field] = null
 		try {
 			field = Option.apply(startClass.getDeclaredField(fieldName))
@@ -115,6 +116,34 @@ object Utils {
 
 	def nonEmpty(s: String): Boolean = {
 		!isEmpty(s)
+	}
+
+	/**
+	 * Checks that redirect target is local relative path (prevents open redirect).
+	 * Must start with single '/', must not contain backslash or control characters.
+	 */
+	def isSafeRedirect(s: String): Boolean = {
+		nonEmpty(s) &&
+			s.startsWith("/") &&
+			!s.startsWith("//") &&
+			!s.contains("\\") &&
+			!s.exists(c => c < 0x20 || c == 0x7f)
+	}
+
+	def safeRedirectOr(s: String, default: String): String = {
+		if (isSafeRedirect(s)) s else default
+	}
+
+	/**
+	 * Extracts local path (with query) from absolute or relative URL, e.g. Referer header.
+	 * Host is dropped, so result always points to current site.
+	 */
+	def localPathOr(url: String, default: String): String = {
+		if (isEmpty(url)) return default
+		Try(new java.net.URI(url)).toOption
+			.flatMap(uri => Option(uri.getRawPath).map(p => p + Option(uri.getRawQuery).map("?" + _).getOrElse("")))
+			.filter(isSafeRedirect)
+			.getOrElse(default)
 	}
 
 	def measured[B](logFun: Long => String)(measuredFun: => B): B = {
@@ -155,5 +184,13 @@ object Utils {
 			}
 			tmpl
 		})
+	}
+
+	def toUrlSlug(s: String): String = {
+			StringUtils.stripAccents(s)
+				.toLowerCase
+				.replaceAll("[^a-z0-9\\-_/]", "_")
+				.replaceAll("_+", "_")
+				.replaceAll("^_|_$", "")
 	}
 }

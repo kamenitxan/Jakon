@@ -14,8 +14,9 @@ import cz.kamenitxan.jakon.webui.entity.CustomControllerInfo
 import io.javalin.http.{Context, Handler}
 
 import java.lang.reflect.Method
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.sql.Connection
-import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
@@ -26,9 +27,11 @@ object PageletInitializer {
 
 	val protectedPrefixes: mutable.Buffer[String] = mutable.Buffer[String]()
 
-	def initControllers(controllers: Seq[Class[_]]): Unit = {
+	def initControllers(controllers: Seq[Class[?]]): Unit = {
 		Logger.info("Initializing pagelets")
-		controllers.foreach(c => {
+		val (activeControllers, disabledControllers) = controllers.partition(PageletSettings.isEnabled)
+		disabledControllers.foreach(c => Logger.info(s"Pagelet ${c.getSimpleName} is disabled by configuration"))
+		activeControllers.foreach(c => {
 			Logger.debug("Initializing pagelet: " + c.getSimpleName)
 			val controllerAnn = c.getAnnotation(classOf[Pagelet])
 			if (controllerAnn.path().endsWith("/")) {
@@ -40,6 +43,7 @@ object PageletInitializer {
 
 			c.getDeclaredMethods
 				.filter(m => m.getAnnotation(classOf[Get]) != null || m.getAnnotation(classOf[Post]) != null)
+				.filter(m => checkDataClass(c, m))
 				.foreach(m => {
 					val get = m.getAnnotation(classOf[Get])
 					val post = m.getAnnotation(classOf[Post])
@@ -57,7 +61,8 @@ object PageletInitializer {
 					}
 				})
 		})
-		controllers.filter(c => classOf[AbstractAdminPagelet].isAssignableFrom(c) && c.getAnnotation(classOf[Pagelet]).showInAdmin()).foreach(c => {
+		activeControllers.filter(c => classOf[AbstractAdminPagelet].isAssignableFrom(c)
+			&& c.getAnnotation(classOf[Pagelet]).showInAdmin()).foreach(c => {
 			val apa = c.getDeclaredMethods.filter(m => m.getAnnotation(classOf[Get]) != null)
 				.map(_.getAnnotation(classOf[Get]))
 				.sortBy(_.path()).headOption
@@ -72,14 +77,14 @@ object PageletInitializer {
 	}
 
 
-	private def initGetAnnotation(get: Get, controllerAnn: Pagelet, m: Method, c: Class[_]): Unit = {
+	private def initGetAnnotation(get: Get, controllerAnn: Pagelet, m: Method, c: Class[?]): Unit = {
 		//TODO m.getReturnType.is
 		JakonInit.javalinConfig.routes.get(controllerAnn.path() + get.path(), new Handler {
 			override def handle(ctx: Context): Unit = {
 				val pagelet: IPagelet = c.getDeclaredConstructor().newInstance().asInstanceOf[IPagelet]
 				val methodArgs = createMethodArgs(m, ctx, pagelet)
 				try {
-					var context = m.invoke(pagelet, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
+					var context = m.invoke(pagelet, methodArgs.array*).asInstanceOf[mutable.Map[String, Any]]
 					if (ctx.result() == null) {
 						if (notRedirected(ctx)) {
 							if (pagelet.isInstanceOf[AbstractAdminPagelet]) {
@@ -107,7 +112,7 @@ object PageletInitializer {
 		})
 	}
 
-	private def initPostAnnotation(post: Post, controllerAnn: Pagelet, m: Method, c: Class[_]): Unit = {
+	private def initPostAnnotation(post: Post, controllerAnn: Pagelet, m: Method, c: Class[?]): Unit = {
 		JakonInit.javalinConfig.routes.post(controllerAnn.path() + post.path(), new Handler {
 			override def handle(ctx: Context): Unit = {
 				val pagelet = c.getDeclaredConstructor().newInstance().asInstanceOf[IPagelet]
@@ -153,25 +158,30 @@ object PageletInitializer {
 		})
 	}
 
-	@tailrec
-	private def replacePathParams(path: String, params: mutable.Map[String, String]): String = {
-		if (params.isEmpty) {
-			path
-		} else {
-			val head = params.head
-			val replaced = path.replace(head._1, head._2)
-			replacePathParams(replaced, params.tail)
+	/**
+	 * Replaces Javalin path param placeholders (`{key}` and `<key>`) in route path with URL encoded values.
+	 * Javalin returns `pathParamMap()` keys without brackets and with URL decoded values.
+	 * `<key>` params may contain slashes, so slashes are kept and each segment is encoded separately.
+	 */
+	def replacePathParams(path: String, params: collection.Map[String, String]): String = {
+		params.foldLeft(path) { case (p, (key, value)) =>
+			p.replace("{" + key + "}", encodePathSegment(value))
+				.replace("<" + key + ">", value.split("/", -1).map(encodePathSegment).mkString("/"))
 		}
+	}
+
+	private def encodePathSegment(value: String): String = {
+		URLEncoder.encode(value, StandardCharsets.UTF_8).replace("+", "%20")
 	}
 
 	private def invokePost(ctx: Context, controller: IPagelet, m: Method, post: Post, methodArgs: MethodArgs): String = {
 		if (notRedirected(ctx)) {
 			m.getReturnType match {
 				case STRING =>
-					m.invoke(controller, methodArgs.array: _*).asInstanceOf[String]
+					m.invoke(controller, methodArgs.array*).asInstanceOf[String]
 				case _ =>
 					try {
-						val context = m.invoke(controller, methodArgs.array: _*).asInstanceOf[mutable.Map[String, Any]]
+						val context = m.invoke(controller, methodArgs.array*).asInstanceOf[mutable.Map[String, Any]]
 						if (notRedirected(ctx)) {
 							controller.render(context, post.template(), ctx)
 
@@ -198,7 +208,7 @@ object PageletInitializer {
 	}
 
 
-	def getDataClass(m: Method): Option[Class[_]] = {
+	def getDataClass(m: Method): Option[Class[?]] = {
 		m.getParameterTypes.find(c => c != CONTEXT_CLS && c != CONNECTION_CLS)
 	}
 
@@ -211,29 +221,69 @@ object PageletInitializer {
 				conn = DBHelper.getConnection
 				conn
 			case t =>
-				val enclosingCls = t.getEnclosingClass
-				val constructor = if (enclosingCls != null) t.getDeclaredConstructor(enclosingCls) else t.getDeclaredConstructor()
-				val data = (if (enclosingCls != null) constructor.newInstance(pagelet) else constructor.newInstance()).asInstanceOf[AnyRef]
 				Logger.debug(s"Creating pagelet data: {${t.getSimpleName}}")
-				t.getDeclaredFields.foreach(f => {
-					try {
-						if (ctx.formParam(f.getName) != null && ctx.formParam(f.getName).nonEmpty) {
-							val value = ctx.formParam(f.getName)
-							f.setAccessible(true)
-							f.set(data, value.conform(f))
-						} else if (!ctx.queryParams(f.getName).isEmpty) {
-							val value = ctx.queryParams(f.getName).asScala.mkString("\r\n")
-							f.setAccessible(true)
-							f.set(data, value.conform(f))
-						}
-					} catch {
-						case ex: Exception => Logger.error("Exception when setting pagelet data value", ex)
-					}
-				})
+				val data = createDataObject(t, ctx, pagelet)
 				dataRef = data
 				data
 		}.asInstanceOf[Array[Any]]
 		new MethodArgs(arr, dataRef, Option.apply(conn))
+	}
+
+	/** Checks that pagelet data class is case class. Method with invalid data class is logged and should be ignored. */
+	private[dynamic] def checkDataClass(c: Class[?], m: Method): Boolean = {
+		getDataClass(m) match {
+			case Some(dc) if !classOf[Product].isAssignableFrom(dc) =>
+				Logger.error(s"${c.getSimpleName}.${m.getName}: pagelet data class ${dc.getSimpleName} must be a case class. Method is ignored.")
+				false
+			case _ => true
+		}
+	}
+
+	/** Creates pagelet case class data object from form and query params */
+	private def createDataObject(t: Class[?], ctx: Context, pagelet: AnyRef): AnyRef = {
+		val values: Map[String, Any] = t.getDeclaredFields.flatMap(f => {
+			try {
+				val paramName = EntityValidator.getParamName(f)
+				val value = if (ctx.formParam(paramName) != null && ctx.formParam(paramName).nonEmpty) {
+					Option(ctx.formParam(paramName))
+				} else if (!ctx.queryParams(paramName).isEmpty) {
+					Option(ctx.queryParams(paramName).asScala.mkString("\r\n"))
+				} else {
+					None
+				}
+				value.map(v => f.getName -> v.conform(f))
+			} catch {
+				case ex: Exception =>
+					Logger.error("Exception when setting pagelet data value", ex)
+					None
+			}
+		}).toMap
+
+		val enclosingCls = t.getEnclosingClass
+		val constructor = t.getDeclaredConstructors.head
+		val params = constructor.getParameters.zipWithIndex.map((p, i) => {
+			if (i == 0 && enclosingCls != null && p.getType == enclosingCls) {
+				pagelet
+			} else {
+				values.get(p.getName).orNull match {
+					case null if p.getType.isPrimitive => defaultPrimitive(p.getType)
+					case v => v
+				}
+			}
+		})
+		constructor.newInstance(params*).asInstanceOf[AnyRef]
+	}
+
+	private def defaultPrimitive(t: Class[?]): Any = t match {
+		case java.lang.Boolean.TYPE => false
+		case java.lang.Character.TYPE => 0.toChar
+		case java.lang.Byte.TYPE => 0.toByte
+		case java.lang.Short.TYPE => 0.toShort
+		case java.lang.Integer.TYPE => 0
+		case java.lang.Long.TYPE => 0L
+		case java.lang.Float.TYPE => 0f
+		case java.lang.Double.TYPE => 0d
+		case _ => null
 	}
 
 	class MethodArgs(val array: Array[Any], val data: Any, val connection: Option[Connection])

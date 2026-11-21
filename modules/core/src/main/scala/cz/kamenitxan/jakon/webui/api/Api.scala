@@ -9,6 +9,7 @@ import io.javalin.http.Context
 
 import java.io.File
 import java.sql.Connection
+import scala.jdk.CollectionConverters.*
 import scala.language.postfixOps
 
 
@@ -17,6 +18,17 @@ import scala.language.postfixOps
  */
 object Api {
 	val gson = new Gson()
+
+	def objectTypes(): java.util.List[String] = {
+		DBHelper.getDaoClasses
+			.filterNot(c => {
+				val settings = c.getDeclaredConstructor().newInstance().objectSettings
+				settings != null && settings.standAlone
+			})
+			.map(_.getName)
+			.sorted
+			.asJava
+	}
 
 	def search(ctx: Context): SearchResponse = {
 		val jsonReq = gson.fromJson(ctx.body(), classOf[SearchRequest])

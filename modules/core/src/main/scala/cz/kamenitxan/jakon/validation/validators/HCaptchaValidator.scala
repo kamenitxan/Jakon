@@ -51,6 +51,6 @@ class HCaptchaValidator extends Validator {
 	}
 
 	class HCaptchaResponse {
-		var success: Boolean = _
+		var success: Boolean = scala.compiletime.uninitialized
 	}
 }

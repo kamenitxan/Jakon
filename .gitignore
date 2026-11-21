@@ -29,6 +29,7 @@ hs_err_pid*
 .node_modules/
 node_modules/*
 jakon_config.properties
+jakon_secrets.properties
 /out/
 /target/
 /fulltext/
@@ -56,3 +57,5 @@ jakon_config.properties
 /modules/backend/src/main/resources/static/jakon/vite/
 /modules/frontend/node_modules/
 /modules/shop/node_modules/
+/modules/core/heapdump.hprof
+/.claude-tmp/

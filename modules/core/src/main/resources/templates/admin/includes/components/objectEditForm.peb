@@ -11,6 +11,7 @@
             {%else%}
                 /admin/object{% if id == 0 %}/create{% endif %}/{{ objectName }}{% if id != 0 %}/{{ id }}{% endif %}
             {% endif %}">
+<input type="hidden" name="_csrf" value="{{ csrfToken() }}">
 
 {% for field in fields %}
     {% if field.an.shownInEdit %}

@@ -9,9 +9,9 @@ import java.util.Locale
  * Created by TPa on 06.12.2020.
  */
 abstract class I18nData(implicit s: sourcecode.FullName) extends BaseEntity {
-	var id: Integer = _
+	var id: Integer = scala.compiletime.uninitialized
 	@JakonField(converter = classOf[LocaleConverter], inputTemplate = "String")
-	var locale: Locale = _
+	var locale: Locale = scala.compiletime.uninitialized
 	val className: String = s.value.substring(s.value.lastIndexOf(".") + 1)
 
 	def create(): Int

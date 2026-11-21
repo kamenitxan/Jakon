@@ -20,6 +20,7 @@
 				<!-- /.panel-heading -->
 				<div class="panel-body">
 					<form action="/admin/dbconsole" method="post">
+						<input type="hidden" name="_csrf" value="{{ csrfToken() }}">
 							<textarea name="sql" id="sql" class="form-control">{{ _RP.sql }}</textarea>
 							<br><br>
 							<input type="submit" class="btn btn-lg btn-success" value="{{ i18n("common","SUBMIT_BTN") }}" />

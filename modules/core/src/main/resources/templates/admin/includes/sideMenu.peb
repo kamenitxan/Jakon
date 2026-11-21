@@ -37,6 +37,7 @@
 								{% endfor %}
 						</div>
 					</div>
+					{% if shopModelClasses is not empty %}
 					<div>
 						<a href="#" class="nav-link" data-bs-toggle="collapse" data-bs-target="#menu_shop_objects">{{ i18n("common","JAKON_SHOP_OBJECTS") }} <span class="fa arrow"></span></a>
 						<div id="menu_shop_objects" class="accordion-collapse collapse{% if shopModelClasses contains objectName %} show{% endif %}" data-bs-parent="#sub-menuAccordion">
@@ -48,6 +49,7 @@
 								{% endfor %}
 						</div>
 					</div>
+					{% endif %}
 					<div>
 						{% for model in modelClasses %}
 						<div class="nav-item">

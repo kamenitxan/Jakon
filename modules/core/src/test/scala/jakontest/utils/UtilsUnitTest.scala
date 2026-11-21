@@ -18,6 +18,26 @@ class UtilsUnitTest extends AnyFunSuite {
 		assert("id" == cls._2.getName)
 	}
 
+	test("isSafeRedirect") {
+		assert(Utils.isSafeRedirect("/admin/index"))
+		assert(Utils.isSafeRedirect("/admin/object/JakonUser?page=2"))
+		assert(!Utils.isSafeRedirect(null))
+		assert(!Utils.isSafeRedirect(""))
+		assert(!Utils.isSafeRedirect("https://evil.com"))
+		assert(!Utils.isSafeRedirect("//evil.com"))
+		assert(!Utils.isSafeRedirect("/\\evil.com"))
+		assert(!Utils.isSafeRedirect("admin"))
+		assert(!Utils.isSafeRedirect("/admin\r\nSet-Cookie: x=y"))
+	}
+
+	test("localPathOr") {
+		assert("/admin/object/JakonUser?page=2" == Utils.localPathOr("http://localhost:4567/admin/object/JakonUser?page=2", "/def"))
+		assert("/x" == Utils.localPathOr("https://evil.com/x", "/def"))
+		assert("/def" == Utils.localPathOr("https://evil.com", "/def"))
+		assert("/def" == Utils.localPathOr(null, "/def"))
+		assert("/def" == Utils.localPathOr("::not a uri", "/def"))
+	}
+
 	test("StringImprovements getOrElse") {
 		val s = "".getOrElse("ok")
 		assert("ok" == s)

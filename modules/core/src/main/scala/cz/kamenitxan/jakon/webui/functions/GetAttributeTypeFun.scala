@@ -35,7 +35,7 @@ class GetAttributeTypeFun extends Function {
 		}
 	}
 
-	def getField(obj: Class[_ <: Any], attrName: String): Field = {
+	def getField(obj: Class[? <: Any], attrName: String): Field = {
 		try {
 			obj.getDeclaredField(attrName)
 		} catch {

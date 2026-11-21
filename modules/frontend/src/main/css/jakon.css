@@ -135,7 +135,7 @@
 }
 
 /* side menu */
-.sidebar #menu_objects, #menu_jakon_objects {
+.sidebar #menu_objects, #menu_jakon_objects, #menu_shop_objects {
 	padding-left: 15px;
 }
 .nav-item {

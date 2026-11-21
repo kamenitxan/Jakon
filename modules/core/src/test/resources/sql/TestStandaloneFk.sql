@@ -1,0 +1,5 @@
+CREATE TABLE TestStandaloneFk (
+    id       INTEGER PRIMARY KEY AUTOINCREMENT,
+    name     VARCHAR(255),
+    owner_id INTEGER REFERENCES JakonUser (id) ON DELETE CASCADE
+);

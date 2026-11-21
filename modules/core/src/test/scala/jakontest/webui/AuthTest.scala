@@ -3,7 +3,7 @@ package jakontest.webui
 import cz.kamenitxan.jakon.core.configuration.Settings
 import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.JakonUser
-import cz.kamenitxan.jakon.core.service.AclRuleService
+import cz.kamenitxan.jakon.core.service.{AclRuleService, UserService}
 import cz.kamenitxan.jakon.utils.security.AuthUtils
 import org.openqa.selenium.htmlunit.HtmlUnitDriver
 import org.openqa.selenium.{By, WebDriver}
@@ -48,7 +48,7 @@ class AuthTest extends FixtureAnyFunSuite {
 			user.lastName = "lastName"
 			user.email = email
 			user.password = password
-			user.locale = new Locale("en", "US")
+			user.locale = Locale.of("en", "US")
 			user.acl = AclRuleService.getByName("Admin").get
 
 			assert(user.create() > 0)
@@ -65,6 +65,33 @@ class AuthTest extends FixtureAnyFunSuite {
 		})
 
 		assert(AuthUtils.checkPassword(password, user.password))
+	}
+
+	test("a password that only starts like a bcrypt hash is hashed on update") { _ =>
+		val tricky = "$2a$not-a-hash-only-a-password"
+		assert(AuthUtils.isPasswordHash(AuthUtils.hashPassword(tricky)))
+		assert(!AuthUtils.isPasswordHash(tricky))
+		assert(!AuthUtils.isPasswordHash(null))
+
+		DBHelper.withDbConnection(implicit conn => {
+			val user = new JakonUser()
+			user.firstName = "hash"
+			user.lastName = "prefix"
+			user.email = "prefix" + email
+			user.password = "original-password"
+			user.locale = Locale.of("en", "US")
+			user.acl = AclRuleService.getByName("Admin").get
+			user.create()
+
+			user.password = tricky
+			user.update()
+
+			val stmt = conn.prepareStatement("SELECT id, username, password, enabled, acl_id FROM JakonUser WHERE id = ?")
+			stmt.setInt(1, user.id)
+			val stored = DBHelper.selectSingle(stmt, classOf[JakonUser]).entity.password
+			assert(AuthUtils.isPasswordHash(stored))
+			assert(AuthUtils.checkPassword(tricky, stored))
+		})
 	}
 
 	test("login ok") { f =>
@@ -127,7 +154,7 @@ class AuthTest extends FixtureAnyFunSuite {
 
 		val firstNameInput = f.driver.findElement(By.cssSelector("#firstname"))
 		firstNameInput.sendKeys("unit")
-		val lastNameInput = f.driver.findElement(By.cssSelector("#firstname"))
+		val lastNameInput = f.driver.findElement(By.cssSelector("#lastname"))
 		lastNameInput.sendKeys("test")
 		val emailInput = f.driver.findElement(By.cssSelector("#email"))
 		emailInput.sendKeys("unittest@test.cz")
@@ -139,6 +166,9 @@ class AuthTest extends FixtureAnyFunSuite {
 		submit.click()
 
 		assert(checkPageLoad(f.driver, "#jakon_messages"))
+		val user = DBHelper.withDbConnection(implicit conn => UserService.getByEmail("unittest@test.cz"))
+		assert(user != null)
+		assert(user.lastName == "test")
 	}
 
 	test ("register post nok") { f =>
@@ -147,10 +177,10 @@ class AuthTest extends FixtureAnyFunSuite {
 
 		val firstNameInput = f.driver.findElement(By.cssSelector("#firstname"))
 		firstNameInput.sendKeys("unit")
-		val lastNameInput = f.driver.findElement(By.cssSelector("#firstname"))
+		val lastNameInput = f.driver.findElement(By.cssSelector("#lastname"))
 		lastNameInput.sendKeys("test")
 		val emailInput = f.driver.findElement(By.cssSelector("#email"))
-		emailInput.sendKeys("unittest@test.cz")
+		emailInput.sendKeys("unittest-nok@test.cz")
 		val passwordInput1 = f.driver.findElement(By.cssSelector("#password"))
 		passwordInput1.sendKeys("unittest")
 		val passwordInput2 = f.driver.findElement(By.cssSelector("#password2"))

@@ -1,10 +1,11 @@
 package cz.kamenitxan.jakon.webui.controller.impl
 
 import com.google.gson.*
-import cz.kamenitxan.jakon.core.dynamic.{Get, Pagelet, Post}
+import cz.kamenitxan.jakon.core.dynamic.*
 import cz.kamenitxan.jakon.core.model.{FileType, JakonFile}
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.PageContext
+import cz.kamenitxan.jakon.webui.AdminSettings
 import cz.kamenitxan.jakon.webui.controller.pagelets.AbstractAdminPagelet
 import cz.kamenitxan.jakon.webui.entity.FileManagerMode
 import io.javalin.http.Context
@@ -90,7 +91,7 @@ class FileManagerController extends AbstractAdminPagelet {
 
 }
 
-object FileManagerController {
+object FileManagerController extends ConditionalPagelet {
 	val REPOSITORY_BASE_PATH = "upload"
 	private val DATE_FORMAT = "EEE, d MMM yyyy HH:mm:ss z" // (Wed, 4 Jul 2001 12:08:56)
 	private val enabledAction: util.Map[FileManagerMode, Boolean] = new util.HashMap[FileManagerMode, Boolean]
@@ -98,6 +99,11 @@ object FileManagerController {
 	private val AlreadyExists = " already exits!"
 
 	val gson: Gson = new Gson()
+
+	/** The whole file manager can be turned off by [[AdminSettings.enableFiles]]. */
+	override def defaultState: PageletState = {
+		if (AdminSettings.enableFiles) PageletState.ENABLED else PageletState.DISABLED
+	}
 
 	init()
 

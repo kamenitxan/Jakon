@@ -19,7 +19,7 @@ class BasicJakonObject extends JakonObject with Ordered {
 		// BasicJakonObject does nothing
 	}
 
-	var visibleOrder: Int = _
-	var objectOrder: Double = _
+	var visibleOrder: Int = scala.compiletime.uninitialized
+	var objectOrder: Double = scala.compiletime.uninitialized
 
 }

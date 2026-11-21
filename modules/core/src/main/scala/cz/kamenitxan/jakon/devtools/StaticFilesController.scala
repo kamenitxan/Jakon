@@ -3,8 +3,8 @@ package cz.kamenitxan.jakon.devtools
 import cz.kamenitxan.jakon.core.configuration.Settings
 import io.javalin.http.Context
 
-import java.io.{File, FileInputStream}
-import java.nio.file.{Files, Paths}
+import java.io.FileInputStream
+import java.nio.file.Files
 import scala.language.postfixOps
 
 /**
@@ -13,23 +13,28 @@ import scala.language.postfixOps
 class StaticFilesController {
 
 	def doGet(ctx: Context): AnyRef = {
-		val filePath = Settings.getOutputDir + ctx.path()
-		val file = new File(filePath)
+		StaticFilesController.serveFile(ctx, Settings.getOutputDir)
+	}
+}
 
-		if (file.exists() && file.isFile) {
-			ctx.status(200)
+object StaticFilesController {
 
-			// Set content type based on file extension
-			val contentType = Files.probeContentType(Paths.get(filePath))
-			if (contentType != null) {
-				ctx.contentType(contentType)
-			}
+	def serveFile(ctx: Context, baseDir: String): AnyRef = {
+		SafeFileResolver.resolve(baseDir, ctx.path()) match {
+			case Some(file) =>
+				ctx.status(200)
 
-			// Stream file content
-			val inputStream = new FileInputStream(file)
-			ctx.result(inputStream)
-		} else {
-			ctx.status(404)
+				// Set content type based on file extension
+				val contentType = Files.probeContentType(file.toPath)
+				if (contentType != null) {
+					ctx.contentType(contentType)
+				}
+
+				// Stream file content
+				val inputStream = new FileInputStream(file)
+				ctx.result(inputStream)
+			case None =>
+				ctx.status(404)
 		}
 		ctx
 	}

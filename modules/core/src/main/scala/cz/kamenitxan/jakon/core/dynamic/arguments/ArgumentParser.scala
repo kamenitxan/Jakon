@@ -20,7 +20,7 @@ trait ArgumentParser {
 	 * @param t data case class
 	 * @return Parsed request data
 	 */
-	def parseRequestData(ctx: Context, t: Class[_]): Map[Field, ParsedValue]
+	def parseRequestData(ctx: Context, t: Class[?]): Map[Field, ParsedValue]
 
 	/**
 	 * @param p case class constructor parameter.
@@ -72,7 +72,7 @@ trait ArgumentParser {
 								val constructorParams = constructor.getParameters.map(p => {
 									mapToObject(p, valueMap)
 								})
-								constructor.newInstance(constructorParams: _*)
+								constructor.newInstance(constructorParams*)
 							})
 							result
 						}

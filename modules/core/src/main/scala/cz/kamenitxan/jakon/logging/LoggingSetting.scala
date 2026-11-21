@@ -9,21 +9,21 @@ import cz.kamenitxan.jakon.core.configuration.{Configuration, ConfigurationValue
 object LoggingSetting {
 
 	@ConfigurationValue(name = "LOGGING.maxLimit", required = true, defaultValue = "100000")
-	private var maxLimit: Int = _
+	private var maxLimit: Int = scala.compiletime.uninitialized
 	@ConfigurationValue(name = "LOGGING.softLimit", required = true, defaultValue = "50000")
-	private var softLimit: Int = _
+	private var softLimit: Int = scala.compiletime.uninitialized
 	@ConfigurationValue(name = "LOGGING.maxCriticalAge", required = true, defaultValue = "43200")
-	private var maxCriticalAge: Int = _
+	private var maxCriticalAge: Int = scala.compiletime.uninitialized
 	@ConfigurationValue(name = "LOGGING.maxErrorAge", required = true, defaultValue = "14400")
-	private var maxErrorAge: Int = _
+	private var maxErrorAge: Int = scala.compiletime.uninitialized
 	@ConfigurationValue(name = "LOGGING.maxWarningAge", required = true, defaultValue = "7200")
-	private var maxWarningAge: Int = _
+	private var maxWarningAge: Int = scala.compiletime.uninitialized
 	@ConfigurationValue(name = "LOGGING.maxInfoAge", required = true, defaultValue = "1440")
-	private var maxInfoAge: Int = _
+	private var maxInfoAge: Int = scala.compiletime.uninitialized
 	@ConfigurationValue(name = "LOGGING.maxDebugAge", required = true, defaultValue = "60")
-	private var maxDebugAge: Int = _
+	private var maxDebugAge: Int = scala.compiletime.uninitialized
 	@ConfigurationValue(name = "LOGGING.logRepository", required = true, defaultValue = "cz.kamenitxan.jakon.logging.InMemoryLogRepository")
-	private var logRepository: LogRepository = _
+	private var logRepository: LogRepository = scala.compiletime.uninitialized
 
 	def getMaxLimit: Int = maxLimit
 

@@ -1,7 +1,7 @@
 package cz.kamenitxan.jakon.webui.facade
 
 import scala.scalajs.js
-import js.UndefOr
+import scala.scalajs.js.UndefOr
 
 @js.native
 trait JQueryPromise extends js.Object {
@@ -51,7 +51,7 @@ trait JQueryDeferred extends JQueryPromise {
   /**
    * Call the progressCallbacks on a Deferred object with the given context and args.
    */
-  def notifyWith(context: js.Object, args: js.Array[_]): JQueryDeferred = js.native
+  def notifyWith(context: js.Object, args: js.Array[?]): JQueryDeferred = js.native
   /**
    * Reject a Deferred object and call any failCallbacks with the given args.
    */

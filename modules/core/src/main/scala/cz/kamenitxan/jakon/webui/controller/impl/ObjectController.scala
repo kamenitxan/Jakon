@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.webui.controller.impl
 
 import cz.kamenitxan.jakon.core.configuration.Settings
+import cz.kamenitxan.jakon.core.database.annotation.ManyToMany
 import cz.kamenitxan.jakon.core.database.{DBHelper, I18n}
 import cz.kamenitxan.jakon.core.model.{I18nData, JakonObject, Ordered}
 import cz.kamenitxan.jakon.logging.Logger
@@ -46,8 +47,9 @@ object ObjectController {
 			val objectSettings = objectClass.get.getDeclaredConstructor().newInstance().objectSettings
 			implicit val conn: Connection = DBHelper.getConnection
 			try {
+				val filter = SqlGen.parseFilterParams(filterParams, objectClass.get)
 				val filterSql = {
-					val fp = SqlGen.parseFilterParams(filterParams, objectClass.get)
+					val fp = filter.sql
 					val of = if (objectSettings != null) objectSettings.customFilter else ""
 					if(fp.nonEmpty && of.nonEmpty) fp + " AND " + of
 					else if (fp.nonEmpty && of.isEmpty) fp
@@ -58,8 +60,9 @@ object ObjectController {
 				val joinSql = createSqlJoin(objectClass.get)
 				// pocet objektu
 				// language=SQL
-				val countSql = s"SELECT count(*) FROM JakonObject $joinSql $filterSql"
-				val count = DBHelper.count(countSql)
+				val countStmt = conn.prepareStatement(s"SELECT count(*) FROM JakonObject $joinSql $filterSql")
+				filter.bind(countStmt)
+				val count = DBHelper.count(countStmt)
 
 				// seznam objektu
 				implicit val ocls: Class[JakonObject] = objectClass.get.asInstanceOf[Class[JakonObject]]
@@ -73,8 +76,9 @@ object ObjectController {
 
 				// language=SQL
 				val listSql = s"SELECT * FROM JakonObject $joinSql $filterSql $order LIMIT $pageSize OFFSET $first"
-				val stmt2 = conn.createStatement()
-				val resultList = DBHelper.selectDeep(stmt2, listSql)
+				val stmt2 = conn.prepareStatement(listSql)
+				filter.bind(stmt2)
+				val resultList = DBHelper.selectDeep(stmt2)
 				// TODO: nacist foreign key objekty
 				val pageItems: Seq[JakonObject] = if (ocls.getInterfaces.contains(classOf[Ordered])) {
 					Ordered.fetchVisibleOrder(resultList, ocls)
@@ -123,7 +127,7 @@ object ObjectController {
 			ctx.status(404)
 			return new cz.kamenitxan.jakon.webui.Context(Map[String, Any](), "errors/404")
 		}
-		implicit val objectClass: Class[_ <: JakonObject] = filteredClasses.head
+		implicit val objectClass: Class[? <: JakonObject] = filteredClasses.head
 
 		if (!isAuthorized(objectClass)) {
 			return new cz.kamenitxan.jakon.webui.Context(Map[String, Any](
@@ -207,12 +211,16 @@ object ObjectController {
 			if (fieldRefOpt.isDefined) {
 				val fieldRef = fieldRefOpt.get
 				fieldRef.setAccessible(true)
-				val value = ctx.formParams(p).asScala.map(_.trim).mkString("\r\n").conform(fieldRef)
-				if (value != null) {
-					p match {
-						case "visibleOrder" => formOrder = value.asInstanceOf[Int]
-						case "objectOrder" =>
-						case _ => fieldRef.set(obj, value)
+				if (fieldRef.getDeclaredAnnotation(classOf[ManyToMany]) != null) {
+					// ManyToMany fields are handled separately via junction table updates below
+				} else {
+					val value = ctx.formParams(p).asScala.map(_.trim).mkString("\r\n").conform(fieldRef)
+					if (value != null) {
+						p match {
+							case "visibleOrder" => formOrder = value.asInstanceOf[Int]
+							case "objectOrder" =>
+							case _ => fieldRef.set(obj, value)
+						}
 					}
 				}
 			}
@@ -222,7 +230,9 @@ object ObjectController {
 		try {
 			if (objectId.nonEmpty) {
 				if (objectClass.getInterfaces.contains(classOf[Ordered])) {
-					obj = DBHelper.withDbConnection(implicit conn => obj.asInstanceOf[Ordered].updateOrder(formOrder))
+					// the subsequent obj.update() persists the whole object (incl. objectOrder), so only the
+					// new order is calculated here, no separate DB write is needed
+					obj = DBHelper.withDbConnection(implicit conn => obj.asInstanceOf[Ordered].calculateOrder(formOrder))
 				}
 				obj.update()
 			} else {
@@ -230,11 +240,14 @@ object ObjectController {
 			}
 		} catch {
 			case ex: SQLiteException =>
-				if (ex.getResultCode == SQLiteErrorCode.SQLITE_CONSTRAINT && ex.getMessage.contains("UNIQUE")) {
+				// sqlite-jdbc reports extended result code SQLITE_CONSTRAINT_UNIQUE
+				val uniqueViolation = ex.getResultCode == SQLiteErrorCode.SQLITE_CONSTRAINT_UNIQUE ||
+					(ex.getResultCode == SQLiteErrorCode.SQLITE_CONSTRAINT && ex.getMessage.contains("UNIQUE"))
+				if (uniqueViolation) {
 					// TODO: mysql
 					// TODO: better msg
 					PageContext.getInstance().addMessage(MessageSeverity.ERROR, "NEW_OBJ_UNIQUE_FAIL")
-					redirect(ctx, "/admin/object/create/" + objectName)
+					return redirect(ctx, "/admin/object/create/" + objectName)
 				} else {
 					throw ex
 				}
@@ -243,6 +256,34 @@ object ObjectController {
 		val i18nFieldOpt = fields.find(_.getAnnotation(classOf[I18n]) != null)
 		if (i18nFieldOpt.nonEmpty) {
 			createI18nData(obj.id, i18nFieldOpt.get, ctx, params)
+		}
+
+		// Persist ManyToMany junction table rows
+		val m2mFields = fields.filter(_.getDeclaredAnnotation(classOf[ManyToMany]) != null)
+		if (m2mFields.nonEmpty) {
+			DBHelper.withDbConnection { implicit conn =>
+				m2mFields.foreach { field =>
+					field.setAccessible(true)
+					val ann         = field.getDeclaredAnnotation(classOf[ManyToMany])
+					val targetClass = ann.genericClass()
+					// junction table belongs to the class declaring the field, not to its subclasses
+					val ownerClass  = field.getDeclaringClass
+					val joinTable   = ownerClass.getSimpleName + targetClass.getSimpleName
+					val joinCol     = { val n = ownerClass.getSimpleName; s"${n.head.toLower}${n.tail}_id" }
+					val inverseCol  = { val n = targetClass.getSimpleName; s"${n.head.toLower}${n.tail}_id" }
+					val deleteStmt = conn.prepareStatement(s"DELETE FROM $joinTable WHERE $joinCol = ?")
+					deleteStmt.setInt(1, obj.id)
+					deleteStmt.executeUpdate()
+					deleteStmt.close()
+					ctx.formParams(field.getName).asScala.filter(_.nonEmpty).foreach { idStr =>
+						val insertStmt = conn.prepareStatement(s"INSERT INTO $joinTable ($joinCol, $inverseCol) VALUES (?, ?)")
+						insertStmt.setInt(1, obj.id)
+						insertStmt.setInt(2, idStr.toInt)
+						insertStmt.executeUpdate()
+						insertStmt.close()
+					}
+				}
+			}
 		}
 
 		if (ctx.queryParam("save_and_new").toBoolOrFalse) {
@@ -264,19 +305,31 @@ object ObjectController {
 			), UNAUTHORIZED_TMPL)
 		}
 
-		// language=SQL
-		val sql = "DELETE FROM JakonObject WHERE id = ?"
 		val conn = DBHelper.getConnection
-		val stmt = conn.prepareStatement(sql)
-		stmt.setInt(1, objectId)
-		stmt.executeUpdate()
-		conn.close()
+		try {
+			// Block deletion if referenced by any KeyValueEntity
+			val refStmt = conn.prepareStatement("SELECT id FROM KeyValueEntity WHERE value = ?")
+			refStmt.setString(1, objectId.toString)
+			val refRs = refStmt.executeQuery()
+			val blockingIds = Iterator.continually(refRs).takeWhile(_.next()).map(_.getInt("id")).toList
+			if (blockingIds.nonEmpty) {
+				PageContext.getInstance().addMessage(MessageSeverity.ERROR, "OBJ_DELETE_CONSTRAINT_FAIL", Seq(blockingIds.mkString(", ")))
+				return redirect(ctx, ObjectPath + objectName)
+			}
+
+			// language=SQL
+			val stmt = conn.prepareStatement("DELETE FROM JakonObject WHERE id = ?")
+			stmt.setInt(1, objectId)
+			stmt.executeUpdate()
+		} finally {
+			conn.close()
+		}
 
 		ctx.redirect(ObjectPath + objectName)
 		new cz.kamenitxan.jakon.webui.Context(Map[String, Any](), ListTmpl)
 	}
 
-	private def isAuthorized(objectClass: Class[_]): Boolean = {
+	private def isAuthorized(objectClass: Class[?]): Boolean = {
 		val user = PageContext.getInstance().getLoggedUser
 		if (user.get.acl.masterAdmin) {
 			true
@@ -291,7 +344,7 @@ object ObjectController {
 		val objectId = ctx.pathParam("id").toOptInt
 		val order = ctx.queryParam("currentOrder").toOptInt
 
-		implicit val objectClass: Class[_ <: JakonObject] = DBHelper.getDaoClasses.filter(c => c.getSimpleName.equals(objectName)).head
+		implicit val objectClass: Class[? <: JakonObject] = DBHelper.getDaoClasses.filter(c => c.getSimpleName.equals(objectName)).head
 		if (!objectClass.getInterfaces.contains(classOf[Ordered])) {
 			PageContext.getInstance().messages += new Message(MessageSeverity.ERROR, "OBJECT_NOT_ORDERED")
 			redirect(ctx, ObjectPath + objectName)
@@ -303,9 +356,9 @@ object ObjectController {
 
 				val ps = conn.prepareStatement("SELECT * FROM " + objectName + " WHERE id = ?")
 				ps.setInt(1, objectId.get)
-				val obj = DBHelper.selectSingleDeep(ps).asInstanceOf[JakonObject with Ordered]
+				val obj = DBHelper.selectSingleDeep(ps).asInstanceOf[JakonObject & Ordered]
+				// updateOrder already persists the new objectOrder to the DB, a full obj.update() would be redundant
 				obj.updateOrder(newOrder)
-				obj.update()
 			} finally {
 				conn.close()
 			}
@@ -322,7 +375,7 @@ object ObjectController {
 	}
 
 	@tailrec
-	private def createSqlJoin(cls: Class[_], sql: String = ""): String = {
+	private def createSqlJoin(cls: Class[?], sql: String = ""): String = {
 		if (cls != null && cls != classOf[JakonObject]) {
 			val objectName = cls.getSimpleName
 			val newSql = sql + s"INNER JOIN $objectName ON JakonObject.id = $objectName.id "
@@ -333,7 +386,7 @@ object ObjectController {
 	}
 
 	private def createI18nData(id: Integer, f: Field, ctx: Context, params: Set[String]): Any = {
-		implicit val cls: Class[_] = f.getDeclaredAnnotation(classOf[I18n]).genericClass()
+		implicit val cls: Class[?] = f.getDeclaredAnnotation(classOf[I18n]).genericClass()
 		val fields = Utils.getFieldsUpTo(cls, classOf[Object])
 		Settings.getSupportedLocales.foreach(l => {
 			val isUpdate = DBHelper.withDbConnection(implicit conn => {

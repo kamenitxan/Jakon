@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Potvrzení objednávky {{ params.orderNumber }}</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 32px auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .header { background: #1d4ed8; color: #ffffff; padding: 32px; text-align: center; }
+    .header h1 { margin: 0; font-size: 22px; }
+    .body { padding: 32px; color: #333333; }
+    .order-box { background: #f0f4ff; border-radius: 6px; padding: 16px 24px; margin: 24px 0; }
+    .order-box h2 { margin: 0 0 4px; font-size: 16px; color: #1d4ed8; }
+    .order-box .number { font-size: 22px; font-weight: bold; color: #111827; }
+    .info-row { display: flex; justify-content: space-between; margin: 8px 0; font-size: 14px; }
+    .info-row .label { color: #6b7280; }
+    .btn { display: inline-block; background: #1d4ed8; color: #ffffff; text-decoration: none; padding: 12px 28px; border-radius: 6px; font-weight: bold; font-size: 15px; }
+    .footer { background: #f9fafb; padding: 20px 32px; text-align: center; font-size: 12px; color: #9ca3af; border-top: 1px solid #e5e7eb; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>✓ Objednávka přijata</h1>
+  </div>
+  <div class="body">
+    <p>Dobrý den, <strong>{{ params.billingName }}</strong>,</p>
+    <p>děkujeme za Vaši objednávku! Přijali jsme ji a brzy ji začneme zpracovávat.</p>
+
+    <div class="order-box">
+      <h2>Číslo objednávky</h2>
+      <div class="number">{{ params.orderNumber }}</div>
+    </div>
+
+    <div class="info-row">
+      <span class="label">Doprava:</span>
+      <span>{{ params.shippingMethod }}</span>
+    </div>
+    <div class="info-row">
+      <span class="label">Platba:</span>
+      <span>{{ params.paymentMethod }}</span>
+    </div>
+    <div class="info-row" style="font-weight: bold; font-size: 16px; margin-top: 12px;">
+      <span class="label">Celková cena:</span>
+      <span>{{ params.totalPrice }} Kč</span>
+    </div>
+
+    <p style="margin-top: 32px;">Stav Vaší objednávky můžete kdykoli sledovat na tomto odkazu:</p>
+
+    <div style="text-align: center; margin: 24px 0;">
+      <a href="/order/status?token={{ params.orderToken }}" class="btn">Sledovat stav objednávky</a>
+    </div>
+
+    <p style="font-size: 13px; color: #6b7280;">
+      Tento odkaz je unikátní pro Vaši objednávku — nikomu jej nezasílejte.
+    </p>
+  </div>
+  <div class="footer">
+    Tento e-mail byl odeslán automaticky. Prosíme, neodpovídejte na něj.
+  </div>
+</div>
+</body>
+</html>

@@ -17,7 +17,7 @@ trait Ordered {
 		Ordered.fetchVisibleOrder(this :: Nil, this.getClass).head
 	}
 
-	def updateNewObjectOrder(implicit conn: Connection): JakonObject with Ordered = {
+	def updateNewObjectOrder(implicit conn: Connection): JakonObject & Ordered = {
 		val objectClass = this.getClass
 		val fieldRef: Field = Utils.getFieldsUpTo(objectClass, classOf[Object]).find(f => f.getName.equals("objectOrder")).get
 		fieldRef.setAccessible(true)
@@ -34,12 +34,17 @@ trait Ordered {
 		this
 	}
 
-	def updateOrder(formOrder: Int)(implicit conn: Connection): JakonObject with Ordered = {
+	/**
+	 * Calculates the new objectOrder value for this object based on the requested visible position
+	 * (formOrder), by placing it between the neighboring objects' objectOrder values. Does not persist
+	 * anything to the DB - the caller is responsible for saving the object afterwards.
+	 */
+	def calculateOrder(formOrder: Int)(implicit conn: Connection): JakonObject & Ordered = {
 		val objectClass = this.getClass
 		val obj = this
 		val stmt = conn.prepareStatement("SELECT id, objectOrder FROM " + objectClass.getSimpleName + " WHERE id = ?")
 		stmt.setInt(1, obj.id)
-		val persistedObj: JakonObject with Ordered = DBHelper.selectSingle(stmt, classOf[BasicJakonObject]).entity.asInstanceOf[JakonObject with Ordered]
+		val persistedObj: JakonObject & Ordered = DBHelper.selectSingle(stmt, classOf[BasicJakonObject]).entity.asInstanceOf[JakonObject & Ordered]
 		fetchVisibleOrder
 		if (formOrder == persistedObj.visibleOrder) {
 
@@ -48,7 +53,7 @@ trait Ordered {
 		val stmt2 = conn.createStatement()
 		val queryResult = DBHelper.select(stmt2, "SELECT id, objectOrder FROM " + objectClass.getSimpleName + " ORDER BY objectOrder ASC", classOf[BasicJakonObject])
 		val allObjects = queryResult.map(qr => {
-			qr.entity.asInstanceOf[JakonObject with Ordered]
+			qr.entity.asInstanceOf[JakonObject & Ordered]
 		}).filter(o => o.id != obj.id).toVector
 
 
@@ -74,14 +79,29 @@ trait Ordered {
 			10
 		}
 		obj.objectOrder = resultPos
-		// TODO: po zmene pozice se ma do DB rovnou ulozit nova, aby se nemusel aktualizovat cely objekt
+		obj
+	}
+
+	/**
+	 * Calculates the new object order for the requested position and persists it directly to the DB,
+	 * without updating the whole object. If the position doesn't change, no DB write is performed.
+	 */
+	def updateOrder(formOrder: Int)(implicit conn: Connection): JakonObject & Ordered = {
+		val originalOrder = this.objectOrder
+		val obj = calculateOrder(formOrder)
+		if (obj.objectOrder != originalOrder) {
+			val stmt = conn.prepareStatement("UPDATE " + obj.getClass.getSimpleName + " SET objectOrder = ? WHERE id = ?")
+			stmt.setDouble(1, obj.objectOrder)
+			stmt.setInt(2, obj.id)
+			stmt.executeUpdate()
+		}
 		obj
 	}
 }
 
 object Ordered {
 
-	def fetchVisibleOrder(objects: Seq[JakonObject], objectClass: Class[_])(implicit conn: Connection): Seq[JakonObject] = {
+	def fetchVisibleOrder(objects: Seq[JakonObject], objectClass: Class[?])(implicit conn: Connection): Seq[JakonObject] = {
 		val stmt = conn.createStatement()
 		val result = DBHelper.select(stmt, "SELECT id FROM " + objectClass.getSimpleName + " ORDER BY objectOrder ASC", classOf[BasicJakonObject])
 		var i = 0
@@ -89,7 +109,7 @@ object Ordered {
 			i += 1
 			(qr.entity.id, i)
 		}).toMap
-		objects.foreach(o => o.asInstanceOf[JakonObject with Ordered].visibleOrder = allObjects(o.id))
+		objects.foreach(o => o.asInstanceOf[JakonObject & Ordered].visibleOrder = allObjects(o.id))
 		objects
 	}
 }

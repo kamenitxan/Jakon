@@ -5,6 +5,7 @@ import cz.kamenitxan.jakon.core.dynamic.{Get, Pagelet}
 import cz.kamenitxan.jakon.core.model.JakonUser
 import cz.kamenitxan.jakon.core.service.UserService
 import cz.kamenitxan.jakon.utils.PageContext
+import cz.kamenitxan.jakon.utils.security.AuthUtils
 import cz.kamenitxan.jakon.webui.entity.{Message, MessageSeverity}
 import io.javalin.http.Context
 
@@ -28,7 +29,7 @@ class JakonUserLogAsExtension extends AbstractObjectExtension {
 		if (PageContext.getInstance().getLoggedUser.exists(_.acl.masterAdmin)) {
 			DBHelper.withDbConnection(implicit conn => {
 				val user = UserService.getById(objectId)
-				ctx.sessionAttribute("user", user)
+				AuthUtils.logIn(ctx, user)
 
 				val params = Seq(user.username)
 				PageContext.getInstance().messages += new Message(MessageSeverity.SUCCESS, "ADMIN_FORCE_LOGIN_OK", params)

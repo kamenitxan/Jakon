@@ -1,7 +1,7 @@
 package cz.kamenitxan.jakon.webui.conform
 
 import cz.kamenitxan.jakon.core.configuration.Settings
-import cz.kamenitxan.jakon.core.database.annotation.{ManyToOne, OneToMany}
+import cz.kamenitxan.jakon.core.database.annotation.{ManyToMany, ManyToOne, OneToMany}
 import cz.kamenitxan.jakon.core.database.{I18n, JakonField}
 import cz.kamenitxan.jakon.core.model.{I18nData, JakonObject}
 import cz.kamenitxan.jakon.utils.TypeReferences.*
@@ -9,7 +9,7 @@ import cz.kamenitxan.jakon.utils.Utils
 import cz.kamenitxan.jakon.webui.controller.impl.ObjectController
 import cz.kamenitxan.jakon.webui.entity.{FieldInfo, HtmlType}
 
-import java.lang.reflect.{Field, ParameterizedType, Type}
+import java.lang.reflect.{Field, Type}
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, LocalDateTime, LocalTime}
@@ -43,7 +43,7 @@ object FieldConformer {
 			conform(f.getType, gft)
 		}
 
-		private def conform(t: Class[_], genericType: Type): Any = {
+		private def conform(t: Class[?], genericType: Type): Any = {
 			t match {
 				case BOOLEAN => s toBoolean
 				case DOUBLE | DOUBLE_j => s toDouble
@@ -98,6 +98,12 @@ object FieldConformer {
 					val typeCls = f.getDeclaredAnnotation(classOf[OneToMany]).genericClass()
 					val typeName = typeCls.getTypeName.substring(typeCls.getTypeName.lastIndexOf(".") + 1)
 					infos = infos :+ new FieldInfo(an, HtmlType.CHECKBOX, f, fv, "OneToMany", typeName)
+				} else if (f.getDeclaredAnnotation(classOf[ManyToMany]) != null) {
+					val fv = f.get(obj)
+					val m2mAnn = f.getDeclaredAnnotation(classOf[ManyToMany])
+					val targetClass = m2mAnn.genericClass()
+					val typeName = targetClass.getTypeName.substring(targetClass.getTypeName.lastIndexOf(".") + 1)
+					infos = infos :+ new FieldInfo(an, HtmlType.CHECKBOX, f, fv, "ManyToMany", typeName)
 				} else {
 					f.getType match {
 						case BOOLEAN =>
@@ -175,7 +181,7 @@ object FieldConformer {
 								} else {
 									fields.map(f => f.getName + "_" + l.toString -> {
 										val an = f.getAnnotation(classOf[JakonField])
-										new FieldInfo(an, HtmlType.TEXT, f, null, "String")
+										new FieldInfo(an, HtmlType.TEXT, f, null)
 									})
 								}
 							}).toMap

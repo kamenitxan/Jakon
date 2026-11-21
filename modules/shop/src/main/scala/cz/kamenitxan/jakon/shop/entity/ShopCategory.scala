@@ -1,7 +1,7 @@
 package cz.kamenitxan.jakon.shop.entity
 
 import cz.kamenitxan.jakon.core.database.JakonField
-import cz.kamenitxan.jakon.core.database.annotation.ManyToOne
+import cz.kamenitxan.jakon.core.database.annotation.{ManyToMany, ManyToOne}
 import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.utils.Utils.StringImprovements
 import cz.kamenitxan.jakon.validation.validators.NotEmpty
@@ -22,8 +22,11 @@ class ShopCategory extends JakonObject with Serializable {
 	var image: String = ""
 	@ManyToOne
 	@JakonField(required = false, searched = true)
-	var parentCategory: ShopCategory = _
-	
+	var parentCategory: ShopCategory = scala.compiletime.uninitialized
+	@ManyToMany(genericClass = classOf[ProductVariant])
+	@JakonField(required = false)
+	var variants: Seq[ProductVariant] = Seq.empty
+
 	/** not saved in a database */
 	var children: Seq[ShopCategory] = Seq.empty
 

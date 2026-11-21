@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.webui
 
 import cz.kamenitxan.jakon.core.database.DBHelper
+import cz.kamenitxan.jakon.core.model.JakonObject
 import cz.kamenitxan.jakon.utils.PageContext
 
 import java.util
@@ -42,7 +43,7 @@ object Context {
 
 	def getAdminContext: Map[String, Any] = {
 		val user = PageContext.getInstance().getLoggedUser
-		val allModelClasses = DBHelper.getDaoClasses
+		val allModelClasses = menuClasses(DBHelper.getDaoClasses.toSeq)
 			.filter(c => user.nonEmpty && (user.get.acl.masterAdmin || user.get.acl.allowedControllers.contains(c.getCanonicalName)))
 			.groupBy(c => {
 				val packageName = c.getPackage.getName
@@ -65,5 +66,18 @@ object Context {
 			"jakon_messages" -> PageContext.getInstance().messages.asJava
 		)
 		context
+	}
+
+	private val ShopPackage = "cz.kamenitxan.jakon.shop"
+
+	/**
+	 * Object classes shown in the admin menu. A shop object extended by another registered class (e.g.
+	 * ShopInit.categoryClass or ShopInit.productClass) is hidden so only the subclass is listed. Admin pages of the
+	 * hidden class stay reachable by URL.
+	 */
+	def menuClasses(classes: Seq[Class[? <: JakonObject]]): Seq[Class[? <: JakonObject]] = {
+		classes.filterNot(c => {
+			c.getPackage.getName.startsWith(ShopPackage) && classes.exists(o => o != c && c.isAssignableFrom(o))
+		})
 	}
 }

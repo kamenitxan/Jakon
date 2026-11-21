@@ -12,13 +12,13 @@ class ConfirmEmailEntity extends JakonObject {
 
 	@ManyToOne
 	@JakonField(disabled = true)
-	var user: JakonUser = _
+	var user: JakonUser = scala.compiletime.uninitialized
 	@JakonField(disabled = true, shownInList = false)
 	var token: String = ""
 	@JakonField(disabled = true)
 	var secret: String = ""
 	@JakonField(disabled = true)
-	var expirationDate: Date = _
+	var expirationDate: Date = scala.compiletime.uninitialized
 
 	override val objectSettings: ObjectSettings = new ObjectSettings(icon = "fa-envelope")
 

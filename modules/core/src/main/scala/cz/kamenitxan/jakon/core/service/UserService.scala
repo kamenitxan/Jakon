@@ -9,12 +9,18 @@ import cz.kamenitxan.jakon.utils.security.AesEncryptor
 import cz.kamenitxan.jakon.webui.entity.ResetPasswordEmailEntity
 import io.javalin.http.Context
 
+import java.security.SecureRandom
 import java.sql.Connection
 import java.util.{Calendar, Date}
 import scala.util.Random
 
 object UserService {
 	implicit val cls: Class[JakonUser] = classOf[JakonUser]
+
+	private val SecretLength = 32
+	private val secureRandom = new Random(new SecureRandom())
+
+	private def generateSecret(): String = secureRandom.alphanumeric.take(SecretLength).mkString
 
 	// language=SQL
 	val SQL_FIND_USER = "SELECT * FROM JakonUser WHERE email = ?"
@@ -70,7 +76,7 @@ object UserService {
 
 		val resetEmailEntity = new ResetPasswordEmailEntity()
 		resetEmailEntity.user = user
-		resetEmailEntity.secret = Random.alphanumeric.take(10).mkString
+		resetEmailEntity.secret = generateSecret()
 		resetEmailEntity.token = AesEncryptor.encrypt(resetEmailEntity.secret).urlEncode
 		resetEmailEntity.expirationDate = {
 			val cal: Calendar = Calendar.getInstance

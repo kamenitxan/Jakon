@@ -7,12 +7,20 @@ import org.slf4j.LoggerFactory
 import java.io.{File, FileInputStream, IOException}
 import java.util.Properties
 import scala.collection.mutable
+import scala.jdk.CollectionConverters.*
 import scala.language.postfixOps
+import scala.util.Using
 
 
 object ConfigurationInitializer {
 	private val logger = LoggerFactory.getLogger(this.getClass.getName)
 	private val conf = mutable.HashMap[String, String]()
+
+	/**
+	 * Optional file with secrets (API tokens, passwords, ...) that must not be committed with the main config.
+	 * It is looked up next to the main config file and its values override the main config ones.
+	 */
+	val SecretsFileName = "jakon_secrets.properties"
 
 
 	@throws[IOException]
@@ -27,25 +35,28 @@ object ConfigurationInitializer {
 						System.exit(-1)
 				}
 			} else {
-				val input = new FileInputStream(configFile)
-				val prop = new Properties
-				prop.load(input)
-				val e = prop.propertyNames
-				while ( {
-					e.hasMoreElements
-				}) {
-					val key = e.nextElement.asInstanceOf[String]
-					val value = prop.getProperty(key).trim
-					conf.put(key, value)
+				load(configFile)
+				val secretsFile = new File(configFile.getAbsoluteFile.getParentFile, SecretsFileName)
+				if (secretsFile.isFile) {
+					val keys = load(secretsFile)
 				}
 			}
 		}
 	}
 
+	/** Puts all properties of the file into the configuration, overriding existing keys; returns the loaded keys. */
+	private def load(file: File): Seq[String] = {
+		val prop = new Properties
+		Using.resource(new FileInputStream(file))(input => prop.load(input))
+		val keys = prop.stringPropertyNames.asScala.toSeq
+		keys.foreach(key => conf.put(key, prop.getProperty(key).trim))
+		keys
+	}
+
 	def getConf: mutable.Map[String, String] = conf
 
 
-	def initConfiguration(configClasses: Seq[Class[_]]): Unit = {
+	def initConfiguration(configClasses: Seq[Class[?]]): Unit = {
 		configClasses.foreach(c => {
 			c.getDeclaredFields.filter(f => f.isAnnotationPresent(classOf[ConfigurationValue])).foreach(f => {
 				val obj = c.getField("MODULE$").get(c)
@@ -62,7 +73,7 @@ object ConfigurationInitializer {
 				val setter = c.getDeclaredMethods
 				  .filter(m => m.getParameterTypes.forall(cls => cls == classOf[String]))
 				  .find(m => m.getName.equalsIgnoreCase("set" + f.getName))
-				if (setter.nonEmpty) {
+				if (setter.nonEmpty && confValue.nonEmpty) {
 					if (setter.get.getParameterTypes.forall(cls => cls == classOf[String])) {
 						setter.get.invoke(obj, confValue.get)
 					} else {

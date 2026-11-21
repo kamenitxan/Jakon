@@ -16,8 +16,4 @@ class TestJakonApp extends JakonInit {
 	}
 
 	Director.registerController(new PageController)
-
-	override def adminControllers(): Unit = {
-		super.adminControllers()
-	}
 }

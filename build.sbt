@@ -2,11 +2,12 @@ import sbt.Tests.{Group, SubProcess}
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val V = new {
-	val Scala = "3.3.7"
-  val jakon = "0.7.3-SNAPSHOT"
-	val log4j = "2.25.3"
+	val Scala = "3.9.0"
+  val jakon = "0.8.0-SNAPSHOT"
+	val log4j = "2.26.0"
 	val circeVersion = "0.14.15"
-	val javalin = "7.0.0"
+	val javalin = "7.2.3"
+	val commonmark = "0.28.0"
 }
 
 scalaVersion := V.Scala
@@ -35,28 +36,29 @@ val Dependencies = new {
 			Seq(
 				"io.javalin" % "javalin" % V.javalin,
 				"io.javalin" % "javalin-rendering-pebble" % V.javalin,
-				"org.slf4j" % "slf4j-api" % "2.0.17",
+				"org.slf4j" % "slf4j-api" % "2.0.18",
 				"org.apache.logging.log4j" % "log4j-api" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-core" % V.log4j,
 				"org.apache.logging.log4j" % "log4j-slf4j2-impl" % V.log4j,
-				"org.xerial" % "sqlite-jdbc" % "3.51.2.0",
-				"com.mysql" % "mysql-connector-j" % "9.6.0" % Optional,
-				"com.google.guava" % "guava" % "33.5.0-jre",
-				"commons-io" % "commons-io" % "2.21.0",
+				"org.xerial" % "sqlite-jdbc" % "3.53.2.0",
+				"com.mysql" % "mysql-connector-j" % "9.7.0" % Optional,
+				"com.google.guava" % "guava" % "33.6.0-jre",
+				"commons-io" % "commons-io" % "2.22.0",
 				"org.apache.commons" % "commons-lang3" % "3.20.0",
-				"commons-codec" % "commons-codec" % "1.21.0",
+				"commons-codec" % "commons-codec" % "1.22.0",
 				"de.svenkubiak" % "jBCrypt" % "0.4.3",
 				"com.sun.mail" % "jakarta.mail" % "2.0.2",
-				"org.commonmark" % "commonmark" % "0.27.1",
-				"org.commonmark" % "commonmark-ext-gfm-tables" % "0.27.1",
-				"org.commonmark" % "commonmark-ext-gfm-strikethrough" % "0.27.1",
-				"com.google.code.gson" % "gson" % "2.13.2",
+				"org.commonmark" % "commonmark" % V.commonmark,
+				"org.commonmark" % "commonmark-ext-gfm-tables" % V.commonmark,
+				"org.commonmark" % "commonmark-ext-gfm-strikethrough" % V.commonmark,
+				"org.commonmark" % "commonmark-ext-task-list-items" % V.commonmark,
+				"com.google.code.gson" % "gson" % "2.14.0",
 				"io.circe" %% "circe-core" % V.circeVersion,
 				"io.circe" %% "circe-generic"% V.circeVersion,
 				"io.circe" %% "circe-parser"% V.circeVersion,
 				//"org.apache.lucene" % "lucene-core" % "7.5.0",
 				//"org.apache.lucene" % "lucene-queryparser" % "7.5.0",
-				"io.github.classgraph" % "classgraph" % "4.8.184",
+				"io.github.classgraph" % "classgraph" % "6.0.0",
 				"com.zaxxer" % "HikariCP" % "7.0.2",
 				"com.github.scribejava" % "scribejava-apis" % "8.3.3",
 				"cz.etn" % "email-validator" % "1.4.0",
@@ -67,16 +69,16 @@ val Dependencies = new {
 	lazy val shop = Seq(
 		libraryDependencies ++=
 			Seq(
-				"com.stripe" % "stripe-java" % "31.3.0"
+				"com.stripe" % "stripe-java" % "33.0.0"
 			)
 	)
 
 	//noinspection SpellCheckingInspection
 	lazy val tests = Def.settings(
 		libraryDependencies ++= Seq(
-			"org.scalatest" %% "scalatest" % "3.2.19" % Test,
+			"org.scalatest" %% "scalatest" % "3.2.20" % Test,
 			"org.scalamock" %% "scalamock" % "7.5.5" % Test,
-			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.41.0" % Test
+			"org.seleniumhq.selenium" % "htmlunit3-driver" % "4.44.0" % Test
 		)
 	)
 }
@@ -112,6 +114,7 @@ lazy val core = (project in file("modules/core"))
 
 lazy val shop = (project in file("modules/shop"))
 	.dependsOn(core)
+	.settings(Dependencies.shop)
 	.settings(Dependencies.tests)
 	.settings(commonBuildSettings)
 	.settings(scalaBuildSettings)
@@ -178,7 +181,11 @@ lazy val commonBuildSettings: Seq[Def.Setting[?]] = Seq(
 	organization := "cz.kamenitxan",
 	name := "jakon",
 	version := V.jakon,
-	startYear := Some(2015)
+	startYear := Some(2015),
+	// Default is crossTarget, which embeds the Scala version in the path. SonarQube does not
+	// support wildcards in sonar.scala.coverage.reportPaths, so keep the report at a stable
+	// location: modules/<module>/target/scoverage-report/scoverage.xml
+	coverageDataDir := target.value
 )
 
 lazy val scalaBuildSettings: Seq[Def.Setting[?]] = Seq(
@@ -227,5 +234,5 @@ addCommandAlias("ci", CICommands)
 addCommandAlias("preCI", PrepareCICommands)
 addCommandAlias("jar", "clean; fullOptCompileCopy; coverageOff; assembly")
 addCommandAlias("testJar", "clean; coverageOff; fullOptCompileCopy; set assembly / mainClass := Some(\"cz.kamenitxan.jakon.Main\"); assembly")
-addCommandAlias("githubTest", "coverageOn; coverage; core/test; coverageReport; coverageOff;")
+addCommandAlias("githubTest", "coverageOn; coverage; core/test; shop/test; coverageReport; coverageOff;")
 addCommandAlias("outdated", "dependencyUpdates")

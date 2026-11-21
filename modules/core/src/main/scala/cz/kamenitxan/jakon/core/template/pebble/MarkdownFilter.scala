@@ -5,10 +5,12 @@ import io.pebbletemplates.pebble.extension.Filter
 import io.pebbletemplates.pebble.template.{EvaluationContext, PebbleTemplate}
 import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension
 import org.commonmark.ext.gfm.tables.TablesExtension
+import org.commonmark.ext.task.list.items.TaskListItemsExtension
 import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
 
 import java.util
+import java.util.regex.Pattern
 
 class MarkdownFilter extends Filter {
 
@@ -21,18 +23,36 @@ class MarkdownFilter extends Filter {
 
 object MarkdownFilter {
 
-	private val extensions = util.List.of(TablesExtension.create, StrikethroughExtension.create)
+	private val extensions = util.List.of(TablesExtension.create, StrikethroughExtension.create, TaskListItemsExtension.create)
 	private val parser = Parser.builder.extensions(extensions).build
 	private val renderer = HtmlRenderer.builder
 		.extensions(extensions)
 		.softbreak("<br>")
 		.build
 
+	private val codeBlockPattern = Pattern.compile("(?s)<pre>.*?</pre>")
+
 	def parseString(input: String): String = {
 		val document = parser.parse(input)
 		val renderedString = renderer.render(document)
-		val result = FunctionHelper.parse(renderedString)
-		result
+		parseFunctionsOutsideCode(renderedString)
+	}
+
+	/**
+	  * Evaluates template functions like {link ...} everywhere except in code blocks,
+	  * where the braces are a part of the shown code.
+	  */
+	private def parseFunctionsOutsideCode(html: String): String = {
+		val m = codeBlockPattern.matcher(html)
+		val result = new StringBuilder
+		var last = 0
+		while (m.find) {
+			result.append(FunctionHelper.parse(html.substring(last, m.start())))
+			result.append(m.group())
+			last = m.end()
+		}
+		result.append(FunctionHelper.parse(html.substring(last)))
+		result.toString
 	}
 
 }

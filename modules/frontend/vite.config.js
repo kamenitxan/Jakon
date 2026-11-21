@@ -14,7 +14,7 @@ export default defineConfig({
 			// overwrite default .html entry
 			input: 'src/main/js/jakon.js',
 			output: {
-				dir: '../backend/src/main/resources/static/jakon/vite',
+				dir: '../core/src/main/resources/static/jakon/vite',
 				entryFileNames: 'jakon.js',
 				assetFileNames: (assetInfo) => {
 					if (assetInfo.name === 'style.css') return 'jakon.css';

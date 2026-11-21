@@ -12,7 +12,7 @@ import org.scalatest.DoNotDiscover
 @DoNotDiscover
 class ServiceTest extends TestBase {
 
-	var user: JakonUser = _
+	var user: JakonUser = scala.compiletime.uninitialized
 	test("UserService getAllUsers") { _ =>
 		DBHelper.withDbConnection(implicit conn => {
 			val users = UserService.getAllUsers()

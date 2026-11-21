@@ -12,17 +12,18 @@ import scala.collection.mutable
 object TaskRunner {
 	private val scheduledExecutor = Executors.newScheduledThreadPool(1)
 	var taskList: mutable.ArrayDeque[AbstractTask] = mutable.ArrayDeque[AbstractTask]()
-	private val taskFutures: mutable.Map[String, ScheduledFuture[_]] = mutable.Map[String, ScheduledFuture[_]]()
-	private val singleRunFutures: mutable.Map[String, ScheduledFuture[_]] = mutable.Map[String, ScheduledFuture[_]]()
+	private val taskFutures: mutable.Map[String, ScheduledFuture[?]] = mutable.Map[String, ScheduledFuture[?]]()
+	private val singleRunFutures: mutable.Map[String, ScheduledFuture[?]] = mutable.Map[String, ScheduledFuture[?]]()
 
 	def schedule(task: AbstractTask): Unit = {
 		if (!task.paused) {
-			val f: ScheduledFuture[_] = scheduledExecutor.scheduleAtFixedRate(task, 0, task.period, task.unit)
+			val f: ScheduledFuture[?] = scheduledExecutor.scheduleAtFixedRate(task, 0, task.period, task.unit)
 			taskFutures += (task.name.value -> f)
 		}
 	}
 
-	def runSingle(task: AbstractTask): Unit = {
+	/** Can be called from many threads (e.g. log cleaning), check and schedule must be atomic. */
+	def runSingle(task: AbstractTask): Unit = singleRunFutures.synchronized {
 		val ef = singleRunFutures.get(task.name.value)
 		if (ef.isEmpty || ef.get.isDone) {
 			val f = scheduledExecutor.schedule(task, 0, TimeUnit.SECONDS)

@@ -12,13 +12,21 @@ import scala.io.Source
 
 object EntityValidator {
 
+	/**
+	 * Annotations of field including annotations of matching constructor parameter.
+	 * Scala places annotations of case class parameters only on constructor parameter.
+	 */
+	def getFieldAnnotations(f: Field): Seq[Annotation] = {
+		val paramAnns = f.getDeclaringClass.getDeclaredConstructors.headOption.toSeq.flatMap(c => {
+			c.getParameters.zip(c.getParameterAnnotations).find(_._1.getName == f.getName).toSeq.flatMap(_._2)
+		})
+		(f.getDeclaredAnnotations.toSeq ++ paramAnns).distinct
+	}
+
 	def validate(prefix: String, validatedData: Map[Field, String]): Either[Seq[Message], Map[Field, String]] = {
-		val errors = validatedData.filter(f => {
-			val anns = f._1.getDeclaredAnnotations
-			anns.exists(a => a.annotationType().getAnnotation(classOf[ValidatedBy]) != null)
-		}).flatMap(f => {
-			val anns = f._1.getDeclaredAnnotations.filter(a => a.annotationType().getAnnotation(classOf[ValidatedBy]) != null).toSeq
-			validateField(prefix, f._1, anns, f._2, validatedData)
+		val errors = validatedData.flatMap(f => {
+			val anns = getFieldAnnotations(f._1).filter(a => a.annotationType().getAnnotation(classOf[ValidatedBy]) != null)
+			if (anns.isEmpty) Seq.empty else validateField(prefix, f._1, anns, f._2, validatedData)
 		}).toSeq
 
 		if (errors.isEmpty) {
@@ -31,7 +39,7 @@ object EntityValidator {
 	// TODO: change name?
 	def validateJson(prefix: String, validatedData: Map[Field, ParsedValue]): Either[Seq[Message], Map[Field, ParsedValue]] = {
 		val errors = validatedData.map(data => {
-			val constructor: Constructor[_] = data._1.getDeclaringClass.getDeclaredConstructors.head
+			val constructor: Constructor[?] = data._1.getDeclaringClass.getDeclaredConstructors.head
 			val parameterIndex = constructor.getParameters.zipWithIndex.find(pi => {
 				pi._1.getName == data._1.getName
 			}).map(_._2)
@@ -60,8 +68,13 @@ object EntityValidator {
 		}
 	}
 
+	/** Request parameter name of field, can be changed by [[Name]] annotation */
+	def getParamName(f: Field): String = {
+		getFieldAnnotations(f).collectFirst { case n: Name => n.name() }.getOrElse(f.getName)
+	}
+
 	// TODO: tohle tu byt nema, neni to cast validatoru
-	def createFormData(ctx: Context, dataClass: Class[_]): Map[Field, String] = {
+	def createFormData(ctx: Context, dataClass: Class[?]): Map[Field, String] = {
 		dataClass.getDeclaredFields.map(f => {
 			var res: (Field, String) = null
 			try {
@@ -71,7 +84,7 @@ object EntityValidator {
 					val is = ctx.req().getPart(f.getName).getInputStream
 					Source.fromInputStream(is).mkString
 				} else {
-					val paramName = Option.apply(f.getDeclaredAnnotation(classOf[Name])).map(_.name()).getOrElse(f.getName)
+					val paramName = getParamName(f)
 					ctx.formParam(paramName)
 				}
 

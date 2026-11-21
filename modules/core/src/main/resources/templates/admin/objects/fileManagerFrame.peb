@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrfToken() }}">
 
     <title>JakonUI File Manager</title>
 
@@ -15,6 +16,8 @@
 
     <!-- jQuery -->
     <script src="/jakon/vite/jakon.js"></script>
+    <!-- Bootstrap 3 (used by angular-filemanager) rejects the jQuery 4 bundled in jakon.js, so jQuery 3 replaces it here -->
+    <script src="/jakon/js/fm/jquery-3.7.1.min.js"></script>
 
     <!-- angular-filemanager -->
     <script src="/jakon/js/fm/angular.min.js"></script>

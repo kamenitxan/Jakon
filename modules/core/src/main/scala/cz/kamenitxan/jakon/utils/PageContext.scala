@@ -54,4 +54,8 @@ case class PageContext(ctx: Context) {
 	def addMessage(severity: MessageSeverity, value: String): Unit = {
 		messages += new Message(severity, value)
 	}
+
+	def addMessage(severity: MessageSeverity, value: String, params: Seq[String]): Unit = {
+		messages += new Message(severity, value, params)
+	}
 }

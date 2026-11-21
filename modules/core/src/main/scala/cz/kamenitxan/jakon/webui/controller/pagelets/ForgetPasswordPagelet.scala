@@ -39,10 +39,10 @@ class ForgetPasswordPagelet extends AbstractAdminPagelet {
 	def post(ctx: Context, conn: Connection, data: ForgetPasswordData): mutable.Map[String, Any] = {
 		val stmt = conn.prepareStatement(SQL_FIND_USER)
 		stmt.setString(1, data.email)
-		val result = DBHelper.selectSingle(stmt, classOf[JakonUser])(conn)
+		val result = DBHelper.selectSingle(stmt, classOf[JakonUser])(using conn)
 		if (result.entity != null) {
 			val user = result.entity
-			UserService.sendForgetPasswordEmail(user, ctx)(conn)
+			UserService.sendForgetPasswordEmail(user, ctx)(using conn)
 		}
 
 		PageContext.getInstance().messages += new Message(MessageSeverity.SUCCESS, "PASSWORD_RESET_OK")
@@ -57,7 +57,7 @@ class ForgetPasswordPagelet extends AbstractAdminPagelet {
 			val sql = "SELECT * FROM ResetPasswordEmailEntity where token = ?"
 			val stmt = conn.prepareStatement(sql)
 			stmt.setString(1, data.token.urlEncode)
-			val rpe = DBHelper.selectSingleDeep(stmt)(implicitly, classOf[ResetPasswordEmailEntity])
+			val rpe = DBHelper.selectSingleDeep(stmt)(using implicitly, classOf[ResetPasswordEmailEntity])
 			if (rpe == null || rpe.expirationDate.before(new Date())) {
 				PageContext.getInstance().addMessage(MessageSeverity.ERROR, "PASSWORD_CHANGE_NOT_FOUND")
 			} else {

@@ -9,12 +9,13 @@ import cz.kamenitxan.jakon.core.database.DBHelper
 import cz.kamenitxan.jakon.core.model.{Category, Page, Post}
 import cz.kamenitxan.jakon.core.template.Pebble
 import jakontest.core.*
+import jakontest.core.database.DBInitializerTest
 import jakontest.core.functions.LinkTest
-import jakontest.core.pagelet.{JsonPageletTest, PageletTest}
+import jakontest.core.pagelet.{JsonPageletTest, PageletTest, PageletValidationTest}
 import jakontest.core.task.TaskRunnerTest
 import jakontest.devtools.DevtoolsTest
 import jakontest.logging.LoggingTest
-import jakontest.utils.entity.{TestExtNoFields, TestExtUser, TestObject}
+import jakontest.utils.entity.{TestExtNoFields, TestExtUser, TestFirstFk, TestM2MOwner, TestM2MTag, TestObject, TestStandaloneFk}
 import jakontest.utils.mail.EmailTest
 import jakontest.utils.{I18NUtilTest, SecurityTest, SqlGenTest, UtilsTest}
 import jakontest.validation.ValidationTest
@@ -39,6 +40,7 @@ class TestRunner extends Suites(
 	new WebUi,
 	new SqlGenTest,
 	new ModelTest,
+	new DBInitializerTest,
 	new SettingsTest,
 	new I18NUtilTest,
 	new PageletTest,
@@ -50,7 +52,12 @@ class TestRunner extends Suites(
 	new ServiceTest,
 	new ValidationTest,
 	new UtilsTest,
-	new TaskRunnerTest
+	new TaskRunnerTest,
+	new PageletValidationTest,
+	new PasswordResetTest,
+	new CoreMiscTest,
+	new AdminInheritedObjectTest,
+	new AdminAccessTest
 ) with BeforeAndAfterAll {
 
 	val config = "jakonConfig=jakon_config_test_dev.properties"
@@ -98,11 +105,11 @@ class TestJakonApp extends JakonInit {
 		DBHelper.addDao(classOf[TestObject])
 		DBHelper.addDao(classOf[TestExtUser])
 		DBHelper.addDao(classOf[TestExtNoFields])
+		DBHelper.addDao(classOf[TestM2MTag])
+		DBHelper.addDao(classOf[TestM2MOwner])
+		DBHelper.addDao(classOf[TestStandaloneFk])
+		DBHelper.addDao(classOf[TestFirstFk])
 	}
 
 	Director.registerController(new PageController)
-
-	override def adminControllers(): Unit = {
-		super.adminControllers()
-	}
 }

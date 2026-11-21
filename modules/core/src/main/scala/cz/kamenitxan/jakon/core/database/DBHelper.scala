@@ -2,11 +2,11 @@ package cz.kamenitxan.jakon.core.database
 
 import com.zaxxer.hikari.HikariDataSource
 import cz.kamenitxan.jakon.core.configuration.{DatabaseType, Settings}
-import cz.kamenitxan.jakon.core.database.annotation.OneToMany
+import cz.kamenitxan.jakon.core.database.annotation.{ManyToMany, OneToMany}
 import cz.kamenitxan.jakon.core.model.*
 import cz.kamenitxan.jakon.logging.Logger
 import cz.kamenitxan.jakon.utils.TypeReferences.SEQ
-import cz.kamenitxan.jakon.utils.Utils.*
+import cz.kamenitxan.jakon.utils.Utils
 import org.sqlite.SQLiteConfig
 
 import java.sql.*
@@ -17,7 +17,7 @@ import scala.collection.mutable
   */
 object DBHelper {
 
-	val objects: mutable.ArrayBuffer[Class[_ <: JakonObject]] = mutable.ArrayBuffer[Class[_ <: JakonObject]]()
+	val objects: mutable.ArrayBuffer[Class[? <: JakonObject]] = mutable.ArrayBuffer[Class[? <: JakonObject]]()
 	private lazy val ds = {
 		val tds = new HikariDataSource(DBInitializer.config)
 		tds.setLeakDetectionThreshold(60 * 1000)
@@ -29,7 +29,7 @@ object DBHelper {
 		objects += jobject
 	}
 
-	def getDaoClasses: mutable.ArrayBuffer[Class[_ <: JakonObject]] = objects
+	def getDaoClasses: mutable.ArrayBuffer[Class[? <: JakonObject]] = objects
 
 	def getConnection: Connection = {
 		val conn = if (Settings.getDatabaseType == DatabaseType.SQLITE) {
@@ -85,7 +85,7 @@ object DBHelper {
 		if (rs.next()) {
 			res = EntityMapper.createJakonObject(rs, cls)
 		} else {
-			res = new QueryResult[T](null)
+			res = new QueryResult[T](Map.empty)
 		}
 		stmt.close()
 		fetchI18nData(res)
@@ -97,7 +97,7 @@ object DBHelper {
 		val res: QueryResult[T] = if (rs.next()) {
 			EntityMapper.createJakonObject(rs, cls)
 		} else {
-			new QueryResult[T](null)
+			new QueryResult[T](Map.empty)
 		}
 		stmt.close()
 		fetchI18nData(res)
@@ -106,26 +106,13 @@ object DBHelper {
 
 	def selectSingleDeep[T <: JakonObject](stmt: Statement, sql: String)(implicit conn: Connection, cls: Class[T]): Option[T] = {
 		val res = selectSingle(stmt, sql, cls)
-		if (res.foreignIds != null && res.foreignIds.nonEmpty) {
-			res.foreignIds.values.foreach(fki => {
-				selectForeignEntity(fki, res)(implicitly, cls)
-			})
-		}
+		fetchForeignObjects(Seq(res))
 		Option(res.entity)
 	}
 
 	def selectSingleDeep[T <: JakonObject](stmt: PreparedStatement)(implicit conn: Connection, cls: Class[T]): T = {
 		val res = selectSingle(stmt, cls)
-		if (res.foreignIds != null && res.foreignIds.nonEmpty) {
-			res.foreignIds.values.foreach(fki => {
-				if (fki.ids.size == 1 && res.entity.id == fki.ids.head) {
-					fki.field.set(res.entity, res.entity)
-				} else {
-					fetchForeignObjects(Seq(res))
-				}
-			})
-		}
-
+		fetchForeignObjects(Seq(res))
 		fetchI18nData(res)
 		res.entity
 	}
@@ -138,7 +125,7 @@ object DBHelper {
 		fki.ids.zipWithIndex.foreach(idi => {
 			stmt.setInt(idi._2 + 1, idi._1)
 		})
-		val r = selectDeep(stmt)(implicitly, cls.asInstanceOf[Class[JakonObject]])
+		val r = selectDeep(stmt)(using implicitly, cls.asInstanceOf[Class[JakonObject]])
 		stmt.close()
 		if (fki.ids.size > 1) {
 			fki.field.set(res.entity, r)
@@ -160,11 +147,12 @@ object DBHelper {
 	}
 
 	def fetchForeignObjects[T <: JakonObject](resultList: Seq[QueryResult[T]])(implicit conn: Connection): Seq[QueryResult[T]] = {
-		resultList.foreach(r => {
-			if (r.foreignIds.nonEmpty) {
+		// empty result (e.g. selectSingle without match) has no entity to fill
+		resultList.filter(r => r.entity != null).foreach(r => {
+			if (r.foreignIds != null && r.foreignIds.nonEmpty) {
 				r.foreignIds.foreach(fki => {
 					val field = fki._2.field
-					if (fki._2.ids.size == 1 && r.entity.id == fki._2.ids.head) {
+					if (fki._2.ids.size == 1 && r.entity.id == fki._2.ids.head && field.getType.isAssignableFrom(r.entity.getClass)) {
 						field.set(r.entity, r.entity)
 					} else {
 						val oneToManyAnn = field.getDeclaredAnnotation(classOf[OneToMany])
@@ -187,7 +175,7 @@ object DBHelper {
 							stmt.setInt(idi._2 + 1, idi._1)
 						})
 
-						val res = selectDeep(stmt)(implicitly, objectClass)
+						val res = selectDeep(stmt)(using implicitly, objectClass)
 						field.getType match {
 							case SEQ => field.set(r.entity, res)
 							case _ => field.set(r.entity, res.head)
@@ -195,8 +183,48 @@ object DBHelper {
 					}
 				})
 			}
+
+			// Handle @ManyToMany fields — load related entities via junction table
+			fetchManyToManyObjects(r)
 		})
 		resultList
+	}
+
+	private def fetchManyToManyObjects[T <: JakonObject](r: QueryResult[T])(implicit conn: Connection): Unit = {
+		val manyToManyFields = Utils.getFieldsUpTo(r.entity.getClass, classOf[Object]).filter(_.getDeclaredAnnotation(classOf[ManyToMany]) != null)
+		manyToManyFields.foreach { field =>
+			val ann         = field.getDeclaredAnnotation(classOf[ManyToMany])
+			// junction table belongs to the class declaring the field, not to its subclasses
+			val ownerClass  = field.getDeclaringClass
+			val targetClass = ann.genericClass().asInstanceOf[Class[JakonObject]]
+			val joinTable   = ownerClass.getSimpleName + targetClass.getSimpleName
+			val joinCol     = ownerClass.getSimpleName + "_id"
+			val inverseCol  = targetClass.getSimpleName + "_id"
+			// language=SQL
+			val idsStmt = conn.prepareStatement(s"SELECT $inverseCol FROM $joinTable WHERE $joinCol = ?")
+			idsStmt.setInt(1, r.entity.id)
+			val idsRs = idsStmt.executeQuery()
+			val ids = scala.collection.mutable.ArrayBuffer.empty[Int]
+			while (idsRs.next()) {
+				ids += idsRs.getInt(1)
+			}
+			idsRs.close()
+			idsStmt.close()
+
+			field.setAccessible(true)
+			if (ids.isEmpty) {
+				field.set(r.entity, Seq.empty)
+			} else {
+				val targetName = targetClass.getSimpleName
+				val superClass = targetClass.getSuperclass
+				val joinSql    = if (superClass != classOf[JakonObject]) s"JOIN ${superClass.getSimpleName} s ON s.id = JakonObject.id" else ""
+				val inClause   = "c.id = ? OR " * (ids.size - 1) + "c.id = ?"
+				val entitiesStmt = conn.prepareStatement(s"SELECT * FROM $targetName c JOIN JakonObject ON c.id = JakonObject.id $joinSql WHERE $inClause")
+				ids.zipWithIndex.foreach { case (id, i) => entitiesStmt.setInt(i + 1, id) }
+				val entities = selectDeep(entitiesStmt)(using implicitly, targetClass)
+				field.set(r.entity, entities)
+			}
+		}
 	}
 
 	private def fetchI18nData[T <: BaseEntity](res: QueryResult[T])(implicit conn: Connection): Unit =  {

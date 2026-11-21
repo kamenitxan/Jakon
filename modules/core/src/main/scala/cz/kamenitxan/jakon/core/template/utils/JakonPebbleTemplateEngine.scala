@@ -17,12 +17,12 @@ import java.util
   * Template Engine based on Pebble.
   */
 class JakonPebbleTemplateEngine extends FileRenderer {
-	var engine: PebbleEngine = _
+	var engine: PebbleEngine = scala.compiletime.uninitialized
 
 	/**
 	  * Construct a new template engine using pebble with an engine using a special loader.
 	  */
-	def this(loader: Loader[_]) = {
+	def this(loader: Loader[?]) = {
 		this()
 		val builder = new PebbleEngine.Builder()
 			.loader(loader)
@@ -36,8 +36,8 @@ class JakonPebbleTemplateEngine extends FileRenderer {
 		this.engine = builder.build
 	}
 
-	override def render(filePath: String, model: util.Map[String, _], context: Context): String = {
-		if (model == null || model.isInstanceOf[util.Map[_, _]]) try {
+	override def render(filePath: String, model: util.Map[String, ?], context: Context): String = {
+		if (model == null || model.isInstanceOf[util.Map[?, ?]]) try {
 			val writer = new StringWriter
 			val template = engine.getTemplate(filePath)
 			if (model == null) template.evaluate(writer)
@@ -53,7 +53,7 @@ class JakonPebbleTemplateEngine extends FileRenderer {
 	@SuppressWarnings(Array("unchecked"))
 	def render(modelAndView: ModelAndView): String = {
 		val model = modelAndView.getModel
-		if (model == null || model.isInstanceOf[util.Map[_, _]]) try {
+		if (model == null || model.isInstanceOf[util.Map[?, ?]]) try {
 			val writer = new StringWriter
 			val template = engine.getTemplate(modelAndView.getViewName)
 			if (model == null) template.evaluate(writer)

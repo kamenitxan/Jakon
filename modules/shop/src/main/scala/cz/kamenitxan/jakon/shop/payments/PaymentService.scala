@@ -1,0 +1,202 @@
+package cz.kamenitxan.jakon.shop.payments
+
+import cz.kamenitxan.jakon.logging.Logger
+import cz.kamenitxan.jakon.shop.entity.{ShopOrder, ShopOrderItem}
+import cz.kamenitxan.jakon.shop.payments.impl.stripe.StripePaymentSettings
+import cz.kamenitxan.jakon.shop.service.{OrderItemService, OrderPaymentService}
+
+import java.math.{BigDecimal, RoundingMode}
+import java.sql.Connection
+
+/**
+ * Application-level service that orchestrates payment initialisation.
+ *
+ * Resolves the appropriate [[PaymentGateway]] for an order's payment method,
+ * builds a [[PaymentRequest]] from the order and its items, and delegates to the gateway.
+ * The caller receives a [[PaymentInitialization]] describing how to proceed
+ * (e.g. redirect URL for hosted checkout, manual instructions, etc.).
+ */
+object PaymentService {
+
+	/**
+	 * Resolves the gateway redirect URL for the given order if its payment method uses a
+	 * redirect-based gateway. Returns [[None]] if the method is manual, the gateway uses a
+	 * different flow, or initialization fails (the error is logged).
+	 *
+	 * @param shopOrder  the order to pay; must not be {@code null}
+	 * @param successUrl URL the customer is redirected to after a successful payment
+	 * @param cancelUrl  URL the customer is redirected to when the payment is cancelled
+	 * @param currency   ISO 4217 currency code; defaults to the value from [[StripePaymentSettings]]
+	 * @param conn       implicit database connection used to load order items
+	 * @return [[Some]] redirect URL when the gateway provides one, [[None]] otherwise
+	 */
+	def gatewayRedirectUrl(shopOrder: ShopOrder, successUrl: String, cancelUrl: String, currency: String = StripePaymentSettings.currency)(implicit conn: Connection): Option[String] = {
+		val gatewayCode = Option(shopOrder.paymentMethod)
+			.map(pm => PaymentGatewayRegistry.normalizeCode(pm.gatewayCode))
+			.getOrElse(PaymentGatewayCode.Manual)
+		if (gatewayCode == PaymentGatewayCode.Manual) {
+			None
+		} else {
+			try {
+				val init = initializePayment(shopOrder, successUrl, cancelUrl, currency)
+				init.flow match {
+					case PaymentFlow.Redirect =>
+						if (init.redirectUrl.isEmpty) {
+							Logger.error(s"Payment gateway returned no redirect URL for order ${shopOrder.orderNumber}")
+						}
+						init.redirectUrl
+					case _ => None
+				}
+			} catch {
+				case e: Exception =>
+					Logger.error(s"Payment initialization failed for order ${shopOrder.orderNumber}: ${e.getMessage}")
+					None
+			}
+		}
+	}
+
+	/**
+	 * Resolves the gateway for the order's payment method, builds a payment request and
+	 * initiates the payment session.
+	 *
+	 * @param shopOrder      the order to pay; must not be {@code null} and must have a payment method set
+	 * @param successUrl URL the customer is redirected to after a successful payment
+	 * @param cancelUrl  URL the customer is redirected to when the payment is cancelled
+	 * @param currency   ISO 4217 currency code; defaults to the value from [[StripePaymentSettings]]
+	 * @param conn       implicit database connection used to load order items
+	 * @return [[PaymentInitialization]] describing how to proceed with the payment
+	 * @throws PaymentGatewayException if the gateway is not configured or the request is invalid
+	 */
+	def initializePayment(shopOrder: ShopOrder, successUrl: String, cancelUrl: String, currency: String = StripePaymentSettings.currency)(implicit conn: Connection): PaymentInitialization = {
+		val request = createPaymentRequest(shopOrder, successUrl, cancelUrl, currency)
+		val gateway = PaymentGatewayRegistry.resolve(shopOrder.paymentMethod)
+		if (!gateway.isConfigured) {
+			throw new PaymentGatewayException(s"Payment gateway '${gateway.gatewayCode}' is not configured.")
+		}
+		val initialization = gateway.initializePayment(request)
+		OrderPaymentService.create(shopOrder, initialization)
+		initialization
+	}
+
+	/**
+	 * Builds a [[PaymentRequest]] for the given order, loading its items from the database.
+	 *
+	 * @param shopOrder      the order to build the request for
+	 * @param successUrl URL the customer is redirected to after a successful payment
+	 * @param cancelUrl  URL the customer is redirected to when the payment is cancelled
+	 * @param currency   ISO 4217 currency code; defaults to the value from [[StripePaymentSettings]]
+	 * @param conn       implicit database connection used to load order items
+	 * @return the assembled [[PaymentRequest]]
+	 */
+	def createPaymentRequest(shopOrder: ShopOrder, successUrl: String, cancelUrl: String, currency: String = StripePaymentSettings.currency)(implicit conn: Connection): PaymentRequest = {
+		val orderItems = if (shopOrder != null && shopOrder.id > 0) {
+			OrderItemService.getByOrder(shopOrder.id)
+		} else {
+			Seq.empty
+		}
+		createPaymentRequest(shopOrder, successUrl, cancelUrl, currency, orderItems)
+	}
+
+	/**
+	 * Builds a [[PaymentRequest]] from the given order and pre-loaded items.
+	 * Used internally and in tests to avoid a database call.
+	 */
+	private[payments] def createPaymentRequest(shopOrder: ShopOrder, successUrl: String, cancelUrl: String, currency: String, shopOrderItems: Seq[ShopOrderItem]): PaymentRequest = {
+		require(shopOrder != null, "Order must not be null.")
+		require(Option(successUrl).exists(_.trim.nonEmpty), "Success URL must not be blank.")
+		require(Option(cancelUrl).exists(_.trim.nonEmpty), "Cancel URL must not be blank.")
+
+		val lineItems = mapOrderItems(shopOrder, shopOrderItems) ++ shippingLineItem(shopOrder) ++ paymentFeeLineItem(shopOrder)
+		val fallbackLineItems = if (lineItems.nonEmpty) {
+			lineItems
+		} else {
+			Seq(
+				PaymentLineItem(
+					name = orderTitle(shopOrder),
+					unitPrice = safeAmount(shopOrder.totalPrice)
+				)
+			)
+		}
+
+		PaymentRequest(
+			shopOrder = shopOrder,
+			lineItems = fallbackLineItems,
+			successUrl = successUrl,
+			cancelUrl = cancelUrl,
+			currency = currency.toLowerCase,
+			metadata = metadata(shopOrder),
+			customerEmail = Option(shopOrder.customer).map(_.email).filter(value => value != null && value.trim.nonEmpty)
+		)
+	}
+
+	/** Maps order items to [[PaymentLineItem]] instances. */
+	private def mapOrderItems(shopOrder: ShopOrder, shopOrderItems: Seq[ShopOrderItem]): Seq[PaymentLineItem] = {
+		shopOrderItems.map(item => PaymentLineItem(
+			name = Option(item.productName).filter(_.trim.nonEmpty).getOrElse(orderTitle(shopOrder)),
+			quantity = Math.max(item.quantity, 1).toLong,
+			unitPrice = resolveUnitPrice(item),
+			description = Option(item.note).filter(_.trim.nonEmpty)
+		))
+	}
+
+	/** Returns a shipping line item if the order has a positive shipping price. */
+	private def shippingLineItem(shopOrder: ShopOrder): Seq[PaymentLineItem] = {
+		if (isPositive(shopOrder.shippingPrice)) {
+			Seq(PaymentLineItem(
+				name = Option(shopOrder.shippingMethod).map(_.name).filter(_.trim.nonEmpty).getOrElse("Shipping"),
+				unitPrice = shopOrder.shippingPrice,
+				description = Option(shopOrder.shippingMethod).map(_.description).filter(_.trim.nonEmpty)
+			))
+		} else {
+			Seq.empty
+		}
+	}
+
+	/** Returns a payment-fee line item if the order has a positive payment price. */
+	private def paymentFeeLineItem(shopOrder: ShopOrder): Seq[PaymentLineItem] = {
+		if (isPositive(shopOrder.paymentPrice)) {
+			Seq(PaymentLineItem(
+				name = Option(shopOrder.paymentMethod).map(_.name).filter(_.trim.nonEmpty).getOrElse("Payment"),
+				unitPrice = shopOrder.paymentPrice,
+				description = Option(shopOrder.paymentMethod).map(_.description).filter(_.trim.nonEmpty)
+			))
+		} else {
+			Seq.empty
+		}
+	}
+
+	/** Builds the metadata map forwarded to the payment gateway for reconciliation. */
+	private def metadata(shopOrder: ShopOrder): Map[String, String] = {
+		Map(
+			"orderId" -> shopOrder.id.toString,
+			"orderNumber" -> Option(shopOrder.orderNumber).getOrElse(""),
+			"paymentMethodId" -> Option(shopOrder.paymentMethod).map(_.id.toString).getOrElse("")
+		).filter(_._2.nonEmpty)
+	}
+
+	private def orderTitle(shopOrder: ShopOrder): String = {
+		Option(shopOrder.orderNumber).filter(_.trim.nonEmpty).map(number => s"Order $number").getOrElse("Order payment")
+	}
+
+	private def safeAmount(amount: BigDecimal): BigDecimal = {
+		Option(amount).getOrElse(BigDecimal.ZERO)
+	}
+
+	private def isPositive(amount: BigDecimal): Boolean = {
+		amount != null && amount.compareTo(BigDecimal.ZERO) > 0
+	}
+
+	/**
+	 * Resolves the unit price for an order item.
+	 * Prefers explicit unit price; falls back to dividing total price by quantity.
+	 */
+	private def resolveUnitPrice(item: ShopOrderItem): BigDecimal = {
+		if (isPositive(item.unitPrice)) {
+			item.unitPrice
+		} else if (isPositive(item.totalPrice)) {
+			safeAmount(item.totalPrice).divide(BigDecimal.valueOf(Math.max(item.quantity, 1).toLong), 2, RoundingMode.HALF_UP)
+		} else {
+			BigDecimal.ZERO
+		}
+	}
+}

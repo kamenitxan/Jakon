@@ -25,9 +25,11 @@ import scala.jdk.CollectionConverters.*
 object JsonPageletInitializer {
 	private val JsonContentType = "application/json"
 
-	def initControllers(controllers: Seq[Class[_]]): Unit = {
+	def initControllers(controllers: Seq[Class[?]]): Unit = {
 		Logger.info("Initializing json pagelets")
-		controllers.foreach(c => {
+		val (activeControllers, disabledControllers) = controllers.partition(PageletSettings.isEnabled)
+		disabledControllers.foreach(c => Logger.info(s"Json pagelet ${c.getSimpleName} is disabled by configuration"))
+		activeControllers.foreach(c => {
 			Logger.debug("Initializing json pagelet: " + c.getSimpleName)
 			val controllerAnn = c.getAnnotation(classOf[JsonPagelet])
 			if (controllerAnn.path().endsWith("/")) {
@@ -36,6 +38,7 @@ object JsonPageletInitializer {
 
 			c.getDeclaredMethods
 				.filter(m => m.getAnnotation(classOf[Get]) != null || m.getAnnotation(classOf[Post]) != null)
+				.filter(m => PageletInitializer.checkDataClass(c, m))
 				.foreach(m => {
 					val get = m.getAnnotation(classOf[Get])
 					val post = m.getAnnotation(classOf[Post])
@@ -57,7 +60,7 @@ object JsonPageletInitializer {
 		Logger.info("Json pagelet initialization complete")
 	}
 
-	private def initGetAnnotation(get: Get, controllerAnn: JsonPagelet, m: Method, c: Class[_]): Unit = {
+	private def initGetAnnotation(get: Get, controllerAnn: JsonPagelet, m: Method, c: Class[?]): Unit = {
 		JakonInit.javalinConfig.routes.get(controllerAnn.path() + get.path(), new Handler {
 			override def handle(ctx: Context): Unit = {
 				ctx.contentType(JsonContentType)
@@ -65,7 +68,7 @@ object JsonPageletInitializer {
 				val response: String = DBHelper.withDbConnection(implicit conn => {
 					val methodArgs = createMethodArgs(m, ctx, pagelet)
 					try {
-						val responseData = m.invoke(pagelet, methodArgs.array: _*)
+						val responseData = m.invoke(pagelet, methodArgs.array*)
 						createResponse(responseData, pagelet)
 					} catch {
 						case ex: Exception =>
@@ -80,7 +83,7 @@ object JsonPageletInitializer {
 		})
 	}
 
-	private def initPostAnnotation(post: Post, controllerAnn: JsonPagelet, m: Method, c: Class[_]): Unit = {
+	private def initPostAnnotation(post: Post, controllerAnn: JsonPagelet, m: Method, c: Class[?]): Unit = {
 		JakonInit.javalinConfig.routes.post(controllerAnn.path() + post.path(), new Handler {
 			override def handle(ctx: Context): Unit = {
 				ctx.contentType(JsonContentType)
@@ -105,13 +108,13 @@ object JsonPageletInitializer {
 							case Right(validatedData) =>
 								methodArgs = parseJsonArgs(m, ctx, controller, validatedData)
 								val methodArgsArray = methodArgs.array
-								val responseData = m.invoke(controller, methodArgsArray: _*)
+								val responseData = m.invoke(controller, methodArgsArray*)
 								createResponse(responseData, controller)
 						}
 					} else {
 						methodArgs = parseJsonArgs(m, ctx, controller)
 						val methodArgsArray = methodArgs.array
-						val responseData = m.invoke(controller, methodArgsArray: _*)
+						val responseData = m.invoke(controller, methodArgsArray*)
 						createResponse(responseData, controller)
 					}
 					ctx.result(response)

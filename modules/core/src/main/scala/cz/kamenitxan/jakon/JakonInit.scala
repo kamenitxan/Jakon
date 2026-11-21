@@ -10,17 +10,20 @@ import cz.kamenitxan.jakon.devtools.{DevRender, DevStaticFilesController, Static
 import cz.kamenitxan.jakon.logging.{LogCleanerTask, Logger}
 import cz.kamenitxan.jakon.utils.mail.{EmailEntity, EmailSendTask, EmailTemplateEntity}
 import cz.kamenitxan.jakon.utils.{ContextExtension, LoggingExceptionHandler, PageContext}
+import cz.kamenitxan.jakon.webui.Routes
 import cz.kamenitxan.jakon.webui.entity.{ConfirmEmailEntity, ResetPasswordEmailEntity}
-import cz.kamenitxan.jakon.webui.{AdminSettings, Routes}
 import io.github.classgraph.ScanResult
 import io.javalin.Javalin
 import io.javalin.apibuilder.ApiBuilder
 import io.javalin.config.{JavalinConfig, RoutesConfig}
 import io.javalin.http.{Context, Handler, HttpStatus}
 import io.javalin.plugin.bundled.CorsPluginConfig
+import org.eclipse.jetty.ee10.servlet.SessionHandler
+import org.eclipse.jetty.http.HttpCookie
 
 import java.io.File
-import java.nio.file.{Files, Paths}
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 
@@ -58,21 +61,11 @@ class JakonInit {
 			cors => {
 				cors.addRule(it => {
 					it.reflectClientOrigin = true
+					it.allowCredentials = true
 				})
 			}
 		} else {
 			 null
-		}
-	}
-
-	protected def adminControllers(): Unit = {
-		if (Files.exists(Paths.get("servers.json"))) {
-			// TODO skryvani controleru udelat nejak jinak
-			//AdminSettings.registerCustomController(classOf[DeployController])
-		}
-		if (AdminSettings.enableFiles) {
-			// TODO skryvani controleru udelat nejak jinak
-			//AdminSettings.registerCustomController(classOf[FileManagerController])
 		}
 	}
 
@@ -111,9 +104,23 @@ class JakonInit {
 		annotationScanner.loadConfiguration()
 
 		val portNumber: Int = arguments.find(a => a._1 == "port").map(a => a._2.toInt).getOrElse(Settings.getPort)
+		val host: String = arguments.find(a => a._1 == "host").map(a => a._2).getOrElse(Settings.getHost)
 
 		val app = Javalin.create(config => {
 			config.jetty.port = portNumber
+			if (host != null && host.nonEmpty) {
+				config.jetty.host = host
+			}
+			config.jetty.modifyServletContextHandler(handler => {
+				if (handler.getSessionHandler == null) {
+					handler.setSessionHandler(new SessionHandler())
+				}
+				val sessionHandler = handler.getSessionHandler
+				sessionHandler.setHttpOnly(true)
+				sessionHandler.setSameSite(HttpCookie.SameSite.LAX)
+				// Secure flag whenever request comes over HTTPS
+				sessionHandler.setSecureRequestOnly(true)
+			})
 			config.http.defaultContentType = "text/html; charset=utf-8"
 			config.router.treatMultipleSlashesAsSingleSlash = true
 			config.staticFiles.add(Settings.getStaticDir)
@@ -130,7 +137,7 @@ class JakonInit {
 		JakonInit.javalin = app
 
 		app.start(portNumber)
-		Logger.info(s"Jakon started on port $portNumber")
+		Logger.info(s"Jakon started on ${if (host != null && host.nonEmpty) host else "all interfaces"}, port $portNumber")
 		Director.start()
 		afterInit()
 	}
@@ -142,8 +149,13 @@ class JakonInit {
 		Logger.info("Starting in " + Settings.getDeployMode + " mode")
 
 		daoSetup()
-		adminControllers()
 		taskSetup()
+
+		if (Settings.isClacksOverhead) {
+			config.routes.before((ctx: Context) => {
+				ctx.header("X-Clacks-Overhead", "GNU Terry Pratchett")
+			})
+		}
 
 		if (Settings.isInitRoutes) {
 			websocketSetup(config)
@@ -193,9 +205,9 @@ class JakonInit {
 					if (user == null || (!user.acl.adminAllowed && !user.acl.allowedFrontendPrefixes.contains(pp))) {
 						Logger.debug(s"User $user denied access to '$pp*'")
 						if (ctx.path().startsWith(Routes.AdminPrefix)) {
-							ctx.redirect(Routes.AdminPrefix + s"?redirectTo=${ctx.path()}", HttpStatus.FOUND)
+							ctx.redirect(Routes.AdminPrefix + s"?redirectTo=${URLEncoder.encode(ctx.path(), StandardCharsets.UTF_8)}", HttpStatus.FOUND)
 						} else {
-							ctx.redirect(Settings.getLoginPath + s"?redirectTo=${ctx.path()}", HttpStatus.FOUND)
+							ctx.redirect(Settings.getLoginPath + s"?redirectTo=${URLEncoder.encode(ctx.path(), StandardCharsets.UTF_8)}", HttpStatus.FOUND)
 						}
 					}
 
@@ -207,6 +219,6 @@ class JakonInit {
 }
 
 object JakonInit {
-	var javalin: Javalin = _
-	var javalinConfig: JavalinConfig = _
+	var javalin: Javalin = scala.compiletime.uninitialized
+	var javalinConfig: JavalinConfig = scala.compiletime.uninitialized
 }

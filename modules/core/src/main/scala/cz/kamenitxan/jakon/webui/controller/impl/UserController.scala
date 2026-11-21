@@ -1,6 +1,7 @@
 package cz.kamenitxan.jakon.webui.controller.impl
 
 import cz.kamenitxan.jakon.core.model.JakonUser
+import cz.kamenitxan.jakon.utils.security.AuthUtils
 import cz.kamenitxan.jakon.utils.{PageContext, Utils}
 import cz.kamenitxan.jakon.webui.ModelAndView
 import cz.kamenitxan.jakon.webui.conform.FieldConformer
@@ -62,7 +63,8 @@ object UserController {
 	private def setValue(user: JakonUser, fieldRef: Field, paramName: String,  value: Any): Unit = {
 		if (value != null) {
 			if (paramName.equals("password")) {
-				if (!value.asInstanceOf[String].startsWith("$2a$")) {
+				// the profile form sends the stored hash back when the password is not changed
+				if (!AuthUtils.isPasswordHash(value.asInstanceOf[String])) {
 					fieldRef.set(user, value)
 				}
 			} else {
